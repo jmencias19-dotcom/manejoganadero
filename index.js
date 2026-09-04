@@ -1,26 +1,31 @@
-// Cargar el token desde las variables de entorno definidas en el flujo de trabajo
+// Cargar variable de entorno
 const botToken = process.env.BOT_TOKEN;
 
 async function ejecutarBot() {
-    console.log("=== Iniciando Bot de Búsqueda ===");
+    console.log("==========================================");
+    console.log("   INICIANDO PRUEBA DE DIAGNÓSTICO BOT   ");
+    console.log("==========================================");
 
-    if (!botToken) {
-        console.error(" Error: No se encontró el token BOT_TOKEN en las variables de entorno.");
+    // Verificar si la variable está llegando al entorno
+    if (!botToken || botToken.trim() === "") {
+        console.error("❌ ERROR: La variable BOT_TOKEN (secret.JJM1) NO está llegando al proceso.");
+        console.error("👉 Revisa en GitHub: Settings > Secrets and variables > Actions > Repository secrets.");
+        console.error("👉 Asegúrate de que el secreto se llame exactamente 'JJM1' (en mayúsculas).");
         process.exit(1);
     }
 
-    console.log(" Secreto cargado correctamente desde GitHub Actions.");
-    console.log(" Ejecutando tarea de búsqueda...");
+    console.log("✅ ÉXITO: El secreto JJM1 se ha detectado correctamente en process.env.BOT_TOKEN.");
+    console.log(`ℹ️  Longitud del token detectado: ${botToken.length} caracteres.`);
 
-    // Simulación de tarea de búsqueda
     try {
-        console.log(" Procesando datos...");
+        console.log("🚀 Ejecutando lógica del bot...");
         
-        // Aquí puedes agregar la lógica real de tu bot de búsqueda
+        // Coloca aquí tus funciones o lógica principal
         
-        console.log(" Tarea finalizada con éxito.");
+        console.log("🎉 Proceso completado sin errores.");
     } catch (error) {
-        console.error(" Hubo un error durante la ejecución:", error);
+        console.error("❌ Error en tiempo de ejecución del script:", error.message);
+        console.error(error.stack);
         process.exit(1);
     }
 }
