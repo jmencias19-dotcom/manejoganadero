@@ -3,6 +3,9 @@ name: Bot de Búsqueda Automática
 on:
   push:
     branches: [ "main" ]
+  schedule:
+    # Opcional: Ejecuta el bot automáticamente todos los días a las 06:00 UTC
+    - cron: '0 6 * * *'
   workflow_dispatch:
 
 jobs:
@@ -17,10 +20,12 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
+          cache: 'npm'
+
+      - name: Instalar dependencias
+        run: npm ci || npm install
 
       - name: Ejecutar el bot de búsqueda
         env:
           BOT_TOKEN: ${{ secrets.JJM1 }}
-        run: |
-          npm install
-          node index.js
+        run: node index.js
