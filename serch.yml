@@ -4,7 +4,6 @@ on:
   push:
     branches: [ "main" ]
   schedule:
-    # Opcional: Ejecuta el bot automáticamente todos los días a las 06:00 UTC
     - cron: '0 6 * * *'
   workflow_dispatch:
 
@@ -20,12 +19,17 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
 
       - name: Instalar dependencias
-        run: npm ci || npm install
+        run: npm install
 
-      - name: Ejecutar el bot de búsqueda
+      - name: Verificar y ejecutar el bot
         env:
           BOT_TOKEN: ${{ secrets.JJM1 }}
-        run: node index.js
+        run: |
+          if [ -z "$BOT_TOKEN" ]; then
+            echo "::error::El secreto JJM1 está vacío o no fue encontrado en GitHub Secrets."
+            exit 1
+          fi
+          echo "Secreto detectado correctamente. Iniciando script..."
+          node index.js
