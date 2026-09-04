@@ -1,9 +1,8 @@
 {
   "name": "bot-busqueda",
   "version": "1.0.0",
-  "description": "Bot de búsqueda automatizada",
+  "description": "Bot de búsqueda automática",
   "main": "index.js",
-  "type": "commonjs",
   "scripts": {
     "start": "node index.js"
   },
