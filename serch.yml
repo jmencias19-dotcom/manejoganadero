@@ -3,8 +3,6 @@ name: Bot de Búsqueda Automática
 on:
   push:
     branches: [ "main" ]
-  schedule:
-    - cron: '0 6 * * *'
   workflow_dispatch:
 
 jobs:
@@ -20,10 +18,14 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Instalar dependencias
-        run: npm install
+      - name: Diagnóstico e Instalación
+        run: |
+          echo "=== 1. Verificando estructura de archivos ==="
+          ls -la
+          echo "=== 2. Instalando dependencias ==="
+          npm install
 
-      - name: Ejecutar script de búsqueda
+      - name: Ejecutar el script Node
         env:
           BOT_TOKEN: ${{ secrets.JJM1 }}
         run: node index.js
