@@ -1,0 +1,26 @@
+name: Bot de Búsqueda Automática
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  run-bot:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Descargar el código del repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar entorno de Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Ejecutar el bot de búsqueda
+        env:
+          BOT_TOKEN: ${{ secrets.JJM1 }}
+        run: |
+          npm install
+          node index.js
