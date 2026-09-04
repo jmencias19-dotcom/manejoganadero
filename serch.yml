@@ -23,13 +23,7 @@ jobs:
       - name: Instalar dependencias
         run: npm install
 
-      - name: Verificar y ejecutar el bot
+      - name: Ejecutar script de búsqueda
         env:
           BOT_TOKEN: ${{ secrets.JJM1 }}
-        run: |
-          if [ -z "$BOT_TOKEN" ]; then
-            echo "::error::El secreto JJM1 está vacío o no fue encontrado en GitHub Secrets."
-            exit 1
-          fi
-          echo "Secreto detectado correctamente. Iniciando script..."
-          node index.js
+        run: node index.js
