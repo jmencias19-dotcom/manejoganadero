@@ -3,21 +3,21 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="theme-color" content="#12181b">
   
-  <!-- Etiqueta actualizada para PWA moderna (elimina el warning) -->
+  <!-- Configuración PWA / WebApp -->
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   
   <title>Manejo Ganadero - App de Campo</title>
 
-  <!-- Manejo Global de Promesas No Capturadas (evita el Uncaught in promise) -->
+  <!-- Captura de errores asíncronos no controlados -->
   <script>
     window.addEventListener('unhandledrejection', function(event) {
-      console.warn('Promesa no capturada (manejada):', event.reason);
-      event.preventDefault(); // Previene que el error rompa la ejecución del JS
-    });window.Telegram.webApp.ready();
+      console.warn('Promesa rechazada capturada:', event.reason);
+      event.preventDefault();
+    });
   </script>
 
-  <!-- Preconexión para optimizar carga de recursos -->
+  <!-- Preconexión de fuentes -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
@@ -33,8 +33,18 @@
   <link rel="stylesheet" href="./logistica-comidas.css">
   <link rel="stylesheet" href="./historial-pastoreo.css">
 
-  <!-- Telegram WebApp SDK -->
+  <!-- Telegram WebApp SDK (Primero se carga la librería) -->
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+  <!-- Inicialización Segura del SDK de Telegram -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      if (window.Telegram?.WebApp) {
+        window.Telegram.WebApp.ready();
+        window.Telegram.WebApp.expand();
+      }
+    });
+  </script>
 
   <!-- Import Map para Dexie.js (IndexedDB Offline) -->
   <script type="importmap">
