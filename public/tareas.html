@@ -1,562 +1,151 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Planificación de Tareas - Hato Laguna Brava</title>
-    
-    <link rel="stylesheet" href="variables.css?v=1.1">
-    <link rel="stylesheet" href="planificacion.css?v=1.1">
+<!-- Script con Firebase Firestore y la lógica de la aplicación -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
+        import { 
+            getFirestore, 
+            collection, 
+            addDoc, 
+            updateDoc, 
+            deleteDoc, 
+            doc, 
+            onSnapshot, 
+            query, 
+            orderBy 
+        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    <style>
-        .container {
-            max-width: 1100px;
-            margin: 0 auto;
-            padding: 12px;
-        }
+        const firebaseConfig = {
+            apiKey: "AIzaSyBnIB0rPQULTOfs55YSnsX2C-2rN5pTANk",
+            authDomain: "hato-laguna-brava.firebaseapp.com",
+            projectId: "hato-laguna-brava",
+            storageBucket: "hato-laguna-brava.firebasestorage.app",
+            messagingSenderId: "1053099733476",
+            appId: "1:1053099733476:web:541a115776b2e80047d7f1",
+            measurementId: "G-RSW0XSHF1F"
+        };
 
-        /* Encabezado Responsivo */
-        .header-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const db = getFirestore(app);
+        const tasksCollection = collection(db, "tareas");
 
-        .header-title h1 {
-            color: var(--primary-color);
-            font-size: var(--font-size-xl);
-            margin: 0 0 5px 0;
-        }
+        const taskForm = document.getElementById('taskForm');
+        const taskTableBody = document.getElementById('taskTableBody');
+        const light = document.getElementById('light');
+        const statusText = document.getElementById('statusText');
+        const toast = document.getElementById('toast');
+        const toastMessage = document.getElementById('toastMessage');
 
-        .header-title p {
-            color: var(--text-muted);
-            font-size: var(--font-size-base);
-            margin: 0;
-            line-height: 1.4;
-        }
-
-        .header-actions {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-            flex-wrap: wrap;
-            width: 100%;
-            justify-content: space-between;
-        }
-
-        .btn-back {
-            background-color: var(--card-bg);
-            color: var(--primary-color);
-            padding: 10px 16px;
-            border-radius: var(--radius-md);
-            text-decoration: none;
-            font-weight: 600;
-            border: 1px solid var(--border-color);
-            box-shadow: var(--relief-shadow);
-            transition: var(--transition);
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .btn-back:hover {
-            transform: translateY(-2px);
-        }
-
-        /* Semáforo de Estado de Carga */
-        .sync-status {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: var(--font-size-sm);
-            font-weight: 600;
-            background-color: var(--card-bg);
-            padding: 8px 12px;
-            border-radius: var(--radius-md);
-            border: 1px solid var(--border-color);
-            box-shadow: var(--relief-shadow);
-        }
-
-        .traffic-light {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            display: inline-block;
-            background-color: #28a745;
-            box-shadow: 0 0 6px rgba(40, 167, 69, 0.6);
-            flex-shrink: 0;
-        }
-
-        .traffic-light.syncing {
-            background-color: #ffc107;
-            box-shadow: 0 0 6px rgba(255, 193, 7, 0.8);
-        }
-
-        /* Notificación Toast Movil */
-        .toast-notification {
-            position: fixed;
-            top: 15px;
-            left: 50%;
-            transform: translate(-50%, -20px);
-            width: 90%;
-            max-width: 400px;
-            background-color: #004085;
-            color: #ffffff;
-            padding: 12px 16px;
-            border-radius: var(--radius-md);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-weight: 600;
-            font-size: var(--font-size-sm);
-            z-index: 1000;
-            opacity: 0;
-            transition: opacity 0.3s ease, transform 0.3s ease;
-            pointer-events: none;
-        }
-
-        .toast-notification.show {
-            opacity: 1;
-            transform: translate(-50%, 0);
-            pointer-events: auto;
-        }
-
-        .toast-notification.success { background-color: #155724; border-left: 5px solid #28a745; }
-        .toast-notification.warning { background-color: #856404; border-left: 5px solid #ffc107; }
-        .toast-notification.danger { background-color: #721c24; border-left: 5px solid #dc3545; }
-
-        /* Estructura del Formulario */
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: 15px;
-            margin-top: 15px;
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-
-        .form-group label {
-            font-size: var(--font-size-base);
-            font-weight: 600;
-            color: var(--primary-color);
-        }
-
-        .form-control {
-            padding: 12px;
-            border-radius: var(--radius-md);
-            border: 1px solid var(--border-color);
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            font-size: var(--font-size-base);
-            outline: none;
-            width: 100%;
-            box-sizing: border-box;
-        }
-
-        .form-control:focus {
-            border-color: var(--primary-color);
-        }
-
-        .full-width {
-            grid-column: 1 / -1;
-        }
-
-        .btn-submit {
-            grid-column: 1 / -1;
-            margin-top: 10px;
-            padding: 14px;
-            background-color: var(--primary-color);
-            color: #ffffff;
-            border: none;
-            border-radius: var(--radius-md);
-            font-weight: 700;
-            font-size: var(--font-size-base);
-            cursor: pointer;
-            box-shadow: var(--relief-shadow);
-            transition: var(--transition);
-            width: 100%;
-        }
-
-        .btn-submit:hover {
-            background-color: var(--primary-hover);
-        }
-
-        /* Tabla Adaptativa */
-        .table-header-flex {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-
-        .btn-clear-all {
-            background-color: #dc3545;
-            color: #ffffff;
-            border: none;
-            padding: 8px 14px;
-            border-radius: var(--radius-md);
-            font-weight: 600;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-
-        .table-responsive {
-            width: 100%;
-            overflow-x: auto;
-            margin-top: 15px;
-            -webkit-overflow-scrolling: touch;
-        }
-
-        table {
-            width: 100%;
-            min-width: 650px; /* Garantiza legibilidad en pantallas estrechas */
-            border-collapse: collapse;
-            text-align: left;
-            font-size: var(--font-size-base);
-        }
-
-        th, td {
-            padding: 10px 12px;
-            border-bottom: 1px solid var(--border-color);
-            white-space: normal;
-            word-break: break-word;
-        }
-
-        th {
-            background-color: var(--bg-color);
-            color: var(--primary-color);
-            font-weight: 700;
-        }
-
-        .status-select {
-            padding: 6px 8px;
-            border-radius: var(--radius-md);
-            font-weight: 700;
-            font-size: 0.85rem;
-            border: 1px solid var(--border-color);
-            cursor: pointer;
-            outline: none;
-            width: 100%;
-        }
-
-        .status-select.status-pendiente { background-color: #fff3cd; color: #856404; }
-        .status-select.status-proceso { background-color: #cce5ff; color: #004085; }
-        .status-select.status-completada { background-color: #d4edda; color: #155724; }
-
-        .btn-delete {
-            background-color: #dc3545;
-            color: #fff;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 600;
-        }
-
-        /* AJUSTES ESPECÍFICOS PARA DISPOSITIVOS MÓVILES (< 768px) */
-        @media (min-width: 768px) {
-            .header-actions {
-                width: auto;
-            }
-        }
-
-        @media (max-width: 600px) {
-            .container {
-                padding: 8px;
-            }
-
-            .header-title h1 {
-                font-size: 1.6rem;
-            }
-
-            .header-title p {
-                font-size: 0.88rem;
-            }
-
-            .form-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .full-width {
-                grid-column: span 1;
-            }
-
-            .btn-clear-all {
-                width: 100%;
-                margin-top: 8px;
-            }
-        }
-    </style>
-</head>
-<body>
-
-    <!-- Banner de Alerta / Notificación Flotante -->
-    <div id="toast" class="toast-notification">
-        <span id="toastIcon">📢</span>
-        <span id="toastMessage">Sistema actualizado</span>
-    </div>
-
-    <div class="container">
-        <div class="header-bar">
-            <div class="header-title">
-                <h1>Hato Laguna Brava</h1>
-                <p>Programación y asignación de labores diarias del personal de campo (mantenimiento de cercas, roza, limpieza de bebederos y faenas de corral).</p>
-            </div>
-            
-            <div class="header-actions">
-                <div class="sync-status">
-                    <span id="light" class="traffic-light"></span>
-                    <span id="statusText">Datos Guardados</span>
-                </div>
-                <a href="index.html" class="btn-back">← Volver al Panel</a>
-            </div>
-        </div>
-
-        <!-- Formulario de Registro -->
-        <section class="card" style="margin-bottom: 20px;">
-            <div class="card-header">
-                <h3 class="card-title">Programar Nueva Labor</h3>
-            </div>
-            
-            <form id="taskForm" class="form-grid">
-                <div class="form-group">
-                    <label for="fecha">Fecha</label>
-                    <input type="date" id="fecha" class="form-control" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="labor">Labor / Actividad</label>
-                    <input type="text" id="labor" class="form-control" placeholder="Ej: Mantenimiento de cercas" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="personal">Encargado / Cuadrilla</label>
-                    <input type="text" id="personal" class="form-control" placeholder="Nombre del personal" required>
-                </div>
-
-                <div class="form-group full-width">
-                    <label for="observaciones">Observaciones / Insumos Requeridos</label>
-                    <input type="text" id="observaciones" class="form-control" placeholder="Ej: Limpieza de bebederos en potrero 4">
-                </div>
-
-                <button type="submit" class="btn-submit">Sincronizar Labor</button>
-            </form>
-        </section>
-
-        <!-- Tabla de Control -->
-        <section class="card">
-            <div class="card-header table-header-flex">
-                <h3 class="card-title">Programación Registrada</h3>
-                <button id="clearAllBtn" class="btn-clear-all">Borrar Todo</button>
-            </div>
-
-            <div class="table-responsive">
-                <table>
-                    <thead>
-                        <tr>
-                            <th style="width: 110px;">Fecha</th>
-                            <th>Labor / Actividad</th>
-                            <th>Encargado/cuadrilla</th>
-                            <th>Observaciones</th>
-                            <th style="width: 130px;">Estado</th>
-                            <th style="width: 80px;">Acción</th>
-                        </tr>
-                    </thead>
-                    <tbody id="taskTableBody">
-                        <!-- Las tareas cargadas aparecerán aquí -->
-                    </tbody>
-                </table>
-            </div>
-        </section>
-    </div>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const taskForm = document.getElementById('taskForm');
-            const taskTableBody = document.getElementById('taskTableBody');
-            const clearAllBtn = document.getElementById('clearAllBtn');
-            const light = document.getElementById('light');
-            const statusText = document.getElementById('statusText');
-            const toast = document.getElementById('toast');
-            const toastMessage = document.getElementById('toastMessage');
-
-            let tasks = JSON.parse(localStorage.getItem('hato_tareas')) || [];
-
-            function playLoudSound(type) {
-                try {
-                    const AudioContext = window.AudioContext || window.webkitAudioContext;
-                    if (!AudioContext) return;
-                    const audioCtx = new AudioContext();
-
-                    if (type === 'success') {
-                        const freqs = [880, 1046.50, 1318.51];
-                        freqs.forEach((freq, i) => {
-                            const osc = audioCtx.createOscillator();
-                            const gain = audioCtx.createGain();
-                            osc.type = 'square'; 
-                            osc.frequency.setValueAtTime(freq, audioCtx.currentTime + (i * 0.08));
-                            gain.gain.setValueAtTime(0.4, audioCtx.currentTime + (i * 0.08));
-                            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + (i * 0.08) + 0.25);
-                            osc.connect(gain);
-                            gain.connect(audioCtx.destination);
-                            osc.start(audioCtx.currentTime + (i * 0.08));
-                            osc.stop(audioCtx.currentTime + (i * 0.08) + 0.25);
-                        });
-                    } else if (type === 'warning') {
-                        [0, 0.15].forEach(delay => {
-                            const osc = audioCtx.createOscillator();
-                            const gain = audioCtx.createGain();
-                            osc.type = 'sawtooth'; 
-                            osc.frequency.setValueAtTime(750, audioCtx.currentTime + delay);
-                            gain.gain.setValueAtTime(0.5, audioCtx.currentTime + delay);
-                            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + delay + 0.1);
-                            osc.connect(gain);
-                            gain.connect(audioCtx.destination);
-                            osc.start(audioCtx.currentTime + delay);
-                            osc.stop(audioCtx.currentTime + delay + 0.1);
-                        });
-                    } else if (type === 'danger') {
-                        const osc = audioCtx.createOscillator();
-                        const gain = audioCtx.createGain();
-                        osc.type = 'sawtooth';
-                        osc.frequency.setValueAtTime(400, audioCtx.currentTime);
-                        osc.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.35);
-                        gain.gain.setValueAtTime(0.6, audioCtx.currentTime);
-                        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.35);
-                        osc.connect(gain);
-                        gain.connect(audioCtx.destination);
-                        osc.start();
-                        osc.stop(audioCtx.currentTime + 0.35);
-                    }
-                } catch (e) {
-                    console.log('Error de audio:', e);
-                }
-            }
-
-            function showNotification(message, type = 'success') {
-                toastMessage.textContent = message;
-                toast.className = `toast-notification ${type} show`;
-                playLoudSound(type);
-
-                setTimeout(() => {
-                    toast.classList.remove('show');
-                }, 3500);
-            }
-
-            function setSyncStatus(isSyncing) {
+        function setSyncStatus(isSyncing) {
+            if (light && statusText) {
                 if (isSyncing) {
                     light.classList.add('syncing');
                     statusText.textContent = 'Sincronizando...';
                 } else {
                     light.classList.remove('syncing');
-                    statusText.textContent = 'Datos Guardados';
+                    statusText.textContent = 'Conectado a la Nube';
                 }
             }
+        }
 
-            function getStatusClass(status) {
-                if (status === 'En Proceso') return 'status-proceso';
-                if (status === 'Completada') return 'status-completada';
-                return 'status-pendiente';
+        function showNotification(message, type = 'success') {
+            if (!toast || !toastMessage) return;
+            toastMessage.textContent = message;
+            toast.className = `toast-notification ${type} show`;
+            setTimeout(() => toast.classList.remove('show'), 3500);
+        }
+
+        function getStatusClass(status) {
+            if (status === 'En Proceso') return 'status-proceso';
+            if (status === 'Completada') return 'status-completada';
+            return 'status-pendiente';
+        }
+
+        const q = query(tasksCollection, orderBy("fecha", "desc"));
+        onSnapshot(q, (snapshot) => {
+            if (!taskTableBody) return;
+            taskTableBody.innerHTML = '';
+            
+            if (snapshot.empty) {
+                taskTableBody.innerHTML = `<tr><td colspan="6" style="text-align:center; color: var(--text-muted);">No hay tareas registradas en el servidor.</td></tr>`;
+                setSyncStatus(false);
+                return;
             }
 
-            function renderTasks() {
-                taskTableBody.innerHTML = '';
-                if (tasks.length === 0) {
-                    taskTableBody.innerHTML = `<tr><td colspan="6" style="text-align:center; color: var(--text-muted);">No hay tareas programadas.</td></tr>`;
-                    return;
-                }
+            snapshot.forEach((docSnapshot) => {
+                const task = docSnapshot.data();
+                const id = docSnapshot.id;
+                const tr = document.createElement('tr');
+                const statusClass = getStatusClass(task.estado);
 
-                tasks.forEach((task, index) => {
-                    const tr = document.createElement('tr');
-                    const statusClass = getStatusClass(task.estado);
+                tr.innerHTML = `
+                    <td>${task.fecha}</td>
+                    <td><strong>${task.labor}</strong></td>
+                    <td>${task.personal}</td>
+                    <td>${task.observaciones || '-'}</td>
+                    <td>
+                        <select class="status-select ${statusClass}" data-id="${id}" onchange="window.updateTaskStatus('${id}', this.value)">
+                            <option value="Pendiente" ${task.estado === 'Pendiente' ? 'selected' : ''}>Pendiente</option>
+                            <option value="En Proceso" ${task.estado === 'En Proceso' ? 'selected' : ''}>En Proceso</option>
+                            <option value="Completada" ${task.estado === 'Completada' ? 'selected' : ''}>Completada</option>
+                        </select>
+                    </td>
+                    <td><button class="btn-delete" onclick="window.deleteTask('${id}')">Eliminar</button></td>
+                `;
+                taskTableBody.appendChild(tr);
+            });
+            setSyncStatus(false);
+        }, (error) => {
+            console.error("Error de conexión:", error);
+            if (statusText) statusText.textContent = "Error de Conexión";
+        });
 
-                    tr.innerHTML = `
-                        <td>${task.fecha}</td>
-                        <td><strong>${task.labor}</strong></td>
-                        <td>${task.personal}</td>
-                        <td>${task.observaciones || '-'}</td>
-                        <td>
-                            <select class="status-select ${statusClass}" onchange="updateTaskStatus(${index}, this.value)">
-                                <option value="Pendiente" ${task.estado === 'Pendiente' ? 'selected' : ''}>Pendiente</option>
-                                <option value="En Proceso" ${task.estado === 'En Proceso' ? 'selected' : ''}>En Proceso</option>
-                                <option value="Completada" ${task.estado === 'Completada' ? 'selected' : ''}>Completada</option>
-                            </select>
-                        </td>
-                        <td><button class="btn-delete" onclick="deleteTask(${index})">Eliminar</button></td>
-                    `;
-                    taskTableBody.appendChild(tr);
-                });
-            }
-
-            taskForm.addEventListener('submit', (e) => {
+        if (taskForm) {
+            taskForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 setSyncStatus(true);
 
-                setTimeout(() => {
-                    const newTask = {
+                try {
+                    await addDoc(tasksCollection, {
                         fecha: document.getElementById('fecha').value,
                         labor: document.getElementById('labor').value,
                         personal: document.getElementById('personal').value,
                         observaciones: document.getElementById('observaciones').value,
-                        estado: 'Pendiente'
-                    };
+                        estado: 'Pendiente',
+                        creadoEn: new Date()
+                    });
 
-                    tasks.push(newTask);
-                    localStorage.setItem('hato_tareas', JSON.stringify(tasks));
                     taskForm.reset();
-                    renderTasks();
+                    showNotification('Labor registrada y guardada en la nube', 'success');
+                } catch (err) {
+                    showNotification('Error al guardar datos', 'danger');
                     setSyncStatus(false);
-                    showNotification('Nueva labor programada y registrada', 'success');
-                }, 400);
-            });
-
-            window.updateTaskStatus = (index, newStatus) => {
-                setSyncStatus(true);
-                setTimeout(() => {
-                    tasks[index].estado = newStatus;
-                    localStorage.setItem('hato_tareas', JSON.stringify(tasks));
-                    renderTasks();
-                    setSyncStatus(false);
-                    showNotification(`Estado cambiado a "${newStatus}"`, 'warning');
-                }, 300);
-            };
-
-            window.deleteTask = (index) => {
-                setSyncStatus(true);
-                setTimeout(() => {
-                    tasks.splice(index, 1);
-                    localStorage.setItem('hato_tareas', JSON.stringify(tasks));
-                    renderTasks();
-                    setSyncStatus(false);
-                    showNotification('Tarea eliminada', 'danger');
-                }, 300);
-            };
-
-            clearAllBtn.addEventListener('click', () => {
-                if (tasks.length === 0) return;
-                if (confirm('¿Borrar todas las tareas registradas?')) {
-                    setSyncStatus(true);
-                    setTimeout(() => {
-                        tasks = [];
-                        localStorage.removeItem('hato_tareas');
-                        renderTasks();
-                        setSyncStatus(false);
-                        showNotification('Se borraron todas las tareas', 'danger');
-                    }, 400);
                 }
             });
+        }
 
-            renderTasks();
-        });
+        window.updateTaskStatus = async (id, newStatus) => {
+            setSyncStatus(true);
+            try {
+                const taskRef = doc(db, "tareas", id);
+                await updateDoc(taskRef, { estado: newStatus });
+                showNotification(`Estado actualizado a "${newStatus}"`, 'warning');
+            } catch (err) {
+                showNotification('Error al actualizar estado', 'danger');
+                setSyncStatus(false);
+            }
+        };
+
+        window.deleteTask = async (id) => {
+            if (confirm('¿Deseas eliminar este registro de la base de datos central?')) {
+                setSyncStatus(true);
+                try {
+                    await deleteDoc(doc(db, "tareas", id));
+                    showNotification('Tarea eliminada de la nube', 'danger');
+                } catch (err) {
+                    showNotification('Error al eliminar', 'danger');
+                    setSyncStatus(false);
+                }
+            }
+        };
     </script>
-</body>
-</html>
