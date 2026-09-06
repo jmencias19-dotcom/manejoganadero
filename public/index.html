@@ -8,24 +8,48 @@
   
   <title>Manejo Ganadero - App de Campo</title>
 
-  <!-- Favicon para evitar el error 404 en WebView -->
+  <!-- Favicon para evitar 404 en WebView -->
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🐄</text></svg>">
 
-  <!-- Telegram WebApp SDK (Única importación) -->
+  <!-- Telegram WebApp SDK -->
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
-  <!-- Captura detallada de errores asíncronos y depuración de promesas -->
-  <script>
-    window.addEventListener('unhandledrejection', function(event) {
-      console.error(' [Unhandled Promise Rejection]:', event.reason);
-      // Imprime el stack trace si el objeto de razón posee detalle
-      if (event.reason && event.reason.stack) {
-        console.error(event.reason.stack);
+  <!-- Import Map para Dexie.js (DEBE SER EXCLUSIVAMENTE JSON) -->
+  <script type="importmap">
+    {
+      "imports": {
+        "dexie": "https://unpkg.com/dexie@latest/dist/dexie.mjs"
       }
-      event.preventDefault(); 
+    }
+  </script>
+
+  <!-- Diagnóstico, Handlers de Error e Inicialización de Telegram -->
+  <script type="module">
+    // 1. Captura avanzada de promesas rechazadas
+    window.addEventListener('unhandledrejection', (event) => {
+      console.group(' [Unhandled Promise Rejection Detected]');
+      console.error('Razón del rechazo:', event.reason);
+      
+      if (event.reason instanceof Error) {
+        console.error('Mensaje:', event.reason.message);
+        console.error('Stack:', event.reason.stack);
+      } else if (typeof event.reason === 'object') {
+        try {
+          console.error('Detalle del objeto devuelto:', JSON.stringify(event.reason, null, 2));
+        } catch (e) {
+          console.error('Objeto no serializable:', event.reason);
+        }
+      }
+      console.groupEnd();
+      event.preventDefault();
     });
 
-    // Inicialización inmediata del SDK de Telegram
+    // 2. Comprobación preventiva de soporte para IndexedDB
+    if (!window.indexedDB) {
+      console.warn(" Advertencia: IndexedDB no está disponible en este WebView/Entorno.");
+    }
+
+    // 3. Inicialización del WebApp de Telegram
     if (window.Telegram?.WebApp) {
       window.Telegram.WebApp.ready();
       window.Telegram.WebApp.expand();
@@ -47,41 +71,4 @@
   <link rel="stylesheet" href="./inventario-sanitario.css">
   <link rel="stylesheet" href="./logistica-comidas.css">
   <link rel="stylesheet" href="./historial-pastoreo.css">
-
-  <!-- Import Map para Dexie.js -->
-  <script type="importmap">
-    <script type="module">
-  // 1. Captura global de promesas rechazadas con deserialización del objeto
-  window.addEventListener('unhandledrejection', (event) => {
-    console.group(' [Unhandled Promise Rejection Detected]');
-    console.error('Razón del rechazo:', event.reason);
-    
-    if (event.reason instanceof Error) {
-      console.error('Mensaje:', event.reason.message);
-      console.error('Stack:', event.reason.stack);
-    } else if (typeof event.reason === 'object') {
-      console.error('Detalle del objeto devuelto:', JSON.stringify(event.reason, null, 2));
-    }
-    console.groupEnd();
-  });
-
-  // 2. Comprobación preventiva de soporte para Dexie / IndexedDB en el WebView
-  async function verificarStorage() {
-    try {
-      if (!window.indexedDB) {
-        throw new Error("IndexedDB no está disponible en este WebView/Entorno.");
-      }
-    } catch (e) {
-      console.warn(" Advertencia de Almacenamiento:", e.message);
-    }
-  }
-
-  verificarStorage();
-</script>
-    {
-      "imports": {
-        "dexie": "https://unpkg.com/dexie@latest/dist/dexie.mjs"
-      }
-    }
-  </script>
 </head>
