@@ -19,14 +19,13 @@
     }
 
     try {
-      // Ajusta la ruta ('./db.js' o './js/db.js') según la estructura de carpetas de tu servidor
       const { inicializarBaseDatos } = await import('./db.js');
       const exito = await inicializarBaseDatos();
       if (exito) {
-        console.log(" Base de Datos IndexedDB/Dexie conectada correctamente.");
+        console.log("Conectada");
       }
     } catch (err) {
-      console.error(" No se pudo cargar el archivo db.js (Verifica la ruta en el servidor):", err);
+      console.error("Error", err);
     }
   });
 </script>
