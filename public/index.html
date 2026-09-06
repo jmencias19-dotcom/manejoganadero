@@ -3,116 +3,278 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manejo Ganadero - Hato Laguna Brava</title>
-    
-    <!-- Estilos de los módulos -->
-    <link rel="stylesheet" href="./planificacion.css">
-    <link rel="stylesheet" href="./historial-pastoreo.css">
-    <link rel="stylesheet" href="./potreros.css">
-    <link rel="stylesheet" href="./levante.css">
-    <link rel="stylesheet" href="./inventario-sanitario.css">
-    <link rel="stylesheet" href="./eventos.css">
-    <link rel="stylesheet" href="./combustible.css">
-    <link rel="stylesheet" href="./logistica-comidas.css">
-    
-    <script type="module">
-        // 1. Captura avanzada de rechazos asíncronos
-        window.addEventListener('unhandledrejection', (event) => {
-            console.group(' [Unhandled Promise Rejection Detected]');
-            console.error('Razón del rechazo:', event.reason);
-            if (event.reason instanceof Error) {
-                console.error('Mensaje:', event.reason.message);
-                console.error('Stack:', event.reason.stack);
-            }
-            console.groupEnd();
-            event.preventDefault();
-        });
+    <title>Sistema de Gestión Ganadera - Hato Laguna Brava</title>
+    <style>
+        /* ==========================================================================
+           VARIABLES GLOBALES Y TEMAS (Paleta de Colores Campo/Paso)
+           ========================================================================== */
+        :root {
+            --primary-color: #2e5a27;      /* Verde pasto / Campo */
+            --primary-hover: #1e3d19;
+            --accent-color: #d97706;       /* Terracota / Ganado */
+            --bg-color: #f4f6f3;           /* Fondo gris/verde claro suave */
+            --card-bg: #ffffff;            /* Fondo de tarjetas */
+            --text-main: #1f2937;          /* Texto principal */
+            --text-muted: #6b7280;         /* Texto secundario */
+            --border-color: #e5e7eb;
+            --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+            --shadow-lg: 0 8px 24px rgba(0,0,0,0.12);
+            --radius-md: 10px;
+            --radius-lg: 16px;
+            --transition: all 0.25s ease-in-out;
+        }
 
-        // 2. Carga dinámica y segura del módulo db.js
-        document.addEventListener('DOMContentLoaded', async () => {
-            if (window.Telegram?.WebApp) {
-                window.Telegram.WebApp.ready();
-                window.Telegram.WebApp.expand();
-            }
+        /* ==========================================================================
+           ESTILOS BASE / REINICIO
+           ========================================================================== */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
-            try {
-                const { inicializarBaseDatos } = await import('./db.js');
-                const exito = await inicializarBaseDatos();
-                if (exito) {
-                    console.log("Conectada");
-                }
-            } catch (err) {
-                console.error("Error", err);
-            }
-        });
-    </script>
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.5;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 10px 0;
+        }
+
+        header h1 {
+            color: var(--primary-color);
+            font-size: 2rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        header p {
+            color: var(--text-muted);
+            font-size: 1rem;
+            margin-top: 5px;
+        }
+
+        /* ==========================================================================
+           GRID DE TARJETAS (MODULOS)
+           ========================================================================== */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* ==========================================================================
+           ESTILO VISUAL DE LAS TARJETAS (CARDS)
+           ========================================================================== */
+        .card {
+            background-color: var(--card-bg);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Indicador de acento superior */
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background-color: var(--primary-color);
+            transition: var(--transition);
+        }
+
+        /* Efecto Hover para interactividad */
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+            border-color: transparent;
+        }
+
+        .card:hover::before {
+            background-color: var(--accent-color);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .card-icon {
+            width: 42px;
+            height: 42px;
+            background-color: #eaf2e8;
+            color: var(--primary-color);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .card-description {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+            flex-grow: 1;
+        }
+
+        /* Botón o acción del módulo */
+        .card-action {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 10px 16px;
+            background-color: var(--primary-color);
+            color: #ffffff;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            border-radius: var(--radius-md);
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+        }
+
+        .card-action:hover {
+            background-color: var(--primary-hover);
+        }
+    </style>
 </head>
 <body>
 
-    <!-- Módulo 1: Planificación de Tareas -->
-    <div class="planificacion-tareas-card">
-        <h2>Planificación de Tareas</h2>
-        <div class="tarea-checkbox-group">
-            <input type="checkbox" id="tarea1">
-            <label for="tarea1">Tarea de ejemplo</label>
-        </div>
-    </div>
+    <header>
+        <h1>Gestión Ganadera</h1>
+        <p>Panel de Control Directo - Operaciones de Campo</p>
+    </header>
 
-    <!-- Módulo 2: Historial de Pastoreo -->
-    <div class="historial-pastoreo-card">
-        <h2>Historial de Pastoreo</h2>
-        <div class="pastoreo-item">
-            <p><strong>Lote / Potrero:</strong> Registro de rotación</p>
-        </div>
-    </div>
+    <main class="dashboard-grid">
 
-    <!-- Módulo 3: Potreros -->
-    <div class="potreros-card">
-        <h2>Gestión de Potreros</h2>
-        <div class="potrero-item">
-            <p><strong>Aforo y Capacidad:</strong> Estado de potreros y días de descanso</p>
+        <!-- Módulo 1 -->
+        <div class="card">
+            <div>
+                <div class="card-header">
+                    <div class="card-icon">1</div>
+                    <h2 class="card-title">Planificación de Tareas</h2>
+                </div>
+                <p class="card-description">Organización de actividades semanales, asignación de personal de campo y seguimiento de labores cotidianas.</p>
+            </div>
+            <a href="#" class="card-action">Acceder a Tareas</a>
         </div>
-    </div>
 
-    <!-- Módulo 4: Dinámica de Pesajes -->
-    <div class="levante-card">
-        <h2>Dinámica de Pesajes (Levante)</h2>
-        <div class="pesaje-item">
-            <p><strong>Control Ponderal:</strong> Registro de peso y GDP (kg/día)</p>
+        <!-- Módulo 2 -->
+        <div class="card">
+            <div>
+                <div class="card-header">
+                    <div class="card-icon">2</div>
+                    <h2 class="card-title">Historial de Pastoreo</h2>
+                </div>
+                <p class="card-description">Registro de rotación de potreros, días de ocupación, descanso de pastos y carga animal por lote.</p>
+            </div>
+            <a href="#" class="card-action">Ver Historial</a>
         </div>
-    </div>
 
-    <!-- Módulo 5: Control Sanitario -->
-    <div class="inventario-sanitario-card">
-        <h2>Control e Inventario Sanitario</h2>
-        <div class="sanitario-item">
-            <p><strong>Insumos / Biológicos:</strong> Registro de stock y dosificación</p>
+        <!-- Módulo 3 -->
+        <div class="card">
+            <div>
+                <div class="card-header">
+                    <div class="card-icon">3</div>
+                    <h2 class="card-title">Potreros</h2>
+                </div>
+                <p class="card-description">Inventario actual de potreros, distribución del rebaño en finca y aforo estimado de forraje.</p>
+            </div>
+            <a href="#" class="card-action">Gestionar Potreros</a>
         </div>
-    </div>
 
-    <!-- Módulo 6: Eventos -->
-    <div class="eventos-card">
-        <h2>Eventos Sanitarios y Reproductivos</h2>
-        <div class="evento-item">
-            <p><strong>Novedades de Campo:</strong> Bitácora de partos, celos y diagnósticos</p>
+        <!-- Módulo 4 -->
+        <div class="card">
+            <div>
+                <div class="card-header">
+                    <div class="card-icon">4</div>
+                    <h2 class="card-title">Dinámica de Pesajes</h2>
+                </div>
+                <p class="card-description">Control de peso, ganancia media diaria (GMD), pesajes de destete y rendimiento del rebaño.</p>
+            </div>
+            <a href="#" class="card-action">Registrar Pesajes</a>
         </div>
-    </div>
 
-    <!-- Módulo 7: Combustible y Maquinarias -->
-    <div class="combustible-card">
-        <h2>Combustible y Maquinarias</h2>
-        <div class="combustible-item">
-            <p><strong>Gasolina / Gasoil:</strong> Control de horas máquina y despacho</p>
+        <!-- Módulo 5 -->
+        <div class="card">
+            <div>
+                <div class="card-header">
+                    <div class="card-icon">5</div>
+                    <h2 class="card-title">Control Sanitario</h2>
+                </div>
+                <p class="card-description">Calendario de vacunación, desparasitación, tratamientos clínicos aplicados y lotes en cuarentena.</p>
+            </div>
+            <a href="#" class="card-action">Ver Sanidad</a>
         </div>
-    </div>
 
-    <!-- Módulo 8: Logística y Comida -->
-    <div class="logistica-comidas-card">
-        <h2>Logística y Comida</h2>
-        <div class="logistica-item">
-            <p><strong>Suministros:</strong> Control de personal, víveres e insumos</p>
+        <!-- Módulo 6 -->
+        <div class="card">
+            <div>
+                <div class="card-header">
+                    <div class="card-icon">6</div>
+                    <h2 class="card-title">Eventos</h2>
+                </div>
+                <p class="card-description">Registro de nacimientos, muertes, ventas, compras, traslados y novedades operativas diarias.</p>
+            </div>
+            <a href="#" class="card-action">Registrar Evento</a>
         </div>
-    </div>
+
+        <!-- Módulo 7 -->
+        <div class="card">
+            <div>
+                <div class="card-header">
+                    <div class="card-icon">7</div>
+                    <h2 class="card-title">Combustible y Maquinarias</h2>
+                </div>
+                <p class="card-description">Inventario de gasoil/gasolina, horas de trabajo de tractores, equipos y control de mantenimiento.</p>
+            </div>
+            <a href="#" class="card-action">Control de Equipos</a>
+        </div>
+
+        <!-- Módulo 8 -->
+        <div class="card">
+            <div>
+                <div class="card-header">
+                    <div class="card-icon">8</div>
+                    <h2 class="card-title">Logística y Comida</h2>
+                </div>
+                <p class="card-description">Control de insumos, suplementos minerales, alimentos concentrados y logística de despachos.</p>
+            </div>
+            <a href="#" class="card-action">Ver Insumos</a>
+        </div>
+
+    </main>
 
 </body>
 </html>
