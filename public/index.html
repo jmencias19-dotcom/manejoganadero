@@ -1,31 +1,49 @@
-<script type="module">
-  // 1. Captura avanzada de rechazos asíncronos
-  window.addEventListener('unhandledrejection', (event) => {
-    console.group(' [Unhandled Promise Rejection Detected]');
-    console.error('Razón del rechazo:', event.reason);
-    if (event.reason instanceof Error) {
-      console.error('Mensaje:', event.reason.message);
-      console.error('Stack:', event.reason.stack);
-    }
-    console.groupEnd();
-    event.preventDefault();
-  });
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planificación y Tareas</title>
+    <link rel="stylesheet" href="./planificacion.css">
+    <script type="module">
+        // 1. Captura avanzada de rechazos asíncronos
+        window.addEventListener('unhandledrejection', (event) => {
+            console.group(' [Unhandled Promise Rejection Detected]');
+            console.error('Razón del rechazo:', event.reason);
+            if (event.reason instanceof Error) {
+                console.error('Mensaje:', event.reason.message);
+                console.error('Stack:', event.reason.stack);
+            }
+            console.groupEnd();
+            event.preventDefault();
+        });
 
-  // 2. Carga dinámica y segura del módulo db.js
-  document.addEventListener('DOMContentLoaded', async () => {
-    if (window.Telegram?.WebApp) {
-      window.Telegram.WebApp.ready();
-      window.Telegram.WebApp.expand();
-    }
+        // 2. Carga dinámica y segura del módulo db.js
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (window.Telegram?.WebApp) {
+                window.Telegram.WebApp.ready();
+                window.Telegram.WebApp.expand();
+            }
 
-    try {
-      const { inicializarBaseDatos } = await import('./db.js');
-      const exito = await inicializarBaseDatos();
-      if (exito) {
-        console.log("Conectada");
-      }
-    } catch (err) {
-      console.error("Error", err);
-    }
-  });
-</script>
+            try {
+                const { inicializarBaseDatos } = await import('./db.js');
+                const exito = await inicializarBaseDatos();
+                if (exito) {
+                    console.log("Conectada");
+                }
+            } catch (err) {
+                console.error("Error", err);
+            }
+        });
+    </script>
+</head>
+<body>
+    <div class="planificacion-tareas-card">
+        <h2>Planificación y Tareas</h2>
+        <div class="tarea-checkbox-group">
+            <input type="checkbox" id="tarea1">
+            <label for="tarea1">Tarea de ejemplo</label>
+        </div>
+    </div>
+</body>
+</html>
