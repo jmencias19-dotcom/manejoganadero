@@ -14,7 +14,7 @@
   <!-- Telegram WebApp SDK -->
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
-  <!-- Import Map para Dexie.js (DEBE SER EXCLUSIVAMENTE JSON) -->
+  <!-- Import Map para Dexie.js -->
   <script type="importmap">
     {
       "imports": {
@@ -23,9 +23,11 @@
     }
   </script>
 
-  <!-- Diagnóstico, Handlers de Error e Inicialización de Telegram -->
+  <!-- Script Unificado de Diagnóstico, Telegram e Inicialización de BD -->
   <script type="module">
-    // 1. Captura avanzada de promesas rechazadas
+    import { inicializarBaseDatos } from './db.js';
+
+    // 1. Captura global de promesas rechazadas
     window.addEventListener('unhandledrejection', (event) => {
       console.group(' [Unhandled Promise Rejection Detected]');
       console.error('Razón del rechazo:', event.reason);
@@ -44,16 +46,25 @@
       event.preventDefault();
     });
 
-    // 2. Comprobación preventiva de soporte para IndexedDB
-    if (!window.indexedDB) {
-      console.warn(" Advertencia: IndexedDB no está disponible en este WebView/Entorno.");
-    }
+    // 2. Inicialización limpia al cargar el DOM
+    document.addEventListener('DOMContentLoaded', async () => {
+      if (window.Telegram?.WebApp) {
+        window.Telegram.WebApp.ready();
+        window.Telegram.WebApp.expand();
+      }
+      
+      if (!window.indexedDB) {
+        console.warn(" Advertencia: IndexedDB no está disponible en este WebView/Entorno.");
+        return;
+      }
 
-    // 3. Inicialización del WebApp de Telegram
-    if (window.Telegram?.WebApp) {
-      window.Telegram.WebApp.ready();
-      window.Telegram.WebApp.expand();
-    }
+      try {
+        await inicializarBaseDatos();
+        console.log(" Base de datos IndexedDB/Dexie inicializada con éxito.");
+      } catch (err) {
+        console.error(" Error crítico durante inicializarBaseDatos():", err);
+      }
+    });
   </script>
 
   <!-- Preconexión de fuentes -->
