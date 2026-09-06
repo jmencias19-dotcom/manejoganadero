@@ -1,0 +1,25 @@
+/* ==========================================================================
+   5. MÓDULO: COMBUSTIBLE - HORAS TRABAJO (Maquinaria, Plantas, Vehículos)
+   ========================================================================== */
+.combustible-horastrabajo-card {
+  background-color: var(--card-bg);
+  border-left: 5px solid var(--accent-orange);
+  border-radius: var(--border-radius);
+  padding: 16px;
+  margin-bottom: 14px;
+}
+
+.combustible-gauge {
+  display: flex;
+  justify-content: space-between;
+  background-color: #263238;
+  padding: 10px;
+  border-radius: 6px;
+  margin-top: 8px;
+}
+
+.combustible-rendimiento {
+  font-size: 0.85rem;
+  color: var(--accent-orange);
+  font-weight: 600;
+}
