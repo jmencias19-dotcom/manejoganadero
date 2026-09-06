@@ -1,16 +1,19 @@
 /* ==========================================================================
-   VARIABLES GLOBALES & PALETA DE COLOR
-   ========================================================================== */
-:root {
-  --bg-dark: #12181b;
-  --card-bg: #1e272c;
-  --card-border: #2c383e;
-  --text-main: #f5f5f5;
-  --text-muted: #90a4ae;
-  --primary: #2e7d32;      /* Verde Pasto/Ganadero */
-  --accent-blue: #0288d1;  /* Azul Logística/Agua */
-  --accent-orange: #f57c00;/* Naranja Maquinaria/Alerta */
-  --accent-red: #d32f2f;   /* Rojo Sanidad/Atención */
-  --accent-purple: #7b1fa2;/* Morado Categorías/Eventos */
-  --border-radius: 12px;
-}
+           VARIABLES GLOBALES Y TEMAS (Paleta de Colores Campo/Paso)
+           ========================================================================== */
+        :root {
+            --primary-color: #2e5a27;      /* Verde pasto / Campo */
+            --primary-hover: #1e3d19;
+            --accent-color: #d97706;       /* Terracota / Ganado */
+            --bg-color: #f4f6f3;           /* Fondo gris/verde claro suave */
+            --card-bg: #ffffff;            /* Fondo de tarjetas */
+            --text-main: #1f2937;          /* Texto principal */
+            --text-muted: #6b7280;         /* Texto secundario */
+            --border-color: #e5e7eb;
+            --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+            --shadow-lg: 0 8px 24px rgba(0,0,0,0.12);
+            --radius-md: 10px;
+            --radius-lg: 16px;
+            --transition: all 0.25s ease-in-out;
+        }
