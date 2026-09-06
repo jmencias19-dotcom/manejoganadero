@@ -1,7 +1,7 @@
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { 
-        getFirestore, 
+        initializeFirestore, 
         collection, 
         addDoc, 
         updateDoc, 
@@ -10,7 +10,7 @@
         onSnapshot 
     } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    // Configuración de Firebase
+    // Configuración del proyecto Firebase
     const firebaseConfig = {
         apiKey: "AIzaSyBnIB0rPQULTOfs55YSnsX2C-2rN5pTANk",
         authDomain: "hato-laguna-brava.firebaseapp.com",
@@ -21,12 +21,14 @@
         measurementId: "G-RSW0XSHF1F"
     };
 
-    // Inicialización de servicios
+    // Inicialización del servicio forzando Long-Polling (evita bloqueos QUIC / HTTP3)
     const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+    const db = initializeFirestore(app, {
+        experimentalForceLongPolling: true,
+    });
     const tasksCollection = collection(db, "tareas");
 
-    // Elementos de la interfaz DOM
+    // Referencias a elementos del DOM
     const taskForm = document.getElementById('taskForm');
     const taskTableBody = document.getElementById('taskTableBody');
     const light = document.getElementById('light');
@@ -34,7 +36,12 @@
     const toast = document.getElementById('toast');
     const toastMessage = document.getElementById('toastMessage');
 
-    // Auxiliares de interfaz
+    // Auxiliar para sanitización de cadenas (Previene inyección de código/XSS)
+    const escapeHtml = (str) => String(str || '').replace(/[&<>"']/g, match => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    })[match]);
+
+    // Gestión del indicador visual de sincronización
     function setSyncStatus(isSyncing, isError = false) {
         if (!light || !statusText) return;
         if (isError) {
@@ -51,6 +58,7 @@
         }
     }
 
+    // Notificaciones Toast emergentes
     function showNotification(message, type = 'success') {
         if (!toast || !toastMessage) return;
         toastMessage.textContent = message;
@@ -64,7 +72,7 @@
         return 'status-pendiente';
     }
 
-    // 1. Escuchar cambios en tiempo real (Sincronización automática)
+    // 1. Escuchar cambios en tiempo real (Sincronización bidireccional)
     setSyncStatus(true);
     onSnapshot(tasksCollection, (snapshot) => {
         if (!taskTableBody) return;
@@ -83,10 +91,10 @@
             const statusClass = getStatusClass(task.estado);
 
             tr.innerHTML = `
-                <td>${task.fecha || ''}</td>
-                <td><strong>${task.labor || ''}</strong></td>
-                <td>${task.personal || ''}</td>
-                <td>${task.observaciones || '-'}</td>
+                <td>${escapeHtml(task.fecha)}</td>
+                <td><strong>${escapeHtml(task.labor)}</strong></td>
+                <td>${escapeHtml(task.personal)}</td>
+                <td>${escapeHtml(task.observaciones || '-')}</td>
                 <td>
                     <select class="status-select ${statusClass}" onchange="window.updateTaskStatus('${id}', this.value)">
                         <option value="Pendiente" ${task.estado === 'Pendiente' ? 'selected' : ''}>Pendiente</option>
@@ -104,7 +112,7 @@
         setSyncStatus(false, true);
     });
 
-    // 2. Registrar nueva labor desde el formulario
+    // 2. Registro de nueva labor desde el formulario
     if (taskForm) {
         taskForm.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -129,7 +137,7 @@
         });
     }
 
-    // 3. Métodos CRUD globales para botones y selectores
+    // 3. Métodos CRUD expuestos al objeto global (window)
     window.updateTaskStatus = async (id, newStatus) => {
         setSyncStatus(true);
         try {
