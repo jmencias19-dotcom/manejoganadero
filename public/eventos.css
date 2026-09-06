@@ -1,0 +1,30 @@
+/* ==========================================================================
+   2. MÓDULO: EVENTOS - CATEGORÍAS (Reproducción, Palpaciones, Partos)
+   ========================================================================== */
+.eventos-categorias-card {
+  background-color: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--border-radius);
+  padding: 16px;
+  margin-bottom: 14px;
+}
+
+.eventos-tag {
+  display: inline-block;
+  background-color: var(--accent-purple);
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: bold;
+  padding: 3px 8px;
+  border-radius: 4px;
+  margin-bottom: 8px;
+}
+
+.eventos-detalles {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
