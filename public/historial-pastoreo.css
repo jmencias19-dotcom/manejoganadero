@@ -1,0 +1,158 @@
+/* ==========================================================================
+   Módulo: Historial de Pastoreo y Rotación de Potreros
+   Alineado con los tokens y variables CSS globales del proyecto.
+   ========================================================================== */
+
+/* Tarjeta Principal del Historial */
+.pastoreo-card {
+  background-color: var(--card-bg);
+  border-radius: var(--border-radius);
+  padding: 16px;
+  margin-bottom: 14px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  border: 1px solid #263238;
+  transition: transform 0.15s ease, border-color 0.15s ease;
+}
+
+.pastoreo-card:active {
+  transform: scale(0.99);
+}
+
+/* Cabecera del Registro */
+.pastoreo-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #37474f;
+  padding-bottom: 10px;
+  margin-bottom: 12px;
+}
+
+.pastoreo-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-light);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Badges de Estado del Potrero */
+.badge-status {
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* En Ocupación Actual */
+.badge-ocupado {
+  background-color: #c62828;
+  color: #ffffff;
+}
+
+/* En Período de Descanso / Recuperación */
+.badge-descanso {
+  background-color: var(--accent);
+  color: #ffffff;
+}
+
+/* Alerta de Sobreocupación / Alerta de Pastoreo */
+.badge-alerta {
+  background-color: var(--warning);
+  color: #000000;
+}
+
+/* Rejilla de Métricas del Pastoreo */
+.pastoreo-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.pastoreo-item {
+  background-color: #263238;
+  padding: 10px;
+  border-radius: 6px;
+  border-left: 3px solid var(--accent);
+}
+
+.pastoreo-label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  display: block;
+  margin-bottom: 2px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.pastoreo-value {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-light);
+  word-break: break-word;
+}
+
+/* Caja de Observaciones de Forraje / Carga */
+.pastoreo-obs {
+  background-color: #12181b;
+  border-radius: 6px;
+  padding: 10px;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+  border: 1px dashed #37474f;
+}
+
+.pastoreo-obs strong {
+  color: var(--text-light);
+}
+
+/* Estilos para Línea de Tiempo de Rotación (Opcional para vistas detalladas) */
+.timeline-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.timeline-event {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  position: relative;
+}
+
+.timeline-indicator {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: var(--accent);
+  margin-top: 4px;
+  flex-shrink: 0;
+}
+
+.timeline-indicator.descanso {
+  background-color: #0288d1;
+}
+
+.timeline-details {
+  flex-grow: 1;
+  background-color: #263238;
+  padding: 8px 12px;
+  border-radius: 6px;
+}
+
+.timeline-date {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.timeline-text {
+  font-size: 0.85rem;
+  color: var(--text-light);
+}
