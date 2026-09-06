@@ -1,31 +1,14 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <link rel="stylesheet" href="public/variables.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistema de Gestión Ganadera - Hato Laguna Brava</title>
-    <style>
-        :root {
-            --primary-color: #1b4332;      /* Verde bosque profundo */
-            --primary-hover: #081c15;
-            --accent-color: #2d6a4f;       /* Verde follaje */
-            --bg-color: #e9ece7;           /* Fondo gris/verde claro neutro */
-            --card-bg: #f8faf7;            /* Superficie de tarjeta */
-            --text-main: #111827;          /* Texto principal */
-            --text-muted: #4b5563;         /* Texto secundario */
-            --border-color: rgba(255, 255, 255, 0.8);
-            
-            /* Relieve 3D / Neomorfismo Suave */
-            --relief-shadow: 6px 6px 14px #d1d5ce, -6px -6px 14px #ffffff;
-            --relief-hover: 10px 10px 20px #c2c7be, -10px -10px 20px #ffffff;
-            --relief-inset: inset 3px 3px 6px #c2c7be, inset -3px -3px 6px #ffffff;
-            
-            --radius-md: 12px;
-            --radius-lg: 18px;
-            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-        }
+    
+    <!-- Archivo de variables CSS externas -->
+    <link rel="stylesheet" href="public/variables.css">
 
+    <style>
         * {
             box-sizing: border-box;
             margin: 0;
@@ -160,7 +143,7 @@
             justify-content: center;
             width: 100%;
             padding: 12px 18px;
-            background: linear-gradient(145deg, #1f4e3a, #173a2b);
+            background-color: var(--primary-color);
             color: #ffffff;
             text-decoration: none;
             font-weight: 600;
@@ -173,7 +156,7 @@
         }
 
         .card-action:hover {
-            background: var(--primary-hover);
+            background-color: var(--primary-hover);
             transform: scale(0.99);
         }
     </style>
