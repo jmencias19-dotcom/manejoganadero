@@ -1,0 +1,32 @@
+/* ==========================================================================
+   6. MÓDULO: PLANIFICACIÓN - TAREAS (Labores de Finca)
+   ========================================================================== */
+.planificacion-tareas-card {
+  background-color: var(--card-bg);
+  border-radius: var(--border-radius);
+  padding: 14px;
+  margin-bottom: 10px;
+}
+
+.tarea-checkbox-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.tarea-checkbox {
+  width: 22px;
+  height: 22px;
+  accent-color: var(--primary);
+  cursor: pointer;
+}
+
+.tarea-texto {
+  font-size: 0.95rem;
+  color: var(--text-main);
+}
+
+.tarea-completada {
+  text-decoration: line-through;
+  color: var(--text-muted);
+}
