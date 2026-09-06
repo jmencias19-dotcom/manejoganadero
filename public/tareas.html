@@ -39,6 +39,34 @@
             transform: translateY(-2px);
         }
 
+        /* Semáforo de Estado de Carga */
+        .sync-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: var(--font-size-base);
+            font-weight: 600;
+            background-color: var(--card-bg);
+            padding: 8px 14px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+            box-shadow: var(--relief-shadow);
+        }
+
+        .traffic-light {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+            background-color: #28a745; /* Verde: Guardado / Sincronizado */
+            box-shadow: 0 0 6px rgba(40, 167, 69, 0.6);
+        }
+
+        .traffic-light.syncing {
+            background-color: #ffc107; /* Amarillo: Procesando */
+            box-shadow: 0 0 6px rgba(255, 193, 7, 0.8);
+        }
+
         .form-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -88,6 +116,29 @@
 
         .btn-submit:hover {
             background-color: var(--primary-hover);
+        }
+
+        .table-header-flex {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .btn-clear-all {
+            background-color: #dc3545;
+            color: #ffffff;
+            border: none;
+            padding: 8px 14px;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .btn-clear-all:hover {
+            background-color: #bd2130;
         }
 
         .table-responsive {
@@ -144,7 +195,15 @@
                 <h1 style="color: var(--primary-color);">Hato Laguna Brava</h1>
                 <p style="color: var(--text-muted);">Módulo de Planificación de Tareas Operativas</p>
             </div>
-            <a href="index.html" class="btn-back">← Volver al Panel</a>
+            
+            <div style="display: flex; gap: 12px; align-items: center;">
+                <!-- Semáforo de Carga -->
+                <div class="sync-status">
+                    <span id="light" class="traffic-light"></span>
+                    <span id="statusText">Datos Guardados</span>
+                </div>
+                <a href="index.html" class="btn-back">← Volver al Panel</a>
+            </div>
         </div>
 
         <!-- Formulario de Registro -->
@@ -159,23 +218,10 @@
                     <input type="date" id="fecha" class="form-control" required>
                 </div>
 
-                <div class="form-group">
+                <!-- Campo cambiado a Entrada de Texto Abierto -->
+                <div class="form-group" style="grid-column: span 2;">
                     <label for="labor">Labor / Actividad</label>
-                    <select id="labor" class="form-control" required>
-                        <option value="">Seleccione...</option>
-                        <option value="Mantenimiento de Cercas">Mantenimiento de Cercas</option>
-                        <option value="Roza y Callejones">Roza y Callejones</option>
-                        <option value="Limpieza de Bebederos">Limpieza de Bebederos</option>
-                        <option value="Faenas de Corral / Pesaje">Faenas de Corral / Pesaje</option>
-                        <option value="Suministro de Sal / Minerales">Suministro de Sal / Minerales</option>
-                        <option value="Control Sanitario / Vacunación">Control Sanitario / Vacunación</option>
-                        <option value="Otra Labor">Otra Labor</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label for="ubicacion">Potrero / Sector</label>
-                    <input type="text" id="ubicacion" class="form-control" placeholder="Ej: Potrero El Sabanón" required>
+                    <input type="text" id="labor" class="form-control" placeholder="Escriba la labor (ej: Mantenimiento de cerca en potrero 3)" required>
                 </div>
 
                 <div class="form-group">
@@ -192,14 +238,17 @@
                     </select>
                 </div>
 
-                <button type="submit" class="btn-submit">Registrar Tarea</button>
+                <!-- Botón Renombrado a Sincronizar -->
+                <button type="submit" class="btn-submit">Sincronizar</button>
             </form>
         </section>
 
         <!-- Tabla de Control -->
         <section class="card">
-            <div class="card-header">
+            <div class="card-header table-header-flex">
                 <h3 class="card-title">Programación de Campo Registrada</h3>
+                <!-- Botón de Borrar Todo -->
+                <button id="clearAllBtn" class="btn-clear-all">Borrar Todo</button>
             </div>
 
             <div class="table-responsive">
@@ -207,8 +256,7 @@
                     <thead>
                         <tr>
                             <th>Fecha</th>
-                            <th>Labor</th>
-                            <th>Ubicación</th>
+                            <th>Labor / Actividad</th>
                             <th>Personal</th>
                             <th>Estado</th>
                             <th>Acción</th>
@@ -226,14 +274,26 @@
         document.addEventListener('DOMContentLoaded', () => {
             const taskForm = document.getElementById('taskForm');
             const taskTableBody = document.getElementById('taskTableBody');
+            const clearAllBtn = document.getElementById('clearAllBtn');
+            const light = document.getElementById('light');
+            const statusText = document.getElementById('statusText');
 
-            // Cargar tareas guardadas
             let tasks = JSON.parse(localStorage.getItem('hato_tareas')) || [];
+
+            function setSyncStatus(isSyncing) {
+                if (isSyncing) {
+                    light.classList.add('syncing');
+                    statusText.textContent = 'Sincronizando...';
+                } else {
+                    light.classList.remove('syncing');
+                    statusText.textContent = 'Datos Guardados';
+                }
+            }
 
             function renderTasks() {
                 taskTableBody.innerHTML = '';
                 if (tasks.length === 0) {
-                    taskTableBody.innerHTML = `<tr><td colspan="6" style="text-align:center; color: var(--text-muted);">No hay tareas programadas.</td></tr>`;
+                    taskTableBody.innerHTML = `<tr><td colspan="5" style="text-align:center; color: var(--text-muted);">No hay tareas programadas.</td></tr>`;
                     return;
                 }
 
@@ -247,7 +307,6 @@
                     tr.innerHTML = `
                         <td>${task.fecha}</td>
                         <td><strong>${task.labor}</strong></td>
-                        <td>${task.ubicacion}</td>
                         <td>${task.personal}</td>
                         <td><span class="badge ${badgeClass}">${task.estado}</span></td>
                         <td><button class="btn-delete" onclick="deleteTask(${index})">Eliminar</button></td>
@@ -258,26 +317,46 @@
 
             taskForm.addEventListener('submit', (e) => {
                 e.preventDefault();
+                setSyncStatus(true);
 
-                const newTask = {
-                    fecha: document.getElementById('fecha').value,
-                    labor: document.getElementById('labor').value,
-                    ubicacion: document.getElementById('ubicacion').value,
-                    personal: document.getElementById('personal').value,
-                    estado: document.getElementById('estado').value
-                };
+                setTimeout(() => {
+                    const newTask = {
+                        fecha: document.getElementById('fecha').value,
+                        labor: document.getElementById('labor').value,
+                        personal: document.getElementById('personal').value,
+                        estado: document.getElementById('estado').value
+                    };
 
-                tasks.push(newTask);
-                localStorage.setItem('hato_tareas', JSON.stringify(tasks));
-                taskForm.reset();
-                renderTasks();
+                    tasks.push(newTask);
+                    localStorage.setItem('hato_tareas', JSON.stringify(tasks));
+                    taskForm.reset();
+                    renderTasks();
+                    setSyncStatus(false);
+                }, 400);
             });
 
             window.deleteTask = (index) => {
-                tasks.splice(index, 1);
-                localStorage.setItem('hato_tareas', JSON.stringify(tasks));
-                renderTasks();
+                setSyncStatus(true);
+                setTimeout(() => {
+                    tasks.splice(index, 1);
+                    localStorage.setItem('hato_tareas', JSON.stringify(tasks));
+                    renderTasks();
+                    setSyncStatus(false);
+                }, 300);
             };
+
+            clearAllBtn.addEventListener('click', () => {
+                if (tasks.length === 0) return;
+                if (confirm('¿Está seguro de que desea borrar todas las tareas registradas?')) {
+                    setSyncStatus(true);
+                    setTimeout(() => {
+                        tasks = [];
+                        localStorage.removeItem('hato_tareas');
+                        renderTasks();
+                        setSyncStatus(false);
+                    }, 400);
+                }
+            });
 
             renderTasks();
         });
