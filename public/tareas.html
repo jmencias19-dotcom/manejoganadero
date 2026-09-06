@@ -224,7 +224,7 @@
 
     <!-- Banner de Alerta / Notificación Flotante -->
     <div id="toast" class="toast-notification">
-        <span id="toastIcon">🔔</span>
+        <span id="toastIcon">🔊</span>
         <span id="toastMessage">Sistema actualizado</span>
     </div>
 
@@ -314,9 +314,50 @@
 
             let tasks = JSON.parse(localStorage.getItem('hato_tareas')) || [];
 
+            // Generador de audio mediante Web Audio API
+            function playSound(type) {
+                try {
+                    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+
+                    if (type === 'success') {
+                        // Tono agudo doble (Éxito / Sincronización)
+                        osc.frequency.setValueAtTime(587.33, audioCtx.currentTime); // D5
+                        osc.frequency.setValueAtTime(880, audioCtx.currentTime + 0.1); // A5
+                        gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+                        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.25);
+                        osc.start();
+                        osc.stop(audioCtx.currentTime + 0.25);
+                    } else if (type === 'warning') {
+                        // Tono medio (Cambio de estado)
+                        osc.frequency.setValueAtTime(440, audioCtx.currentTime); // A4
+                        gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+                        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
+                        osc.start();
+                        osc.stop(audioCtx.currentTime + 0.15);
+                    } else if (type === 'danger') {
+                        // Tono grave descendente (Eliminar)
+                        osc.frequency.setValueAtTime(300, audioCtx.currentTime);
+                        osc.frequency.exponentialRampToValueAtTime(150, audioCtx.currentTime + 0.2);
+                        gain.gain.setValueAtTime(0.25, audioCtx.currentTime);
+                        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
+                        osc.start();
+                        osc.stop(audioCtx.currentTime + 0.2);
+                    }
+                } catch (e) {
+                    console.log('Audio no soportado o bloqueado por el navegador:', e);
+                }
+            }
+
             function showNotification(message, type = 'success') {
                 toastMessage.textContent = message;
                 toast.className = `toast-notification ${type} show`;
+                playSound(type);
+
                 setTimeout(() => {
                     toast.classList.remove('show');
                 }, 3500);
