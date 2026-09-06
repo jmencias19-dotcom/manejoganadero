@@ -1,0 +1,67 @@
+/* ==========================================================================
+   3. MÓDULO: LEVANTE - PESAJES (Ganancia Media Diaria - GMD)
+   ========================================================================== */
+.levante-pesajes-card {
+  background-color: var(--card-bg);
+  border-radius: var(--border-radius);
+  padding: 16px;
+  margin-bottom: 14px;
+  border: 1px solid var(--card-border);
+}
+
+.levante-pesaje-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--card-border);
+}
+
+.levante-pesaje-row:last-child {
+  border-bottom: none;
+}
+
+.levante-gmd-positive {
+  color: #66bb6a;
+  font-weight: bold;
+  font-size: 0.95rem;
+}
+
+.levante-gmd-negative {
+  color: #ef5350;
+  font-weight: bold;
+  font-size: 0.95rem;
+}
+
+/* ==========================================================================
+   4. MÓDULO: HISTORIAL - ROTACIÓN (Pastoreo Voisin / Cambios de Potrero)
+   ========================================================================== */
+.historial-rotacion-timeline {
+  border-left: 2px solid var(--accent-blue);
+  margin-left: 10px;
+  padding-left: 16px;
+}
+
+.historial-rotacion-item {
+  position: relative;
+  margin-bottom: 16px;
+  background-color: var(--card-bg);
+  padding: 12px;
+  border-radius: 8px;
+}
+
+.historial-rotacion-item::before {
+  content: '';
+  position: absolute;
+  left: -23px;
+  top: 14px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: var(--accent-blue);
+}
+
+.historial-fecha {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
