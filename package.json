@@ -1,10 +1,17 @@
 {
-  "name": "bot-busqueda",
+  "name": "manejoganadero-backend",
   "version": "1.0.0",
-  "description": "Bot de búsqueda automática",
+  "description": "Backend y Telegram Mini App para Gestión Ganadera en Campo",
   "main": "index.js",
+  "type": "module",
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "dev": "node --watch index.js"
   },
-  "dependencies": {}
+  "dependencies": {
+    "@supabase/supabase-js": "^2.45.0",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "node-telegram-bot-api": "^0.66.0"
+  }
 }
