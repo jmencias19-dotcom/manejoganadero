@@ -3,8 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Planificación y Tareas</title>
+    <title>Manejo Ganadero</title>
+    <!-- Estilos de los módulos -->
     <link rel="stylesheet" href="./planificacion.css">
+    <link rel="stylesheet" href="./historial-pastoreo.css">
+    
     <script type="module">
         // 1. Captura avanzada de rechazos asíncronos
         window.addEventListener('unhandledrejection', (event) => {
@@ -38,11 +41,20 @@
     </script>
 </head>
 <body>
+    <!-- Módulo 6: Planificación y Tareas -->
     <div class="planificacion-tareas-card">
         <h2>Planificación y Tareas</h2>
         <div class="tarea-checkbox-group">
             <input type="checkbox" id="tarea1">
             <label for="tarea1">Tarea de ejemplo</label>
+        </div>
+    </div>
+
+    <!-- Módulo: Historial de Pastoreo -->
+    <div class="historial-pastoreo-card">
+        <h2>Historial de Pastoreo</h2>
+        <div class="pastoreo-item">
+            <p><strong>Lote / Potrero:</strong> Registro de rotación</p>
         </div>
     </div>
 </body>
