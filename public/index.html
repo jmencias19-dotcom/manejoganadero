@@ -7,14 +7,29 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   
   <title>Manejo Ganadero - App de Campo</title>
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <!-- Captura detallada de errores asíncronos -->
+
+  <!-- Favicon para evitar el error 404 en WebView -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🐄</text></svg>">
+
+  <!-- Telegram WebApp SDK (Única importación) -->
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+  <!-- Captura detallada de errores asíncronos y depuración de promesas -->
   <script>
     window.addEventListener('unhandledrejection', function(event) {
-      // Imprime el detalle real del objeto para identificar la causa (ej. ruta JS, Dexie, Fetch)
-      console.error('Detalle de promesa rechazada:', event.reason);
+      console.error(' [Unhandled Promise Rejection]:', event.reason);
+      // Imprime el stack trace si el objeto de razón posee detalle
+      if (event.reason && event.reason.stack) {
+        console.error(event.reason.stack);
+      }
       event.preventDefault(); 
     });
+
+    // Inicialización inmediata del SDK de Telegram
+    if (window.Telegram?.WebApp) {
+      window.Telegram.WebApp.ready();
+      window.Telegram.WebApp.expand();
+    }
   </script>
 
   <!-- Preconexión de fuentes -->
@@ -22,7 +37,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 
-  <!-- Hojas de Estilo CSS desde la raíz (./) -->
+  <!-- Hojas de Estilo CSS -->
   <link rel="stylesheet" href="./variables.css">
   <link rel="stylesheet" href="./potreros.css">
   <link rel="stylesheet" href="./eventos.css">
@@ -32,19 +47,6 @@
   <link rel="stylesheet" href="./inventario-sanitario.css">
   <link rel="stylesheet" href="./logistica-comidas.css">
   <link rel="stylesheet" href="./historial-pastoreo.css">
-
-  <!-- Telegram WebApp SDK -->
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
-
-  <!-- Inicialización de Telegram -->
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      if (window.Telegram?.WebApp) {
-        window.Telegram.WebApp.ready();
-        window.Telegram.WebApp.expand();
-      }
-    });
-  </script>
 
   <!-- Import Map para Dexie.js -->
   <script type="importmap">
