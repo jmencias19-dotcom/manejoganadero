@@ -36,3 +36,103 @@ onSnapshot(tasksCollection, (snapshot) => {
     if (statusText) statusText.textContent = "Error de Conexión";
     setSyncStatus(false);
 });
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { 
+        getFirestore, 
+        collection, 
+        addDoc, 
+        updateDoc, 
+        deleteDoc, 
+        doc, 
+        onSnapshot 
+    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { 
+        getAuth, 
+        signInWithEmailAndPassword, 
+        signOut, 
+        onAuthStateChanged 
+    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyBnIB0rPQULTOfs55YSnsX2C-2rN5pTANk",
+        authDomain: "hato-laguna-brava.firebaseapp.com",
+        projectId: "hato-laguna-brava",
+        storageBucket: "hato-laguna-brava.firebasestorage.app",
+        messagingSenderId: "1053099733476",
+        appId: "1:1053099733476:web:541a115776b2e80047d7f1",
+        measurementId: "G-RSW0XSHF1F"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+    const tasksCollection = collection(db, "tareas");
+
+    let unsubscribeFirestore = null;
+
+    // Control de estado de autenticación
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            console.log("Usuario autenticado:", user.email);
+            iniciarEscuchaTareas();
+        } else {
+            console.warn("Usuario no autenticado. Redirigiendo a login...");
+            if (unsubscribeFirestore) unsubscribeFirestore();
+            // Redirigir al login si no hay sesión activa
+            // window.location.href = "login.html";
+        }
+    });
+
+    function iniciarEscuchaTareas() {
+        const taskTableBody = document.getElementById('taskTableBody');
+        
+        unsubscribeFirestore = onSnapshot(tasksCollection, (snapshot) => {
+            if (!taskTableBody) return;
+            taskTableBody.innerHTML = '';
+            
+            if (snapshot.empty) {
+                taskTableBody.innerHTML = `<tr><td colspan="6" style="text-align:center;">No hay labores registradas.</td></tr>`;
+                setSyncStatus(false);
+                return;
+            }
+
+            snapshot.forEach((docSnapshot) => {
+                const task = docSnapshot.data();
+                const id = docSnapshot.id;
+                const tr = document.createElement('tr');
+                const statusClass = getStatusClass(task.estado);
+
+                tr.innerHTML = `
+                    <td>${task.fecha || ''}</td>
+                    <td><strong>${task.labor || ''}</strong></td>
+                    <td>${task.personal || ''}</td>
+                    <td>${task.observaciones || '-'}</td>
+                    <td>
+                        <select class="status-select ${statusClass}" onchange="window.updateTaskStatus('${id}', this.value)">
+                            <option value="Pendiente" ${task.estado === 'Pendiente' ? 'selected' : ''}>Pendiente</option>
+                            <option value="En Proceso" ${task.estado === 'En Proceso' ? 'selected' : ''}>En Proceso</option>
+                            <option value="Completada" ${task.estado === 'Completada' ? 'selected' : ''}>Completada</option>
+                        </select>
+                    </td>
+                    <td><button class="btn-delete" onclick="window.deleteTask('${id}')">Eliminar</button></td>
+                `;
+                taskTableBody.appendChild(tr);
+            });
+            setSyncStatus(false);
+        }, (error) => {
+            console.error("Error en onSnapshot de Firestore:", error);
+            setSyncStatus(false);
+        });
+    }
+
+    // Función global para cerrar sesión desde la UI
+    window.logout = async () => {
+        try {
+            await signOut(auth);
+            window.location.href = "login.html";
+        } catch (err) {
+            console.error("Error al cerrar sesión:", err);
+        }
+    };
+</script>
