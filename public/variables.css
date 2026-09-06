@@ -1,19 +1,194 @@
 /* ==========================================================================
-           VARIABLES GLOBALES Y TEMAS (Paleta de Colores Campo/Paso)
-           ========================================================================== */
-        :root {
-            --primary-color: #2e5a27;      /* Verde pasto / Campo */
-            --primary-hover: #1e3d19;
-            --accent-color: #d97706;       /* Terracota / Ganado */
-            --bg-color: #f4f6f3;           /* Fondo gris/verde claro suave */
-            --card-bg: #ffffff;            /* Fondo de tarjetas */
-            --text-main: #1f2937;          /* Texto principal */
-            --text-muted: #6b7280;         /* Texto secundario */
-            --border-color: #e5e7eb;
-            --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
-            --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
-            --shadow-lg: 0 8px 24px rgba(0,0,0,0.12);
-            --radius-md: 10px;
-            --radius-lg: 16px;
-            --transition: all 0.25s ease-in-out;
-        }
+   VARIABLES GLOBALES Y TEMAS (Paleta Verde Campo con Relieve)
+   ========================================================================== */
+:root {
+    --primary-color: #1b4332;      /* Verde bosque profundo, limpio y profesional */
+    --primary-hover: #081c15;
+    --accent-color: #2d6a4f;       /* Verde follaje activo */
+    --bg-color: #e9ece7;           /* Gris/verde claro neutro para contraste de relieve */
+    --card-bg: #f8faf7;            /* Superficie clara de tarjeta */
+    --text-main: #111827;          /* Texto de alto contraste */
+    --text-muted: #4b5563;         /* Texto secundario claro */
+    --border-color: rgba(255, 255, 255, 0.6);
+    
+    /* Variables de Relieve / Neomorfismo Suave */
+    --relief-shadow: 6px 6px 14px #d1d5ce, -6px -6px 14px #ffffff;
+    --relief-hover: 10px 10px 20px #c2c7be, -10px -10px 20px #ffffff;
+    --relief-inset: inset 3px 3px 6px #c2c7be, inset -3px -3px 6px #ffffff;
+    
+    --radius-md: 12px;
+    --radius-lg: 18px;
+    --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+/* ==========================================================================
+   ESTILOS BASE / REINICIO
+   ========================================================================== */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-main);
+    line-height: 1.5;
+    padding: 24px;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 35px;
+}
+
+header h1 {
+    color: var(--primary-color);
+    font-size: 2.2rem;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    text-shadow: 1px 1px 2px rgba(255,255,255,0.8);
+}
+
+header p {
+    color: var(--text-muted);
+    font-size: 1rem;
+    font-weight: 500;
+    margin-top: 4px;
+}
+
+/* ==========================================================================
+   GRID DE TARJETAS
+   ========================================================================== */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+    gap: 24px;
+    max-width: 1280px;
+    margin: 0 auto;
+}
+
+/* ==========================================================================
+   TARJETAS CON RELIEVE Y FIGURAS ALUSIVAS
+   ========================================================================== */
+.card {
+    background-color: var(--card-bg);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    border: 1px solid var(--border-color);
+    box-shadow: var(--relief-shadow);
+    transition: var(--transition);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+}
+
+.card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--relief-hover);
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 14px;
+}
+
+/* Icono con efecto hundido (inset) */
+.card-icon {
+    width: 48px;
+    height: 48px;
+    background-color: var(--bg-color);
+    color: var(--primary-color);
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--relief-inset);
+    flex-shrink: 0;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 24px 24px;
+}
+
+/* Figuras vectoriales (SVG) alusivas a cada casilla */
+.card:nth-child(1) .card-icon {
+    /* Planificación: Calendario / Lista */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%231b4332' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01' /%3E%3C/svg%3E");
+}
+
+.card:nth-child(2) .card-icon {
+    /* Historial Pastoreo: Rotación / Reloj */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%231b4332' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15' /%3E%3C/svg%3E");
+}
+
+.card:nth-child(3) .card-icon {
+    /* Potreros: Campo / Cerca */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%231b4332' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 002 2h1.5a2.5 2.5 0 002.5-2.5V11.4M9 20h6M12 4v16' /%3E%3C/svg%3E");
+}
+
+.card:nth-child(4) .card-icon {
+    /* Dinámica de Pesajes: Bascula / Crecimiento */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%231b4332' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M3 6l3 18h12l3-18H3zm3 0V4a2 2 0 012-2h8a2 2 0 012 2v2M12 11v6m-3-3h6' /%3E%3C/svg%3E");
+}
+
+.card:nth-child(5) .card-icon {
+    /* Control Sanitario: Cruz Médica / Vacuna */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%231b4332' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z' /%3E%3C/svg%3E");
+}
+
+.card:nth-child(6) .card-icon {
+    /* Eventos: Megáfono / Novedades */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%231b4332' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M11 58l10-5H19v-6l-10-5H5v16h4zM19 17v-6M15 10l4 4' /%3E%3C/svg%3E");
+}
+
+.card:nth-child(7) .card-icon {
+    /* Combustible y Maquinaria: Tractor / Engranaje */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%231b4332' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z' /%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M15 12a3 3 0 11-6 0 3 3 0 016 0z' /%3E%3C/svg%3E");
+}
+
+.card:nth-child(8) .card-icon {
+    /* Logística y Comida: Suministros / Caja */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%231b4332' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4' /%3E%3C/svg%3E");
+}
+
+.card-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+.card-description {
+    font-size: 0.88rem;
+    color: var(--text-muted);
+    margin-bottom: 22px;
+    flex-grow: 1;
+}
+
+/* Botón con relieve 3D interactivo */
+.card-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 12px 18px;
+    background: linear-gradient(145deg, #1f4e3a, #173a2b);
+    color: #ffffff;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+    border-radius: var(--radius-md);
+    transition: var(--transition);
+    border: none;
+    box-shadow: 3px 3px 8px rgba(0,0,0,0.15), -1px -1px 3px rgba(255,255,255,0.1);
+    cursor: pointer;
+}
+
+.card-action:hover {
+    background: var(--primary-hover);
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+    transform: scale(0.99);
+}
