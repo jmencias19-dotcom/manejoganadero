@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Manejo Ganadero - App de Campo</title>
+  
+  <!-- Telegram WebApp SDK -->
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  
+  <!-- Dexie.js para almacenamiento IndexedDB local (Offline) -->
+  <script src="https://unpkg.com/dexie@latest/dist/dexie.mjs" type="module"></script>
+
+  <style>
+    :root {
+      --bg-primary: #12181b;
+      --card-bg: #1e272c;
+      --accent: #2e7d32;
+      --accent-hover: #1b5e20;
+      --text-light: #f5f5f5;
+      --text-muted: #b0bec5;
+      --warning: #f57c00;
+      --border-radius: 10px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-light);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      min-height: 100vh;
+    }
+
+    /* Estado de Conexión */
+    .status-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 14px;
+      border-radius: var(--border-radius);
+      background-color: var(--card-bg);
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .badge {
+      padding: 4px 10px;
+      border-radius: 12px;
+      text-transform: uppercase;
+      font-size: 0.75rem;
+    }
+
+    .badge-offline { background-color: var(--warning); color: #000; }
+    .badge-online { background-color: var(--accent); color: #fff; }
+
+    /* Tarjetas y Formularios */
+    .card {
+      background-color: var(--card-bg);
+      padding: 18px;
+      border-radius: var(--border-radius);
+      box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+    }
+
+    h2 {
+      font-size: 1.1rem;
+      margin-bottom: 12px;
+      color: var(--text-light);
+    }
+
+    .form-group {
+      margin-bottom: 14px;
+    }
+
+    label {
+      display: block;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 12px;
+      border-radius: 6px;
+      border: 1px solid #37474f;
+      background-color: #263238;
+      color: var(--text-light);
+      font-size: 1rem;
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      background-color: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    button:active {
+      background-color: var(--accent-hover);
+    }
+
+    /* Resumen Offline */
+    .sync-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 8px;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Barra de Estado de Red -->
+  <div class="status-bar">
+    <span>Estado de Red:</span>
+    <span id="net-status" class="badge badge-online">Comprobando...</span>
+  </div>
+
+  <!-- Formulario de Pesaje en Campo -->
+  <div class="card">
+    <h2>Registro de Pesaje (Manga/Corral)</h2>
+    <form id="form-pesaje">
+      <div class="form-group">
+        <label for="numero-arete">Número de Arete / ID Animal</label>
+        <input type="text" id="numero-arete" placeholder="Ej. 1045" required autocomplete="off">
+      </div>
+
+      <div class="form-group">
+        <label for="peso-kg">Peso Actual (kg)</label>
+        <input type="number" id="peso-kg" step="0.5" placeholder="Ej. 380.5" required>
+      </div>
+
+      <div class="form-group">
+        <label for="categoria">Categoría / Lote</label>
+        <select id="categoria">
+          <option value="Mauta">Mauta</option>
+          <option value="Mauto">Mauto</option>
+          <option value="Novilla">Novilla</option>
+          <option value="Vaca">Vaca</option>
+          <option value="Toro">Toro</option>
+          <option value="Bufalino">Bufalino</option>
+        </select>
+      </div>
+
+      <button type="submit">Guardar Pesaje Offline 🐂</button>
+    </form>
+  </div>
+
+  <!-- Panel de Control de Sincronización Local -->
+  <div class="card">
+    <h2>Cola de Sincronización</h2>
+    <div class="sync-info">
+      <span>Registros pendientes:</span>
+      <strong id="pending-count">0</strong>
+    </div>
+    <br>
+    <button id="btn-sync" style="background-color: #0288d1;">Forzar Sincronización 🔄</button>
+  </div>
+
+  <!-- Lógica JavaScript Principal (Offline-First) -->
+  <script type="module">
+    import Dexie from 'https://unpkg.com/dexie@latest/dist/dexie.mjs';
+
+    // 1. Inicialización de la Base de Datos Local
+    const db = new Dexie('HatoManejoganaderoDB');
+    db.version(1).stores({
+      pesajes: 'id, animal_id, synced'
+    });
+
+    // 2. Inicialización de Telegram WebApp SDK
+    const tg = window.Telegram?.WebApp;
+    if (tg) {
+      tg.ready();
+      tg.expand(); // Expande la pantalla en el celular
+    }
+
+    // Elementos DOM
+    const netStatus = document.getElementById('net-status');
+    const pendingCount = document.getElementById('pending-count');
+    const formPesaje = document.getElementById('form-pesaje');
+
+    // 3. Monitoreo del Estado de Conexión
+    function actualizarEstadoRed() {
+      if (navigator.onLine) {
+        netStatus.textContent = 'En Línea';
+        netStatus.className = 'badge badge-online';
+        sincronizarDatos(); // Intenta sincronizar automáticamente al conectarse
+      } else {
+        netStatus.textContent = 'Sin Conexión (Offline)';
+        netStatus.className = 'badge badge-offline';
+      }
+    }
+
+    window.addEventListener('online', actualizarEstadoRed);
+    window.addEventListener('offline', actualizarEstadoRed);
+    actualizarEstadoRed();
+
+    // 4. Actualizar Contador de Registros Offline Pendientes
+    async function actualizarContador() {
+      const pendientes = await db.pesajes.where('synced').equals(0).count();
+      pendingCount.textContent = pendientes;
+    }
+    actualizarContador();
+
+    // 5. Guardar Registro en IndexedDB (Modo Offline)
+    formPesaje.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const arete = document.getElementById('numero-arete').value.trim();
+      const peso = parseFloat(document.getElementById('peso-kg').value);
+      const categoria = document.getElementById('categoria').value;
+
+      const nuevoPesaje = {
+        id: crypto.randomUUID(), // UUIDv4 único generado offline
+        animal_id: arete,
+        peso_kg: peso,
+        categoria: categoria,
+        fecha_pesaje: new Date().toISOString(),
+        synced: 0 // Marca de pendiente
+      };
+
+      await db.pesajes.add(nuevoPesaje);
+      
+      // Notificación táctil vía Telegram SDK si está disponible
+      if (tg && tg.HapticFeedback) {
+        tg.HapticFeedback.notificationOccurred('success');
+      }
+
+      formPesaje.reset();
+      await actualizarContador();
+      
+      if (navigator.onLine) {
+        sincronizarDatos();
+      } else {
+        alert('Pesaje guardado en el dispositivo. Se sincronizará al detectar señal.');
+      }
+    });
+
+    // 6. Función de Sincronización con el Servidor Vercel/Supabase
+    async function sincronizarDatos() {
+      if (!navigator.onLine) return;
+
+      const pendientes = await db.pesajes.where('synced').equals(0).toArray();
+      if (pendientes.length === 0) return;
+
+      try {
+        const respuesta = await fetch('/api/sincronizar', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ pesajes: pendientes, sanidad: [] })
+        });
+
+        if (respuesta.ok) {
+          const idsExitosos = pendientes.map(p => p.id);
+          await db.pesajes.where('id').anyOf(idsExitosos).modify({ synced: 1 });
+          await actualizarContador();
+          console.log('Sincronización automática exitosa');
+        }
+      } catch (error) {
+        console.error('Error al sincronizar con la nube:', error);
+      }
+    }
+
+    document.getElementById('btn-sync').addEventListener('click', sincronizarDatos);
+  </script>
+</body>
+</html>
