@@ -9,9 +9,7 @@
             updateDoc, 
             deleteDoc, 
             doc, 
-            onSnapshot, 
-            query, 
-            orderBy 
+            onSnapshot 
         } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
@@ -61,8 +59,8 @@
             return 'status-pendiente';
         }
 
-        const q = query(tasksCollection, orderBy("fecha", "desc"));
-        onSnapshot(q, (snapshot) => {
+        // Se usa la colección directa para evitar errores de índices ausentes en Firestore
+        onSnapshot(tasksCollection, (snapshot) => {
             if (!taskTableBody) return;
             taskTableBody.innerHTML = '';
             
@@ -79,9 +77,9 @@
                 const statusClass = getStatusClass(task.estado);
 
                 tr.innerHTML = `
-                    <td>${task.fecha}</td>
-                    <td><strong>${task.labor}</strong></td>
-                    <td>${task.personal}</td>
+                    <td>${task.fecha || ''}</td>
+                    <td><strong>${task.labor || ''}</strong></td>
+                    <td>${task.personal || ''}</td>
                     <td>${task.observaciones || '-'}</td>
                     <td>
                         <select class="status-select ${statusClass}" data-id="${id}" onchange="window.updateTaskStatus('${id}', this.value)">
@@ -98,6 +96,7 @@
         }, (error) => {
             console.error("Error de conexión:", error);
             if (statusText) statusText.textContent = "Error de Conexión";
+            setSyncStatus(false);
         });
 
         if (taskForm) {
@@ -112,13 +111,15 @@
                         personal: document.getElementById('personal').value,
                         observaciones: document.getElementById('observaciones').value,
                         estado: 'Pendiente',
-                        creadoEn: new Date()
+                        creadoEn: new Date().toISOString()
                     });
 
                     taskForm.reset();
                     showNotification('Labor registrada y guardada en la nube', 'success');
                 } catch (err) {
+                    console.error("Error al guardar:", err);
                     showNotification('Error al guardar datos', 'danger');
+                } finally {
                     setSyncStatus(false);
                 }
             });
@@ -131,7 +132,9 @@
                 await updateDoc(taskRef, { estado: newStatus });
                 showNotification(`Estado actualizado a "${newStatus}"`, 'warning');
             } catch (err) {
+                console.error("Error al actualizar:", err);
                 showNotification('Error al actualizar estado', 'danger');
+            } finally {
                 setSyncStatus(false);
             }
         };
@@ -143,7 +146,9 @@
                     await deleteDoc(doc(db, "tareas", id));
                     showNotification('Tarea eliminada de la nube', 'danger');
                 } catch (err) {
+                    console.error("Error al eliminar:", err);
                     showNotification('Error al eliminar', 'danger');
+                } finally {
                     setSyncStatus(false);
                 }
             }
