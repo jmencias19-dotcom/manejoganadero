@@ -1,0 +1,58 @@
+/* ==========================================================================
+   1. MÓDULO: POTREROS - UGM (Unidad Gran Ganado / Aforo de Pasto)
+   ========================================================================== */
+.potreros-ugm-card {
+  background-color: var(--card-bg);
+  border-left: 5px solid var(--primary);
+  border-radius: var(--border-radius);
+  padding: 16px;
+  margin-bottom: 14px;
+}
+
+.potreros-ugm-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.potreros-ugm-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.potreros-ugm-badge {
+  background-color: rgba(46, 125, 50, 0.2);
+  color: #81c784;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.potreros-ugm-metrics {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-top: 10px;
+  background-color: rgba(0, 0, 0, 0.2);
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.potreros-metric-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.potreros-metric-label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.potreros-metric-value {
+  font-size: 1rem;
+  font-weight: bold;
+  color: var(--text-main);
+}
