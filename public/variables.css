@@ -1,38 +1,37 @@
 /* ==========================================================================
-   VARIABLES GLOBALES Y TEMAS - HATO LAGUNA BRAVA
+   VARIABLES GLOBALES Y TEMAS - HATO LAGUNA BRAVA (ALTA INTENSIDAD)
    ========================================================================== */
 
 :root {
-    /* --- Paleta de Colores Ajustada (Verde más oscuro y mayor contraste) --- */
-    --primary-color: #0b291a;      /* Verde bosque ultra profundo (mayor impacto) */
-    --primary-hover: #03140c;      /* Tono casi negro para estados hover */
-    --accent-color: #1e5138;       /* Verde foliar de apoyo */
-    --bg-color: #e5e9e2;           /* Fondo gris/verde suave */
-    --card-bg: #f3f6f1;           /* Superficie de tarjeta limpia */
+    /* --- Paleta de Colores de Alta Saturación e Impacto --- */
+    --primary-color: #004d25;      /* Verde esmeralda profundo (intenso y corporativo) */
+    --primary-hover: #002e16;      /* Verde sombra para estados hover */
+    --accent-color: #00873d;       /* Verde vibrante para elementos destacados */
+    --accent-gold: #f5a623;        /* Dorado/Amarillo de alto impacto para alertas y resaltados */
     
-    /* --- Tipografía y Textos de Alto Contraste --- */
-    --text-main: #0a0e14;          /* Negro alto contraste para máxima legibilidad */
-    --text-muted: #374151;         /* Gris oscuro secundario legibilidad en campo */
-    --border-color: rgba(255, 255, 255, 0.9);
+    --bg-color: #e2e8e0;           /* Fondo gris/verde con mayor definición */
+    --card-bg: #f8faf7;           /* Superficie de tarjeta limpia de alto contraste */
+    
+    /* --- Tipografía y Textos de Máxima Legibilidad --- */
+    --text-main: #050a07;          /* Negro verdoso ultra puro */
+    --text-muted: #2d3748;         /* Gris carbón para texto secundario */
+    --border-color: #ffffff;
 
     /* --- Escalado de Tamaños de Texto --- */
-    --font-size-sm: 0.85rem;       /* Textos secundarios o etiquetas */
-    --font-size-base: 0.95rem;     /* Descripciones y cuerpo */
-    --font-size-md: 1.25rem;       /* Títulos de tarjetas */
-    --font-size-lg: 1.75rem;       /* Subtítulos de sección */
-    --font-size-xl: 2.3rem;        /* Encabezado principal (H1) */
+    --font-size-sm: 0.85rem;
+    --font-size-base: 0.95rem;
+    --font-size-md: 1.25rem;
+    --font-size-lg: 1.75rem;
+    --font-size-xl: 2.3rem;
 
-    /* --- Relieve 3D / Neomorfismo Optimizado --- */
-    /* Sombras base más suaves e integradas */
-    --relief-shadow: 5px 5px 12px #c1c7bc, -5px -5px 12px #ffffff;
-    /* Mayor elevación y relieve acentuado al pasar el cursor (hover) */
-    --relief-hover: 12px 12px 24px #b4bcae, -12px -12px 24px #ffffff;
-    /* Efecto de hendidura interna para íconos */
-    --relief-inset: inset 3px 3px 6px #c1c7bc, inset -3px -3px 6px #ffffff;
+    /* --- Relieve 3D / Neomorfismo Acentuado --- */
+    --relief-shadow: 6px 6px 14px #b8c2b4, -6px -6px 14px #ffffff;
+    --relief-hover: 10px 10px 22px #a8b4a3, -10px -10px 22px #ffffff;
+    --relief-inset: inset 4px 4px 8px #b8c2b4, inset -4px -4px 8px #ffffff;
 
-    /* --- Geometría y Transiciones (Bordes más curvos) --- */
+    /* --- Geometría y Transiciones --- */
     --radius-sm: 10px;
-    --radius-md: 16px;             /* Curvatura aumentada para botones e íconos */
-    --radius-lg: 24px;             /* Curvatura acentuada para contenedores/tarjetas */
-    --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    --radius-md: 16px;
+    --radius-lg: 24px;
+    --transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
