@@ -1,162 +1,38 @@
-<!-- Script con Firebase Firestore y la lógica de la aplicación -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { 
-            getFirestore, 
-            collection, 
-            addDoc, 
-            updateDoc, 
-            deleteDoc, 
-            doc, 
-            onSnapshot 
-        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+onSnapshot(tasksCollection, (snapshot) => {
+    if (!taskTableBody) return;
+    taskTableBody.innerHTML = '';
+    
+    if (snapshot.empty) {
+        taskTableBody.innerHTML = `<tr><td colspan="6" style="text-align:center; color: var(--text-muted);">No hay tareas registradas en el servidor.</td></tr>`;
+        setSyncStatus(false);
+        return;
+    }
 
-        // Capturador global para ver el error exacto en la consola si vuelve a ocurrir
-        window.addEventListener('unhandledrejection', event => {
-            console.error('Error detallado de promesa no capturada:', event.reason);
-        });
+    snapshot.forEach((docSnapshot) => {
+        const task = docSnapshot.data();
+        const id = docSnapshot.id;
+        const tr = document.createElement('tr');
+        const statusClass = getStatusClass(task.estado);
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyBnIB0rPQULTOfs55YSnsX2C-2rN5pTANk",
-            authDomain: "hato-laguna-brava.firebaseapp.com",
-            projectId: "hato-laguna-brava",
-            storageBucket: "hato-laguna-brava.firebasestorage.app",
-            messagingSenderId: "1053099733476",
-            appId: "1:1053099733476:web:541a115776b2e80047d7f1",
-            measurementId: "G-RSW0XSHF1F"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        const tasksCollection = collection(db, "tareas");
-
-        const taskForm = document.getElementById('taskForm');
-        const taskTableBody = document.getElementById('taskTableBody');
-        const light = document.getElementById('light');
-        const statusText = document.getElementById('statusText');
-        const toast = document.getElementById('toast');
-        const toastMessage = document.getElementById('toastMessage');
-
-        function setSyncStatus(isSyncing) {
-            if (light && statusText) {
-                if (isSyncing) {
-                    light.classList.add('syncing');
-                    statusText.textContent = 'Sincronizando...';
-                } else {
-                    light.classList.remove('syncing');
-                    statusText.textContent = 'Conectado a la Nube';
-                }
-            }
-        }
-
-        function showNotification(message, type = 'success') {
-            if (!toast || !toastMessage) return;
-            toastMessage.textContent = message;
-            toast.className = `toast-notification ${type} show`;
-            setTimeout(() => toast.classList.remove('show'), 3500);
-        }
-
-        function getStatusClass(status) {
-            if (status === 'En Proceso') return 'status-proceso';
-            if (status === 'Completada') return 'status-completada';
-            return 'status-pendiente';
-        }
-
-        onSnapshot(tasksCollection, (snapshot) => {
-            if (!taskTableBody) return;
-            taskTableBody.innerHTML = '';
-            
-            if (snapshot.empty) {
-                taskTableBody.innerHTML = `<tr><td colspan="6" style="text-align:center; color: var(--text-muted);">No hay tareas registradas en el servidor.</td></tr>`;
-                setSyncStatus(false);
-                return;
-            }
-
-            snapshot.forEach((docSnapshot) => {
-                const task = docSnapshot.data();
-                const id = docSnapshot.id;
-                const tr = document.createElement('tr');
-                const statusClass = getStatusClass(task.estado);
-
-                tr.innerHTML = `
-                    <td>${task.fecha || ''}</td>
-                    <td><strong>${task.labor || ''}</strong></td>
-                    <td>${task.personal || ''}</td>
-                    <td>${task.observaciones || '-'}</td>
-                    <td>
-                        <select class="status-select ${statusClass}" data-id="${id}" onchange="window.updateTaskStatus('${id}', this.value)">
-                            <option value="Pendiente" ${task.estado === 'Pendiente' ? 'selected' : ''}>Pendiente</option>
-                            <option value="En Proceso" ${task.estado === 'En Proceso' ? 'selected' : ''}>En Proceso</option>
-                            <option value="Completada" ${task.estado === 'Completada' ? 'selected' : ''}>Completada</option>
-                        </select>
-                    </td>
-                    <td><button class="btn-delete" onclick="window.deleteTask('${id}')">Eliminar</button></td>
-                `;
-                taskTableBody.appendChild(tr);
-            });
-            setSyncStatus(false);
-        }, (error) => {
-            console.error("Error en onSnapshot de Firestore:", error);onSnapshot(collection(db, "tareas"), (snapshot) => {
-  // Tu lógica para procesar los datos
+        tr.innerHTML = `
+            <td>${task.fecha || ''}</td>
+            <td><strong>${task.labor || ''}</strong></td>
+            <td>${task.personal || ''}</td>
+            <td>${task.observaciones || '-'}</td>
+            <td>
+                <select class="status-select ${statusClass}" data-id="${id}" onchange="window.updateTaskStatus('${id}', this.value)">
+                    <option value="Pendiente" ${task.estado === 'Pendiente' ? 'selected' : ''}>Pendiente</option>
+                    <option value="En Proceso" ${task.estado === 'En Proceso' ? 'selected' : ''}>En Proceso</option>
+                    <option value="Completada" ${task.estado === 'Completada' ? 'selected' : ''}>Completada</option>
+                </select>
+            </td>
+            <td><button class="btn-delete" onclick="window.deleteTask('${id}')">Eliminar</button></td>
+        `;
+        taskTableBody.appendChild(tr);
+    });
+    setSyncStatus(false);
 }, (error) => {
-  console.error("Error en onSnapshot de Firestore:", error);
+    console.error("Error en onSnapshot de Firestore:", error);
+    if (statusText) statusText.textContent = "Error de Conexión";
+    setSyncStatus(false);
 });
-            if (statusText) statusText.textContent = "Error de Conexión";
-            setSyncStatus(false);
-        });
-
-        if (taskForm) {
-            taskForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                setSyncStatus(true);
-
-                try {
-                    await addDoc(tasksCollection, {
-                        fecha: document.getElementById('fecha').value,
-                        labor: document.getElementById('labor').value,
-                        personal: document.getElementById('personal').value,
-                        observaciones: document.getElementById('observaciones').value,
-                        estado: 'Pendiente',
-                        creadoEn: new Date().toISOString()
-                    });
-
-                    taskForm.reset();
-                    showNotification('Labor registrada y guardada en la nube', 'success');
-                } catch (err) {
-                    console.error("Error al guardar en Firestore:", err);
-                    showNotification('Error al guardar datos', 'danger');
-                } finally {
-                    setSyncStatus(false);
-                }
-            });
-        }
-
-        window.updateTaskStatus = async (id, newStatus) => {
-            setSyncStatus(true);
-            try {
-                const taskRef = doc(db, "tareas", id);
-                await updateDoc(taskRef, { estado: newStatus });
-                showNotification(`Estado actualizado a "${newStatus}"`, 'warning');
-            } catch (err) {
-                console.error("Error al actualizar en Firestore:", err);
-                showNotification('Error al actualizar estado', 'danger');
-            } finally {
-                setSyncStatus(false);
-            }
-        };
-
-        window.deleteTask = async (id) => {
-            if (confirm('¿Deseas eliminar este registro de la base de datos central?')) {
-                setSyncStatus(true);
-                try {
-                    await deleteDoc(doc(db, "tareas", id));
-                    showNotification('Tarea eliminada de la nube', 'danger');
-                } catch (err) {
-                    console.error("Error al eliminar en Firestore:", err);
-                    showNotification('Error al eliminar', 'danger');
-                } finally {
-                    setSyncStatus(false);
-                }
-            }
-        };
-    </script>
