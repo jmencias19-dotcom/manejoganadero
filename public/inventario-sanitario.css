@@ -1,0 +1,28 @@
+/* ==========================================================================
+   7. MÓDULO: INVENTARIO - SANITARIO (Vacunas, Desparasitantes, Stock)
+   ========================================================================== */
+.inventario-sanitario-card {
+  background-color: var(--card-bg);
+  border-left: 5px solid var(--accent-red);
+  border-radius: var(--border-radius);
+  padding: 16px;
+  margin-bottom: 14px;
+}
+
+.sanitario-stock-low {
+  background-color: rgba(211, 47, 47, 0.2);
+  color: #ef5350;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: bold;
+}
+
+.sanitario-stock-ok {
+  background-color: rgba(46, 125, 50, 0.2);
+  color: #81c784;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: bold;
+}
