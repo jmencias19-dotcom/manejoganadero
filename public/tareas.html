@@ -220,9 +220,9 @@
                     <input type="date" id="fecha" class="form-control" required>
                 </div>
 
-                <div class="form-group" style="grid-column: span 2;">
+                <div class="form-group">
                     <label for="labor">Labor / Actividad</label>
-                    <input type="text" id="labor" class="form-control" placeholder="Escriba la labor (ej: Mantenimiento de cerca en potrero 3)" required>
+                    <input type="text" id="labor" class="form-control" placeholder="Ej: Reparación de cerca eléctrica" required>
                 </div>
 
                 <div class="form-group">
@@ -230,13 +230,9 @@
                     <input type="text" id="personal" class="form-control" placeholder="Nombre del personal" required>
                 </div>
 
-                <div class="form-group">
-                    <label for="estado">Estado Inicial</label>
-                    <select id="estado" class="form-control">
-                        <option value="Pendiente">Pendiente</option>
-                        <option value="En Proceso">En Proceso</option>
-                        <option value="Completada">Completada</option>
-                    </select>
+                <div class="form-group" style="grid-column: span 3;">
+                    <label for="observaciones">Observaciones / Insumos Requeridos</label>
+                    <input type="text" id="observaciones" class="form-control" placeholder="Ej: Se requieren 2 rollos de alambre y 10 estacas">
                 </div>
 
                 <button type="submit" class="btn-submit">Sincronizar</button>
@@ -257,6 +253,7 @@
                             <th>Fecha</th>
                             <th>Labor / Actividad</th>
                             <th>Personal</th>
+                            <th>Observaciones</th>
                             <th>Seguimiento de Estado</th>
                             <th>Acción</th>
                         </tr>
@@ -298,7 +295,7 @@
             function renderTasks() {
                 taskTableBody.innerHTML = '';
                 if (tasks.length === 0) {
-                    taskTableBody.innerHTML = `<tr><td colspan="5" style="text-align:center; color: var(--text-muted);">No hay tareas programadas.</td></tr>`;
+                    taskTableBody.innerHTML = `<tr><td colspan="6" style="text-align:center; color: var(--text-muted);">No hay tareas programadas.</td></tr>`;
                     return;
                 }
 
@@ -310,6 +307,7 @@
                         <td>${task.fecha}</td>
                         <td><strong>${task.labor}</strong></td>
                         <td>${task.personal}</td>
+                        <td>${task.observaciones || '-'}</td>
                         <td>
                             <select class="status-select ${statusClass}" onchange="updateTaskStatus(${index}, this.value)">
                                 <option value="Pendiente" ${task.estado === 'Pendiente' ? 'selected' : ''}>Pendiente</option>
@@ -332,7 +330,8 @@
                         fecha: document.getElementById('fecha').value,
                         labor: document.getElementById('labor').value,
                         personal: document.getElementById('personal').value,
-                        estado: document.getElementById('estado').value
+                        observaciones: document.getElementById('observaciones').value,
+                        estado: 'Pendiente' // Se asigna 'Pendiente' por defecto al sincronizar
                     };
 
                     tasks.push(newTask);
@@ -343,7 +342,6 @@
                 }, 400);
             });
 
-            // Función para actualizar el estado individual de una tarea
             window.updateTaskStatus = (index, newStatus) => {
                 setSyncStatus(true);
                 setTimeout(() => {
