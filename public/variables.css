@@ -1,0 +1,16 @@
+/* ==========================================================================
+   VARIABLES GLOBALES & PALETA DE COLOR
+   ========================================================================== */
+:root {
+  --bg-dark: #12181b;
+  --card-bg: #1e272c;
+  --card-border: #2c383e;
+  --text-main: #f5f5f5;
+  --text-muted: #90a4ae;
+  --primary: #2e7d32;      /* Verde Pasto/Ganadero */
+  --accent-blue: #0288d1;  /* Azul Logística/Agua */
+  --accent-orange: #f57c00;/* Naranja Maquinaria/Alerta */
+  --accent-red: #d32f2f;   /* Rojo Sanidad/Atención */
+  --accent-purple: #7b1fa2;/* Morado Categorías/Eventos */
+  --border-radius: 12px;
+}
