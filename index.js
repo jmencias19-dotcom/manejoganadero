@@ -1,4 +1,4 @@
-// index.js - Servidor API y Bot Core
+// index.js - Servidor API y Bot Core (Modo Webhook para Vercel)
 import express from 'express';
 import TelegramBot from 'node-telegram-bot-api';
 import { createClient } from '@supabase/supabase-js';
@@ -9,16 +9,18 @@ dotenv.config();
 const app = express();
 app.use(express.json());
 
-// Inicialización de Supabase (Base de datos central)
+// Inicialización de Supabase
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-// Inicialización del Bot de Telegram (Polling o Webhook)
+// Inicialización del Bot (¡Importante: polling apagado!)
 const token = process.env.TELEGRAM_BOT_TOKEN;
-const bot = new TelegramBot(token, { polling: true });
+const bot = new TelegramBot(token, { polling: false });
 
-// Comando /start para la Mini App
+// -------------------------------------------------------------
+// COMANDOS DEL BOT
+// -------------------------------------------------------------
 bot.onText(/\/start/, (msg) => {
   const chatId = msg.chat.id;
   bot.sendMessage(chatId, 'Bienvenido al Sistema de Manejo Ganadero.', {
@@ -33,7 +35,18 @@ bot.onText(/\/start/, (msg) => {
   });
 });
 
-// Endpoint de Sincronización Lote (Offline -> Cloud)
+// -------------------------------------------------------------
+// ENDPOINTS DE LA API
+// -------------------------------------------------------------
+
+// 1. Endpoint para el Webhook de Telegram
+// Telegram enviará los mensajes a esta ruta.
+app.post(`/api/bot${token}`, (req, res) => {
+  bot.processUpdate(req.body);
+  res.sendStatus(200);
+});
+
+// 2. Endpoint de Sincronización (Offline -> Cloud)
 app.post('/api/sincronizar', async (req, res) => {
   const { pesajes, sanidad } = req.body;
 
@@ -41,7 +54,6 @@ app.post('/api/sincronizar', async (req, res) => {
     let pesajesProcesados = 0;
     let sanidadProcesada = 0;
 
-    // 1. Insertar o Actualizar Pesajes en Supabase (Upsert para evitar duplicados por UUID)
     if (pesajes && pesajes.length > 0) {
       const datosPesaje = pesajes.map(p => ({
         id: p.id,
@@ -59,7 +71,6 @@ app.post('/api/sincronizar', async (req, res) => {
       pesajesProcesados = datosPesaje.length;
     }
 
-    // 2. Insertar o Actualizar Eventos Sanitarios
     if (sanidad && sanidad.length > 0) {
       const datosSanidad = sanidad.map(s => ({
         id: s.id,
@@ -88,7 +99,9 @@ app.post('/api/sincronizar', async (req, res) => {
   }
 });
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Servidor de Manejo Ganadero corriendo en puerto ${PORT}`);
-});
+// -------------------------------------------------------------
+// CONFIGURACIÓN DE VERCEL (Exportar la app de Express)
+// -------------------------------------------------------------
+// En Vercel, no se usa app.listen(). Vercel toma el control de Express
+// enviando las solicitudes directamente al objeto app.
+export default app;
