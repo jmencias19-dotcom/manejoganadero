@@ -67,6 +67,37 @@
             box-shadow: 0 0 6px rgba(255, 193, 7, 0.8);
         }
 
+        /* Contenedor de Notificación / Alerta Toast */
+        .toast-notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #004085;
+            color: #ffffff;
+            padding: 14px 20px;
+            border-radius: var(--radius-md);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            pointer-events: none;
+        }
+
+        .toast-notification.show {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        .toast-notification.success { background-color: #155724; border-left: 6px solid #28a745; }
+        .toast-notification.warning { background-color: #856404; border-left: 6px solid #ffc107; }
+        .toast-notification.danger { background-color: #721c24; border-left: 6px solid #dc3545; }
+
         .form-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -165,7 +196,6 @@
             font-weight: 700;
         }
 
-        /* Select de Estado Interactivo en la Tabla */
         .status-select {
             padding: 6px 10px;
             border-radius: var(--radius-md);
@@ -191,6 +221,12 @@
     </style>
 </head>
 <body>
+
+    <!-- Banner de Alerta / Notificación Flotante -->
+    <div id="toast" class="toast-notification">
+        <span id="toastIcon">🔔</span>
+        <span id="toastMessage">Sistema actualizado</span>
+    </div>
 
     <div class="container">
         <div class="header-bar">
@@ -273,8 +309,18 @@
             const clearAllBtn = document.getElementById('clearAllBtn');
             const light = document.getElementById('light');
             const statusText = document.getElementById('statusText');
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
 
             let tasks = JSON.parse(localStorage.getItem('hato_tareas')) || [];
+
+            function showNotification(message, type = 'success') {
+                toastMessage.textContent = message;
+                toast.className = `toast-notification ${type} show`;
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 3500);
+            }
 
             function setSyncStatus(isSyncing) {
                 if (isSyncing) {
@@ -331,7 +377,7 @@
                         labor: document.getElementById('labor').value,
                         personal: document.getElementById('personal').value,
                         observaciones: document.getElementById('observaciones').value,
-                        estado: 'Pendiente' // Se asigna 'Pendiente' por defecto al sincronizar
+                        estado: 'Pendiente'
                     };
 
                     tasks.push(newTask);
@@ -339,6 +385,7 @@
                     taskForm.reset();
                     renderTasks();
                     setSyncStatus(false);
+                    showNotification('Nueva labor programada y registrada con éxito', 'success');
                 }, 400);
             });
 
@@ -349,6 +396,7 @@
                     localStorage.setItem('hato_tareas', JSON.stringify(tasks));
                     renderTasks();
                     setSyncStatus(false);
+                    showNotification(`Estado de la tarea modificado a "${newStatus}"`, 'warning');
                 }, 300);
             };
 
@@ -359,6 +407,7 @@
                     localStorage.setItem('hato_tareas', JSON.stringify(tasks));
                     renderTasks();
                     setSyncStatus(false);
+                    showNotification('Tarea eliminada del programa', 'danger');
                 }, 300);
             };
 
@@ -371,6 +420,7 @@
                         localStorage.removeItem('hato_tareas');
                         renderTasks();
                         setSyncStatus(false);
+                        showNotification('Se borraron todas las tareas programadas', 'danger');
                     }, 400);
                 }
             });
