@@ -1,7 +1,6 @@
 <!-- Script con Firebase Firestore y la lógica de la aplicación -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
         import { 
             getFirestore, 
             collection, 
@@ -11,6 +10,11 @@
             doc, 
             onSnapshot 
         } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        // Capturador global para ver el error exacto en la consola si vuelve a ocurrir
+        window.addEventListener('unhandledrejection', event => {
+            console.error('Error detallado de promesa no capturada:', event.reason);
+        });
 
         const firebaseConfig = {
             apiKey: "AIzaSyBnIB0rPQULTOfs55YSnsX2C-2rN5pTANk",
@@ -23,7 +27,6 @@
         };
 
         const app = initializeApp(firebaseConfig);
-        const analytics = getAnalytics(app);
         const db = getFirestore(app);
         const tasksCollection = collection(db, "tareas");
 
@@ -59,7 +62,6 @@
             return 'status-pendiente';
         }
 
-        // Se usa la colección directa para evitar errores de índices ausentes en Firestore
         onSnapshot(tasksCollection, (snapshot) => {
             if (!taskTableBody) return;
             taskTableBody.innerHTML = '';
@@ -94,7 +96,7 @@
             });
             setSyncStatus(false);
         }, (error) => {
-            console.error("Error de conexión:", error);
+            console.error("Error en onSnapshot de Firestore:", error);
             if (statusText) statusText.textContent = "Error de Conexión";
             setSyncStatus(false);
         });
@@ -117,7 +119,7 @@
                     taskForm.reset();
                     showNotification('Labor registrada y guardada en la nube', 'success');
                 } catch (err) {
-                    console.error("Error al guardar:", err);
+                    console.error("Error al guardar en Firestore:", err);
                     showNotification('Error al guardar datos', 'danger');
                 } finally {
                     setSyncStatus(false);
@@ -132,7 +134,7 @@
                 await updateDoc(taskRef, { estado: newStatus });
                 showNotification(`Estado actualizado a "${newStatus}"`, 'warning');
             } catch (err) {
-                console.error("Error al actualizar:", err);
+                console.error("Error al actualizar en Firestore:", err);
                 showNotification('Error al actualizar estado', 'danger');
             } finally {
                 setSyncStatus(false);
@@ -146,7 +148,7 @@
                     await deleteDoc(doc(db, "tareas", id));
                     showNotification('Tarea eliminada de la nube', 'danger');
                 } catch (err) {
-                    console.error("Error al eliminar:", err);
+                    console.error("Error al eliminar en Firestore:", err);
                     showNotification('Error al eliminar', 'danger');
                 } finally {
                     setSyncStatus(false);
