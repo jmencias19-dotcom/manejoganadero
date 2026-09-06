@@ -50,6 +50,34 @@
 
   <!-- Import Map para Dexie.js -->
   <script type="importmap">
+    <script type="module">
+  // 1. Captura global de promesas rechazadas con deserialización del objeto
+  window.addEventListener('unhandledrejection', (event) => {
+    console.group(' [Unhandled Promise Rejection Detected]');
+    console.error('Razón del rechazo:', event.reason);
+    
+    if (event.reason instanceof Error) {
+      console.error('Mensaje:', event.reason.message);
+      console.error('Stack:', event.reason.stack);
+    } else if (typeof event.reason === 'object') {
+      console.error('Detalle del objeto devuelto:', JSON.stringify(event.reason, null, 2));
+    }
+    console.groupEnd();
+  });
+
+  // 2. Comprobación preventiva de soporte para Dexie / IndexedDB en el WebView
+  async function verificarStorage() {
+    try {
+      if (!window.indexedDB) {
+        throw new Error("IndexedDB no está disponible en este WebView/Entorno.");
+      }
+    } catch (e) {
+      console.warn(" Advertencia de Almacenamiento:", e.message);
+    }
+  }
+
+  verificarStorage();
+</script>
     {
       "imports": {
         "dexie": "https://unpkg.com/dexie@latest/dist/dexie.mjs"
