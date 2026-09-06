@@ -232,7 +232,7 @@
         <div class="header-bar">
             <div>
                 <h1 style="color: var(--primary-color);">Hato Laguna Brava</h1>
-                <p style="color: var(--text-muted);">Módulo de Planificación de Tareas Operativas</p>
+                <p style="color: var(--text-muted);">Programación y asignación de labores diarias del personal de campo (mantenimiento y faenas de corral).</p>
             </div>
             
             <div style="display: flex; gap: 12px; align-items: center;">
@@ -322,7 +322,6 @@
                     const audioCtx = new AudioContext();
 
                     if (type === 'success') {
-                        // Trino / Sirena doble de confirmación fuerte
                         const freqs = [880, 1046.50, 1318.51];
                         freqs.forEach((freq, i) => {
                             const osc = audioCtx.createOscillator();
@@ -337,7 +336,6 @@
                             osc.stop(audioCtx.currentTime + (i * 0.08) + 0.25);
                         });
                     } else if (type === 'warning') {
-                        // Doble pitido industrial potente (Cambio de estado)
                         [0, 0.15].forEach(delay => {
                             const osc = audioCtx.createOscillator();
                             const gain = audioCtx.createGain();
@@ -351,7 +349,6 @@
                             osc.stop(audioCtx.currentTime + delay + 0.1);
                         });
                     } else if (type === 'danger') {
-                        // Alerta grave de eliminación
                         const osc = audioCtx.createOscillator();
                         const gain = audioCtx.createGain();
                         osc.type = 'sawtooth';
