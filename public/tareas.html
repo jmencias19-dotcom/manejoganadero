@@ -12,27 +12,54 @@
         .container {
             max-width: 1100px;
             margin: 0 auto;
+            padding: 12px;
         }
 
+        /* Encabezado Responsivo */
         .header-bar {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
             flex-wrap: wrap;
             gap: 15px;
+        }
+
+        .header-title h1 {
+            color: var(--primary-color);
+            font-size: var(--font-size-xl);
+            margin: 0 0 5px 0;
+        }
+
+        .header-title p {
+            color: var(--text-muted);
+            font-size: var(--font-size-base);
+            margin: 0;
+            line-height: 1.4;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+            width: 100%;
+            justify-content: space-between;
         }
 
         .btn-back {
             background-color: var(--card-bg);
             color: var(--primary-color);
-            padding: 10px 18px;
+            padding: 10px 16px;
             border-radius: var(--radius-md);
             text-decoration: none;
             font-weight: 600;
             border: 1px solid var(--border-color);
             box-shadow: var(--relief-shadow);
             transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .btn-back:hover {
@@ -44,10 +71,10 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            font-size: var(--font-size-base);
+            font-size: var(--font-size-sm);
             font-weight: 600;
             background-color: var(--card-bg);
-            padding: 8px 14px;
+            padding: 8px 12px;
             border-radius: var(--radius-md);
             border: 1px solid var(--border-color);
             box-shadow: var(--relief-shadow);
@@ -60,6 +87,7 @@
             display: inline-block;
             background-color: #28a745;
             box-shadow: 0 0 6px rgba(40, 167, 69, 0.6);
+            flex-shrink: 0;
         }
 
         .traffic-light.syncing {
@@ -67,40 +95,44 @@
             box-shadow: 0 0 6px rgba(255, 193, 7, 0.8);
         }
 
-        /* Contenedor de Notificación / Alerta Toast */
+        /* Notificación Toast Movil */
         .toast-notification {
             position: fixed;
-            top: 20px;
-            right: 20px;
+            top: 15px;
+            left: 50%;
+            transform: translate(-50%, -20px);
+            width: 90%;
+            max-width: 400px;
             background-color: #004085;
             color: #ffffff;
-            padding: 14px 20px;
+            padding: 12px 16px;
             border-radius: var(--radius-md);
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
             display: flex;
             align-items: center;
             gap: 10px;
             font-weight: 600;
+            font-size: var(--font-size-sm);
             z-index: 1000;
             opacity: 0;
-            transform: translateY(-20px);
             transition: opacity 0.3s ease, transform 0.3s ease;
             pointer-events: none;
         }
 
         .toast-notification.show {
             opacity: 1;
-            transform: translateY(0);
+            transform: translate(-50%, 0);
             pointer-events: auto;
         }
 
-        .toast-notification.success { background-color: #155724; border-left: 6px solid #28a745; }
-        .toast-notification.warning { background-color: #856404; border-left: 6px solid #ffc107; }
-        .toast-notification.danger { background-color: #721c24; border-left: 6px solid #dc3545; }
+        .toast-notification.success { background-color: #155724; border-left: 5px solid #28a745; }
+        .toast-notification.warning { background-color: #856404; border-left: 5px solid #ffc107; }
+        .toast-notification.danger { background-color: #721c24; border-left: 5px solid #dc3545; }
 
+        /* Estructura del Formulario */
         .form-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
             gap: 15px;
             margin-top: 15px;
         }
@@ -118,37 +150,46 @@
         }
 
         .form-control {
-            padding: 10px 12px;
+            padding: 12px;
             border-radius: var(--radius-md);
             border: 1px solid var(--border-color);
             background-color: var(--bg-color);
             color: var(--text-main);
             font-size: var(--font-size-base);
             outline: none;
+            width: 100%;
+            box-sizing: border-box;
         }
 
         .form-control:focus {
             border-color: var(--primary-color);
         }
 
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
         .btn-submit {
             grid-column: 1 / -1;
             margin-top: 10px;
-            padding: 12px;
+            padding: 14px;
             background-color: var(--primary-color);
             color: #ffffff;
             border: none;
             border-radius: var(--radius-md);
             font-weight: 700;
+            font-size: var(--font-size-base);
             cursor: pointer;
             box-shadow: var(--relief-shadow);
             transition: var(--transition);
+            width: 100%;
         }
 
         .btn-submit:hover {
             background-color: var(--primary-hover);
         }
 
+        /* Tabla Adaptativa */
         .table-header-flex {
             display: flex;
             justify-content: space-between;
@@ -168,26 +209,26 @@
             transition: var(--transition);
         }
 
-        .btn-clear-all:hover {
-            background-color: #bd2130;
-        }
-
         .table-responsive {
             width: 100%;
             overflow-x: auto;
-            margin-top: 20px;
+            margin-top: 15px;
+            -webkit-overflow-scrolling: touch;
         }
 
         table {
             width: 100%;
+            min-width: 650px; /* Garantiza legibilidad en pantallas estrechas */
             border-collapse: collapse;
             text-align: left;
             font-size: var(--font-size-base);
         }
 
         th, td {
-            padding: 12px 14px;
+            padding: 10px 12px;
             border-bottom: 1px solid var(--border-color);
+            white-space: normal;
+            word-break: break-word;
         }
 
         th {
@@ -197,13 +238,14 @@
         }
 
         .status-select {
-            padding: 6px 10px;
+            padding: 6px 8px;
             border-radius: var(--radius-md);
             font-weight: 700;
             font-size: 0.85rem;
             border: 1px solid var(--border-color);
             cursor: pointer;
             outline: none;
+            width: 100%;
         }
 
         .status-select.status-pendiente { background-color: #fff3cd; color: #856404; }
@@ -214,9 +256,44 @@
             background-color: #dc3545;
             color: #fff;
             border: none;
-            padding: 5px 10px;
-            border-radius: 4px;
+            padding: 6px 12px;
+            border-radius: 6px;
             cursor: pointer;
+            font-weight: 600;
+        }
+
+        /* AJUSTES ESPECÍFICOS PARA DISPOSITIVOS MÓVILES (< 768px) */
+        @media (min-width: 768px) {
+            .header-actions {
+                width: auto;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 8px;
+            }
+
+            .header-title h1 {
+                font-size: 1.6rem;
+            }
+
+            .header-title p {
+                font-size: 0.88rem;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .full-width {
+                grid-column: span 1;
+            }
+
+            .btn-clear-all {
+                width: 100%;
+                margin-top: 8px;
+            }
         }
     </style>
 </head>
@@ -230,12 +307,12 @@
 
     <div class="container">
         <div class="header-bar">
-            <div>
-                <h1 style="color: var(--primary-color);">Hato Laguna Brava</h1>
-                <p style="color: var(--text-muted);">Programación y asignación de labores diarias del personal de campo (mantenimiento y faenas de corral).</p>
+            <div class="header-title">
+                <h1>Hato Laguna Brava</h1>
+                <p>Programación y asignación de labores diarias del personal de campo (mantenimiento de cercas, roza, limpieza de bebederos y faenas de corral).</p>
             </div>
             
-            <div style="display: flex; gap: 12px; align-items: center;">
+            <div class="header-actions">
                 <div class="sync-status">
                     <span id="light" class="traffic-light"></span>
                     <span id="statusText">Datos Guardados</span>
@@ -245,7 +322,7 @@
         </div>
 
         <!-- Formulario de Registro -->
-        <section class="card" style="margin-bottom: 30px;">
+        <section class="card" style="margin-bottom: 20px;">
             <div class="card-header">
                 <h3 class="card-title">Programar Nueva Labor</h3>
             </div>
@@ -258,7 +335,7 @@
 
                 <div class="form-group">
                     <label for="labor">Labor / Actividad</label>
-                    <input type="text" id="labor" class="form-control" placeholder="Ej: Reparación de cerca eléctrica" required>
+                    <input type="text" id="labor" class="form-control" placeholder="Ej: Mantenimiento de cercas" required>
                 </div>
 
                 <div class="form-group">
@@ -266,19 +343,19 @@
                     <input type="text" id="personal" class="form-control" placeholder="Nombre del personal" required>
                 </div>
 
-                <div class="form-group" style="grid-column: span 3;">
+                <div class="form-group full-width">
                     <label for="observaciones">Observaciones / Insumos Requeridos</label>
-                    <input type="text" id="observaciones" class="form-control" placeholder="Ej: Se requieren 2 rollos de alambre y 10 estacas">
+                    <input type="text" id="observaciones" class="form-control" placeholder="Ej: Limpieza de bebederos en potrero 4">
                 </div>
 
-                <button type="submit" class="btn-submit">Sincronizar</button>
+                <button type="submit" class="btn-submit">Sincronizar Labor</button>
             </form>
         </section>
 
         <!-- Tabla de Control -->
         <section class="card">
             <div class="card-header table-header-flex">
-                <h3 class="card-title">Programación de Campo Registrada</h3>
+                <h3 class="card-title">Programación Registrada</h3>
                 <button id="clearAllBtn" class="btn-clear-all">Borrar Todo</button>
             </div>
 
@@ -286,12 +363,12 @@
                 <table>
                     <thead>
                         <tr>
-                            <th>Fecha</th>
+                            <th style="width: 110px;">Fecha</th>
                             <th>Labor / Actividad</th>
                             <th>Encargado/cuadrilla</th>
                             <th>Observaciones</th>
-                            <th>Seguimiento de Estado</th>
-                            <th>Acción</th>
+                            <th style="width: 130px;">Estado</th>
+                            <th style="width: 80px;">Acción</th>
                         </tr>
                     </thead>
                     <tbody id="taskTableBody">
@@ -314,7 +391,6 @@
 
             let tasks = JSON.parse(localStorage.getItem('hato_tareas')) || [];
 
-            // Generador de audio de alta intensidad
             function playLoudSound(type) {
                 try {
                     const AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -362,7 +438,7 @@
                         osc.stop(audioCtx.currentTime + 0.35);
                     }
                 } catch (e) {
-                    console.log('Error reproduciendo sonido:', e);
+                    console.log('Error de audio:', e);
                 }
             }
 
@@ -439,7 +515,7 @@
                     taskForm.reset();
                     renderTasks();
                     setSyncStatus(false);
-                    showNotification('Nueva labor programada y registrada con éxito', 'success');
+                    showNotification('Nueva labor programada y registrada', 'success');
                 }, 400);
             });
 
@@ -450,7 +526,7 @@
                     localStorage.setItem('hato_tareas', JSON.stringify(tasks));
                     renderTasks();
                     setSyncStatus(false);
-                    showNotification(`Estado de la tarea modificado a "${newStatus}"`, 'warning');
+                    showNotification(`Estado cambiado a "${newStatus}"`, 'warning');
                 }, 300);
             };
 
@@ -461,20 +537,20 @@
                     localStorage.setItem('hato_tareas', JSON.stringify(tasks));
                     renderTasks();
                     setSyncStatus(false);
-                    showNotification('Tarea eliminada del programa', 'danger');
+                    showNotification('Tarea eliminada', 'danger');
                 }, 300);
             };
 
             clearAllBtn.addEventListener('click', () => {
                 if (tasks.length === 0) return;
-                if (confirm('¿Está seguro de que desea borrar todas las tareas registradas?')) {
+                if (confirm('¿Borrar todas las tareas registradas?')) {
                     setSyncStatus(true);
                     setTimeout(() => {
                         tasks = [];
                         localStorage.removeItem('hato_tareas');
                         renderTasks();
                         setSyncStatus(false);
-                        showNotification('Se borraron todas las tareas programadas', 'danger');
+                        showNotification('Se borraron todas las tareas', 'danger');
                     }, 400);
                 }
             });
