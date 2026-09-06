@@ -96,7 +96,11 @@
             });
             setSyncStatus(false);
         }, (error) => {
-            console.error("Error en onSnapshot de Firestore:", error);
+            console.error("Error en onSnapshot de Firestore:", error);onSnapshot(collection(db, "tareas"), (snapshot) => {
+  // Tu lógica para procesar los datos
+}, (error) => {
+  console.error("Error en onSnapshot de Firestore:", error);
+});
             if (statusText) statusText.textContent = "Error de Conexión";
             setSyncStatus(false);
         });
