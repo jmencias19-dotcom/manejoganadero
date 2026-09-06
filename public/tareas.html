@@ -21,10 +21,11 @@
         measurementId: "G-RSW0XSHF1F"
     };
 
-    // Inicialización del servicio forzando Long-Polling (evita bloqueos QUIC / HTTP3)
+    // Inicialización del servicio forzando transporte compatible (desactiva HTTP3/Streams propensos a fallar)
     const app = initializeApp(firebaseConfig);
     const db = initializeFirestore(app, {
         experimentalForceLongPolling: true,
+        useFetchStreams: false
     });
     const tasksCollection = collection(db, "tareas");
 
@@ -36,7 +37,7 @@
     const toast = document.getElementById('toast');
     const toastMessage = document.getElementById('toastMessage');
 
-    // Auxiliar para sanitización de cadenas (Previene inyección de código/XSS)
+    // Auxiliar para sanitización de cadenas (Previene XSS)
     const escapeHtml = (str) => String(str || '').replace(/[&<>"']/g, match => ({
         '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
     })[match]);
@@ -72,45 +73,49 @@
         return 'status-pendiente';
     }
 
-    // 1. Escuchar cambios en tiempo real (Sincronización bidireccional)
+    // 1. Escuchar cambios en tiempo real con captura explícita de excepciones
     setSyncStatus(true);
-    onSnapshot(tasksCollection, (snapshot) => {
-        if (!taskTableBody) return;
-        taskTableBody.innerHTML = '';
-        
-        if (snapshot.empty) {
-            taskTableBody.innerHTML = `<tr><td colspan="6" style="text-align:center; color: var(--text-muted);">No hay labores registradas en el servidor.</td></tr>`;
+    onSnapshot(tasksCollection, 
+        (snapshot) => {
+            if (!taskTableBody) return;
+            taskTableBody.innerHTML = '';
+            
+            if (snapshot.empty) {
+                taskTableBody.innerHTML = `<tr><td colspan="6" style="text-align:center; color: var(--text-muted);">No hay labores registradas en el servidor.</td></tr>`;
+                setSyncStatus(false);
+                return;
+            }
+
+            snapshot.forEach((docSnapshot) => {
+                const task = docSnapshot.data();
+                const id = docSnapshot.id;
+                const tr = document.createElement('tr');
+                const statusClass = getStatusClass(task.estado);
+
+                tr.innerHTML = `
+                    <td>${escapeHtml(task.fecha)}</td>
+                    <td><strong>${escapeHtml(task.labor)}</strong></td>
+                    <td>${escapeHtml(task.personal)}</td>
+                    <td>${escapeHtml(task.observaciones || '-')}</td>
+                    <td>
+                        <select class="status-select ${statusClass}" onchange="window.updateTaskStatus('${id}', this.value)">
+                            <option value="Pendiente" ${task.estado === 'Pendiente' ? 'selected' : ''}>Pendiente</option>
+                            <option value="En Proceso" ${task.estado === 'En Proceso' ? 'selected' : ''}>En Proceso</option>
+                            <option value="Completada" ${task.estado === 'Completada' ? 'selected' : ''}>Completada</option>
+                        </select>
+                    </td>
+                    <td><button class="btn-delete" onclick="window.deleteTask('${id}')">Eliminar</button></td>
+                `;
+                taskTableBody.appendChild(tr);
+            });
             setSyncStatus(false);
-            return;
+        }, 
+        (error) => {
+            console.error("Detalle del error en Firestore:", error.code, error.message);
+            setSyncStatus(false, true);
+            showNotification('Error al conectar con la base de datos', 'danger');
         }
-
-        snapshot.forEach((docSnapshot) => {
-            const task = docSnapshot.data();
-            const id = docSnapshot.id;
-            const tr = document.createElement('tr');
-            const statusClass = getStatusClass(task.estado);
-
-            tr.innerHTML = `
-                <td>${escapeHtml(task.fecha)}</td>
-                <td><strong>${escapeHtml(task.labor)}</strong></td>
-                <td>${escapeHtml(task.personal)}</td>
-                <td>${escapeHtml(task.observaciones || '-')}</td>
-                <td>
-                    <select class="status-select ${statusClass}" onchange="window.updateTaskStatus('${id}', this.value)">
-                        <option value="Pendiente" ${task.estado === 'Pendiente' ? 'selected' : ''}>Pendiente</option>
-                        <option value="En Proceso" ${task.estado === 'En Proceso' ? 'selected' : ''}>En Proceso</option>
-                        <option value="Completada" ${task.estado === 'Completada' ? 'selected' : ''}>Completada</option>
-                    </select>
-                </td>
-                <td><button class="btn-delete" onclick="window.deleteTask('${id}')">Eliminar</button></td>
-            `;
-            taskTableBody.appendChild(tr);
-        });
-        setSyncStatus(false);
-    }, (error) => {
-        console.error("Error en lectura remota de Firestore:", error);
-        setSyncStatus(false, true);
-    });
+    );
 
     // 2. Registro de nueva labor desde el formulario
     if (taskForm) {
