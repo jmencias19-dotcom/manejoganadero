@@ -224,7 +224,7 @@
 
     <!-- Banner de Alerta / Notificación Flotante -->
     <div id="toast" class="toast-notification">
-        <span id="toastIcon">🔊</span>
+        <span id="toastIcon">📢</span>
         <span id="toastMessage">Sistema actualizado</span>
     </div>
 
@@ -314,49 +314,65 @@
 
             let tasks = JSON.parse(localStorage.getItem('hato_tareas')) || [];
 
-            // Generador de audio mediante Web Audio API
-            function playSound(type) {
+            // Generador de audio de alta intensidad
+            function playLoudSound(type) {
                 try {
-                    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                    const osc = audioCtx.createOscillator();
-                    const gain = audioCtx.createGain();
-
-                    osc.connect(gain);
-                    gain.connect(audioCtx.destination);
+                    const AudioContext = window.AudioContext || window.webkitAudioContext;
+                    if (!AudioContext) return;
+                    const audioCtx = new AudioContext();
 
                     if (type === 'success') {
-                        // Tono agudo doble (Éxito / Sincronización)
-                        osc.frequency.setValueAtTime(587.33, audioCtx.currentTime); // D5
-                        osc.frequency.setValueAtTime(880, audioCtx.currentTime + 0.1); // A5
-                        gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
-                        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.25);
-                        osc.start();
-                        osc.stop(audioCtx.currentTime + 0.25);
+                        // Trino / Sirena doble de confirmación fuerte (Onda cuadrada para alta potencia)
+                        const freqs = [880, 1046.50, 1318.51]; // Acorde La-Do#-Mi (A5-C6-E6)
+                        freqs.forEach((freq, i) => {
+                            const osc = audioCtx.createOscillator();
+                            const gain = audioCtx.createGain();
+                            osc.type = 'square'; 
+                            osc.frequency.setValueAtTime(freq, audioCtx.currentTime + (i * 0.08));
+                            gain.gain.setValueAtTime(0.4, audioCtx.currentTime + (i * 0.08));
+                            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + (i * 0.08) + 0.25);
+                            osc.connect(gain);
+                            gain.connect(audioCtx.destination);
+                            osc.start(audioCtx.currentTime + (i * 0.08));
+                            osc.stop(audioCtx.currentTime + (i * 0.08) + 0.25);
+                        });
                     } else if (type === 'warning') {
-                        // Tono medio (Cambio de estado)
-                        osc.frequency.setValueAtTime(440, audioCtx.currentTime); // A4
-                        gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
-                        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
-                        osc.start();
-                        osc.stop(audioCtx.currentTime + 0.15);
+                        // Doble pitido industrial potente (Cambio de estado)
+                        [0, 0.15].forEach(delay => {
+                            const osc = audioCtx.createOscillator();
+                            const gain = audioCtx.createGain();
+                            osc.type = 'sawtooth'; 
+                            osc.frequency.setValueAtTime(750, audioCtx.currentTime + delay);
+                            gain.gain.setValueAtTime(0.5, audioCtx.currentTime + delay);
+                            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + delay + 0.1);
+                            osc.connect(gain);
+                            gain.connect(audioCtx.destination);
+                            osc.start(audioCtx.currentTime + delay);
+                            osc.stop(audioCtx.currentTime + delay + 0.1);
+                        });
                     } else if (type === 'danger') {
-                        // Tono grave descendente (Eliminar)
-                        osc.frequency.setValueAtTime(300, audioCtx.currentTime);
-                        osc.frequency.exponentialRampToValueAtTime(150, audioCtx.currentTime + 0.2);
-                        gain.gain.setValueAtTime(0.25, audioCtx.currentTime);
-                        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
+                        // Alerta grave de eliminación (Onda diente de sierra descendente)
+                        const osc = audioCtx.createOscillator();
+                        const gain = audioCtx.createGain();
+                        osc.type = 'sawtooth';
+                        osc.frequency.setValueAtTime(400, audioCtx.currentTime);
+                        osc.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.35);
+                        gain.gain.setValueAtTime(0.6, audioCtx.currentTime);
+                        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.35);
+                        osc.connect(gain);
+                        gain.connect(audioCtx.destination);
                         osc.start();
-                        osc.stop(audioCtx.currentTime + 0.2);
+                        osc.stop(audioCtx.currentTime + 0.35);
                     }
                 } catch (e) {
-                    console.log('Audio no soportado o bloqueado por el navegador:', e);
+                    console.log('Error reproduciendo sonido:', e);
                 }
             }
 
             function showNotification(message, type = 'success') {
                 toastMessage.textContent = message;
                 toast.className = `toast-notification ${type} show`;
-                playSound(type);
+                playLoudSound(type);
 
                 setTimeout(() => {
                     toast.classList.remove('show');
