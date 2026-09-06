@@ -3,17 +3,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="theme-color" content="#12181b">
   
-  <!-- Configuración PWA / WebApp -->
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   
   <title>Manejo Ganadero - App de Campo</title>
 
-  <!-- Captura de errores asíncronos no controlados -->
+  <!-- Captura detallada de errores asíncronos -->
   <script>
     window.addEventListener('unhandledrejection', function(event) {
-      console.warn('Promesa rechazada capturada:', event.reason);
-      event.preventDefault();
+      // Imprime el detalle real del objeto para identificar la causa (ej. ruta JS, Dexie, Fetch)
+      console.error('Detalle de promesa rechazada:', event.reason);
+      event.preventDefault(); 
     });
   </script>
 
@@ -33,10 +33,10 @@
   <link rel="stylesheet" href="./logistica-comidas.css">
   <link rel="stylesheet" href="./historial-pastoreo.css">
 
-  <!-- Telegram WebApp SDK (Primero se carga la librería) -->
+  <!-- Telegram WebApp SDK -->
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
-  <!-- Inicialización Segura del SDK de Telegram -->
+  <!-- Inicialización de Telegram -->
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       if (window.Telegram?.WebApp) {
@@ -46,7 +46,7 @@
     });
   </script>
 
-  <!-- Import Map para Dexie.js (IndexedDB Offline) -->
+  <!-- Import Map para Dexie.js -->
   <script type="importmap">
     {
       "imports": {
