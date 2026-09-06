@@ -14,7 +14,7 @@
     window.addEventListener('unhandledrejection', function(event) {
       console.warn('Promesa no capturada (manejada):', event.reason);
       event.preventDefault(); // Previene que el error rompa la ejecución del JS
-    });
+    });telegram.webApp.ready();
   </script>
 
   <!-- Preconexión para optimizar carga de recursos -->
