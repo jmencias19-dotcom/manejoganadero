@@ -1,13 +1,12 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <link rel="stylesheet" href="public/variables.css?v=1.1">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistema de Gestión Ganadera - Hato Laguna Brava</title>
     
-    <!-- Archivo de variables CSS externas -->
-    <link rel="stylesheet" href="public/variables.css">
+    <!-- Archivo de variables CSS externas con control de versión anti-caché -->
+    <link rel="stylesheet" href="public/variables.css?v=1.1">
 
     <style>
         * {
@@ -31,14 +30,14 @@
 
         header h1 {
             color: var(--primary-color);
-            font-size: 2.2rem;
+            font-size: var(--font-size-xl);
             font-weight: 800;
             letter-spacing: -0.5px;
         }
 
         header p {
             color: var(--text-muted);
-            font-size: 1rem;
+            font-size: var(--font-size-base);
             font-weight: 500;
             margin-top: 4px;
         }
@@ -126,13 +125,13 @@
         }
 
         .card-title {
-            font-size: 1.15rem;
+            font-size: var(--font-size-md);
             font-weight: 700;
             color: var(--primary-color);
         }
 
         .card-description {
-            font-size: 0.88rem;
+            font-size: var(--font-size-base);
             color: var(--text-muted);
             margin-bottom: 22px;
             flex-grow: 1;
@@ -148,7 +147,7 @@
             color: #ffffff;
             text-decoration: none;
             font-weight: 600;
-            font-size: 0.9rem;
+            font-size: var(--font-size-base);
             border-radius: var(--radius-md);
             transition: var(--transition);
             border: none;
