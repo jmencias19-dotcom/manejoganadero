@@ -1,322 +1,195 @@
 /* ==========================================================================
-   1. DESIGN SYSTEM TOKENS & DESIGN VARIABLES (AZUL, VERDE Y BLANCO)
+   1. DESIGN SYSTEM TOKENS (SISTEMA DE DISEÑO BASE)
    ========================================================================== */
 :root {
-    /* Paleta Principal: Azul, Verde y Blanco */
-    --color-bg-app: #edf2f7;          /* Gris azulado muy claro para contraste limpio */
-    --color-bg-container: #ffffff;    /* Blanco puro para superficie principal */
-    --color-surface-card: #ffffff;    /* Tarjetas blancas puras con bordes y sombras */
-    --color-surface-hover: #f0fdf4;   /* Toque verde menta ultra claro para interacciones */
-    
-    /* Azules Corporativos (Estructura y Jerarquía) */
-    --color-blue-primary: #0f172a;    /* Azul medianoche (Texto principal y títulos) */
-    --color-blue-brand: #1e40af;      /* Azul real técnico (Marca y botones primarios) */
-    --color-blue-hover: #1d4ed8;      /* Azul vibrante para hover */
-    --color-blue-light: #eff6ff;      /* Fondo azul ultra claro para badges y acentos */
-
-    /* Verdes de Campo / Ganadería (Acentos y Acciones Clave) */
-    --color-green-primary: #15803d;   /* Verde bosque profesional (Acciones positivas) */
-    --color-green-hover: #166534;     /* Verde oscuro para hover */
-    --color-green-light: #dcfce7;     /* Verde pastel para acentos e iconos */
+    /* Paleta Principal: Verde Campo, Azul Técnico y Blanco */
+    --primary-color: #1b4332;         /* Verde bosque profundo (Institucional) */
+    --primary-hover: #2d6a4f;         /* Verde activo para estados hover */
+    --bg-color: #e9ecef;              /* Gris muy claro de fondo general */
+    --card-bg: #ffffff;               /* Fondo blanco para las tarjetas */
     
     /* Tipografía y Textos */
-    --color-text-main: #0f172a;       /* Máximo contraste accesible WCAG AAA */
-    --color-text-muted: #475569;      /* Texto secundario de alta legibilidad */
-    --color-text-inverse: #ffffff;    /* Texto sobre botones o fondos oscuros */
-    
-    /* Bordes y Divisiones */
-    --color-border: #cbd5e1;          /* Bordes limpios y definidos */
-    --color-border-focus: #16a34a;    /* Borde verde activo para inputs */
-    
-    /* Sistema de Radio de Bordes (Bordes suavemente redondeados) */
-    --radius-sm: 8px;
-    --radius-md: 14px;
-    --radius-lg: 20px;
-    
-    /* Sombras Elevadas (Depth System) */
-    --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.06), 0 1px 2px rgba(15, 23, 42, 0.04);
-    --shadow-md: 0 4px 12px -2px rgba(15, 23, 42, 0.08), 0 2px 6px -1px rgba(15, 23, 42, 0.04);
-    --shadow-lg: 0 12px 24px -4px rgba(15, 23, 42, 0.12), 0 4px 8px -2px rgba(15, 23, 42, 0.06);
-    --shadow-focus: 0 0 0 4px rgba(22, 163, 74, 0.2);
+    --text-main: #1d2d44;             /* Texto principal de alto contraste */
+    --text-muted: #5c677d;            /* Texto secundario y descripciones */
+    --border-color: #d8f3dc;          /* Borde sutil verdoso */
 
-    /* Transiciones */
-    --transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-normal: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    /* Escala Tipográfica */
+    --font-size-base: 0.95rem;
+    --font-size-md: 1.15rem;
+    --font-size-xl: 1.85rem;
+
+    /* Radio de Bordes */
+    --radius-md: 10px;
+    --radius-lg: 16px;
+
+    /* Sistema de Sombras & Depth System */
+    --relief-shadow: 0 4px 12px rgba(27, 67, 50, 0.08);
+    --relief-hover: 0 8px 24px rgba(27, 67, 50, 0.15);
+    --relief-inset: inset 0 2px 4px rgba(0, 0, 0, 0.06);
+
+    /* Animaciones */
+    --transition: all 0.25s ease-in-out;
 }
 
 /* ==========================================================================
-   2. BASE LAYOUT & CANVAS (OPTIMIZADO PARA TELEGRAM MINI APP)
+   2. REGLAS GLOBALES Y LAYOUT BASE
    ========================================================================== */
 * {
     box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
 
 body {
-    background-color: var(--color-bg-app);
-    color: var(--color-text-main);
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    margin: 0;
-    padding: 0;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-main);
     line-height: 1.5;
-    -webkit-font-smoothing: antialiased;
-}
-
-.container, main {
-    background-color: var(--color-bg-container);
-    width: 100%;
-    max-width: 800px !important;
-    margin: 0 auto;
-    padding: 24px 16px !important;
+    padding: 24px;
     min-height: 100vh;
-    box-shadow: var(--shadow-lg);
+}
+
+header {
+    text-align: center;
+    margin-bottom: 35px;
+}
+
+header h1 {
+    color: var(--primary-color);
+    font-size: var(--font-size-xl);
+    font-weight: 800;
+    letter-spacing: -0.5px;
+}
+
+header p {
+    color: var(--text-muted);
+    font-size: var(--font-size-base);
+    font-weight: 500;
+    margin-top: 4px;
 }
 
 /* ==========================================================================
-   3. TARJETAS ELEVADAS Y BORDES SUAVES (CARDS)
+   3. GRID DE DASHBOARD Y TARJETAS (CARDS)
    ========================================================================== */
-section, .section-card, .card-panel {
-    background: var(--color-surface-card);
-    border-radius: var(--radius-md);
-    padding: 20px;
-    margin-bottom: 20px;
-    border: 1px solid var(--color-border);
-    box-shadow: var(--shadow-sm);
-    transition: transform var(--transition-normal), box-shadow var(--transition-normal), border-color var(--transition-normal);
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+    gap: 24px;
+    max-width: 1280px;
+    margin: 0 auto;
+}
+
+.card {
+    background-color: var(--card-bg);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    border: 1px solid var(--border-color);
+    box-shadow: var(--relief-shadow);
+    transition: var(--transition);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
     position: relative;
-    overflow: hidden;
 }
 
-/* Borde indicador superior de color verde en cada tarjeta */
-section::before, .section-card::before, .card-panel::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 4px;
-    background: linear-gradient(90deg, var(--color-blue-brand), var(--color-green-primary));
+.card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--relief-hover);
 }
 
-section:hover, .section-card:hover, .card-panel:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
-    border-color: #94a3b8;
-}
-
-/* ==========================================================================
-   4. TIPOGRAFÍA Y ICONOGRAFÍA INTEGRADAS
-   ========================================================================== */
-h1, h2, h3, h4, h5, h6 {
-    color: var(--color-blue-primary);
-    margin-top: 0;
-    margin-bottom: 8px;
-    font-weight: 700;
-    letter-spacing: -0.02em;
+.card-header {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 14px;
+    margin-bottom: 14px;
 }
 
-h1 { font-size: 1.6rem; }
-h2 { font-size: 1.35rem; }
-h3 { font-size: 1.15rem; }
-
-p, li, span {
-    color: var(--color-text-main);
-    font-size: 0.95rem;
-}
-
-.text-muted {
-    color: var(--color-text-muted);
-    font-size: 0.875rem;
-    margin-bottom: 16px;
-    display: block;
-}
-
-/* Encabezado Principal */
-.container > h1, main > h1 {
-    background: linear-gradient(135deg, var(--color-blue-brand), var(--color-green-primary));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    border-bottom: 2px solid var(--color-border);
-    padding-bottom: 12px;
-    margin-bottom: 24px;
-}
-
-/* ICONOGRAFÍA AUTOMÁTICA VÍA SVG INLINE EN ENCABEZADOS DE SECCIÓN */
-/* Planificación de Tareas */
-h2:has(+ .text-muted):nth-of-type(1)::before, 
-section:nth-of-type(1) h2::before {
-    content: '';
-    display: inline-block;
-    width: 22px;
-    height: 22px;
-    background-color: var(--color-blue-brand);
-    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'%3E%3Cpath d='M9 11l3 3L22 4'/%3E%3Cpath d='M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11'/%3E%3C/svg%3E") no-repeat center / contain;
-    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'%3E%3Cpath d='M9 11l3 3L22 4'/%3E%3Cpath d='M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11'/%3E%3C/svg%3E") no-repeat center / contain;
-}
-
-/* Historial de Pastoreo */
-section:nth-of-type(2) h2::before {
-    content: '';
-    display: inline-block;
-    width: 22px;
-    height: 22px;
-    background-color: var(--color-green-primary);
-    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'%3E%3Cpath d='M12 8v4l3 3'/%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3C/svg%3E") no-repeat center / contain;
-    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'%3E%3Cpath d='M12 8v4l3 3'/%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3C/svg%3E") no-repeat center / contain;
-}
-
-/* Potreros / Terrenos */
-section:nth-of-type(3) h2::before {
-    content: '';
-    display: inline-block;
-    width: 22px;
-    height: 22px;
-    background-color: var(--color-green-primary);
-    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'%3E%3Cpath d='M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z'/%3E%3C/svg%3E") no-repeat center / contain;
-    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'%3E%3Cpath d='M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z'/%3E%3C/svg%3E") no-repeat center / contain;
+.card-icon {
+    width: 48px;
+    height: 48px;
+    background-color: var(--bg-color);
+    color: var(--primary-color);
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--relief-inset);
+    flex-shrink: 0;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 24px 24px;
 }
 
 /* ==========================================================================
-   5. BOTONES E INTERACTIVIDAD CON ICONOS LIMPIOS
+   4. ÍCONOS SVG EMBEBIDOS
    ========================================================================== */
-a {
-    color: var(--color-blue-brand);
-    text-decoration: none;
-    font-weight: 600;
-    transition: color var(--transition-fast);
+.card:nth-child(1) .card-icon {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%231b4332' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01' /%3E%3C/svg%3E");
 }
 
-a:hover {
-    color: var(--color-blue-hover);
-    text-decoration: underline;
+.card:nth-child(2) .card-icon {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%231b4332' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15' /%3E%3C/svg%3E");
 }
 
-/* Botón Genérico Primario (Azul) */
-a.btn-link, .card-action, button, input[type="submit"] {
+.card:nth-child(3) .card-icon {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%231b4332' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 002 2h1.5a2.5 2.5 0 002.5-2.5V11.4M9 20h6M12 4v16' /%3E%3C/svg%3E");
+}
+
+.card:nth-child(4) .card-icon {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%231b4332' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M3 6l3 18h12l3-18H3zm3 0V4a2 2 0 012-2h8a2 2 0 012 2v2M12 11v6m-3-3h6' /%3E%3C/svg%3E");
+}
+
+.card:nth-child(5) .card-icon {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%231b4332' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z' /%3E%3C/svg%3E");
+}
+
+.card:nth-child(6) .card-icon {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%231b4332' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z' /%3E%3C/svg%3E");
+}
+
+.card:nth-child(7) .card-icon {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%231b4332' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z' /%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M15 12a3 3 0 11-6 0 3 3 0 016 0z' /%3E%3C/svg%3E");
+}
+
+.card:nth-child(8) .card-icon {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%231b4332' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4' /%3E%3C/svg%3E");
+}
+
+/* ==========================================================================
+   5. TEXTOS Y BOTONES
+   ========================================================================== */
+.card-title {
+    font-size: var(--font-size-md);
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+.card-description {
+    font-size: var(--font-size-base);
+    color: var(--text-muted);
+    margin-bottom: 22px;
+    flex-grow: 1;
+}
+
+.card-action {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
-    background-color: var(--color-blue-brand);
-    color: var(--color-text-inverse) !important;
-    padding: 10px 18px;
-    font-size: 0.875rem;
+    width: 100%;
+    padding: 12px 18px;
+    background-color: var(--primary-color);
+    color: #ffffff;
+    text-decoration: none;
     font-weight: 600;
-    border-radius: var(--radius-sm);
-    text-decoration: none !important;
+    font-size: var(--font-size-base);
+    border-radius: var(--radius-md);
+    transition: var(--transition);
     border: none;
+    box-shadow: 3px 3px 8px rgba(0,0,0,0.15), -1px -1px 3px rgba(255,255,255,0.1);
     cursor: pointer;
-    box-shadow: var(--shadow-sm);
-    transition: all var(--transition-fast);
 }
 
-a.btn-link:hover, .card-action:hover, button:hover, input[type="submit"]:hover {
-    background-color: var(--color-blue-hover);
-    transform: translateY(-1px);
-    box-shadow: var(--shadow-md);
-}
-
-a.btn-link:active, .card-action:active, button:active {
-    transform: translateY(0);
-}
-
-/* Icono genérico de Flecha para botones de acción */
-a.btn-link::after, .card-action::after {
-    content: '';
-    display: inline-block;
-    width: 16px;
-    height: 16px;
-    background-color: currentColor;
-    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'%3E%3Cpath d='M5 12h14M12 5l7 7-7 7'/%3E%3C/svg%3E") no-repeat center / contain;
-    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'%3E%3Cpath d='M5 12h14M12 5l7 7-7 7'/%3E%3C/svg%3E") no-repeat center / contain;
-}
-
-/* VARIANTES DE BOTONES CON ICONOS ESPECÍFICOS */
-/* Botón Verde Campo (Historial / Registros) */
-.card-action-success, a.btn-success {
-    background-color: var(--color-green-primary);
-}
-.card-action-success:hover, a.btn-success:hover {
-    background-color: var(--color-green-hover);
-}
-
-/* Botón Azul Secundario / Gestionar */
-.card-action-warning, a.btn-warning {
-    background-color: #0284c7; /* Azul cielo técnico */
-}
-.card-action-warning:hover, a.btn-warning:hover {
-    background-color: #0369a1;
-}
-
-/* ==========================================================================
-   6. TABLAS DE DATOS LIMPIAS Y RESPONSIVAS
-   ========================================================================== */
-.table-responsive {
-    width: 100%;
-    overflow-x: auto;
-    margin-top: 16px;
-    margin-bottom: 16px;
-    background-color: #ffffff;
-    border-radius: var(--radius-sm);
-    border: 1px solid var(--color-border);
-    box-shadow: var(--shadow-sm);
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-    white-space: nowrap;
-}
-
-th {
-    background-color: var(--color-blue-light);
-    color: var(--color-blue-brand);
-    font-weight: 700;
-    text-transform: uppercase;
-    font-size: 0.75rem;
-    letter-spacing: 0.05em;
-    border-bottom: 2px solid var(--color-border);
-    padding: 12px 16px;
-    text-align: left;
-}
-
-td {
-    padding: 12px 16px;
-    font-size: 0.875rem;
-    border-bottom: 1px solid var(--color-border);
-    color: var(--color-text-main);
-}
-
-tr:nth-child(even) {
-    background-color: #f8fafc;
-}
-
-tr:hover td {
-    background-color: var(--color-surface-hover);
-}
-
-/* ==========================================================================
-   7. FORMULARIOS E INPUTS MODERNOS
-   ========================================================================== */
-input[type="text"], 
-input[type="number"], 
-input[type="date"], 
-select, 
-textarea {
-    width: 100% !important;
-    padding: 10px 14px;
-    font-size: 0.875rem;
-    color: var(--color-text-main);
-    background-color: #ffffff;
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-sm);
-    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
-    outline: none;
-}
-
-input:focus, select:focus, textarea:focus {
-    border-color: var(--color-border-focus);
-    box-shadow: var(--shadow-focus);
+.card-action:hover {
+    background-color: var(--primary-hover);
+    transform: scale(0.99);
 }
