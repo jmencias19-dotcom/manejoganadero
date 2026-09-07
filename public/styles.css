@@ -1,46 +1,54 @@
 /* ==========================================================================
-   1. DESIGN SYSTEM TOKENS (SISTEMA DE DISEÑO TEMA OSCURO - HATO LAGUNA BRAVA)
+   1. SYSTEM TOKENS & DESIGN VARIABLES
    ========================================================================== */
 :root {
-    /* Paleta Principal: Modo Oscuro UI */
-    --bg-color: #16181a;            /* Fondo general gris oscuro/casi negro */
-    --card-bg: #212529;             /* Fondo de las tarjetas contenedor */
-    --card-hover: #2b3036;          /* Estado hover de las tarjetas */
-    
-    /* Colores de Acento y Botones */
-    --primary-color: #22c55e;        /* Verde brillante de acción */
-    --primary-hover: #16a34a;        /* Verde intenso para hover */
-    --btn-text: #ffffff;             /* Texto dentro de los botones verdes */
-
-    /* Insignias de Íconos (Badges) */
-    --icon-bg: #fef08a;             /* Fondo amarillo pastel para la caja del ícono */
-
-    /* Tipografía y Bordes */
-    --text-main: #ffffff;            /* Texto principal (Títulos) */
-    --text-muted: #9ca3af;           /* Texto secundario y descripciones */
-    --border-color: #2e343b;         /* Borde sutil entre contenedores */
-
-    /* Escala Tipográfica Base (Desktop) */
+    --bg-color: #16181a;
+    --card-bg: #212529;
+    --card-hover: #2b3036;
+    --primary-color: #22c55e;
+    --primary-hover: #16a34a;
+    --btn-text: #ffffff;
+    --icon-bg: #fef08a;
+    --text-main: #ffffff;
+    --text-muted: #9ca3af;
+    --border-color: #2e343b;
     --font-size-base: 0.95rem;
     --font-size-md: 1.15rem;
     --font-size-xl: 1.85rem;
-
-    /* Radio de Bordes */
     --radius-md: 10px;
     --radius-lg: 18px;
-
-    /* Sistema de Sombras & Depth System */
     --relief-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
     --relief-hover: 0 8px 24px rgba(0, 0, 0, 0.6);
     --relief-inset: inset 0 1px 2px rgba(0, 0, 0, 0.2);
-
-    /* Animaciones */
     --transition: all 0.25s ease-in-out;
 }
 
 /* ==========================================================================
-   ESTILOS ADICIONALES PARA LA CABECERA (BANDERAS Y SILUETAS GANADERAS)
+   2. GLOBAL RESET & BASE LAYOUT
    ========================================================================== */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-main);
+    line-height: 1.5;
+    padding: 24px;
+    min-height: 100vh;
+}
+
+/* ==========================================================================
+   3. HEADER ARCHITECTURE & BRANDING
+   ========================================================================== */
+header {
+    text-align: center;
+    margin-bottom: 35px;
+}
+
 .header-container {
     display: flex;
     align-items: center;
@@ -49,6 +57,25 @@
     max-width: 1000px;
     margin: 0 auto;
     flex-wrap: nowrap;
+}
+
+.header-title-wrapper {
+    flex-grow: 1;
+    text-align: center;
+}
+
+header h1 {
+    color: var(--text-main);
+    font-size: var(--font-size-xl);
+    font-weight: 800;
+    letter-spacing: -0.5px;
+}
+
+header p {
+    color: var(--text-muted);
+    font-size: var(--font-size-base);
+    font-weight: 500;
+    margin-top: 4px;
 }
 
 .flag-container {
@@ -67,17 +94,12 @@
     object-fit: cover;
 }
 
-.header-title-wrapper {
-    flex-grow: 1;
-    text-align: center;
-}
-
 .animal-silhouettes-top {
     display: flex;
     justify-content: center;
     gap: 16px;
     margin-bottom: 6px;
-    color: var(--primary-color); /* Tono verde corporativo para las siluetas */
+    color: var(--primary-color);
 }
 
 .animal-icon {
@@ -86,63 +108,8 @@
     opacity: 0.9;
 }
 
-/* Ajustes responsivos para pantallas móviles */
-@media (max-width: 600px) {
-    .header-container {
-        flex-direction: column;
-        gap: 12px;
-    }
-
-    .flag-container {
-        width: 50px;
-        height: 34px;
-        order: 2; /* Sitúa las banderas debajo del título en pantallas muy angostas si se prefiere, o déjalas al lado usando display flex en row */
-    }
-
-    .header-title-wrapper {
-        order: 1;
-    }
-}
-
 /* ==========================================================================
-   2. REGLAS GLOBALES Y LAYOUT BASE
-   ========================================================================== */
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
-
-body {
-    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-    background-color: var(--bg-color);
-    color: var(--text-main);
-    line-height: 1.5;
-    padding: 24px;
-    min-height: 100vh;
-}
-
-header {
-    text-align: center;
-    margin-bottom: 35px;
-}
-
-header h1 {
-    color: var(--text-main);
-    font-size: var(--font-size-xl);
-    font-weight: 800;
-    letter-spacing: -0.5px;
-}
-
-header p {
-    color: var(--text-muted);
-    font-size: var(--font-size-base);
-    font-weight: 500;
-    margin-top: 4px;
-}
-
-/* ==========================================================================
-   3. GRID DE DASHBOARD Y TARJETAS ADAPTABLES (MOBILE-FIRST / RESPONSIVE)
+   4. DASHBOARD GRID & CARDS
    ========================================================================== */
 .dashboard-grid {
     display: grid;
@@ -179,7 +146,6 @@ header p {
     margin-bottom: 14px;
 }
 
-/* Caja del ícono optimizada */
 .card-icon {
     width: 48px;
     height: 48px;
@@ -195,44 +161,6 @@ header p {
     background-size: 26px 26px;
 }
 
-/* ==========================================================================
-   4. ÍCONOS SVG EMBEBIDOS POR MÓDULO
-   ========================================================================== */
-.card-tareas .card-icon {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23000000' stroke-width='2.2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4'/%3E%3C/svg%3E");
-}
-
-.card-pastereo .card-icon {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23000000' stroke-width='2.2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z'/%3E%3C/svg%3E");
-}
-
-.card-potreros .card-icon {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23000000' stroke-width='2.2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l5.447 2.724A1 1 0 0021 18.818V8.045a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7'/%3E%3C/svg%3E");
-}
-
-.card-pesajes .card-icon {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23000000' stroke-width='2.2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M3 6l9-4 9 4M3 6v10a2 2 0 002 2h14a2 2 0 002-2V6M3 6l9 6 9-6M12 12v6'/%3E%3C/svg%3E");
-}
-
-.card-sanitario .card-icon {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23000000' stroke-width='2.2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z'/%3E%3C/svg%3E");
-}
-
-.card-eventos .card-icon {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23000000' stroke-width='2.2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z'/%3E%3C/svg%3E");
-}
-
-.card-maquinaria .card-icon {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23000000' stroke-width='2.2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M3 4a1 1 0 011-1h8a1 1 0 011 1v16a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM13 8h2a2 2 0 012 2v4a2 2 0 002 2h0a2 2 0 002-2V9l-3-3M6 7h4v4H6V7z'/%3E%3C/svg%3E");
-}
-
-.card-logistica .card-icon {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23000000' stroke-width='2.2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M12 21a9 9 0 100-18 9 9 0 000 18zM7 8v8M17 8v8M7 12h10'/%3E%3C/svg%3E");
-}
-
-/* ==========================================================================
-   5. TIPOGRAFÍA Y BOTONES TÁCTILES
-   ========================================================================== */
 .card-title {
     font-size: var(--font-size-md);
     font-weight: 700;
@@ -277,55 +205,42 @@ header p {
 }
 
 /* ==========================================================================
-   6. CABECERA (BANDERAS Y SILUETAS GANADERAS)
+   5. MODULE ICON DEFINITIONS (SVG)
    ========================================================================== */
-.header-container {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    max-width: 1000px;
-    margin: 0 auto;
-    flex-wrap: nowrap;
+.card-tareas .card-icon {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23000000' stroke-width='2.2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4'/%3E%3C/svg%3E");
 }
 
-.flag-container {
-    width: 60px;
-    height: 40px;
-    border-radius: 6px;
-    overflow: hidden;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-    flex-shrink: 0;
-    border: 1px solid var(--border-color);
+.card-pastereo .card-icon {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23000000' stroke-width='2.2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z'/%3E%3C/svg%3E");
 }
 
-.flag-icon {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+.card-potreros .card-icon {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23000000' stroke-width='2.2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l5.447 2.724A1 1 0 0021 18.818V8.045a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7'/%3E%3C/svg%3E");
 }
 
-.header-title-wrapper {
-    flex-grow: 1;
-    text-align: center;
+.card-pesajes .card-icon {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23000000' stroke-width='2.2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M3 6l9-4 9 4M3 6v10a2 2 0 002 2h14a2 2 0 002-2V6M3 6l9 6 9-6M12 12v6'/%3E%3C/svg%3E");
 }
 
-.animal-silhouettes-top {
-    display: flex;
-    justify-content: center;
-    gap: 16px;
-    margin-bottom: 6px;
-    color: var(--primary-color);
+.card-sanitario .card-icon {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23000000' stroke-width='2.2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z'/%3E%3C/svg%3E");
 }
 
-.animal-icon {
-    width: 28px;
-    height: 28px;
-    opacity: 0.9;
+.card-eventos .card-icon {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23000000' stroke-width='2.2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z'/%3E%3C/svg%3E");
+}
+
+.card-maquinaria .card-icon {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23000000' stroke-width='2.2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M3 4a1 1 0 011-1h8a1 1 0 011 1v16a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM13 8h2a2 2 0 012 2v4a2 2 0 002 2h0a2 2 0 002-2V9l-3-3M6 7h4v4H6V7z'/%3E%3C/svg%3E");
+}
+
+.card-logistica .card-icon {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23000000' stroke-width='2.2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M12 21a9 9 0 100-18 9 9 0 000 18zM7 8v8M17 8v8M7 12h10'/%3E%3C/svg%3E");
 }
 
 /* ==========================================================================
-   7. ESTRUCTURA DE TAREAS Y REGISTROS (CORREGIDA Y ADAPTADA AL TEMA OSCURO)
+   6. FORMS & TABLES COMPONENTS
    ========================================================================== */
 .miniapp-container, 
 .container-principal, 
@@ -339,15 +254,6 @@ header p {
     gap: 20px;
     padding: 4px;
     background-color: var(--bg-color);
-}
-
-@media (min-width: 768px) {
-    .miniapp-container, 
-    .container-principal, 
-    .form-table-layout {
-        flex-direction: row;
-        align-items: flex-start;
-    }
 }
 
 .task-form-card {
@@ -439,20 +345,14 @@ th, .data-table th {
 }
 
 /* ==========================================================================
-   8. MEDIA QUERIES GENERALES
+   7. RESPONSIVE MEDIA QUERIES
    ========================================================================== */
-@media (max-width: 480px) {
-    body {
-        padding: 12px;
-    }
-
-    header h1 {
-        font-size: 1.5rem;
-    }
-
-    .dashboard-grid {
-        grid-template-columns: 1fr;
-        gap: 16px;
+@media (min-width: 768px) {
+    .miniapp-container, 
+    .container-principal, 
+    .form-table-layout {
+        flex-direction: row;
+        align-items: flex-start;
     }
 }
 
@@ -470,5 +370,20 @@ th, .data-table th {
 
     .header-title-wrapper {
         order: 1;
+    }
+}
+
+@media (max-width: 480px) {
+    body {
+        padding: 12px;
+    }
+
+    header h1 {
+        font-size: 1.5rem;
+    }
+
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
     }
 }
