@@ -1,6 +1,6 @@
 /* ==========================================================================
    VARIABLES GLOBALES Y RESET - SISTEMA DE GESTIÓN GANADERA (HATO LAGUNA BRAVA)
-   Archivo: variables.css (v1.3 - Móvil Estricto)
+   Archivo: variables.css (v1.4 - Integrado y Responsivo)
    ========================================================================== */
 
 :root {
@@ -8,7 +8,7 @@
     --primary-color: #1b4332;       /* Verde Bosque Profundo / Corporativo */
     --primary-hover: #2d6a4f;       /* Verde Intermedio (Estado Hover) */
     --bg-color: #f4f6f8;            /* Gris claro mate (optimizado para lecturas en campo) */
-    --card-bg: #ffffff;              /* Blanco puro para tarjetas */
+    --card-bg: #ffffff;             /* Blanco puro para tarjetas */
     --text-main: #212529;           /* Gris oscuro de alto contraste */
     --text-muted: #555555;          /* Gris medio para descripciones */
     --border-color: #e2e8f0;        /* Gris tenue para delimitación de bordes */
@@ -31,42 +31,44 @@
     --font-size-xl: 1.8rem;         /* Título principal del dashboard */
 }
 
-/* Reset Absoluto para Prevenir Desbordamiento Lateral */
+/* 1. RESET Y CONTROL DE OVERFLOW GLOBAL */
+*, *::before, *::after {
+    box-sizing: border-box;
+    min-width: 0; /* Previene desbordamiento interno en layouts Flexbox/Grid */
+}
+
 html, body {
-    width: 100% !important;
-    max-width: 100% !important;
-    overflow-x: hidden !important;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
     margin: 0;
     padding: 0;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-main);
 }
 
-*, *::before, *::after {
-    box-sizing: border-box !important;
-}
-
-/* Contenedor Principal (Card) */
+/* 2. CONTENEDORES PRINCIPALES Y TARJETAS */
 .planificacion-tareas-card {
     display: flex;
     flex-direction: column;
     gap: 1.25rem;
-    width: 100% !important;
-    max-width: 100% !important;
+    width: 100%;
+    max-width: 100%;
     padding: 1.25rem;
     background-color: var(--card-bg);
     border-radius: var(--radius-lg);
     box-shadow: var(--relief-shadow);
 }
 
-/* Grupos de Campos e Insumos de Entrada */
 .tarea-field-group {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
-    width: 100% !important;
-    max-width: 100% !important;
+    width: 100%;
 }
 
-/* Control Estricto de Inputs, Selects y Textareas */
+/* 3. CONTROLES DE FORMULARIO (OPTIMIZADOS PARA OPERACIÓN EN CAMPO) */
 .tarea-field-group input,
 .tarea-field-group select,
 .tarea-field-group textarea,
@@ -77,11 +79,10 @@ input[type="number"],
 select,
 textarea {
     display: block;
-    width: 100% !important;
-    max-width: 100% !important;
-    min-height: 48px; /* Tamaño táctil estándar para operaciones de campo */
+    width: 100%;
+    min-height: 48px; /* Dimensión táctil mínima recomendada */
     padding: 0.6rem 0.85rem;
-    font-size: 16px !important; /* Evita el auto-zoom molesto en iOS/Safari y Android */
+    font-size: 16px; /* 16px exactos: evita auto-zoom en Safari/Chrome móvil */
     color: var(--text-main);
     background-color: var(--bg-color);
     border: 1px solid var(--border-color);
@@ -95,54 +96,60 @@ textarea {
 
 .tarea-field-group input:focus,
 .tarea-field-group select:focus,
-.tarea-field-group textarea:focus {
+.tarea-field-group textarea:focus,
+.form-control:focus {
     outline: none;
     border-color: var(--primary-color);
     box-shadow: 0 0 0 3px rgba(27, 67, 50, 0.15);
 }
 
-/* Contenedor con Scroll Lateral Seguro para Tablas */
+/* 4. CONTENEDOR RESPONSIVO Y SCROLL LATERAL PARA TABLAS */
 .table-wrapper {
-    width: 100% !important;
-    max-width: 100% !important;
-    overflow-x: auto !important;
-    -webkit-overflow-scrolling: touch;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch; /* Scroll suave en dispositivos iOS */
     margin-top: 0.5rem;
     border: 1px solid var(--border-color);
     border-radius: var(--radius-md);
+    background-color: var(--card-bg);
 }
 
 .table-wrapper table {
     width: 100%;
-    min-width: 550px; /* Protege la tabla de colapsar texto */
+    min-width: 600px; /* Ancho mínimo para forzar el scroll horizontal en pantallas pequeñas */
     border-collapse: collapse;
 }
 
 .table-wrapper th, 
 .table-wrapper td {
-    padding: 0.75rem 0.5rem;
+    padding: 0.75rem 0.75rem;
     text-align: left;
     font-size: 0.875rem;
     border-bottom: 1px solid var(--border-color);
+    white-space: nowrap; /* Mantiene la integridad visual de las filas */
 }
 
-/* ==========================================================================
-   REGRAS DE ADAPTACIÓN PARA SMARTPHONES Y TABLETS
-   ========================================================================== */
+.table-wrapper th {
+    background-color: #f8fafc;
+    font-weight: 600;
+    color: var(--text-main);
+}
 
+/* 5. MEDIA QUERIES (DISPOSITIVOS MÓVILES Y TABLETS) */
 @media screen and (max-width: 768px) {
-    .planificacion-tareas-card {
-        padding: 0.85rem !important;
-        border-radius: var(--radius-md);
-    }
-
     :root {
         --font-size-xl: 1.35rem;
         --font-size-md: 1.1rem;
         --font-size-base: 0.9rem;
     }
 
-    /* Colapsa cualquier estructura multi-columna a 1 sola columna vertical */
+    .planificacion-tareas-card {
+        padding: 0.85rem;
+        border-radius: var(--radius-md);
+    }
+
+    /* Colapsa grillas y filas de múltiples columnas a flujo vertical de 1 columna */
     .form-row,
     .grid-container,
     .row,
@@ -159,16 +166,17 @@ textarea {
         gap: 0.85rem !important;
     }
 
-    /* Botones adaptados a ancho completo táctil */
+    /* Botones táctiles de ancho completo */
     .btn,
     button[type="submit"],
     .btn-action {
-        width: 100% !important;
+        width: 100%;
         min-height: 48px;
-        display: flex;
+        display: inline-flex;
         align-items: center;
         justify-content: center;
         font-size: 1rem;
         font-weight: 600;
+        border-radius: var(--radius-md);
     }
 }
