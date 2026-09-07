@@ -1,0 +1,203 @@
+/* ==========================================================================
+   1. DESIGN SYSTEM TOKENS (SISTEMA DE DISEÑO TEMA OSCURO - HATO LAGUNA BRAVA)
+   ========================================================================== */
+:root {
+    /* Paleta Principal: Modo Oscuro UI */
+    --bg-color: #16181a;            /* Fondo general gris oscuro/casi negro */
+    --card-bg: #212529;             /* Fondo de las tarjetas contenedor */
+    --card-hover: #2b3036;          /* Estado hover de las tarjetas */
+    
+    /* Colores de Acento y Botones */
+    --primary-color: #22c55e;        /* Verde brillante de acción */
+    --primary-hover: #16a34a;        /* Verde intenso para hover */
+    --btn-text: #ffffff;             /* Texto dentro de los botones verdes */
+
+    /* Insignias de Íconos (Badges) */
+    --icon-bg: #fef08a;             /* Fondo amarillo pastel para la caja del ícono */
+
+    /* Tipografía y Bordes */
+    --text-main: #ffffff;            /* Texto principal (Títulos) */
+    --text-muted: #9ca3af;           /* Texto secundario y descripciones */
+    --border-color: #2e343b;         /* Borde sutil entre contenedores */
+
+    /* Escala Tipográfica Base (Desktop) */
+    --font-size-base: 0.95rem;
+    --font-size-md: 1.15rem;
+    --font-size-xl: 1.85rem;
+
+    /* Radio de Bordes */
+    --radius-md: 10px;
+    --radius-lg: 18px;
+
+    /* Sistema de Sombras & Depth System */
+    --relief-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+    --relief-hover: 0 8px 24px rgba(0, 0, 0, 0.6);
+    --relief-inset: inset 0 1px 2px rgba(0, 0, 0, 0.2);
+
+    /* Animaciones */
+    --transition: all 0.25s ease-in-out;
+}
+
+/* ==========================================================================
+   2. REGLAS GLOBALES Y LAYOUT BASE
+   ========================================================================== */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-main);
+    line-height: 1.5;
+    padding: 24px;
+    min-height: 100vh;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 35px;
+}
+
+header h1 {
+    color: var(--text-main);
+    font-size: var(--font-size-xl);
+    font-weight: 800;
+    letter-spacing: -0.5px;
+}
+
+header p {
+    color: var(--text-muted);
+    font-size: var(--font-size-base);
+    font-weight: 500;
+    margin-top: 4px;
+}
+
+/* ==========================================================================
+   3. CONTENEDOR PRINCIPAL Y SECCIONES (MÓDULO DE TAREAS)
+   ========================================================================== */
+.container-principal, 
+.tareas-container, 
+.miniapp-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 1280px;
+    margin: 0 auto;
+    gap: 24px; /* Espaciado fluido y limpio entre el formulario y la tabla de tareas */
+    box-sizing: border-box;
+}
+
+/* Sección de Tarjetas o Paneles internos de Tareas */
+.card, .form-section, .table-section {
+    background-color: var(--card-bg);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    border: 1px solid var(--border-color);
+    box-shadow: var(--relief-shadow);
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Contenedor responsivo para las tablas de tareas (evita desbordes horizontales) */
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin-top: 12px;
+}
+
+table {
+    width: 100%;
+    min-width: 600px; /* Evita que las columnas de acciones/estado se compriman de más */
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 12px 14px;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+    font-size: var(--font-size-base);
+}
+
+th {
+    color: var(--text-muted);
+    font-weight: 600;
+}
+
+/* ==========================================================================
+   4. FORMULARIOS E INPUTS TÁCTILES
+   ========================================================================== */
+input[type="text"],
+input[type="number"],
+input[type="date"],
+select,
+textarea {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    padding: 12px 14px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-color);
+    background-color: var(--bg-color);
+    color: var(--text-main);
+    font-size: var(--font-size-base);
+    outline: none;
+    transition: var(--transition);
+}
+
+input:focus, select:focus, textarea:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.2);
+}
+
+/* Botones de acción ergonómicos */
+button, .btn-accion, .btn-eliminar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 10px 18px;
+    background-color: var(--primary-color);
+    color: var(--btn-text);
+    font-weight: 600;
+    font-size: var(--font-size-base);
+    border-radius: var(--radius-md);
+    border: none;
+    cursor: pointer;
+    transition: var(--transition);
+    -webkit-tap-highlight-color: transparent;
+}
+
+button:hover, .btn-accion:hover {
+    background-color: var(--primary-hover);
+}
+
+button:active {
+    transform: scale(0.98);
+}
+
+/* ==========================================================================
+   5. MEDIA QUERIES PARA ADAPTABILIDAD MÓVIL
+   ========================================================================== */
+@media (max-width: 480px) {
+    body {
+        padding: 12px;
+    }
+
+    .container-principal, 
+    .tareas-container, 
+    .miniapp-container {
+        gap: 16px; /* Gap más compacto en pantallas pequeñas de teléfonos */
+    }
+
+    .card, .form-section, .table-section {
+        padding: 16px;
+    }
+
+    header h1 {
+        font-size: 1.5rem;
+    }
+}
