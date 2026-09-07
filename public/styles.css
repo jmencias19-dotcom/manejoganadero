@@ -10,11 +10,11 @@
     /* Colores de Acento y Botones */
     --primary-color: #22c55e;        /* Verde brillante de acción */
     --primary-hover: #16a34a;        /* Verde intenso para hover */
-    --btn-text: #ffffff;             /* Texto dentro de los botones verdes */
+    --btn-text: #ffffff;              /* Texto dentro de los botones verdes */
 
     /* Insignias de Íconos (Badges) */
     --icon-bg: #fef08a;              /* Fondo amarillo pastel para la caja del ícono */
-    --icon-stroke: %23ca8a04;        /* Amarillo/marrón técnico para el stroke del SVG */
+    --icon-color: #000000;           /* Color negro para el ícono SVG */
 
     /* Tipografía y Bordes */
     --text-main: #ffffff;            /* Texto principal (Títulos) */
@@ -26,7 +26,7 @@
     --font-size-md: 1.15rem;
     --font-size-xl: 1.85rem;
 
-    /* Radio de Bordes (Adaptado al diseño redondeado de la tablet) */
+    /* Radio de Bordes */
     --radius-md: 10px;
     --radius-lg: 18px;
 
@@ -113,6 +113,7 @@ header p {
     margin-bottom: 14px;
 }
 
+/* Contenedor del ícono (Caja amarilla) */
 .card-icon {
     width: 48px;
     height: 48px;
@@ -123,43 +124,61 @@ header p {
     justify-content: center;
     box-shadow: var(--relief-inset);
     flex-shrink: 0;
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size: 26px 26px;
+    position: relative;
+}
+
+/* Elemento interno para renderizado vectorial del SVG en negro */
+.card-icon::before {
+    content: '';
+    width: 26px;
+    height: 26px;
+    background-color: var(--icon-color);
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
+    -webkit-mask-size: contain;
+    mask-size: contain;
 }
 
 /* ==========================================================================
-   4. ÍCONOS SVG EMBEBIDOS ESPECÍFICOS POR MÓDULO (BASE64 NEGRO GARANTIZADO)
+   4. MÁSCARAS VECTORIALES SVG POR MÓDULO (RENDERIZADO NEGRO GARANTIZADO)
    ========================================================================== */
 
-/* 1. Planificación de Tareas (Lista de verificación / Checklist) */
-.card-tareas .card-icon {
-    background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGZpbGw9Im5vbmUiIHZpZXdCb3g9IjAgMCAyNCAyNCIgc3Ryb2tlPSJibGFjayIgc3Ryb2tlLXdpZHRoPSIyLjI3Ij48cGF0aCBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGQ9Ik05IDVIN2EyIDIgMCAwMC0yIDJ2MTJhMiAyIDAgMDAyIDJoMTBhMiAyIDAgMDAyLTJWN2EyIDIgMCAwMC0yLTJoLTJNOSA1YTIgMiAwIDAwMiAyaDJhMiAyIDAgMDAyLTJNOSA1YTIgMiAwIDAxMi0yaDJhMiAyIDAgMDEyIDJtLTYgOWwyIDIgNC00Ii8+PC9zdmc+");
+/* 1. Planificación de Tareas */
+.card-tareas .card-icon::before {
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='black' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4'/%3E%3C/svg%3E");
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='black' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4'/%3E%3C/svg%3E");
 }
 
-/* 2. Historial de Pastoreo (Reloj / Tiempo / Rotación) */
-.card-pastereo .card-icon {
-    background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGZpbGw9Im5vbmUiIHZpZXdCb3g9IjAgMCAyNCAyNCIgc3Ryb2tlPSJibGFjayIgc3Ryb2tlLXdpZHRoPSIyLjI3Ij48cGF0aCBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGQ9Ik0xMiA4djRsMyAzbTYtM2E5IDkgMCAxMTE4IDAgOSA5IDAgMDEtMTggMHoiLz48L3N2Zz4=");
+/* 2. Historial de Pastoreo */
+.card-pastereo .card-icon::before {
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='black' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z'/%3E%3C/svg%3E");
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='black' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z'/%3E%3C/svg%3E");
 }
 
-/* 3. Potreros (Mapa / Delimitación de área) */
-.card-potreros .card-icon {
-    background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGZpbGw9Im5vbmUiIHZpZXdCb3g9IjAgMCAyNCAyNCIgc3Ryb2tlPSJibGFjayIgc3Ryb2tlLXdpZHRoPSIyLjI3Ij48cGF0aCBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGQ9Ik05IDIwbC01LjQ0Ny0yLjcyNEExIDEgMCAwMTMgMTYuMzgyVjUuNjE4YTEgMSAwIDAxMS40NDctLjg5NEw5IDdtMCAxM2w2LTNtLTYgM1Y3bTYgMTBsNS40NDcgMi43MjRBMSAxIDAgMDAyMSAxOC44MThWOC4wNDVhMSAxIDAgMDAtLjU1My0uODk0TDE1IDRtMCAxM1Y0bTAgMEw5IDciLz48L3N2Zz4=");
+/* 3. Potreros */
+.card-potreros .card-icon::before {
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='black' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l5.447 2.724A1 1 0 0021 18.818V8.045a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7'/%3E%3C/svg%3E");
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='black' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l5.447 2.724A1 1 0 0021 18.818V8.045a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7'/%3E%3C/svg%3E");
 }
 
-/* 4. Dinámica de Pesajes (Báscula Ganadera) */
-.card-pesajes .card-icon {
-    background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGZpbGw9Im5vbmUiIHZpZXdCb3g9IjAgMCAyNCAyNCIgc3Ryb2tlPSJibGFjayIgc3Ryb2tlLXdpZHRoPSIyLjI3Ij48cGF0aCBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGQ9Ik0zIDZsOS00IDkgNE0zIDZ2MTBhMiAyIDAgMDAyIDJoMTRhMiAyIDAgMDAyLTJWNk0zIDZsOSA2IDktNk0xMiAxMnY2Ii8+PC9zdmc+");
+/* 4. Dinámica de Pesajes */
+.card-pesajes .card-icon::before {
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='black' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M3 6l9-4 9 4M3 6v10a2 2 0 002 2h14a2 2 0 002-2V6M3 6l9 6 9-6M12 12v6'/%3E%3C/svg%3E");
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='black' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M3 6l9-4 9 4M3 6v10a2 2 0 002 2h14a2 2 0 002-2V6M3 6l9 6 9-6M12 12v6'/%3E%3C/svg%3E");
 }
 
-/* 5. Control Sanitario (Escudo de Protección / Salud) */
-.card-sanitario .card-icon {
-    background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGZpbGw9Im5vbmUiIHZpZXdCb3g9IjAgMCAyNCAyNCIgc3Ryb2tlPSJibGFjayIgc3Ryb2tlLXdpZHRoPSIyLjI3Ij48cGF0aCBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGQ9Ik05IDEybDIgMiA0LTRtNS42MTgtNC4wMTZBMTEuOTU1IDExLjk1NSAwIDAxMTIgMi45NDRhMTEuOTU1IDExLjk1NSAwIDAxLTguNjE4IDMuMDQwQTEyLjAyIDEyLjAyIDAgMDAzIDljMCA1LjU5MSAzLjgyNCAxMC4yOSA5IDExLjYyMiA1LjE3Ni0xLjMzMiA5TY4LjAzIDktMTEuNjIyIDAtMS4wNDItLjEzMy0yLjA1Mi0uMzgyLTMuMDE2eiIvPjwvc3ZnPg==");
+/* 5. Control Sanitario */
+.card-sanitario .card-icon::before {
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='black' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z'/%3E%3C/svg%3E");
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='black' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z'/%3E%3C/svg%3E");
 }
 
-/* 6. Eventos (Calendario / Programación) */
-.card-eventos .card-icon {
-    background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGZpbGw9Im5vbmUiIHZpZXdCb3g9IjAgMCAyNCAyNCIgc3Ryb2tlPSJibGFjayIgc3Ryb2tlLXdpZHRoPSIyLjI3Ij48cGF0aCBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGQ9Ik04IDdWM204IDRWM20tOSA4aDEwTTUgMjFoMTRhMiAyIDAgMDAyLTJWN2EyIDIgMCAwMC0yLTJINTVhMiAyIDAgMDAtMiAydjEyYTIgMiAwIDAwMiAyeiIvPjwvc3ZnPg==");
+/* 6. Eventos */
+.card-eventos .card-icon::before {
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='black' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z'/%3E%3C/svg%3E");
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='black' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z'/%3E%3C/svg%3E");
 }
 
 /* ==========================================================================
