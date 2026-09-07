@@ -46,7 +46,7 @@
         <input type="text" id="observaciones" placeholder="Detalles adicionales">
       </div>
       <div class="full">
-        <button type="submit">Guardar Tarea</button>
+        <button type="submit" id="btnSubmit">Guardar Tarea</button>
       </div>
     </form>
 
@@ -78,7 +78,9 @@
       updateDoc, 
       deleteDoc, 
       doc, 
-      onSnapshot 
+      onSnapshot,
+      enableIndexedDbPersistence,
+      serverTimestamp
     } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     // Configuración de tu proyecto Firebase
@@ -97,29 +99,41 @@
     const db = getFirestore(app);
     const tasksCollection = collection(db, "tareas");
 
+    // Habilitar Persistencia Offline para Celular y PC
+    enableIndexedDbPersistence(db).catch((err) => {
+      if (err.code === 'failed-precondition') {
+        console.warn('Múltiples pestañas abiertas, la persistencia se ejecutará en una sola.');
+      } else if (err.code === 'unimplemented') {
+        console.warn('El navegador no soporta persistencia offline.');
+      }
+    });
+
     // Referencias al DOM
     const taskForm = document.getElementById('taskForm');
     const taskTableBody = document.getElementById('taskTableBody');
     const statusText = document.getElementById('statusText');
+    const btnSubmit = document.getElementById('btnSubmit');
 
-    function setSyncStatus(isSyncing, isError = false) {
+    function setSyncStatus(isSyncing, isError = false, errorMessage = "") {
       if (isError) {
-        statusText.textContent = "Error de Conexión con la base de datos";
+        statusText.textContent = errorMessage || "Error de Conexión o Permisos en Firestore";
         statusText.style.color = "red";
       } else if (isSyncing) {
-        statusText.textContent = "Sincronizando...";
+        statusText.textContent = "Sincronizando con la Nube...";
         statusText.style.color = "orange";
       } else {
-        statusText.textContent = "Conectado a la Nube";
+        statusText.textContent = "Conectado a la Nube (Sincronizado)";
         statusText.style.color = "green";
       }
     }
 
     // Escuchar cambios en tiempo real
-    onSnapshot(tasksCollection, (snapshot) => {
+    onSnapshot(tasksCollection, { includeMetadataChanges: true }, (snapshot) => {
+      const hasPendingWrites = snapshot.metadata.hasPendingWrites;
+      
       if (snapshot.empty) {
         taskTableBody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No hay tareas registradas.</td></tr>';
-        setSyncStatus(false);
+        setSyncStatus(hasPendingWrites);
         return;
       }
 
@@ -147,29 +161,36 @@
         `;
         taskTableBody.appendChild(tr);
       });
-      setSyncStatus(false);
+
+      setSyncStatus(hasPendingWrites);
     }, (error) => {
       console.error("Error en snapshot:", error);
-      setSyncStatus(false, true);
+      setSyncStatus(false, true, "Error de Permisos: Verifica las Reglas de Firestore.");
     });
 
     // Registro de nueva labor desde el formulario
     taskForm.addEventListener('submit', async (e) => {
       e.preventDefault();
+      btnSubmit.disabled = true;
       setSyncStatus(true);
+
+      const nuevaTarea = {
+        fecha: document.getElementById('fecha').value,
+        labor: document.getElementById('labor').value,
+        personal: document.getElementById('personal').value,
+        observaciones: document.getElementById('observaciones').value,
+        estado: 'Pendiente',
+        creadoEn: serverTimestamp()
+      };
+
       try {
-        await addDoc(tasksCollection, {
-          fecha: document.getElementById('fecha').value,
-          labor: document.getElementById('labor').value,
-          personal: document.getElementById('personal').value,
-          observaciones: document.getElementById('observaciones').value,
-          estado: 'Pendiente',
-          creadoEn: new Date().toISOString()
-        });
+        await addDoc(tasksCollection, nuevaTarea);
         taskForm.reset();
       } catch (err) {
         console.error("Error al guardar:", err);
-        setSyncStatus(false, true);
+        setSyncStatus(false, true, "Error al guardar en la nube.");
+      } finally {
+        btnSubmit.disabled = false;
       }
     });
 
@@ -177,10 +198,11 @@
     window.updateTaskStatus = async (id, newStatus) => {
       setSyncStatus(true);
       try {
-        await updateDoc(doc(db, "tareas", id), { estado: newStatus });
+        const taskRef = doc(db, "tareas", id);
+        await updateDoc(taskRef, { estado: newStatus });
       } catch (err) {
         console.error("Error al actualizar estado:", err);
-        setSyncStatus(false, true);
+        setSyncStatus(false, true, "Error al actualizar estado.");
       }
     };
 
@@ -188,10 +210,11 @@
       if (confirm('¿Deseas eliminar esta labor de la base de datos?')) {
         setSyncStatus(true);
         try {
-          await deleteDoc(doc(db, "tareas", id));
+          const taskRef = doc(db, "tareas", id);
+          await deleteDoc(taskRef);
         } catch (err) {
           console.error("Error al eliminar:", err);
-          setSyncStatus(false, true);
+          setSyncStatus(false, true, "Error al eliminar la tarea.");
         }
       }
     };
