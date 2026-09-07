@@ -30,3 +30,20 @@
     --font-size-md: 1.25rem;        /* Títulos de módulos/tarjetas */
     --font-size-xl: 1.8rem;         /* Título principal del dashboard */
 }
+.planificacion-tareas-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.tarea-field-group {
+  width: 100%;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+  max-width: 100%;
+}
+
+* {
+  box-sizing: border-box;
+}
