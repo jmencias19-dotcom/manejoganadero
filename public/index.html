@@ -8,7 +8,6 @@
     <!-- Archivos de CSS externos -->
     <link rel="stylesheet" href="variables.css?v=1.1">
     <link rel="stylesheet" href="styles.css">
-
 </head>
 <body>
 
@@ -22,7 +21,6 @@
                     <rect width="900" height="200" fill="#fcdd09"/>
                     <!-- Estrellas simplificadas para el diseño responsivo -->
                     <g fill="#ffffff" transform="translate(450, 300) scale(0.7)">
-                        <!-- Representación central estilizada de las estrellas del tricolor -->
                         <circle cx="-120" cy="-30" r="12"/><circle cx="-80" cy="-50" r="12"/><circle cx="-40" cy="-60" r="12"/><circle cx="0" cy="-65" r="12"/><circle cx="40" cy="-60" r="12"/><circle cx="80" cy="-50" r="12"/><circle cx="120" cy="-30" r="12"/>
                     </g>
                 </svg>
@@ -40,11 +38,28 @@
                         <path d="M2 10c0-2 2-4 5-4h1V5h2v1h6V5h2v1h1c3 0 5 2 5 4v3h-2v4h-2v-2H6v2H4v-4H2v-3zm5-2c-1.1 0-2 .9-2 2v1h2V8h-2zm10 0v3h2V9c0-1.1-.9-2-2-2z"/>
                     </svg>
                 </div>
+                <h1>Hato Laguna Brava</h1>
+                <p>Sistema Integral de Gestión Ganadera</p>
+            </div>
+        </div>
+    </header>
 
-        <!-- Módulo 1 -->
+    <!-- Contenedor principal de tarjetas en Grid -->
+    <main class="dashboard-grid">
+
+        <!-- Módulo 1: Tareas -->
         <article class="card card-tareas">
+            <div>
+                <header class="card-header">
+                    <div class="card-icon" aria-hidden="true"></div>
+                    <h2 class="card-title">Gestión de Tareas</h2>
+                </header>
+                <p class="card-description">Planificación y seguimiento de labores diarias en el hato, asignación de responsables y estatus de ejecución operativa.</p>
+            </div>
+            <a href="tareas.html" class="card-action" aria-label="Gestionar Tareas">Ver Tareas</a>
+        </article>
 
-        <!-- Módulo 2 -->
+        <!-- Módulo 2: Historial de Pastoreo -->
         <article class="card card-pastereo">
             <div>
                 <header class="card-header">
@@ -56,7 +71,7 @@
             <a href="pastoreo.html" class="card-action" aria-label="Ver Historial de Pastoreo">Ver Historial</a>
         </article>
 
-        <!-- Módulo 3 -->
+        <!-- Módulo 3: Potreros -->
         <article class="card card-potreros">
             <div>
                 <header class="card-header">
@@ -68,7 +83,7 @@
             <a href="potreros.html" class="card-action" aria-label="Gestionar Potreros">Gestionar Potreros</a>
         </article>
 
-        <!-- Módulo 4 -->
+        <!-- Módulo 4: Dinámica de Pesajes -->
         <article class="card card-pesajes">
             <div>
                 <header class="card-header">
@@ -80,7 +95,7 @@
             <a href="pesajes.html" class="card-action" aria-label="Registrar Pesajes">Registrar Pesajes</a>
         </article>
 
-        <!-- Módulo 5 -->
+        <!-- Módulo 5: Control Sanitario -->
         <article class="card card-sanitario">
             <div>
                 <header class="card-header">
@@ -92,7 +107,7 @@
             <a href="sanidad.html" class="card-action" aria-label="Ver Control Sanitario">Ver Sanidad</a>
         </article>
 
-        <!-- Módulo 6 -->
+        <!-- Módulo 6: Eventos -->
         <article class="card card-eventos">
             <div>
                 <header class="card-header">
@@ -101,7 +116,7 @@
                 </header>
                 <p class="card-description">Novedades zootécnicas en tiempo real: partos/nacimientos, bajas por mortalidad, ventas, compras y traslados internos de lotes.</p>
             </div>
-            <a href="eventos.html" class="card-action" aria-label="Registrogistrar Evento Zootécnico">Registrar Evento</a>
+            <a href="eventos.html" class="card-action" aria-label="Registrar Evento Zootécnico">Registrar Evento</a>
         </article>
 
         <!-- Módulo 7: Combustible y Maquinarias -->
