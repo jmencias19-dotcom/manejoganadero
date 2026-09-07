@@ -1,0 +1,32 @@
+/* ==========================================================================
+   VARIABLES GLOBALES - SISTEMA DE GESTIÓN GANADERA (HATO LAGUNA BRAVA)
+   Archivo: variables.css (v1.1)
+   ========================================================================== */
+
+:root {
+    /* Paleta Típica Agro-Industrial Tropical */
+    --primary-color: #1b4332;       /* Verde Bosque Profundo / Corporativo */
+    --primary-hover: #2d6a4f;       /* Verde Intermedio (Estado Hover) */
+    --bg-color: #f4f6f8;            /* Gris claro mate (optimizado para lecturas en campo) */
+    --card-bg: #ffffff;             /* Blanco puro para tarjetas */
+    --text-main: #212529;           /* Gris oscuro de alto contraste */
+    --text-muted: #555555;          /* Gris medio para descripciones */
+    --border-color: #e2e8f0;        /* Gris tenue para delimitación de bordes */
+
+    /* Sombras y Efectos de Relieve (Neuromorfismo Ligero) */
+    --relief-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
+    --relief-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    --relief-inset: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
+
+    /* Bordes y Curvaturas */
+    --radius-md: 8px;               /* Botones e íconos */
+    --radius-lg: 12px;              /* Tarjetas de módulos */
+
+    /* Transiciones */
+    --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+
+    /* Escala Tipográfica Relativa */
+    --font-size-base: 0.95rem;      /* Texto de descripción y botones */
+    --font-size-md: 1.25rem;        /* Títulos de módulos/tarjetas */
+    --font-size-xl: 1.8rem;         /* Título principal del dashboard */
+}
