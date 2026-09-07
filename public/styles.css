@@ -3,7 +3,7 @@
    ========================================================================== */
 :root {
     /* Paleta Principal: Modo Oscuro UI */
-    --bg-color: #16181a;             /* Fondo general gris oscuro/casi negro */
+    --bg-color: #16181a;            /* Fondo general gris oscuro/casi negro */
     --card-bg: #212529;             /* Fondo de las tarjetas contenedor */
     --card-hover: #2b3036;          /* Estado hover de las tarjetas */
     
@@ -211,7 +211,7 @@ header p {
 }
 
 /* ==========================================================================
-   6. MEDIA QUERIES PARA ADAPTABILIDAD MÓVIL (PANTALLAS PEQUEÑAS)
+   6. MEDIA QUERIES PARA ADAPTABILIDAD MÓVIL Y AJUSTES DE MINIAPP
    ========================================================================== */
 @media (max-width: 480px) {
     body {
@@ -300,7 +300,7 @@ header p {
     opacity: 0.9;
 }
 
-/* Ajustes responsivos para pantallas móviles */
+/* Ajustes responsivos para pantallas móviles de la cabecera */
 @media (max-width: 600px) {
     .header-container {
         flex-direction: column;
@@ -310,10 +310,77 @@ header p {
     .flag-container {
         width: 50px;
         height: 34px;
-        order: 2; /* Sitúa las banderas debajo del título en pantallas muy angostas si se prefiere, o déjalas al lado usando display flex en row */
+        order: 2;
     }
 
     .header-title-wrapper {
         order: 1;
     }
+}
+
+/* ==========================================================================
+   7. AJUSTES DE CORRECCIÓN DE DESBORDAMIENTO (MINIAPP DE REGISTROS)
+   ========================================================================== */
+
+/* Contenedor principal de la MiniApp que pasa de filas a una columna fluida en móviles */
+.miniapp-container, .container-principal, .form-table-layout {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    gap: 16px;
+    padding: 4px;
+}
+
+@media (min-width: 768px) {
+    /* Si en desktop usas un layout de dos columnas (Formulario + Tabla), lo mantienes aquí */
+    .miniapp-container, .container-principal, .form-table-layout {
+        flex-direction: row;
+        align-items: flex-start;
+    }
+}
+
+/* Contenedor responsivo para las tablas de registros (evita desbordes horizontales o superposiciones) */
+.table-responsive, .table-container {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin-top: 12px;
+}
+
+table {
+    width: 100%;
+    min-width: 500px; /* Asegura que la tabla no se comprima demasiado */
+    border-collapse: collapse;
+}
+
+/* Inputs, textareas y selects adaptados para no romper los límites del contenedor */
+input[type="text"],
+input[type="number"],
+input[type="date"],
+select,
+textarea {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    padding: 10px 12px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-color);
+    background-color: var(--bg-color);
+    color: var(--text-main);
+    font-size: var(--font-size-base);
+}
+
+/* Botones de acción dentro de la miniapp (como Eliminar o Guardar) con áreas táctiles óptimas */
+.miniapp-container button, 
+.table-responsive button, 
+button.btn-eliminar, 
+.btn-accion {
+    min-height: 42px;
+    padding: 8px 14px;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    font-weight: 600;
+    -webkit-tap-highlight-color: transparent;
 }
