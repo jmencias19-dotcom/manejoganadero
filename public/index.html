@@ -2,9 +2,10 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Planificación de Tareas - Hato Laguna Brava</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Gestión Ganadera - Hato Laguna Brava</title>
     
+    <!-- Archivo de variables CSS externas con control de versión anti-caché -->
     <link rel="stylesheet" href="variables.css?v=1.1">
 
     <style>
@@ -18,171 +19,267 @@
             font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
             background-color: var(--bg-color, #f4f6f8);
             color: var(--text-main, #1a1a1a);
-            line-height: 1.4;
-            padding: 12px;
+            line-height: 1.5;
+            padding: 24px;
         }
 
-        .container {
-            width: 100%;
-            max-width: 600px;
+        header {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        header h1 {
+            color: var(--primary-color, #1b4332);
+            font-size: var(--font-size-xl, 2rem);
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        header p {
+            color: var(--text-muted, #555555);
+            font-size: var(--font-size-base, 1rem);
+            font-weight: 500;
+            margin-top: 4px;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+            gap: 24px;
+            max-width: 1280px;
             margin: 0 auto;
         }
 
-        .card-form {
+        .card {
             background-color: var(--card-bg, #ffffff);
             border-radius: var(--radius-lg, 12px);
-            padding: 16px;
+            padding: 24px;
             border: 1px solid var(--border-color, #e0e0e0);
             box-shadow: var(--relief-shadow, 0 4px 6px rgba(0,0,0,0.05));
-            margin-bottom: 20px;
-        }
-
-        .card-form h2 {
-            color: var(--primary-color, #1b4332);
-            font-size: 1.25rem;
-            margin-bottom: 12px;
-            font-weight: 800;
-        }
-
-        .form-group {
+            transition: var(--transition, all 0.2s ease-in-out);
             display: flex;
             flex-direction: column;
-            margin-bottom: 12px;
+            justify-content: space-between;
+            position: relative;
         }
 
-        .form-group label {
-            font-size: 0.875rem;
-            font-weight: 700;
-            margin-bottom: 4px;
-            color: var(--text-main, #333333);
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--relief-hover, 0 8px 15px rgba(0,0,0,0.1));
         }
 
-        .form-group input, 
-        .form-group select, 
-        .form-group textarea {
-            width: 100%;
-            min-height: 44px;
-            padding: 10px;
-            font-size: 16px;
-            border: 1px solid var(--border-color, #cccccc);
-            border-radius: var(--radius-md, 6px);
-            background-color: #ffffff;
-            color: var(--text-main, #1a1a1a);
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 14px;
         }
 
-        .form-group textarea {
-            min-height: 70px;
-            resize: vertical;
-        }
-
-        .btn-submit {
-            width: 100%;
+        .card-icon {
+            width: 48px;
             height: 48px;
+            background-color: var(--bg-color, #f4f6f8);
+            color: var(--primary-color, #1b4332);
+            border-radius: var(--radius-md, 8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--relief-inset, inset 0 2px 4px rgba(0,0,0,0.06));
+            flex-shrink: 0;
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: 24px 24px;
+        }
+
+        /* Íconos SVG embebidos por tarjeta */
+        .card:nth-child(1) .card-icon {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%231b4332' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01' /%3E%3C/svg%3E");
+        }
+
+        .card:nth-child(2) .card-icon {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%231b4332' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15' /%3E%3C/svg%3E");
+        }
+
+        .card:nth-child(3) .card-icon {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%231b4332' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 002 2h1.5a2.5 2.5 0 002.5-2.5V11.4M9 20h6M12 4v16' /%3E%3C/svg%3E");
+        }
+
+        .card:nth-child(4) .card-icon {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%231b4332' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M3 6l3 18h12l3-18H3zm3 0V4a2 2 0 012-2h8a2 2 0 012 2v2M12 11v6m-3-3h6' /%3E%3C/svg%3E");
+        }
+
+        .card:nth-child(5) .card-icon {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%231b4332' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z' /%3E%3C/svg%3E");
+        }
+
+        .card:nth-child(6) .card-icon {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%231b4332' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z' /%3E%3C/svg%3E");
+        }
+
+        .card:nth-child(7) .card-icon {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%231b4332' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z' /%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M15 12a3 3 0 11-6 0 3 3 0 016 0z' /%3E%3C/svg%3E");
+        }
+
+        .card:nth-child(8) .card-icon {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%231b4332' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4' /%3E%3C/svg%3E");
+        }
+
+        .card-title {
+            font-size: var(--font-size-md, 1.25rem);
+            font-weight: 700;
+            color: var(--primary-color, #1b4332);
+        }
+
+        .card-description {
+            font-size: var(--font-size-base, 0.95rem);
+            color: var(--text-muted, #555555);
+            margin-bottom: 22px;
+            flex-grow: 1;
+        }
+
+        .card-action {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 12px 18px;
             background-color: var(--primary-color, #1b4332);
             color: #ffffff;
-            font-weight: 700;
-            font-size: 1rem;
-            border: none;
-            border-radius: var(--radius-md, 6px);
-            cursor: pointer;
-            margin-top: 8px;
-            transition: background-color 0.2s ease;
-        }
-
-        .btn-submit:hover {
-            background-color: var(--primary-hover, #2d6a4f);
-        }
-
-        .table-container {
-            width: 100%;
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-            background: var(--card-bg, #ffffff);
-            border-radius: var(--radius-lg, 8px);
-            border: 1px solid var(--border-color, #e0e0e0);
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            white-space: nowrap;
-        }
-
-        th, td {
-            padding: 10px 12px;
-            text-align: left;
-            font-size: 0.875rem;
-            border-bottom: 1px solid var(--border-color, #eee);
-        }
-
-        th {
-            background-color: var(--bg-color, #f8f9fa);
-            color: var(--primary-color, #1b4332);
-            font-weight: 700;
-        }
-
-        .back-link {
-            display: inline-block;
-            margin-bottom: 12px;
-            color: var(--primary-color, #1b4332);
             text-decoration: none;
             font-weight: 600;
-            font-size: 0.9rem;
+            font-size: var(--font-size-base, 0.95rem);
+            border-radius: var(--radius-md, 8px);
+            transition: var(--transition, all 0.2s ease-in-out);
+            border: none;
+            box-shadow: 3px 3px 8px rgba(0,0,0,0.15), -1px -1px 3px rgba(255,255,255,0.1);
+            cursor: pointer;
+        }
+
+        .card-action:hover {
+            background-color: var(--primary-hover, #2d6a4f);
+            transform: scale(0.99);
+        }
+
+        /* Estado deshabilitado para módulos en construcción */
+        .card-action.disabled {
+            background-color: #a0a0a0;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+        .card-action.disabled:hover {
+            transform: none;
+            background-color: #a0a0a0;
         }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <a href="index.html" class="back-link">← Volver al Panel Principal</a>
+    <header>
+        <h1>Gestión Ganadera Hato Laguna Brava
+            <br><span style="font-size: 0.8em; font-weight: 600;">Grupo Imperatori</span>
+        </h1>
+        <p>Panel de Control Directo - Operaciones de Campo</p>
+    </header>
 
-    <div class="card-form">
-        <h2>Planificación de Tareas</h2>
+    <main class="dashboard-grid">
 
-        <form id="taskForm">
-            <div class="form-group">
-                <label>Fecha:</label>
-                <input type="date" name="fecha" required>
+        <!-- Módulo 1 -->
+        <article class="card">
+            <div>
+                <header class="card-header">
+                    <div class="card-icon" aria-hidden="true"></div>
+                    <h2 class="card-title">Planificación de Tareas</h2>
+                </header>
+                <p class="card-description">Programación y asignación de labores diarias del personal de campo (mantenimiento de cercas, roza, limpieza de bebederos y faenas de corral).</p>
             </div>
+            <a href="tareas.html" class="card-action" aria-label="Acceder al módulo de Planificación de Tareas">Acceder a Tareas</a>
+        </article>
 
-            <div class="form-group">
-                <label>Labor / Actividad:</label>
-                <input type="text" name="labor" placeholder="Ej. Limpieza de bebederos, roza, etc." required>
+        <!-- Módulo 2 -->
+        <article class="card">
+            <div>
+                <header class="card-header">
+                    <div class="card-icon" aria-hidden="true"></div>
+                    <h2 class="card-title">Historial de Pastoreo</h2>
+                </header>
+                <p class="card-description">Bitácora técnica de rotación de lotes: días de ocupación, períodos de descanso por potrero, remanente de pasto y carga animal sostenida.</p>
             </div>
+            <a href="pastoreo.html" class="card-action" aria-label="Ver Historial de Pastoreo">Ver Historial</a>
+        </article>
 
-            <div class="form-group">
-                <label>Personal Asignado:</label>
-                <input type="text" name="personal" placeholder="Ej. Juan / Pedro">
+        <!-- Módulo 3 -->
+        <article class="card">
+            <div>
+                <header class="card-header">
+                    <div class="card-icon" aria-hidden="true"></div>
+                    <h2 class="card-title">Potreros</h2>
+                </header>
+                <p class="card-description">Delimitación y estado de potreros: aforo de forraje disponible, disponibilidad de agua, sombras y capacidad de soporte por hectárea.</p>
             </div>
+            <a href="potreros.html" class="card-action" aria-label="Gestionar Potreros">Gestionar Potreros</a>
+        </article>
 
-            <div class="form-group">
-                <label>Observaciones:</label>
-                <textarea name="observaciones" rows="2" placeholder="Detalles adicionales..."></textarea>
+        <!-- Módulo 4 -->
+        <article class="card">
+            <div>
+                <header class="card-header">
+                    <div class="card-icon" aria-hidden="true"></div>
+                    <h2 class="card-title">Dinámica de Pesajes</h2>
+                </header>
+                <p class="card-description">Evaluación del crecimiento ponderal: seguimiento a la ganancia media diaria (GMD), pesajes de destete y curva de desarrollo de mautas/mautes.</p>
             </div>
+            <a href="pesajes.html" class="card-action" aria-label="Registrar Pesajes">Registrar Pesajes</a>
+        </article>
 
-            <button type="submit" class="btn-submit">Guardar Tarea</button>
-        </form>
-    </div>
+        <!-- Módulo 5 -->
+        <article class="card">
+            <div>
+                <header class="card-header">
+                    <div class="card-icon" aria-hidden="true"></div>
+                    <h2 class="card-title">Control Sanitario</h2>
+                </header>
+                <p class="card-description">Planes zoosanitarios: ciclos de vacunación, esquema de desparasitación, tratamientos clínicos de campo y aislamiento en enfermería.</p>
+            </div>
+            <a href="sanidad.html" class="card-action" aria-label="Ver Control Sanitario">Ver Sanidad</a>
+        </article>
 
-    <div class="table-container">
-        <table>
-            <thead>
-                <tr>
-                    <th>Fecha</th>
-                    <th>Labor</th>
-                    <th>Personal</th>
-                    <th>Observaciones</th>
-                    <th>Estado</th>
-                </tr>
-            </thead>
-            <tbody id="tablaCuerpo">
-                <tr>
-                    <td colspan="5" style="text-align: center; color: #777;">No hay tareas registradas.</td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-</div>
+        <!-- Módulo 6 -->
+        <article class="card">
+            <div>
+                <header class="card-header">
+                    <div class="card-icon" aria-hidden="true"></div>
+                    <h2 class="card-title">Eventos</h2>
+                </header>
+                <p class="card-description">Novedades zootécnicas en tiempo real: partos/nacimientos, bajas por mortalidad, ventas, compras y traslados internos de lotes.</p>
+            </div>
+            <a href="eventos.html" class="card-action" aria-label="Registrar Evento Zootécnico">Registrar Evento</a>
+        </article>
+
+        <!-- Módulo 7 -->
+        <article class="card">
+            <div>
+                <header class="card-header">
+                    <div class="card-icon" aria-hidden="true"></div>
+                    <h2 class="card-title">Combustible y Maquinarias</h2>
+                </header>
+                <p class="card-description">Administración de parque automotor y equipos: inventario de gasoil/gasolina, registro de horómetros en tractores y mantenimientos preventivos.</p>
+            </div>
+            <a href="maquinaria.html" class="card-action" aria-label="Control de Equipos y Maquinarias">Control de Equipos</a>
+        </article>
+
+        <!-- Módulo 8 -->
+        <article class="card">
+            <div>
+                <header class="card-header">
+                    <div class="card-icon" aria-hidden="true"></div>
+                    <h2 class="card-title">Logística y Comida</h2>
+                </header>
+                <p class="card-description">Gestión de insumos y nutrición: inventario de sal mineralizada, melaza, alimentos concentrados, medicamentos y suministros para la finca.</p>
+            </div>
+            <a href="insumos.html" class="card-action" aria-label="Ver Inventario de Insumos">Ver Insumos</a>
+        </article>
+
+    </main>
 
 </body>
 </html>
