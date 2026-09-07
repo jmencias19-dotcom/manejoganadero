@@ -185,7 +185,7 @@ header p {
     align-items: center;
     justify-content: center;
     width: 100%;
-    min-height: 46px; /* Altura ergonómica para toque en pantallas táctiles */
+    min-height: 46px;
     padding: 12px 18px;
     background-color: var(--primary-color);
     color: var(--btn-text);
@@ -201,7 +201,7 @@ header p {
 }
 
 .card-action:active {
-    transform: scale(0.98); /* Feedback visual táctil al presionar en móvil */
+    transform: scale(0.98);
 }
 
 .card-action:hover {
@@ -211,49 +211,7 @@ header p {
 }
 
 /* ==========================================================================
-   6. MEDIA QUERIES PARA ADAPTABILIDAD MÓVIL Y AJUSTES DE MINIAPP
-   ========================================================================== */
-@media (max-width: 480px) {
-    body {
-        padding: 12px; /* Reduce los márgenes exteriores de la pantalla */
-    }
-
-    header {
-        margin-bottom: 20px;
-    }
-
-    header h1 {
-        font-size: 1.5rem; /* Ajusta el título principal para que no rompa en pantallas estrechas */
-    }
-
-    .dashboard-grid {
-        grid-template-columns: 1fr; /* Columna única en teléfonos móviles para lectura fluida */
-        gap: 16px;
-    }
-
-    .card {
-        padding: 18px; /* Tarjetas más compactas pero con suficiente espacio táctil */
-    }
-
-    .card-header {
-        gap: 12px;
-        margin-bottom: 12px;
-    }
-
-    .card-icon {
-        width: 42px;
-        height: 42px;
-        background-size: 22px 22px;
-    }
-
-    .card-description {
-        font-size: 0.9rem;
-        margin-bottom: 18px;
-    }
-}
-
-/* ==========================================================================
-   ESTILOS ADICIONALES PARA LA CABECERA (BANDERAS Y SILUETAS GANADERAS)
+   6. CABECERA (BANDERAS Y SILUETAS GANADERAS)
    ========================================================================== */
 .header-container {
     display: flex;
@@ -291,7 +249,7 @@ header p {
     justify-content: center;
     gap: 16px;
     margin-bottom: 6px;
-    color: var(--primary-color); /* Tono verde corporativo para las siluetas */
+    color: var(--primary-color);
 }
 
 .animal-icon {
@@ -300,7 +258,138 @@ header p {
     opacity: 0.9;
 }
 
-/* Ajustes responsivos para pantallas móviles de la cabecera */
+/* ==========================================================================
+   7. ESTRUCTURA DE TAREAS Y REGISTROS (CORREGIDA Y ADAPTADA AL TEMA OSCURO)
+   ========================================================================== */
+.miniapp-container, 
+.container-principal, 
+.form-table-layout, 
+.task-management-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    gap: 20px;
+    padding: 4px;
+    background-color: var(--bg-color);
+}
+
+@media (min-width: 768px) {
+    .miniapp-container, 
+    .container-principal, 
+    .form-table-layout {
+        flex-direction: row;
+        align-items: flex-start;
+    }
+}
+
+.task-form-card {
+    background-color: var(--card-bg);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    border: 1px solid var(--border-color);
+    box-shadow: var(--relief-shadow);
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    width: 100%;
+}
+
+.form-group {
+    width: 100%;
+}
+
+input[type="text"],
+input[type="number"],
+input[type="date"],
+select,
+textarea,
+.form-input {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    padding: 12px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-color);
+    background-color: var(--bg-color);
+    color: var(--text-main);
+    font-size: var(--font-size-base);
+}
+
+input:focus, textarea:focus, select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+.btn-save {
+    background-color: var(--primary-color);
+    color: var(--btn-text);
+    border: none;
+    padding: 12px;
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    cursor: pointer;
+    width: 100%;
+    transition: var(--transition);
+}
+
+.btn-save:hover {
+    background-color: var(--primary-hover);
+}
+
+.table-responsive, 
+.table-container, 
+.table-responsive-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    background-color: var(--card-bg);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--relief-shadow);
+    padding: 12px;
+    margin-top: 4px;
+}
+
+table, .data-table {
+    width: 100%;
+    min-width: 500px;
+    border-collapse: collapse;
+    text-align: left;
+    font-size: var(--font-size-base);
+}
+
+th, td, .data-table th, .data-table td {
+    padding: 12px;
+    border-bottom: 1px solid var(--border-color);
+    white-space: nowrap;
+    color: var(--text-main);
+}
+
+th, .data-table th {
+    background-color: var(--card-hover);
+    font-weight: 600;
+}
+
+/* ==========================================================================
+   8. MEDIA QUERIES GENERALES
+   ========================================================================== */
+@media (max-width: 480px) {
+    body {
+        padding: 12px;
+    }
+
+    header h1 {
+        font-size: 1.5rem;
+    }
+
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+}
+
 @media (max-width: 600px) {
     .header-container {
         flex-direction: column;
