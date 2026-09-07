@@ -1,34 +1,131 @@
-/* 1. Asegurar contenedor responsivo */
+/* ==========================================================================
+   VARIABLES DE SISTEMA DE DISEÑO (TEMA DE CAMPO / TROPICAL)
+   ========================================================================== */
+:root {
+    --bg-app: #f2f5f3;               /* Fondo base neutro suave */
+    --card-bg: #ffffff;              /* Fondo de módulos y tablas */
+    --primary: #1b4332;              /* Verde técnico principal */
+    --border-color: #e2e8f0;         /* Bordes de baja opacidad */
+    
+    /* Sistema de Sombras para Depth & Elevation */
+    --shadow-flat: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.06);
+    --shadow-card: 0 4px 12px -2px rgba(27, 67, 50, 0.08), 0 2px 6px -1px rgba(0, 0, 0, 0.04);
+    --shadow-hover: 0 8px 20px -4px rgba(27, 67, 50, 0.14), 0 4px 8px -2px rgba(0, 0, 0, 0.06);
+    --shadow-inset: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
+}
+
+/* 1. Contenedor Base y Body */
+body {
+    background-color: var(--bg-app);
+    color: #2d3748;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
 .container, body, main {
     width: 100% !important;
     max-width: 100vw !important;
-    padding: 10px !important;
+    padding: 12px !important;
     box-sizing: border-box !important;
     overflow-x: hidden;
 }
 
-/* 2. Encapsular la tabla para permitir scroll horizontal en móviles */
+/* 2. Encapsulado de Tabla con Efecto Elevado */
 .table-responsive {
     width: 100%;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
-    margin-top: 15px;
+    margin-top: 16px;
+    margin-bottom: 16px;
+    background-color: var(--card-bg);
+    border-radius: 12px;
+    box-shadow: var(--shadow-card);
+    border: 1px solid var(--border-color);
 }
 
-/* 3. Ajuste de celda para evitar deformación */
+/* 3. Estructura de Tabla y Sombras Internas */
 table {
     width: 100%;
-    border-collapse: collapse;
-    white-space: nowrap; /* Mantiene la estructura de fila en móviles */
+    border-collapse: separate; /* Cambiado a 'separate' para respetar border-radius */
+    border-spacing: 0;
+    white-space: nowrap;
 }
 
-th, td {
-    padding: 8px 10px;
-    font-size: 14px; /* Tamaño adecuado para lectura móvil */
+th {
+    background-color: #f8faf9;
+    color: var(--primary);
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid var(--border-color);
+    padding: 12px 14px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
 }
 
-/* 4. Ajuste para campos de entrada de texto */
-input[type="text"], select, textarea {
+td {
+    padding: 10px 14px;
+    font-size: 14px;
+    border-bottom: 1px solid var(--border-color);
+    transition: background-color 0.2s ease;
+}
+
+/* Efecto de relieve en filas alternadas */
+tr:nth-child(even) {
+    background-color: #fafcfb;
+}
+
+tr:last-child td {
+    border-bottom: none;
+}
+
+/* Feedback visual al pulsar/pasar sobre una fila */
+tr:hover td {
+    background-color: #f0f7f4;
+}
+
+/* 4. Formularios e Inputs con Relieve y Enfoque Inset */
+input[type="text"], 
+input[type="number"], 
+input[type="date"], 
+select, 
+textarea {
     width: 100% !important;
     box-sizing: border-box !important;
+    padding: 10px 12px;
+    font-size: 14px;
+    background-color: #fbfcfb;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    box-shadow: var(--shadow-inset); /* Sombra interna para efecto de hendidura */
+    transition: all 0.2s ease-in-out;
+    outline: none;
+}
+
+/* Estado Focus (Elevación activa del campo seleccionado) */
+input[type="text"]:focus, 
+input[type="number"]:focus, 
+input[type="date"]:focus, 
+select:focus, 
+textarea:focus {
+    background-color: #ffffff;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(27, 67, 50, 0.15), var(--shadow-flat);
+}
+
+/* 5. Tarjetas / Contenedores de Módulos (Opcional si usas divs contenedores) */
+.card-panel {
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 16px;
+    box-shadow: var(--shadow-card);
+    border: 1px solid var(--border-color);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card-panel:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-hover);
 }
