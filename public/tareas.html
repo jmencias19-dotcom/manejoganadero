@@ -1,173 +1,201 @@
-<script type="module">
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestión Ganadera - Planificación de Tareas</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; background-color: #f4f6f8; }
+    .container { max-width: 900px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    h1 { color: #2c3e50; }
+    form { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+    form div.full { grid-column: span 2; }
+    input, select, button { padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; }
+    button { background-color: #27ae60; color: white; border: none; cursor: pointer; }
+    button:hover { background-color: #219150; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+    th { background-color: #f8f9fa; }
+    .btn-delete { background-color: #e74c3c; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; }
+    .status-badge { padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; }
+    #statusText { margin-bottom: 15px; font-weight: bold; }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>Planificación de Tareas</h1>
+    <div id="statusText">Conectando a la nube...</div>
+
+    <!-- Formulario para agregar labores -->
+    <form id="taskForm">
+      <div>
+        <label for="fecha">Fecha:</label>
+        <input type="date" id="fecha" required>
+      </div>
+      <div>
+        <label for="labor">Labor / Actividad:</label>
+        <input type="text" id="labor" placeholder="Ej. Limpieza de bebederos" required>
+      </div>
+      <div>
+        <label for="personal">Personal Asignado:</label>
+        <input type="text" id="personal" placeholder="Ej. Juan / Pedro" required>
+      </div>
+      <div class="full">
+        <label for="observaciones">Observaciones:</label>
+        <input type="text" id="observaciones" placeholder="Detalles adicionales">
+      </div>
+      <div class="full">
+        <button type="submit">Guardar Tarea</button>
+      </div>
+    </form>
+
+    <!-- Tabla para listar registros de Firestore -->
+    <table>
+      <thead>
+        <tr>
+          <th>Fecha</th>
+          <th>Labor</th>
+          <th>Personal</th>
+          <th>Observaciones</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody id="taskTableBody">
+        <tr><td colspan="6" style="text-align:center;">Cargando tareas...</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Script con integración de Firebase SDK v10 (Module) -->
+  <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { 
-        initializeFirestore, 
-        collection, 
-        addDoc, 
-        updateDoc, 
-        deleteDoc, 
-        doc, 
-        onSnapshot 
+      getFirestore, 
+      collection, 
+      addDoc, 
+      updateDoc, 
+      deleteDoc, 
+      doc, 
+      onSnapshot 
     } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    // Configuración del proyecto Firebase
+    // Configuración de tu proyecto Firebase
     const firebaseConfig = {
-        apiKey: "AIzaSyBnIB0rPQULTOfs55YSnsX2C-2rN5pTANk",
-        authDomain: "hato-laguna-brava.firebaseapp.com",
-        projectId: "hato-laguna-brava",
-        storageBucket: "hato-laguna-brava.firebasestorage.app",
-        messagingSenderId: "1053099733476",
-        appId: "1:1053099733476:web:541a115776b2e80047d7f1",
-        measurementId: "G-RSW0XSHF1F"
+      apiKey: "AIzaSyBnIBOrPQULTOf55YSmsX2C-2rN5pTANK",
+      authDomain: "hato-laguna-brava.firebaseapp.com",
+      projectId: "hato-laguna-brava",
+      storageBucket: "hato-laguna-brava.appspot.com",
+      messagingSenderId: "1053099733476",
+      appId: "1:1053099733476:web:541a115776b2e0004d7f1",
+      measurementId: "G-RSW0XSHF1F"
     };
 
-    // Inicialización del servicio forzando transporte compatible (desactiva HTTP3/Streams propensos a fallar)
+    // Inicializar Firebase y Firestore
     const app = initializeApp(firebaseConfig);
-    const db = initializeFirestore(app, {
-        experimentalForceLongPolling: true,
-        useFetchStreams: false
-    });
+    const db = getFirestore(app);
     const tasksCollection = collection(db, "tareas");
 
-    // Referencias a elementos del DOM
+    // Referencias al DOM
     const taskForm = document.getElementById('taskForm');
     const taskTableBody = document.getElementById('taskTableBody');
-    const light = document.getElementById('light');
     const statusText = document.getElementById('statusText');
-    const toast = document.getElementById('toast');
-    const toastMessage = document.getElementById('toastMessage');
 
-    // Auxiliar para sanitización de cadenas (Previene XSS)
-    const escapeHtml = (str) => String(str || '').replace(/[&<>"']/g, match => ({
-        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
-    })[match]);
-
-    // Gestión del indicador visual de sincronización
     function setSyncStatus(isSyncing, isError = false) {
-        if (!light || !statusText) return;
-        if (isError) {
-            light.classList.remove('syncing');
-            statusText.textContent = 'Error de Conexión';
-            return;
-        }
-        if (isSyncing) {
-            light.classList.add('syncing');
-            statusText.textContent = 'Sincronizando...';
-        } else {
-            light.classList.remove('syncing');
-            statusText.textContent = 'Conectado a la Nube';
-        }
+      if (isError) {
+        statusText.textContent = "Error de Conexión con la base de datos";
+        statusText.style.color = "red";
+      } else if (isSyncing) {
+        statusText.textContent = "Sincronizando...";
+        statusText.style.color = "orange";
+      } else {
+        statusText.textContent = "Conectado a la Nube";
+        statusText.style.color = "green";
+      }
     }
 
-    // Notificaciones Toast emergentes
-    function showNotification(message, type = 'success') {
-        if (!toast || !toastMessage) return;
-        toastMessage.textContent = message;
-        toast.className = `toast-notification ${type} show`;
-        setTimeout(() => toast.classList.remove('show'), 3500);
-    }
+    // Escuchar cambios en tiempo real
+    onSnapshot(tasksCollection, (snapshot) => {
+      if (snapshot.empty) {
+        taskTableBody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No hay tareas registradas.</td></tr>';
+        setSyncStatus(false);
+        return;
+      }
 
-    function getStatusClass(status) {
-        if (status === 'En Proceso') return 'status-proceso';
-        if (status === 'Completada') return 'status-completada';
-        return 'status-pendiente';
-    }
+      taskTableBody.innerHTML = '';
+      snapshot.forEach((docSnap) => {
+        const task = docSnap.data();
+        const id = docSnap.id;
+        
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${task.fecha || ''}</td>
+          <td>${task.labor || ''}</td>
+          <td>${task.personal || ''}</td>
+          <td>${task.observaciones || ''}</td>
+          <td>
+            <select onchange="window.updateTaskStatus('${id}', this.value)">
+              <option value="Pendiente" ${task.estado === 'Pendiente' ? 'selected' : ''}>Pendiente</option>
+              <option value="En Proceso" ${task.estado === 'En Proceso' ? 'selected' : ''}>En Proceso</option>
+              <option value="Completada" ${task.estado === 'Completada' ? 'selected' : ''}>Completada</option>
+            </select>
+          </td>
+          <td>
+            <button class="btn-delete" onclick="window.deleteTask('${id}')">Eliminar</button>
+          </td>
+        `;
+        taskTableBody.appendChild(tr);
+      });
+      setSyncStatus(false);
+    }, (error) => {
+      console.error("Error en snapshot:", error);
+      setSyncStatus(false, true);
+    });
 
-    // 1. Escuchar cambios en tiempo real con captura explícita de excepciones
-    setSyncStatus(true);
-    onSnapshot(tasksCollection, 
-        (snapshot) => {
-            if (!taskTableBody) return;
-            taskTableBody.innerHTML = '';
-            
-            if (snapshot.empty) {
-                taskTableBody.innerHTML = `<tr><td colspan="6" style="text-align:center; color: var(--text-muted);">No hay labores registradas en el servidor.</td></tr>`;
-                setSyncStatus(false);
-                return;
-            }
-
-            snapshot.forEach((docSnapshot) => {
-                const task = docSnapshot.data();
-                const id = docSnapshot.id;
-                const tr = document.createElement('tr');
-                const statusClass = getStatusClass(task.estado);
-
-                tr.innerHTML = `
-                    <td>${escapeHtml(task.fecha)}</td>
-                    <td><strong>${escapeHtml(task.labor)}</strong></td>
-                    <td>${escapeHtml(task.personal)}</td>
-                    <td>${escapeHtml(task.observaciones || '-')}</td>
-                    <td>
-                        <select class="status-select ${statusClass}" onchange="window.updateTaskStatus('${id}', this.value)">
-                            <option value="Pendiente" ${task.estado === 'Pendiente' ? 'selected' : ''}>Pendiente</option>
-                            <option value="En Proceso" ${task.estado === 'En Proceso' ? 'selected' : ''}>En Proceso</option>
-                            <option value="Completada" ${task.estado === 'Completada' ? 'selected' : ''}>Completada</option>
-                        </select>
-                    </td>
-                    <td><button class="btn-delete" onclick="window.deleteTask('${id}')">Eliminar</button></td>
-                `;
-                taskTableBody.appendChild(tr);
-            });
-            setSyncStatus(false);
-        }, 
-        (error) => {
-            console.error("Detalle del error en Firestore:", error.code, error.message);
-            setSyncStatus(false, true);
-            showNotification('Error al conectar con la base de datos', 'danger');
-        }
-    );
-
-    // 2. Registro de nueva labor desde el formulario
-    if (taskForm) {
-        taskForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            setSyncStatus(true);
-            try {
-                await addDoc(tasksCollection, {
-                    fecha: document.getElementById('fecha').value,
-                    labor: document.getElementById('labor').value,
-                    personal: document.getElementById('personal').value,
-                    observaciones: document.getElementById('observaciones').value,
-                    estado: 'Pendiente',
-                    creadoEn: new Date().toISOString()
-                });
-                taskForm.reset();
-                showNotification('Labor registrada exitosamente', 'success');
-            } catch (err) {
-                console.error("Error al escribir en Firestore:", err);
-                showNotification('Error al guardar datos', 'danger');
-            } finally {
-                setSyncStatus(false);
-            }
+    // Registro de nueva labor desde el formulario
+    taskForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      setSyncStatus(true);
+      try {
+        await addDoc(tasksCollection, {
+          fecha: document.getElementById('fecha').value,
+          labor: document.getElementById('labor').value,
+          personal: document.getElementById('personal').value,
+          observaciones: document.getElementById('observaciones').value,
+          estado: 'Pendiente',
+          creadoEn: new Date().toISOString()
         });
-    }
+        taskForm.reset();
+      } catch (err) {
+        console.error("Error al guardar:", err);
+        setSyncStatus(false, true);
+      }
+    });
 
-    // 3. Métodos CRUD expuestos al objeto global (window)
+    // Funciones CRUD globales para ser llamadas desde la tabla HTML
     window.updateTaskStatus = async (id, newStatus) => {
-        setSyncStatus(true);
-        try {
-            await updateDoc(doc(db, "tareas", id), { estado: newStatus });
-            showNotification(`Estado actualizado a "${newStatus}"`, 'warning');
-        } catch (err) {
-            console.error("Error al actualizar:", err);
-            showNotification('Error al actualizar estado', 'danger');
-        } finally {
-            setSyncStatus(false);
-        }
+      setSyncStatus(true);
+      try {
+        await updateDoc(doc(db, "tareas", id), { estado: newStatus });
+      } catch (err) {
+        console.error("Error al actualizar estado:", err);
+        setSyncStatus(false, true);
+      }
     };
 
     window.deleteTask = async (id) => {
-        if (confirm('¿Deseas eliminar esta labor de la base de datos?')) {
-            setSyncStatus(true);
-            try {
-                await deleteDoc(doc(db, "tareas", id));
-                showNotification('Labor eliminada', 'danger');
-            } catch (err) {
-                console.error("Error al eliminar:", err);
-                showNotification('Error al eliminar', 'danger');
-            } finally {
-                setSyncStatus(false);
-            }
+      if (confirm('¿Deseas eliminar esta labor de la base de datos?')) {
+        setSyncStatus(true);
+        try {
+          await deleteDoc(doc(db, "tareas", id));
+        } catch (err) {
+          console.error("Error al eliminar:", err);
+          setSyncStatus(false, true);
         }
+      }
     };
-</script>
+  </script>
+
+</body>
+</html>
