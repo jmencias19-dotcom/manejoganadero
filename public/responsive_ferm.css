@@ -149,11 +149,88 @@
     }
 }
 
-/* Tablets y Dispositivos Medianos (577px a 768px) */
-@media screen and (min-width: 577px) and (max-width: 768px) {
-    .form-row {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 1rem;
+/* ==========================================================================
+   AJUSTES DE RESPONSIVIDAD PARA MÓVILES (HATO LAGUNA BRAVA)
+   ========================================================================== */
+
+/* 1. Forzar que todos los elementos respeten el ancho de su contenedor */
+*, *::before, *::after {
+    box-sizing: border-box !important;
+}
+
+/* 2. Reglas generales para la tarjeta y campos */
+.planificacion-tareas-card {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 100%;
+    padding: 1rem;
+    box-sizing: border-box;
+}
+
+.tarea-field-group {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1rem;
+}
+
+/* 3. Ajuste estricto para las casillas de entrada (Inputs/Selects/Textareas) */
+.tarea-field-group input,
+.tarea-field-group select,
+.tarea-field-group textarea,
+input[type="text"],
+input[type="date"],
+input[type="number"],
+select,
+textarea {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-height: 48px; /* Altura cómoda para tocar con el dedo en campo */
+    padding: 0.6rem 0.8rem;
+    font-size: 16px !important; /* Previene el zoom automático molesto en iPhone/Android */
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    background-color: var(--bg-color);
+    box-sizing: border-box !important;
+    -webkit-appearance: none; /* Elimina estilos nativos de iOS/Android que deforman los campos */
+    appearance: none;
+}
+
+/* 4. Scroll horizontal controlado para la tabla */
+.table-wrapper {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    margin-top: 1rem;
+}
+
+.table-wrapper table {
+    width: 100%;
+    min-width: 500px; /* Asegura que la tabla no se aplaste y permita scroll horizontal */
+    border-collapse: collapse;
+}
+
+/* 5. Regla estricta para pantallas de teléfono (menores a 600px) */
+@media screen and (max-width: 600px) {
+    /* Si tienes filas con varias columnas en PC, aquí se fuerzan a 1 sola columna */
+    .form-row,
+    .row,
+    .grid,
+    div[class*="col-"] {
+        display: flex !important;
+        flex-direction: column !important;
+        width: 100% !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+
+    .planificacion-tareas-card {
+        padding: 0.75rem;
     }
 }
