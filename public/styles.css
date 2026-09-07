@@ -2,16 +2,16 @@
    1. DESIGN SYSTEM TOKENS (SISTEMA DE DISEÑO BASE)
    ========================================================================== */
 :root {
-    /* Paleta Principal: Verde Campo, Azul Técnico y Blanco */
+    /* Paleta Principal: Verde Campo, Cemento y Blanco */
     --primary-color: #1b4332;         /* Verde bosque profundo (Institucional) */
     --primary-hover: #2d6a4f;         /* Verde activo para estados hover */
-    --bg-color: #e9ecef;              /* Azul de fondo general */
-    --card-bg: #ffffff;               /* Fondo blanco para las tarjetas */
+    --bg-color: #8d99ae;              /* Gris Cemento Clásico Matte */
+    --card-bg: #ffffff;               /* Fondo blanco para contraste claro */
     
     /* Tipografía y Textos */
     --text-main: #1d2d44;             /* Texto principal de alto contraste */
-    --text-muted: #5c677d;            /* Texto secundario y descripciones */
-    --border-color: #d8f3dc;          /* Borde sutil verdoso */
+    --text-muted: #4a5568;            /* Texto secundario ajustado */
+    --border-color: #cbd5e1;          /* Borde neutro para tono cemento */
 
     /* Escala Tipográfica */
     --font-size-base: 0.95rem;
