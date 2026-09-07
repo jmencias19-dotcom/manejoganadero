@@ -1,389 +1,107 @@
-/* ==========================================================================
-   1. SYSTEM TOKENS & DESIGN VARIABLES
-   ========================================================================== */
+/* --- Variables de Estilo --- */
 :root {
-    --bg-color: #16181a;
-    --card-bg: #212529;
-    --card-hover: #2b3036;
-    --primary-color: #22c55e;
-    --primary-hover: #16a34a;
-    --btn-text: #ffffff;
-    --icon-bg: #fef08a;
-    --text-main: #ffffff;
-    --text-muted: #9ca3af;
-    --border-color: #2e343b;
-    --font-size-base: 0.95rem;
-    --font-size-md: 1.15rem;
-    --font-size-xl: 1.85rem;
-    --radius-md: 10px;
-    --radius-lg: 18px;
-    --relief-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
-    --relief-hover: 0 8px 24px rgba(0, 0, 0, 0.6);
-    --relief-inset: inset 0 1px 2px rgba(0, 0, 0, 0.2);
-    --transition: all 0.25s ease-in-out;
+  /* Colores */
+  --color-fondo-app: #121212;      /* Fondo muy oscuro de la app */
+  --color-fondo-tarjeta: #1e1e1e;   /* Fondo gris oscuro de las tarjetas */
+  --color-texto-primario: #ffffff;  /* Blanco para títulos y texto principal */
+  --color-texto-secundario: #b3b3b3; /* Gris claro para descripciones */
+  --color-acento-verde: #2ecc71;    /* Verde para botones 'Call to Action' */
+  --color-acento-amarillo: #f1c40f;   /* Amarillo para fondos de iconos */
+  --color-icono: #fff;              /* Color del icono dentro del círculo */
+
+  /* Estilos */
+  --radio-borde-tarjeta: 12px;
+  --radio-borde-boton: 8px;
+  --radio-borde-icono: 50%; /* Círculo perfecto */
+  --fuente-principal: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Similar a Windows */
 }
 
-/* ==========================================================================
-   2. GLOBAL RESET & BASE LAYOUT
-   ========================================================================== */
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
-
+/* --- Estilos Globales --- */
 body {
-    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-    background-color: var(--bg-color);
-    color: var(--text-main);
-    line-height: 1.5;
-    padding: 24px;
-    min-height: 100vh;
+  margin: 0;
+  padding: 20px;
+  font-family: var(--fuente-principal);
+  background-color: var(--color-fondo-app);
+  color: var(--color-texto-primario);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
 }
 
-/* ==========================================================================
-   3. HEADER ARCHITECTURE & BRANDING
-   ========================================================================== */
-header {
-    text-align: center;
-    margin-bottom: 35px;
+/* --- Contenedor del Panel (Grid) --- */
+.panel-control {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+  width: 100%;
+  max-width: 1200px;
 }
 
-.header-container {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    max-width: 1000px;
-    margin: 0 auto;
-    flex-wrap: nowrap;
+/* --- Estilos de la Tarjeta --- */
+.tarjeta-tarea {
+  background-color: var(--color-fondo-tarjeta);
+  border-radius: var(--radio-borde-tarjeta);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3); /* Sombra sutil */
+  transition: transform 0.2s ease;
 }
 
-.header-title-wrapper {
-    flex-grow: 1;
-    text-align: center;
+.tarjeta-tarea:hover {
+  transform: translateY(-5px); /* Efecto hover */
 }
 
-header h1 {
-    color: var(--text-main);
-    font-size: var(--font-size-xl);
-    font-weight: 800;
-    letter-spacing: -0.5px;
+/* Encabezado de la Tarjeta (Icono + Título) */
+.tarjeta-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
 }
 
-header p {
-    color: var(--text-muted);
-    font-size: var(--font-size-base);
-    font-weight: 500;
-    margin-top: 4px;
+.contenedor-icono {
+  background-color: var(--color-acento-amarillo);
+  color: var(--color-icono);
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radio-borde-icono);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 15px;
+  font-weight: bold; /* Para simular un icono con texto, opcional */
 }
 
-.flag-container {
-    width: 60px;
-    height: 40px;
-    border-radius: 6px;
-    overflow: hidden;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-    flex-shrink: 0;
-    border: 1px solid var(--border-color);
+.tarjeta-titulo {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0;
 }
 
-.flag-icon {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+/* Cuerpo de la Tarjeta (Descripción) */
+.tarjeta-descripcion {
+  color: var(--color-texto-secundario);
+  font-size: 0.9rem;
+  line-height: 1.5;
+  margin-bottom: 20px;
+  flex-grow: 1; /* Empuja el botón hacia abajo */
 }
 
-.animal-silhouettes-top {
-    display: flex;
-    justify-content: center;
-    gap: 16px;
-    margin-bottom: 6px;
-    color: var(--primary-color);
+/* Botón de la Tarjeta */
+.boton-accion {
+  background-color: var(--color-acento-verde);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: var(--radio-borde-boton);
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  width: 100%; /* Botón de ancho completo */
 }
 
-.animal-icon {
-    width: 28px;
-    height: 28px;
-    opacity: 0.9;
-}
-
-/* ==========================================================================
-   4. DASHBOARD GRID & CARDS
-   ========================================================================== */
-.dashboard-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 24px;
-    max-width: 1280px;
-    margin: 0 auto;
-}
-
-.card {
-    background-color: var(--card-bg);
-    border-radius: var(--radius-lg);
-    padding: 24px;
-    border: 1px solid var(--border-color);
-    box-shadow: var(--relief-shadow);
-    transition: var(--transition);
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    position: relative;
-    width: 100%;
-}
-
-.card:hover {
-    background-color: var(--card-hover);
-    transform: translateY(-4px);
-    box-shadow: var(--relief-hover);
-}
-
-.card-header {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    margin-bottom: 14px;
-}
-
-.card-icon {
-    width: 48px;
-    height: 48px;
-    background-color: var(--icon-bg);
-    border-radius: var(--radius-md);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: var(--relief-inset);
-    flex-shrink: 0;
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size: 26px 26px;
-}
-
-.card-title {
-    font-size: var(--font-size-md);
-    font-weight: 700;
-    color: var(--text-main);
-}
-
-.card-description {
-    font-size: var(--font-size-base);
-    color: var(--text-muted);
-    margin-bottom: 22px;
-    flex-grow: 1;
-}
-
-.card-action {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    min-height: 46px;
-    padding: 12px 18px;
-    background-color: var(--primary-color);
-    color: var(--btn-text);
-    text-decoration: none;
-    font-weight: 600;
-    font-size: var(--font-size-base);
-    border-radius: var(--radius-md);
-    transition: var(--transition);
-    border: none;
-    box-shadow: 0 2px 8px rgba(34, 197, 94, 0.25);
-    cursor: pointer;
-    -webkit-tap-highlight-color: transparent;
-}
-
-.card-action:active {
-    transform: scale(0.98);
-}
-
-.card-action:hover {
-    background-color: var(--primary-hover);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(34, 197, 94, 0.4);
-}
-
-/* ==========================================================================
-   5. MODULE ICON DEFINITIONS (SVG)
-   ========================================================================== */
-.card-tareas .card-icon {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23000000' stroke-width='2.2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4'/%3E%3C/svg%3E");
-}
-
-.card-pastereo .card-icon {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23000000' stroke-width='2.2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z'/%3E%3C/svg%3E");
-}
-
-.card-potreros .card-icon {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23000000' stroke-width='2.2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l5.447 2.724A1 1 0 0021 18.818V8.045a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7'/%3E%3C/svg%3E");
-}
-
-.card-pesajes .card-icon {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23000000' stroke-width='2.2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M3 6l9-4 9 4M3 6v10a2 2 0 002 2h14a2 2 0 002-2V6M3 6l9 6 9-6M12 12v6'/%3E%3C/svg%3E");
-}
-
-.card-sanitario .card-icon {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23000000' stroke-width='2.2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z'/%3E%3C/svg%3E");
-}
-
-.card-eventos .card-icon {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23000000' stroke-width='2.2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z'/%3E%3C/svg%3E");
-}
-
-.card-maquinaria .card-icon {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23000000' stroke-width='2.2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M3 4a1 1 0 011-1h8a1 1 0 011 1v16a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM13 8h2a2 2 0 012 2v4a2 2 0 002 2h0a2 2 0 002-2V9l-3-3M6 7h4v4H6V7z'/%3E%3C/svg%3E");
-}
-
-.card-logistica .card-icon {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23000000' stroke-width='2.2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M12 21a9 9 0 100-18 9 9 0 000 18zM7 8v8M17 8v8M7 12h10'/%3E%3C/svg%3E");
-}
-
-/* ==========================================================================
-   6. FORMS & TABLES COMPONENTS
-   ========================================================================== */
-.miniapp-container, 
-.container-principal, 
-.form-table-layout, 
-.task-management-container {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    max-width: 100%;
-    box-sizing: border-box;
-    gap: 20px;
-    padding: 4px;
-    background-color: var(--bg-color);
-}
-
-.task-form-card {
-    background-color: var(--card-bg);
-    border-radius: var(--radius-lg);
-    padding: 20px;
-    border: 1px solid var(--border-color);
-    box-shadow: var(--relief-shadow);
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-    width: 100%;
-}
-
-.form-group {
-    width: 100%;
-}
-
-input[type="text"],
-input[type="number"],
-input[type="date"],
-select,
-textarea,
-.form-input {
-    width: 100%;
-    max-width: 100%;
-    box-sizing: border-box;
-    padding: 12px;
-    border-radius: var(--radius-md);
-    border: 1px solid var(--border-color);
-    background-color: var(--bg-color);
-    color: var(--text-main);
-    font-size: var(--font-size-base);
-}
-
-input:focus, textarea:focus, select:focus {
-    outline: none;
-    border-color: var(--primary-color);
-}
-
-.btn-save {
-    background-color: var(--primary-color);
-    color: var(--btn-text);
-    border: none;
-    padding: 12px;
-    border-radius: var(--radius-md);
-    font-weight: 600;
-    cursor: pointer;
-    width: 100%;
-    transition: var(--transition);
-}
-
-.btn-save:hover {
-    background-color: var(--primary-hover);
-}
-
-.table-responsive, 
-.table-container, 
-.table-responsive-wrapper {
-    width: 100%;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    background-color: var(--card-bg);
-    border-radius: var(--radius-lg);
-    border: 1px solid var(--border-color);
-    box-shadow: var(--relief-shadow);
-    padding: 12px;
-    margin-top: 4px;
-}
-
-table, .data-table {
-    width: 100%;
-    min-width: 500px;
-    border-collapse: collapse;
-    text-align: left;
-    font-size: var(--font-size-base);
-}
-
-th, td, .data-table th, .data-table td {
-    padding: 12px;
-    border-bottom: 1px solid var(--border-color);
-    white-space: nowrap;
-    color: var(--text-main);
-}
-
-th, .data-table th {
-    background-color: var(--card-hover);
-    font-weight: 600;
-}
-
-/* ==========================================================================
-   7. RESPONSIVE MEDIA QUERIES
-   ========================================================================== */
-@media (min-width: 768px) {
-    .miniapp-container, 
-    .container-principal, 
-    .form-table-layout {
-        flex-direction: row;
-        align-items: flex-start;
-    }
-}
-
-@media (max-width: 600px) {
-    .header-container {
-        flex-direction: column;
-        gap: 12px;
-    }
-
-    .flag-container {
-        width: 50px;
-        height: 34px;
-        order: 2;
-    }
-
-    .header-title-wrapper {
-        order: 1;
-    }
-}
-
-@media (max-width: 480px) {
-    body {
-        padding: 12px;
-    }
-
-    header h1 {
-        font-size: 1.5rem;
-    }
-
-    .dashboard-grid {
-        grid-template-columns: 1fr;
-        gap: 16px;
-    }
+.boton-accion:hover {
+  background-color: #27ae60; /* Verde más oscuro al pasar el ratón */
 }
