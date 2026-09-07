@@ -1,6 +1,6 @@
 /* ==========================================================================
    VARIABLES GLOBALES - SISTEMA DE GESTIÓN GANADERA (HATO LAGUNA BRAVA)
-   Archivo: variables.css (v1.1)
+   Archivo: variables.css (v1.2 - Móvil Aumentado)
    ========================================================================== */
 
 :root {
@@ -8,7 +8,7 @@
     --primary-color: #1b4332;       /* Verde Bosque Profundo / Corporativo */
     --primary-hover: #2d6a4f;       /* Verde Intermedio (Estado Hover) */
     --bg-color: #f4f6f8;            /* Gris claro mate (optimizado para lecturas en campo) */
-    --card-bg: #ffffff;             /* Blanco puro para tarjetas */
+    --card-bg: #ffffff;              /* Blanco puro para tarjetas */
     --text-main: #212529;           /* Gris oscuro de alto contraste */
     --text-muted: #555555;          /* Gris medio para descripciones */
     --border-color: #e2e8f0;        /* Gris tenue para delimitación de bordes */
@@ -30,20 +30,130 @@
     --font-size-md: 1.25rem;        /* Títulos de módulos/tarjetas */
     --font-size-xl: 1.8rem;         /* Título principal del dashboard */
 }
+
+/* Reset Global para Densidad y Renderizado en Pantallas Táctiles */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+/* Layout Principal de la Tarjeta */
 .planificacion-tareas-card {
-  display: flex;
-  flex-direction: column;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    width: 100%;
+    padding: 1.25rem;
+    background-color: var(--card-bg);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--relief-shadow);
 }
 
+/* Campos de Formulario Adaptables */
 .tarea-field-group {
-  width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    width: 100%;
 }
 
+/* Ajuste Universal de Inputs, Selects y Textareas */
+.tarea-field-group input,
+.tarea-field-group select,
+.tarea-field-group textarea,
+.form-control {
+    width: 100%;
+    min-height: 48px; /* Altura óptima para toque táctil (Touch Target) */
+    padding: 0.6rem 0.85rem;
+    font-size: var(--font-size-base);
+    color: var(--text-main);
+    background-color: var(--bg-color);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    box-shadow: var(--relief-inset);
+    transition: var(--transition);
+    -webkit-appearance: none; /* Uniforma renders en Safari/iOS */
+    appearance: none;
+}
+
+.tarea-field-group input:focus,
+.tarea-field-group select:focus,
+.tarea-field-group textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(27, 67, 50, 0.15);
+}
+
+/* Contenedor Adaptable para Tablas de Datos */
 .table-wrapper {
-  overflow-x: auto;
-  max-width: 100%;
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch; /* Desplazamiento suave en móviles */
+    margin-top: 0.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
 }
 
-* {
-  box-sizing: border-box;
+.table-wrapper table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 600px; /* Evita compresión excesiva de datos en pantallas pequeñas */
+}
+
+.table-wrapper th, 
+.table-wrapper td {
+    padding: 0.75rem 0.5rem;
+    text-align: left;
+    font-size: 0.875rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+/* ==========================================================================
+   MEDIA QUERIES - OPTIMIZACIÓN RESPONSIVA
+   ========================================================================== */
+
+/* Dispositivos Móviles (Smartphones en Retrato - hasta 576px) */
+@media screen and (max-width: 576px) {
+    .planificacion-tareas-card {
+        padding: 0.85rem;
+        border-radius: var(--radius-md);
+    }
+
+    :root {
+        --font-size-xl: 1.4rem;
+        --font-size-md: 1.1rem;
+        --font-size-base: 0.9rem;
+    }
+
+    /* Forzar diseño en 1 sola columna vertical */
+    .form-row,
+    .grid-container {
+        display: flex !important;
+        flex-direction: column !important;
+        width: 100% !important;
+        gap: 0.85rem !important;
+    }
+
+    /* Botones táctiles de ancho completo */
+    .btn,
+    button[type="submit"],
+    .btn-action {
+        width: 100%;
+        min-height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+        font-weight: 600;
+    }
+}
+
+/* Tablets y Dispositivos Medianos (577px a 768px) */
+@media screen and (min-width: 577px) and (max-width: 768px) {
+    .form-row {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
 }
