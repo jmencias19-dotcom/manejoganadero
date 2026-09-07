@@ -39,6 +39,72 @@
 }
 
 /* ==========================================================================
+   ESTILOS ADICIONALES PARA LA CABECERA (BANDERAS Y SILUETAS GANADERAS)
+   ========================================================================== */
+.header-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    max-width: 1000px;
+    margin: 0 auto;
+    flex-wrap: nowrap;
+}
+
+.flag-container {
+    width: 60px;
+    height: 40px;
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    flex-shrink: 0;
+    border: 1px solid var(--border-color);
+}
+
+.flag-icon {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.header-title-wrapper {
+    flex-grow: 1;
+    text-align: center;
+}
+
+.animal-silhouettes-top {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    margin-bottom: 6px;
+    color: var(--primary-color); /* Tono verde corporativo para las siluetas */
+}
+
+.animal-icon {
+    width: 28px;
+    height: 28px;
+    opacity: 0.9;
+}
+
+/* Ajustes responsivos para pantallas móviles */
+@media (max-width: 600px) {
+    .header-container {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .flag-container {
+        width: 50px;
+        height: 34px;
+        order: 2; /* Sitúa las banderas debajo del título en pantallas muy angostas si se prefiere, o déjalas al lado usando display flex en row */
+    }
+
+    .header-title-wrapper {
+        order: 1;
+    }
+}
+
+/* ==========================================================================
    2. REGLAS GLOBALES Y LAYOUT BASE
    ========================================================================== */
 * {
