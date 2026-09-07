@@ -13,15 +13,53 @@
 <body>
 
     <header class="main-header">
-        <h1>Gestión Ganadera Hato Laguna Brava
-            <br><span style="font-size: 0.75em; font-weight: 600;">Grupo Imperatori</span>
-        </h1>
-        <p>Panel de Control Directo - Operaciones de Campo</p>
+        <div class="header-container">
+            <!-- Bandera de Venezuela (SVG) -->
+            <div class="flag-container" aria-label="Bandera de Venezuela">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600" class="flag-icon">
+                    <rect width="900" height="600" fill="#cf142b"/>
+                    <rect width="900" height="400" fill="#00247d"/>
+                    <rect width="900" height="200" fill="#fcdd09"/>
+                    <!-- Estrellas simplificadas para el diseño responsivo -->
+                    <g fill="#ffffff" transform="translate(450, 300) scale(0.7)">
+                        <!-- Representación central estilizada de las estrellas del tricolor -->
+                        <circle cx="-120" cy="-30" r="12"/><circle cx="-80" cy="-50" r="12"/><circle cx="-40" cy="-60" r="12"/><circle cx="0" cy="-65" r="12"/><circle cx="40" cy="-60" r="12"/><circle cx="80" cy="-50" r="12"/><circle cx="120" cy="-30" r="12"/>
+                    </g>
+                </svg>
+            </div>
+
+            <!-- Título Central con Siluetas de Ganado (Vaca y Búfalo) -->
+            <div class="header-title-wrapper">
+                <div class="animal-silhouettes-top">
+                    <!-- Silueta Vaca Cebú/Brahman -->
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="animal-icon" fill="currentColor" aria-hidden="true">
+                        <path d="M4 8h2V6h2v2h8V6h2v2h2v4h-1v6h-2v-2H7v2H5v-6H4V8zm3 2v2h10v-2H7z"/>
+                    </svg>
+                    <!-- Silueta Búfalo de Agua -->
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="animal-icon" fill="currentColor" aria-hidden="true">
+                        <path d="M2 10c0-2 2-4 5-4h1V5h2v1h6V5h2v1h1c3 0 5 2 5 4v3h-2v4h-2v-2H6v2H4v-4H2v-3zm5-2c-1.1 0-2 .9-2 2v1h2V8h-2zm10 0v3h2V9c0-1.1-.9-2-2-2z"/>
+                    </svg>
+                </div>
+                <h1>Gestión Ganadera Hato Laguna Brava
+                    <br><span style="font-size: 0.75em; font-weight: 600;">Grupo Imperatori</span>
+                </h1>
+                <p>Panel de Control Directo - Operaciones de Campo</p>
+            </div>
+
+            <!-- Bandera de Italia (SVG) -->
+            <div class="flag-container" aria-label="Bandera de Italia">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600" class="flag-icon">
+                    <rect width="900" height="600" fill="#cd212a"/>
+                    <rect width="600" height="600" fill="#ffffff"/>
+                    <rect width="300" height="600" fill="#009246"/>
+                </svg>
+            </div>
+        </div>
     </header>
 
     <main class="dashboard-grid">
 
-        <!-- Módulo 1: Añadida clase card-tareas -->
+        <!-- Módulo 1 -->
         <article class="card card-tareas">
             <div>
                 <header class="card-header">
@@ -33,7 +71,7 @@
             <a href="tareas.html" class="card-action" aria-label="Acceder al módulo de Planificación de Tareas">Acceder a Tareas</a>
         </article>
 
-        <!-- Módulo 2: Añadida clase card-pastereo -->
+        <!-- Módulo 2 -->
         <article class="card card-pastereo">
             <div>
                 <header class="card-header">
@@ -45,7 +83,7 @@
             <a href="pastoreo.html" class="card-action" aria-label="Ver Historial de Pastoreo">Ver Historial</a>
         </article>
 
-        <!-- Módulo 3: Añadida clase card-potreros -->
+        <!-- Módulo 3 -->
         <article class="card card-potreros">
             <div>
                 <header class="card-header">
@@ -57,7 +95,7 @@
             <a href="potreros.html" class="card-action" aria-label="Gestionar Potreros">Gestionar Potreros</a>
         </article>
 
-        <!-- Módulo 4: Añadida clase card-pesajes -->
+        <!-- Módulo 4 -->
         <article class="card card-pesajes">
             <div>
                 <header class="card-header">
@@ -69,7 +107,7 @@
             <a href="pesajes.html" class="card-action" aria-label="Registrar Pesajes">Registrar Pesajes</a>
         </article>
 
-        <!-- Módulo 5: Añadida clase card-sanitario -->
+        <!-- Módulo 5 -->
         <article class="card card-sanitario">
             <div>
                 <header class="card-header">
@@ -81,7 +119,7 @@
             <a href="sanidad.html" class="card-action" aria-label="Ver Control Sanitario">Ver Sanidad</a>
         </article>
 
-        <!-- Módulo 6: Añadida clase card-eventos -->
+        <!-- Módulo 6 -->
         <article class="card card-eventos">
             <div>
                 <header class="card-header">
@@ -90,7 +128,7 @@
                 </header>
                 <p class="card-description">Novedades zootécnicas en tiempo real: partos/nacimientos, bajas por mortalidad, ventas, compras y traslados internos de lotes.</p>
             </div>
-            <a href="eventos.html" class="card-action" aria-label="Registrar Evento Zootécnico">Registrar Evento</a>
+            <a href="eventos.html" class="card-action" aria-label="Registrogistrar Evento Zootécnico">Registrar Evento</a>
         </article>
 
         <!-- Módulo 7: Combustible y Maquinarias -->
