@@ -8,6 +8,7 @@
 }
 
 body {
+ background-color: #000000;
  font-family: sans-serif;
  color: var(--text-main);
  margin: 0;
