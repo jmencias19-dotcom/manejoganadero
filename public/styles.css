@@ -226,15 +226,16 @@ body {
 }
 
 /* ==========================================================================
-   7. EXTENSIÓN DE CABECERA: BANDERAS Y SILUETAS DE GANADO
+   ESTILOS DE LA CABECERA - HATO LAGUNA BRAVA
    ========================================================================== */
+
 .main-header {
     background-color: var(--card-bg);
-    border-bottom: 1px solid var(--border-color);
-    padding: 20px 16px;
+    border-bottom: 2px solid var(--border-color);
+    padding: 1.5rem 1rem;
     box-shadow: var(--relief-shadow);
-    margin-bottom: 35px;
     border-radius: var(--radius-lg);
+    margin-bottom: 35px;
 }
 
 .header-container {
@@ -242,24 +243,19 @@ body {
     margin: 0 auto;
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: space-between; /* Distribuye banderas a los lados y centro */
     gap: 1.5rem;
     flex-wrap: wrap;
-}
-
-.flags-top-group {
-    display: flex;
-    align-items: center;
-    gap: 12px;
+    text-align: center;
 }
 
 .flag-container {
-    width: 56px;
-    height: 38px;
-    border-radius: 6px;
+    width: 65px;
+    height: 44px;
+    border-radius: var(--radius-sm);
     overflow: hidden;
-    box-shadow: var(--relief-inset);
-    border: 1px solid var(--border-color);
+    box-shadow: var(--relief-shadow);
+    border: 1px solid rgba(255, 255, 255, 0.8);
     flex-shrink: 0;
 }
 
@@ -272,54 +268,57 @@ body {
 
 .header-title-wrapper {
     flex: 1;
-    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
     min-width: 280px;
 }
 
 .animal-silhouettes-top {
     display: flex;
-    justify-content: center;
-    gap: 12px;
-    margin-bottom: 6px;
+    gap: 1.2rem;
     color: var(--primary-color);
+    margin-bottom: 0.2rem;
 }
 
 .animal-icon {
-    width: 26px;
-    height: 26px;
+    width: 36px;
+    height: 36px;
 }
 
 .header-title-wrapper h1 {
-    font-size: var(--font-size-xl);
+    font-size: var(--font-size-lg);
     font-weight: 800;
     color: var(--text-main);
     margin: 0;
-    line-height: 1.2;
-    letter-spacing: -0.5px;
-}
-
-.header-title-wrapper h1 span {
-    font-size: 0.75em;
-    font-weight: 600;
-    color: var(--primary-color);
+    line-height: 1.25;
 }
 
 .header-title-wrapper p {
-    color: var(--text-muted);
+    margin: 0;
     font-size: var(--font-size-base);
-    font-weight: 500;
-    margin-top: 4px;
+    color: var(--text-muted);
+    font-weight: 600;
 }
 
+/* Responsivo para pantallas pequeñas (móviles de campo) */
 @media (max-width: 768px) {
     .header-container {
         flex-direction: column;
-        text-align: center;
+        justify-content: center;
     }
     
-    .flags-top-group {
-        justify-content: center;
+    .header-title-wrapper {
+        order: 1; /* Pone el título arriba en celulares */
         width: 100%;
-        margin-bottom: 4px;
+    }
+    
+    .flag-container:nth-of-type(1) {
+        order: 2; /* Bandera izquierda abajo */
+    }
+    
+    .flag-container:nth-of-type(2) {
+        order: 3; /* Bandera derecha abajo */
     }
 }
