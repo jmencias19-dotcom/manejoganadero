@@ -251,3 +251,102 @@ header p {
         margin-bottom: 18px;
     }
 }
+
+/* ==========================================================================
+   7. EXTENSIÓN DE CABECERA: BANDERAS Y SILUETAS DE GANADO
+   ========================================================================== */
+.main-header {
+    background-color: var(--card-bg);
+    border-bottom: 1px solid var(--border-color);
+    padding: 20px 16px;
+    box-shadow: var(--relief-shadow);
+    margin-bottom: 35px;
+    border-radius: var(--radius-lg);
+}
+
+.header-container {
+    max-width: 1280px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.flags-top-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.flag-container {
+    width: 56px;
+    height: 38px;
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: var(--relief-inset);
+    border: 1px solid var(--border-color);
+    flex-shrink: 0;
+}
+
+.flag-icon {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.header-title-wrapper {
+    flex: 1;
+    text-align: center;
+    min-width: 280px;
+}
+
+.animal-silhouettes-top {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 6px;
+    color: var(--primary-color);
+}
+
+.animal-icon {
+    width: 26px;
+    height: 26px;
+}
+
+.header-title-wrapper h1 {
+    font-size: var(--font-size-xl);
+    font-weight: 800;
+    color: var(--text-main);
+    margin: 0;
+    line-height: 1.2;
+    letter-spacing: -0.5px;
+}
+
+.header-title-wrapper h1 span {
+    font-size: 0.75em;
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+.header-title-wrapper p {
+    color: var(--text-muted);
+    font-size: var(--font-size-base);
+    font-weight: 500;
+    margin-top: 4px;
+}
+
+@media (max-width: 768px) {
+    .header-container {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .flags-top-group {
+        justify-content: center;
+        width: 100%;
+        margin-bottom: 4px;
+    }
+}
