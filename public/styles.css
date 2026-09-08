@@ -3,22 +3,22 @@
    ========================================================================== */
 :root {
     /* Paleta Principal: Modo Oscuro UI */
-    --bg-color: #16181a;             /* Fondo general gris oscuro/casi negro */
-    --card-bg: #212529;             /* Fondo de las tarjetas contenedor */
-    --card-hover: #2b3036;          /* Estado hover de las tarjetas */
+    --bg-color: #16181a;              /* Fondo general gris oscuro/casi negro */
+    --card-bg: #212529;               /* Fondo de las tarjetas contenedor */
+    --card-hover: #2b3036;            /* Estado hover de las tarjetas */
     
     /* Colores de Acento y Botones */
-    --primary-color: #22c55e;        /* Verde brillante de acción */
-    --primary-hover: #16a34a;        /* Verde intenso para hover */
-    --btn-text: #ffffff;             /* Texto dentro de los botones verdes */
+    --primary-color: #22c55e;         /* Verde brillante de acción */
+    --primary-hover: #16a34a;         /* Verde intenso para hover */
+    --btn-text: #ffffff;              /* Texto dentro de los botones verdes */
 
     /* Insignias de Íconos (Badges) */
-    --icon-bg: #fef08a;             /* Fondo amarillo pastel para la caja del ícono */
+    --icon-bg: #fef08a;               /* Fondo amarillo pastel para la caja del ícono */
 
     /* Tipografía y Bordes */
-    --text-main: #ffffff;            /* Texto principal (Títulos) */
-    --text-muted: #9ca3af;           /* Texto secundario y descripciones */
-    --border-color: #2e343b;         /* Borde sutil entre contenedores */
+    --text-main: #ffffff;             /* Texto principal (Títulos) */
+    --text-muted: #9ca3af;            /* Texto secundario y descripciones */
+    --border-color: #2e343b;          /* Borde sutil entre contenedores */
 
     /* Escala Tipográfica Base (Desktop) */
     --font-size-base: 0.95rem;
@@ -54,30 +54,6 @@ body {
     line-height: 1.5;
     padding: 24px;
     min-height: 100vh;
-}
-
-/* Cambiamos el selector genérico 'header' por la clase exacta '.main-header' */
-.main-header {
-    background-color: var(--card-bg);
-    border-bottom: 1px solid var(--border-color);
-    padding: 20px 16px;
-    box-shadow: var(--relief-shadow);
-    margin-bottom: 35px;
-    border-radius: var(--radius-lg);
-}
-
-.main-header h1 {
-    color: var(--text-main);
-    font-size: var(--font-size-xl);
-    font-weight: 800;
-    letter-spacing: -0.5px;
-}
-
-.main-header p {
-    color: var(--text-muted);
-    font-size: var(--font-size-base);
-    font-weight: 500;
-    margin-top: 4px;
 }
 
 /* ==========================================================================
@@ -190,7 +166,7 @@ body {
     align-items: center;
     justify-content: center;
     width: 100%;
-    min-height: 46px; /* Altura ergonómica para toque en pantallas táctiles */
+    min-height: 46px;
     padding: 12px 18px;
     background-color: var(--primary-color);
     color: var(--btn-text);
@@ -206,7 +182,7 @@ body {
 }
 
 .card-action:active {
-    transform: scale(0.98); /* Feedback visual táctil al presionar en móvil */
+    transform: scale(0.98);
 }
 
 .card-action:hover {
@@ -220,24 +196,16 @@ body {
    ========================================================================== */
 @media (max-width: 480px) {
     body {
-        padding: 12px; /* Reduce los márgenes exteriores de la pantalla */
-    }
-
-    header {
-        margin-bottom: 20px;
-    }
-
-    header h1 {
-        font-size: 1.5rem; /* Ajusta el título principal para que no rompa en pantallas estrechas */
+        padding: 12px;
     }
 
     .dashboard-grid {
-        grid-template-columns: 1fr; /* Columna única en teléfonos móviles para lectura fluida */
+        grid-template-columns: 1fr;
         gap: 16px;
     }
 
     .card {
-        padding: 18px; /* Tarjetas más compactas pero con suficiente espacio táctil */
+        padding: 18px;
     }
 
     .card-header {
