@@ -10,26 +10,118 @@
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="tareas.css">
 
+    <style>
+        /* Estilos específicos para alinear las banderas y el título superior perfectamente */
+        .main-header {
+            background-color: var(--header-bg, #1e293b);
+            color: #fff;
+            padding: 1.5rem 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+        }
+        .flags-top-group {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .flag-container {
+            width: 60px;
+            height: 40px;
+            border-radius: 4px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            flex-shrink: 0;
+        }
+        .flag-icon {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        .header-title-wrapper {
+            flex: 1;
+            text-align: center;
+            min-width: 280px;
+        }
+        .animal-silhouettes-top {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 0.5rem;
+            color: #38bdf8;
+        }
+        .animal-icon {
+            width: 28px;
+            height: 28px;
+        }
+        .header-title-wrapper h1 {
+            font-size: 1.6rem;
+            font-weight: 800;
+            margin: 0;
+            line-height: 1.2;
+            letter-spacing: -0.025em;
+        }
+        .header-title-wrapper h1 span {
+            font-size: 0.85em;
+            font-weight: 600;
+            color: #38bdf8;
+        }
+        .header-title-wrapper p {
+            margin: 0.4rem 0 0 0;
+            font-size: 0.95rem;
+            color: #94a3b8;
+        }
+
+        @media (max-width: 768px) {
+            .header-container {
+                flex-direction: column;
+                text-align: center;
+            }
+            .flags-top-group {
+                justify-content: center;
+                width: 100%;
+                margin-bottom: 0.5rem;
+            }
+        }
+    </style>
 </head>
 <body>
 
     <header class="main-header">
         <div class="header-container">
-            <!-- Bandera de Venezuela (SVG) -->
-            <div class="flag-container" aria-label="Bandera de Venezuela">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600" class="flag-icon">
-                    <rect width="900" height="600" fill="#cf142b"/>
-                    <rect width="900" height="400" fill="#00247d"/>
-                    <rect width="900" height="200" fill="#fcdd09"/>
-                    <!-- Estrellas simplificadas para el diseño responsivo -->
-                    <g fill="#ffffff" transform="translate(450, 300) scale(0.7)">
-                        <!-- Representación central estilizada de las estrellas del tricolor -->
-                        <circle cx="-120" cy="-30" r="12"/><circle cx="-80" cy="-50" r="12"/><circle cx="-40" cy="-60" r="12"/><circle cx="0" cy="-65" r="12"/><circle cx="40" cy="-60" r="12"/><circle cx="80" cy="-50" r="12"/><circle cx="120" cy="-30" r="12"/>
-                    </g>
-                </svg>
+            <!-- Grupo de Banderas en la Parte Superior Izquierda/Centro -->
+            <div class="flags-top-group" aria-label="Banderas representativas">
+                <!-- Bandera de Venezuela (SVG) -->
+                <div class="flag-container" aria-label="Bandera de Venezuela">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600" class="flag-icon">
+                        <rect width="900" height="600" fill="#cf142b"/>
+                        <rect width="900" height="400" fill="#00247d"/>
+                        <rect width="900" height="200" fill="#fcdd09"/>
+                        <g fill="#ffffff" transform="translate(450, 300) scale(0.7)">
+                            <circle cx="-120" cy="-30" r="12"/><circle cx="-80" cy="-50" r="12"/><circle cx="-40" cy="-60" r="12"/><circle cx="0" cy="-65" r="12"/><circle cx="40" cy="-60" r="12"/><circle cx="80" cy="-50" r="12"/><circle cx="120" cy="-30" r="12"/>
+                        </g>
+                    </svg>
+                </div>
+
+                <!-- Bandera de Italia (SVG) -->
+                <div class="flag-container" aria-label="Bandera de Italia">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600" class="flag-icon">
+                        <rect width="900" height="600" fill="#cd212a"/>
+                        <rect width="600" height="600" fill="#ffffff"/>
+                        <rect width="300" height="600" fill="#009246"/>
+                    </svg>
+                </div>
             </div>
 
-            <!-- Título Central con Siluetas de Ganado (Vaca y Búfalo) -->
+            <!-- Título Central con Siluetas de Ganado, Hato Laguna Brava y Grupo Imperatori -->
             <div class="header-title-wrapper">
                 <div class="animal-silhouettes-top">
                     <!-- Silueta Vaca Cebú/Brahman -->
@@ -41,19 +133,10 @@
                         <path d="M2 10c0-2 2-4 5-4h1V5h2v1h6V5h2v1h1c3 0 5 2 5 4v3h-2v4h-2v-2H6v2H4v-4H2v-3zm5-2c-1.1 0-2 .9-2 2v1h2V8h-2zm10 0v3h2V9c0-1.1-.9-2-2-2z"/>
                     </svg>
                 </div>
-                <h1>Gestión Ganadera Hato Laguna Brava
-                    <br><span style="font-size: 0.75em; font-weight: 600;">Grupo Imperatori</span>
+                <h1>Sistema de Gestión Ganadera - Hato Laguna Brava
+                    <br><span>Grupo Imperatori</span>
                 </h1>
                 <p>Panel de Control Directo - Operaciones de Campo</p>
-            </div>
-
-            <!-- Bandera de Italia (SVG) -->
-            <div class="flag-container" aria-label="Bandera de Italia">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600" class="flag-icon">
-                    <rect width="900" height="600" fill="#cd212a"/>
-                    <rect width="600" height="600" fill="#ffffff"/>
-                    <rect width="300" height="600" fill="#009246"/>
-                </svg>
             </div>
         </div>
     </header>
@@ -129,7 +212,7 @@
                 </header>
                 <p class="card-description">Novedades zootécnicas en tiempo real: partos/nacimientos, bajas por mortalidad, ventas, compras y traslados internos de lotes.</p>
             </div>
-            <a href="eventos.html" class="card-action" aria-label="Registrogistrar Evento Zootécnico">Registrar Evento</a>
+            <a href="eventos.html" class="card-action" aria-label="Registrar Evento Zootécnico">Registrar Evento</a>
         </article>
 
         <!-- Módulo 7: Combustible y Maquinarias -->
