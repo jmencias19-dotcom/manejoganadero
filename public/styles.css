@@ -18,7 +18,7 @@
     /* Tipografía y Bordes */
     --text-main: #ffffff;             /* Texto principal (Títulos) */
     --text-muted: #9ca3af;            /* Texto secundario y descripciones */
-    --border-color: #2e343b;          /* Borde sutil entre contenedores */
+    --border-color: #ffffff;          /* Borde sutil entre contenedores */
 
     /* Escala Tipográfica Base (Desktop) */
     --font-size-base: 0.95rem;
