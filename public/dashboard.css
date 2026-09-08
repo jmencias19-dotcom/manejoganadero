@@ -8,7 +8,7 @@
 }
 
 body {
- background-color: #000000;
+background: linear-gradient(135deg, #1A1A1A, #050505);
  font-family: sans-serif;
  color: var(--text-main);
  margin: 0;
