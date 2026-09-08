@@ -1,228 +1,123 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Gestión Ganadera - Planificación de Tareas</title>
-  <!-- Archivos de CSS externos -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Gestión Ganadera - Hato Laguna Brava</title>
+    
+    <!-- Archivos de CSS externos -->
     <link rel="stylesheet" href="variables.css?v=1.1">
     <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="tareas.css">
-  <style>
-    body { font-family: Arial, sans-serif; margin: 20px; background-color: #f4f6f8; }
-    .container { max-width: 900px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-    h1 { color: #2c3e50; }
-    form { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
-    form div.full { grid-column: span 2; }
-    input, select, button { padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; }
-    button { background-color: #27ae60; color: white; border: none; cursor: pointer; }
-    button:hover { background-color: #219150; }
-    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-    th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
-    th { background-color: #f8f9fa; }
-    .btn-delete { background-color: #e74c3c; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; }
-    .status-badge { padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; }
-    #statusText { margin-bottom: 15px; font-weight: bold; }
-  </style>
+
 </head>
 <body>
 
-  <div class="container">
-    <h1>Planificación de Tareas</h1>
-    <div id="statusText">Conectando a la nube...</div>
+    <header class="main-header">
+        <h1>Gestión Ganadera Hato Laguna Brava
+            <br><span style="font-size: 0.75em; font-weight: 600;">Grupo Imperatori</span>
+        </h1>
+        <p>Panel de Control Directo - Operaciones de Campo</p>
+    </header>
 
-    <!-- Formulario para agregar labores -->
-    <form id="taskForm">
-      <div>
-        <label for="fecha">Fecha:</label>
-        <input type="date" id="fecha" required>
-      </div>
-      <div>
-        <label for="labor">Labor / Actividad:</label>
-        <input type="text" id="labor" placeholder="Ej. Limpieza de bebederos" required>
-      </div>
-      <div>
-        <label for="personal">Personal Asignado:</label>
-        <input type="text" id="personal" placeholder="Ej. Juan / Pedro" required>
-      </div>
-      <div class="full">
-        <label for="observaciones">Observaciones:</label>
-        <input type="text" id="observaciones" placeholder="Detalles adicionales">
-      </div>
-      <div class="full">
-        <button type="submit" id="btnSubmit">Guardar Tarea</button>
-      </div>
-    </form>
+    <main class="dashboard-grid">
 
-    <!-- Tabla para listar registros de Firestore -->
-    <table>
-      <thead>
-        <tr>
-          <th>Fecha</th>
-          <th>Labor</th>
-          <th>Personal</th>
-          <th>Observaciones</th>
-          <th>Estado</th>
-          <th>Acciones</th>
-        </tr>
-      </thead>
-      <tbody id="taskTableBody">
-        <tr><td colspan="6" style="text-align:center;">Cargando tareas...</td></tr>
-      </tbody>
-    </table>
-  </div>
+        <!-- Módulo 1 -->
+        <article class="card">
+            <div>
+                <header class="card-header">
+                    <div class="card-icon" aria-hidden="true"></div>
+                    <h2 class="card-title">Planificación de Tareas</h2>
+                </header>
+                <p class="card-description">Programación y asignación de labores diarias del personal de campo (mantenimiento de cercas, roza, limpieza de bebederos y faenas de corral).</p>
+            </div>
+            <a href="tareas.html" class="card-action" aria-label="Acceder al módulo de Planificación de Tareas">Acceder a Tareas</a>
+        </article>
 
-  <!-- Script con integración de Firebase SDK v10 (Module) -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { 
-      getFirestore, 
-      collection, 
-      addDoc, 
-      updateDoc, 
-      deleteDoc, 
-      doc, 
-      onSnapshot,
-      enableIndexedDbPersistence,
-      serverTimestamp
-    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        <!-- Módulo 2 -->
+        <article class="card">
+            <div>
+                <header class="card-header">
+                    <div class="card-icon" aria-hidden="true"></div>
+                    <h2 class="card-title">Historial de Pastoreo</h2>
+                </header>
+                <p class="card-description">Bitácora técnica de rotación de lotes: días de ocupación, períodos de descanso por potrero, remanente de pasto y carga animal sostenida.</p>
+            </div>
+            <a href="pastoreo.html" class="card-action" aria-label="Ver Historial de Pastoreo">Ver Historial</a>
+        </article>
 
-    // Configuración de tu proyecto Firebase
-    const firebaseConfig = {
-      apiKey: "AIzaSyBnIBOrPQULTOf55YSmsX2C-2rN5pTANK",
-      authDomain: "hato-laguna-brava.firebaseapp.com",
-      projectId: "hato-laguna-brava",
-      storageBucket: "hato-laguna-brava.appspot.com",
-      messagingSenderId: "1053099733476",
-      appId: "1:1053099733476:web:541a115776b2e0004d7f1",
-      measurementId: "G-RSW0XSHF1F"
-    };
+        <!-- Módulo 3 -->
+        <article class="card">
+            <div>
+                <header class="card-header">
+                    <div class="card-icon" aria-hidden="true"></div>
+                    <h2 class="card-title">Potreros</h2>
+                </header>
+                <p class="card-description">Delimitación y estado de potreros: aforo de forraje disponible, disponibilidad de agua, sombras y capacidad de soporte por hectárea.</p>
+            </div>
+            <a href="potreros.html" class="card-action" aria-label="Gestionar Potreros">Gestionar Potreros</a>
+        </article>
 
-    // Inicializar Firebase y Firestore
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-    const tasksCollection = collection(db, "tareas");
+        <!-- Módulo 4 -->
+        <article class="card">
+            <div>
+                <header class="card-header">
+                    <div class="card-icon" aria-hidden="true"></div>
+                    <h2 class="card-title">Dinámica de Pesajes</h2>
+                </header>
+                <p class="card-description">Evaluación del crecimiento ponderal: seguimiento a la ganancia media diaria (GMD), pesajes de destete y curva de desarrollo de mautas/mautes.</p>
+            </div>
+            <a href="pesajes.html" class="card-action" aria-label="Registrar Pesajes">Registrar Pesajes</a>
+        </article>
 
-    // Habilitar Persistencia Offline para Celular y PC
-    enableIndexedDbPersistence(db).catch((err) => {
-      if (err.code === 'failed-precondition') {
-        console.warn('Múltiples pestañas abiertas, la persistencia se ejecutará en una sola.');
-      } else if (err.code === 'unimplemented') {
-        console.warn('El navegador no soporta persistencia offline.');
-      }
-    });
+        <!-- Módulo 5 -->
+        <article class="card">
+            <div>
+                <header class="card-header">
+                    <div class="card-icon" aria-hidden="true"></div>
+                    <h2 class="card-title">Control Sanitario</h2>
+                </header>
+                <p class="card-description">Planes zoosanitarios: ciclos de vacunación, esquema de desparasitación, tratamientos clínicos de campo y aislamiento en enfermería.</p>
+            </div>
+            <a href="sanidad.html" class="card-action" aria-label="Ver Control Sanitario">Ver Sanidad</a>
+        </article>
 
-    // Referencias al DOM
-    const taskForm = document.getElementById('taskForm');
-    const taskTableBody = document.getElementById('taskTableBody');
-    const statusText = document.getElementById('statusText');
-    const btnSubmit = document.getElementById('btnSubmit');
+        <!-- Módulo 6 -->
+        <article class="card">
+            <div>
+                <header class="card-header">
+                    <div class="card-icon" aria-hidden="true"></div>
+                    <h2 class="card-title">Eventos</h2>
+                </header>
+                <p class="card-description">Novedades zootécnicas en tiempo real: partos/nacimientos, bajas por mortalidad, ventas, compras y traslados internos de lotes.</p>
+            </div>
+            <a href="eventos.html" class="card-action" aria-label="Registrar Evento Zootécnico">Registrar Evento</a>
+        </article>
 
-    function setSyncStatus(isSyncing, isError = false, errorMessage = "") {
-      if (isError) {
-        statusText.textContent = errorMessage || "Error de Conexión o Permisos en Firestore";
-        statusText.style.color = "red";
-      } else if (isSyncing) {
-        statusText.textContent = "Sincronizando con la Nube...";
-        statusText.style.color = "orange";
-      } else {
-        statusText.textContent = "Conectado a la Nube (Sincronizado)";
-        statusText.style.color = "green";
-      }
-    }
+        <!-- Módulo 7: Combustible y Maquinarias -->
+        <article class="card card-maquinaria">
+            <div>
+                <header class="card-header">
+                    <div class="card-icon" aria-hidden="true"></div>
+                    <h2 class="card-title">Combustible y Maquinarias</h2>
+                </header>
+                <p class="card-description">Control de insumos energéticos y parque automotor: inventario de diésel/gasolina, horas-motor (horómetros), mantenimiento preventivo de tractores, camionetas y motos de trabajo.</p>
+            </div>
+            <a href="maquinaria.html" class="card-action" aria-label="Gestionar Combustible y Maquinarias">Gestionar Maquinaria</a>
+        </article>
 
-    // Escuchar cambios en tiempo real
-    onSnapshot(tasksCollection, { includeMetadataChanges: true }, (snapshot) => {
-      const hasPendingWrites = snapshot.metadata.hasPendingWrites;
-      
-      if (snapshot.empty) {
-        taskTableBody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No hay tareas registradas.</td></tr>';
-        setSyncStatus(hasPendingWrites);
-        return;
-      }
+        <!-- Módulo 8: Logística y Comida -->
+        <article class="card card-logistica">
+            <div>
+                <header class="card-header">
+                    <div class="card-icon" aria-hidden="true"></div>
+                    <h2 class="card-title">Logística y Comida</h2>
+                </header>
+                <p class="card-description">Administración de víveres e insumos operativos: control de remesas para la cocina del personal de campo, herramientas, repuestos y logística de despachos.</p>
+            </div>
+            <a href="logistica.html" class="card-action" aria-label="Gestionar Logística y Comida">Ver Logística</a>
+        </article>
 
-      taskTableBody.innerHTML = '';
-      snapshot.forEach((docSnap) => {
-        const task = docSnap.data();
-        const id = docSnap.id;
-        
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td>${task.fecha || ''}</td>
-          <td>${task.labor || ''}</td>
-          <td>${task.personal || ''}</td>
-          <td>${task.observaciones || ''}</td>
-          <td>
-            <select onchange="window.updateTaskStatus('${id}', this.value)">
-              <option value="Pendiente" ${task.estado === 'Pendiente' ? 'selected' : ''}>Pendiente</option>
-              <option value="En Proceso" ${task.estado === 'En Proceso' ? 'selected' : ''}>En Proceso</option>
-              <option value="Completada" ${task.estado === 'Completada' ? 'selected' : ''}>Completada</option>
-            </select>
-          </td>
-          <td>
-            <button class="btn-delete" onclick="window.deleteTask('${id}')">Eliminar</button>
-          </td>
-        `;
-        taskTableBody.appendChild(tr);
-      });
-
-      setSyncStatus(hasPendingWrites);
-    }, (error) => {
-      console.error("Error en snapshot:", error);
-      setSyncStatus(false, true, "Error de Permisos: Verifica las Reglas de Firestore.");
-    });
-
-    // Registro de nueva labor desde el formulario
-    taskForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      btnSubmit.disabled = true;
-      setSyncStatus(true);
-
-      const nuevaTarea = {
-        fecha: document.getElementById('fecha').value,
-        labor: document.getElementById('labor').value,
-        personal: document.getElementById('personal').value,
-        observaciones: document.getElementById('observaciones').value,
-        estado: 'Pendiente',
-        creadoEn: serverTimestamp()
-      };
-
-      try {
-        await addDoc(tasksCollection, nuevaTarea);
-        taskForm.reset();
-      } catch (err) {
-        console.error("Error al guardar:", err);
-        setSyncStatus(false, true, "Error al guardar en la nube.");
-      } finally {
-        btnSubmit.disabled = false;
-      }
-    });
-
-    // Funciones CRUD globales para ser llamadas desde la tabla HTML
-    window.updateTaskStatus = async (id, newStatus) => {
-      setSyncStatus(true);
-      try {
-        const taskRef = doc(db, "tareas", id);
-        await updateDoc(taskRef, { estado: newStatus });
-      } catch (err) {
-        console.error("Error al actualizar estado:", err);
-        setSyncStatus(false, true, "Error al actualizar estado.");
-      }
-    };
-
-    window.deleteTask = async (id) => {
-      if (confirm('¿Deseas eliminar esta labor de la base de datos?')) {
-        setSyncStatus(true);
-        try {
-          const taskRef = doc(db, "tareas", id);
-          await deleteDoc(taskRef);
-        } catch (err) {
-          console.error("Error al eliminar:", err);
-          setSyncStatus(false, true, "Error al eliminar la tarea.");
-        }
-      }
-    };
-  </script>
+    </main>
 
 </body>
 </html>
