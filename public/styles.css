@@ -56,19 +56,24 @@ body {
     min-height: 100vh;
 }
 
-header {
-    text-align: center;
+/* Cambiamos el selector genérico 'header' por la clase exacta '.main-header' */
+.main-header {
+    background-color: var(--card-bg);
+    border-bottom: 1px solid var(--border-color);
+    padding: 20px 16px;
+    box-shadow: var(--relief-shadow);
     margin-bottom: 35px;
+    border-radius: var(--radius-lg);
 }
 
-header h1 {
+.main-header h1 {
     color: var(--text-main);
     font-size: var(--font-size-xl);
     font-weight: 800;
     letter-spacing: -0.5px;
 }
 
-header p {
+.main-header p {
     color: var(--text-muted);
     font-size: var(--font-size-base);
     font-weight: 500;
