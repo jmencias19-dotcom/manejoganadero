@@ -1,223 +1,90 @@
-/* ==========================================================================
-   PLANIFICACION Y TAREAS CSS - HATO LAGUNA BRAVA
-   Estilos específicos para el módulo de control operativo de campo
-   ========================================================================== */
+<!-- ==========================================================================
+     MÓDULO DE PLANIFICACIÓN DE TAREAS - HATO LAGUNA BRAVA
+     Estructura HTML limpia y acoplada a planificacion.css
+     ========================================================================== -->
+<section style="max-width: 1200px; margin: 30px auto; padding: 0 20px;" id="modulo-tareas">
+    <div class="planificacion-tareas-card">
+        
+        <!-- CABECERA DE ESTADO Y SEMÁFORO -->
+        <div class="header-ascii-box">
+            <span style="font-weight: bold; color: var(--accent-green, #2ecc71);">CONTROL OPERATIVO DE TAREAS - HATO</span>
+            <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                <span class="ascii-status-item">
+                    🚦 Estado de Sincronización: <span id="sync-text" style="color: #2ecc71;">VERDE (Conectado)</span>
+                    <div id="sync-semaforo" style="display:inline-block; width:10px; height:10px; background:#2ecc71; border-radius:50%; margin-left:4px;"></div>
+                </span>
+                <span class="ascii-status-item">
+                    🔊 Alarma: <span style="color: #2ecc71;">ACTIVA</span>
+                </span>
+            </div>
+        </div>
 
-/* Contenedor principal de la tarjeta del módulo */
-.planificacion-tareas-card {
-    background: rgba(18, 24, 20, 0.85);
-    border: 1px solid rgba(46, 204, 113, 0.25);
-    border-radius: 12px;
-    padding: 25px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-    backdrop-filter: blur(8px);
-    margin-bottom: 30px;
-    color: var(--text-main, #ffffff);
-}
+        <!-- 1. PANEL DE REGISTRO DE ACTIVIDADES -->
+        <h4>1. PANEL DE REGISTRO DE ACTIVIDADES</h4>
+        
+        <form id="tarea-form" class="tarea-form-grid">
+            
+            <div class="tarea-field-group">
+                <label for="tarea-fecha">• Fecha de Actividad:</label>
+                <input type="date" id="tarea-fecha" class="tarea-input" required>
+            </div>
 
-/* Cabecera de estado y semáforo ASCII / Sincronización */
-.header-ascii-box {
-    background: rgba(0, 0, 0, 0.4);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 8px;
-    padding: 14px 18px;
-    margin-bottom: 25px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 12px;
-    font-size: 13px;
-    font-family: monospace;
-}
+            <div class="tarea-field-group">
+                <label for="tarea-desc">• Descripción de Tareas:</label>
+                <textarea id="tarea-desc" class="tarea-textarea" placeholder="Espacio para escritura de la labor (ej. mantenimiento de cercas, roza)..." required></textarea>
+            </div>
 
-.ascii-status-item {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    font-weight: bold;
-}
+            <div class="tarea-field-group">
+                <label for="tarea-responsable">• Responsable:</label>
+                <input type="text" id="tarea-responsable" class="tarea-input" placeholder="Seleccionar o escribir responsable..." required>
+            </div>
 
-/* Títulos de sección internos */
-.planificacion-tareas-card h4 {
-    margin: 0 0 12px 0;
-    font-size: 14px;
-    letter-spacing: 0.5px;
-    color: var(--accent-green, #2ecc71);
-    text-transform: uppercase;
-    border-bottom: 1px solid rgba(46, 204, 113, 0.2);
-    padding-bottom: 6px;
-}
+            <div class="tarea-field-group">
+                <label for="tarea-observacion">• Observaciones:</label>
+                <textarea id="tarea-observacion" class="tarea-textarea" placeholder="Espacio para escritura de notas o insumos..."></textarea>
+            </div>
 
-/* Cuadrícula del formulario de registro */
-.tarea-form-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 15px;
-    margin-bottom: 20px;
-}
+            <div class="tarea-actions-group">
+                <button type="submit" class="btn-accion btn-guardar">[ 💾 GUARDAR Y SINCRONIZAR ]</button>
+                <button type="button" id="btn-rehacer" class="btn-accion btn-reiniciar">[ 🔄 REINICIAR TAREAS ]</button>
+            </div>
 
-.tarea-field-group {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-}
+        </form>
 
-.tarea-field-group label {
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--accent-green, #2ecc71);
-}
+        <!-- 2. ÁREA DE RESUMEN Y SEGUIMIENTO DE ACTIVIDADES -->
+        <div class="resumen-section">
+            <h4>2. ÁREA DE RESUMEN Y SEGUIMIENTO DE ACTIVIDADES</h4>
+            
+            <div class="filtros-rapidos-bar">
+                <span style="font-weight: bold; color: var(--text-main, #ffffff);">FILTROS RÁPIDOS:</span>
+                <button type="button" class="btn-filtro">[ 📌 Todos ]</button>
+                <button type="button" class="btn-filtro">[ ⏳ En Proceso ]</button>
+                <button type="button" class="btn-filtro">[ ⚠️ Pendientes ]</button>
+                <button type="button" class="btn-filtro">[ ✅ Ejecutadas ]</button>
+            </div>
 
-.tarea-input,
-.tarea-textarea {
-    width: 100%;
-    padding: 11px 14px;
-    background: rgba(0, 0, 0, 0.3);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    border-radius: 8px;
-    color: #fff;
-    font-size: 14px;
-    box-sizing: border-box;
-    transition: border-color 0.2s, box-shadow 0.2s;
-}
+            <div class="tabla-tareas-container">
+                <table class="tabla-tareas-hato">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Fecha</th>
+                            <th>Descripción</th>
+                            <th>Responsable</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-tareas-body">
+                        <!-- Inyección dinámica mediante tareas.js -->
+                    </tbody>
+                </table>
+            </div>
 
-.tarea-input:focus,
-.tarea-textarea:focus {
-    outline: none;
-    border-color: var(--accent-green, #2ecc71);
-    box-shadow: 0 0 8px rgba(46, 204, 113, 0.3);
-}
+            <div>
+                <button type="button" id="btn-borrar-sel" class="btn-borrar">[ 🗑️ BORRAR TAREA SELECCIONADA ]</button>
+            </div>
+        </div>
 
-.tarea-textarea {
-    resize: vertical;
-    min-height: 80px;
-}
-
-/* Grupo de botones de acción del formulario */
-.tarea-actions-group {
-    grid-column: 1 / -1;
-    display: flex;
-    gap: 12px;
-    flex-wrap: wrap;
-    margin-top: 5px;
-}
-
-.btn-accion {
-    padding: 11px 18px;
-    font-weight: bold;
-    border-radius: 8px;
-    border: none;
-    cursor: pointer;
-    font-size: 13px;
-    transition: transform 0.1s, opacity 0.2s;
-}
-
-.btn-accion:active {
-    transform: scale(0.98);
-}
-
-.btn-guardar {
-    background-color: var(--accent-green, #2ecc71);
-    color: #111;
-}
-
-.btn-guardar:hover {
-    opacity: 0.9;
-}
-
-.btn-reiniciar {
-    background: rgba(255, 255, 255, 0.1);
-    color: #fff;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.btn-reiniciar:hover {
-    background: rgba(255, 255, 255, 0.15);
-}
-
-/* Sección de resumen y seguimiento */
-.resumen-section {
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-    padding-top: 20px;
-    margin-top: 20px;
-}
-
-/* Barra de filtros rápidos */
-.filtros-rapidos-bar {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-    margin-bottom: 18px;
-    align-items: center;
-    font-size: 12px;
-}
-
-.btn-filtro {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    color: #fff;
-    padding: 6px 12px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 12px;
-    font-weight: 600;
-    transition: background 0.2s, border-color 0.2s;
-}
-
-.btn-filtro:hover {
-    background: rgba(46, 204, 113, 0.15);
-    border-color: var(--accent-green, #2ecc71);
-}
-
-/* Contenedor y tabla de tareas */
-.tabla-tareas-container {
-    width: 100%;
-    overflow-x: auto;
-    margin-bottom: 15px;
-    border-radius: 8px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.tabla-tareas-hato {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 13px;
-    text-align: left;
-    white-space: nowrap;
-}
-
-.tabla-tareas-hato th {
-    background: rgba(0, 0, 0, 0.3);
-    padding: 10px 12px;
-    border-bottom: 2px solid rgba(46, 204, 113, 0.3);
-    color: var(--accent-green, #2ecc71);
-    font-weight: bold;
-}
-
-.tabla-tareas-hato td {
-    padding: 10px 12px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-    color: #e2e8f0;
-}
-
-.tabla-tareas-hato tbody tr:hover {
-    background: rgba(255, 255, 255, 0.03);
-}
-
-/* Botón de borrado */
-.btn-borrar {
-    background-color: #c0392b;
-    color: #fff;
-    padding: 8px 14px;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: bold;
-    font-size: 12px;
-    transition: opacity 0.2s;
-}
-
-.btn-borrar:hover {
-    opacity: 0.85;
-}
+    </div>
+</section>
