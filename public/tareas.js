@@ -59,3 +59,5 @@ document.addEventListener('DOMContentLoaded', () => {
 
     renderTasks();
 });
+
+fetch('planificacion.html').then(response => response.text()) .then(data => document.querySelector('.task-management').innerHTML = data);
