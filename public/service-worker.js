@@ -3,6 +3,7 @@ const ASSETS_TO_CACHE = [
   '/',
   'index.html',
   'historial-pastoreo.html',
+  'tareas.html',
   'styles.css',
   'dashboard.css',
   'variables.css',
