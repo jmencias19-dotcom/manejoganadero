@@ -1,15 +1,21 @@
 <div class="planificacion-tareas-card">
   <h3>Planificación de Labores</h3>
   <form id="tarea-form">
-    <label for="tarea-labor">Labor:</label>
-    <input type="text" id="tarea-labor" required>
+    <div class="tarea-field-group">
+  <label for="tarea-labor">Labor:</label>
+  <input type="text" id="tarea-labor" class="tarea-input" required>
+</div>
+    <div class="tarea-field-group">
+  <label for="tarea-desc">Descripción:</label>
+  <textarea id="tarea-desc" class="tarea-textarea" required></textarea>
+</div>
 
-    <label for="tarea-desc">Descripción:</label>
-    <textarea id="tarea-desc" required></textarea>
+<div class="tarea-field-group">
+  <label for="tarea-fecha">Fecha:</label>
+  <input type="date" id="tarea-fecha" class="tarea-input" required>
+</div>
 
-    <label for="tarea-fecha">Fecha:</label>
-    <input type="date" id="tarea-fecha" required>
+<button type="submit" class="btn guardar">Guardar Tarea</button>
 
-    <button type="submit">Guardar Tarea</button>
   </form>
 </div>
