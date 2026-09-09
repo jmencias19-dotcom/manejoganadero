@@ -28,7 +28,7 @@
                 </svg>
             </div>
 
-            <!-- Título Central con Siluetas de Ganado (Vaca y Búfalo) -->
+            <!-- Título Central con Siluetas de Ganado -->
             <div class="header-title-wrapper">
                 <div class="animal-silhouettes-top">
                     <!-- Silueta Vaca Cebú/Brahman -->
@@ -59,6 +59,114 @@
 
     <main class="dashboard-grid">
 
+        <!-- Módulo 1: Planificación de Tareas (Con enlace a planificacion.css / formulario integrado) -->
+        <article id="modulo-tareas" class="card planificacion-tareas-card">
+            <div>
+                <header class="card-header">
+                    <div class="card-icon" aria-hidden="true"></div>
+                    <h2 class="card-title">Planificación de Tareas</h2>
+                </header>
+                <p class="card-description">Programación y asignación de labores diarias del personal de campo, mantenimiento y revisiones mecánicas.</p>
+            </div>
+            <a href="#modulo-tareas" class="card-action" aria-label="Acceder al módulo de Planificación de Tareas">Asignar Tareas</a>
+        </article>
+
+        <!-- Módulo 2: Historial de Pastoreo -->
+        <article class="card card-pastereo">
+            <div>
+                <header class="card-header">
+                    <div class="card-icon" aria-hidden="true"></div>
+                    <h2 class="card-title">Historial de Pastoreo</h2>
+                </header>
+                <p class="card-description">Bitácora técnica de rotación de lotes: días de ocupación, períodos de descanso por potrero y carga animal.</p>
+            </div>
+            <a href="#" class="card-action" aria-label="Ver Historial de Pastoreo">Próximamente</a>
+        </article>
+
+        <!-- Módulo 3: Potreros -->
+        <article class="card card-potreros">
+            <div>
+                <header class="card-header">
+                    <div class="card-icon" aria-hidden="true"></div>
+                    <h2 class="card-title">Potreros</h2>
+                </header>
+                <p class="card-description">Delimitación y estado de potreros: aforo de forraje disponible, disponibilidad de agua y sombras naturales.</p>
+            </div>
+            <a href="#" class="card-action" aria-label="Gestionar Potreros">Próximamente</a>
+        </article>
+
+        <!-- Módulo 4: Dinámica de Pesajes -->
+        <article class="card card-pesajes">
+            <div>
+                <header class="card-header">
+                    <div class="card-icon" aria-hidden="true"></div>
+                    <h2 class="card-title">Dinámica de Pesajes</h2>
+                </header>
+                <p class="card-description">Evaluación del crecimiento ponderal: ganancia media diaria (GMD), pesajes de destete y curva de desarrollo.</p>
+            </div>
+            <a href="#" class="card-action" aria-label="Registrar Pesajes">Próximamente</a>
+        </article>
+
+        <!-- Módulo 5: Control Sanitario -->
+        <article class="card card-sanitario">
+            <div>
+                <header class="card-header">
+                    <div class="card-icon" aria-hidden="true"></div>
+                    <h2 class="card-title">Control Sanitario</h2>
+                </header>
+                <p class="card-description">Planes zoosanitarios: ciclos de vacunación, esquemas de desparasitación y tratamientos clínicos en manga.</p>
+            </div>
+            <a href="#" class="card-action" aria-label="Ver Control Sanitario">Próximamente</a>
+        </article>
+
+        <!-- Módulo 6: Eventos -->
+        <article class="card card-eventos">
+            <div>
+                <header class="card-header">
+                    <div class="card-icon" aria-hidden="true"></div>
+                    <h2 class="card-title">Eventos</h2>
+                </header>
+                <p class="card-description">Novedades zootécnicas en tiempo real: partos y nacimientos, altas, bajas, ventas y traslados internos de lotes.</p>
+            </div>
+            <a href="#" class="card-action" aria-label="Registrar Evento Zootécnico">Próximamente</a>
+        </article>
+
+        <!-- Módulo 7: Combustible y Maquinarias -->
+        <article class="card card-maquinaria">
+            <div>
+                <header class="card-header">
+                    <div class="card-icon" aria-hidden="true"></div>
+                    <h2 class="card-title">Combustible y Maquinarias</h2>
+                </header>
+                <p class="card-description">Control de inventario de diésel/gasolina, horómetros y mantenimiento preventivo de tractores, camionetas y motos.</p>
+            </div>
+            <a href="#" class="card-action" aria-label="Gestionar Combustible y Maquinarias">Próximamente</a>
+        </article>
+
+        <!-- Módulo 8: Logística y Comida -->
+        <article class="card card-logistica">
+            <div>
+                <header class="card-header">
+                    <div class="card-icon" aria-hidden="true"></div>
+                    <h2 class="card-title">Logística y Comida</h2>
+                </header>
+                <p class="card-description">Administración de víveres e insumos operativos: control de remesas para la cocina de campo, repuestos y despachos.</p>
+            </div>
+            <a href="#" class="card-action" aria-label="Gestionar Logística y Comida">Próximamente</a>
+        </article>
+
+    </main>
+
+    <!-- Scripts de Control -->
+    <script src="tareas.js"></script>
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/service-worker.js')
+            .then(reg => console.log('Service Worker registered', reg.scope))
+            .catch(err => console.log('Service Worker registration failed:', err));
+        });
+      }
     </script>
 
 </body>
