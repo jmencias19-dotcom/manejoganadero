@@ -3,52 +3,186 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Planificación</title>
+    <title>Planificación - Control Operativo Hato</title>
     <link rel="stylesheet" href="planificacion.css">
     <link rel="stylesheet" href="variables.css">
+    <style>
+        /* Estilos complementarios para el encabezado de texto estructurado y tabla de resumen */
+        .header-ascii-box {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--border-radius, 8px);
+            padding: 12px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            font-size: 13px;
+        }
+        .ascii-status-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 600;
+        }
+        .filtros-rapidos-bar {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+        .btn-filtro {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-main, #fff);
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .btn-filtro:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+        .tabla-tareas-container {
+            width: 100%;
+            overflow-x: auto;
+            margin-top: 10px;
+            margin-bottom: 15px;
+        }
+        .tabla-tareas-hato {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            text-align: left;
+        }
+        .tabla-tareas-hato th, .tabla-tareas-hato td {
+            padding: 10px 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .tabla-tareas-hato th {
+            color: var(--accent-green, #2ecc71);
+            font-weight: 700;
+        }
+    </style>
 </head>
 <body>
 
     <div class="planificacion-tareas-card">
-        <h3>Planificación de Labores</h3>
+        
+        <!-- Bloque de Cabecera Operativa (Convertido desde el esquema de texto) -->
+        <div class="header-ascii-box">
+            <h3 style="margin: 0; font-size: 16px; color: var(--accent-green, #2ecc71);">CONTROL OPERATIVO DE TAREAS - HATO</h3>
+            <div style="display: flex; gap: 15px; align-items: center;">
+                <span class="ascii-status-item">
+                    🚦 Estado de Sincronización: <span id="sync-text-status" style="color: #2ecc71;">VERDE (Conectado)</span>
+                    <div id="sync-semaforo" class="semaforo-indicador" style="display:inline-block; width:10px; height:10px; background:#2ecc71; border-radius:50%; margin-left:4px;"></div>
+                </span>
+                <span class="ascii-status-item">🔊 Alarma: <span style="color: #2ecc71;">ACTIVA</span></span>
+            </div>
+        </div>
+
+        <h4 style="margin-top: 0; margin-bottom: 10px; color: var(--text-main, #fff);">1. PANEL DE REGISTRO DE ACTIVIDADES</h4>
+        
         <form id="tarea-form" class="tarea-form-grid">
             
-            <!-- Descripción de tareas -->
+            <!-- Fecha de asignación -->
             <div class="tarea-field-group">
-                <label for="tarea-desc">Descripción de Tareas:</label>
-                <textarea id="tarea-desc" class="tarea-textarea" required></textarea>
+                <label for="tarea-fecha">Fecha de Actividad:</label>
+                <input type="date" id="tarea-fecha" class="tarea-input" required>
             </div>
 
             <!-- Responsable -->
             <div class="tarea-field-group">
                 <label for="tarea-responsable">Responsable:</label>
-                <input type="text" id="tarea-responsable" class="tarea-input" required>
+                <input type="text" id="tarea-responsable" class="tarea-input" placeholder="Seleccionar o escribir responsable..." required>
+            </div>
+
+            <!-- Descripción de tareas -->
+            <div class="tarea-field-group" style="grid-column: 1 / -1;">
+                <label for="tarea-desc">Descripción de Tareas:</label>
+                <textarea id="tarea-desc" class="tarea-textarea" placeholder="Espacio para escritura de la labor..." required></textarea>
             </div>
 
             <!-- Observación -->
-            <div class="tarea-field-group">
+            <div class="tarea-field-group" style="grid-column: 1 / -1;">
                 <label for="tarea-observacion">Observación:</label>
-                <textarea id="tarea-observacion" class="tarea-textarea"></textarea>
+                <textarea id="tarea-observacion" class="tarea-textarea" placeholder="Espacio para escritura de notas o insumos..."></textarea>
             </div>
 
-            <!-- Fecha de asignación -->
-            <div class="tarea-field-group">
-                <label for="tarea-fecha">Fecha de Asignación:</label>
-                <input type="date" id="tarea-fecha" class="tarea-input" required>
-            </div>
-
-            <!-- Controles: Guardar, Rehacer y Semáforo de Sincronización -->
-            <div class="tarea-actions-group">
-                <button type="submit" class="btn guardar">Guardar y Sincronizar</button>
-                <button type="button" id="btn-rehacer" class="btn rehacer">Rehacer Tarea</button>
-                <div id="sync-semaforo" class="semaforo-indicador" title="Estado de Sincronización"></div>
+            <!-- Controles: Guardar, Rehacer -->
+            <div class="tarea-actions-group" style="grid-column: 1 / -1; display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+                <button type="submit" class="btn guardar" style="padding: 10px 18px; font-weight: 600; cursor: pointer;">💾 GUARDAR Y SINCRONIZAR</button>
+                <button type="button" id="btn-rehacer" class="btn rehacer" style="padding: 10px 18px; font-weight: 600; cursor: pointer;">🔄 REINICIAR TAREAS</button>
             </div>
         </form>
 
         <!-- Área de resumen de actividades y listado -->
-        <div class="resumen-actividades">
-            <h4>Resumen de Actividades</h4>
-            <ul id="task-list"></ul>
+        <div class="resumen-actividades" style="margin-top: 25px; border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 15px;">
+            <h4 style="margin-top: 0; margin-bottom: 10px; color: var(--text-main, #fff);">2. ÁREA DE RESUMEN Y SEGUIMIENTO DE ACTIVIDADES</h4>
+            
+            <!-- Filtros Rápidos -->
+            <div class="filtros-rapidos-bar">
+                <span style="font-size: 12px; font-weight: bold; align-self: center; margin-right: 5px;">FILTROS RÁPIDOS:</span>
+                <button type="button" class="btn-filtro">📌 Todos</button>
+                <button type="button" class="btn-filtro">⏳ En Proceso</button>
+                <button type="button" class="btn-filtro">⚠️ Pendientes</button>
+                <button type="button" class="btn-filtro">✅ Ejecutadas</button>
+            </div>
+
+            <!-- Tabla de Tareas (Estructura Tabular Requerida) -->
+            <div class="tabla-tareas-container">
+                <table class="tabla-tareas-hato">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Fecha</th>
+                            <th>Descripción</th>
+                            <th>Responsable</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="task-table-body">
+                        <tr>
+                            <td>01</td>
+                            <td>08/09/2026</td>
+                            <td>Revisión cerca eléctrica</td>
+                            <td>Juan José</td>
+                            <td><span style="background: rgba(52, 152, 219, 0.2); color: #3498db; padding: 3px 8px; border-radius: 4px; font-size: 11px;">En Proceso</span></td>
+                            <td><button type="button" class="btn-filtro" style="padding: 3px 8px;">[Estado]</button></td>
+                        </tr>
+                        <tr>
+                            <td>02</td>
+                            <td>09/09/2026</td>
+                            <td>Servicio inyectores BT50</td>
+                            <td>Equipo Mec.</td>
+                            <td><span style="background: rgba(243, 156, 18, 0.2); color: #f39c12; padding: 3px 8px; border-radius: 4px; font-size: 11px;">Pendiente</span></td>
+                            <td><button type="button" class="btn-filtro" style="padding: 3px 8px;">[Estado]</button></td>
+                        </tr>
+                        <tr>
+                            <td>03</td>
+                            <td>07/09/2026</td>
+                            <td>Rotación potrero Módulo</td>
+                            <td>Personal</td>
+                            <td><span style="background: rgba(46, 204, 113, 0.2); color: var(--accent-green, #2ecc71); padding: 3px 8px; border-radius: 4px; font-size: 11px;">Ejecutado</span></td>
+                            <td><button type="button" class="btn-filtro" style="padding: 3px 8px;">[Estado]</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Contenedor dinámico legacy opcional -->
+            <ul id="task-list" style="display: none;"></ul>
+
+            <!-- Botón Borrar Tarea Seleccionada -->
+            <div style="margin-top: 15px;">
+                <button type="button" id="btn-borrar-seleccionada" class="btn" style="background-color: #c0392b; color: #fff; padding: 8px 14px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 12px;">
+                    🗑️ BORRAR TAREA SELECCIONADA
+                </button>
+            </div>
         </div>
     </div>
 
