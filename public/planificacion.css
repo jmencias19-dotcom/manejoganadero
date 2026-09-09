@@ -100,3 +100,24 @@ th {
 .btn-delete:hover {
     background-color: #c0392b;
 }
+
+.card {
+    background-color: #1e1e1e; /* Fondo oscuro consistente */
+    border: 1px solid rgba(255, 255, 255, 0.12); /* El marco delimitador sutil */
+    border-radius: 16px; /* Esquinas redondeadas idénticas */
+    padding: 20px;
+    margin-bottom: 16px; /* Separación limpia con el siguiente módulo */
+}
+
+/* Estilo para el botón dentro de la tarjeta si requiere el ancho completo */
+.card .btn-primary {
+    width: 100%;
+    background-color: #2ecc71; /* Verde operativo */
+    border: none;
+    border-radius: 10px;
+    padding: 12px;
+    font-weight: bold;
+    color: #ffffff;
+    cursor: pointer;
+    margin-top: 15px;
+}
