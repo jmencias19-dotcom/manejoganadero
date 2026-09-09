@@ -1,116 +1,223 @@
-body {
-  background: linear-gradient(135deg, #1A1A1A, #050505);
-  font-family: sans-serif;
-  color: var(--text-main);
-  margin: 0;
-  padding: 10px; /* Reducido para mejor aprovechamiento en móviles */
-}
+/* ==========================================================================
+   PLANIFICACION Y TAREAS CSS - HATO LAGUNA BRAVA
+   Estilos específicos para el módulo de control operativo de campo
+   ========================================================================== */
 
+/* Contenedor principal de la tarjeta del módulo */
 .planificacion-tareas-card {
-  background-color: var(--card-bg);
-  border-radius: var(--radius-lg);
-  padding: 15px;
-  width: 100%;
-  max-width: 700px; /* Ampliado ligeramente para tablets y PC */
-  margin: 0 auto;
-  border: 1px solid var(--border-color);
-  box-shadow: var(--relief-shadow);
-  box-sizing: border-box;
+    background: rgba(18, 24, 20, 0.85);
+    border: 1px solid rgba(46, 204, 113, 0.25);
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(8px);
+    margin-bottom: 30px;
+    color: var(--text-main, #ffffff);
 }
 
+/* Cabecera de estado y semáforo ASCII / Sincronización */
+.header-ascii-box {
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin-bottom: 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    font-size: 13px;
+    font-family: monospace;
+}
+
+.ascii-status-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: bold;
+}
+
+/* Títulos de sección internos */
+.planificacion-tareas-card h4 {
+    margin: 0 0 12px 0;
+    font-size: 14px;
+    letter-spacing: 0.5px;
+    color: var(--accent-green, #2ecc71);
+    text-transform: uppercase;
+    border-bottom: 1px solid rgba(46, 204, 113, 0.2);
+    padding-bottom: 6px;
+}
+
+/* Cuadrícula del formulario de registro */
 .tarea-form-grid {
-  display: grid;
-  gap: 15px;
-  grid-template-columns: 1fr; /* Una columna por defecto para celulares */
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 15px;
+    margin-bottom: 20px;
 }
 
-/* Adaptación responsiva para tablets y PC */
-@media (min-width: 768px) {
-  body {
-    padding: 30px;
-  }
-  .planificacion-tareas-card {
-    padding: 30px;
-  }
-  .tarea-form-grid {
-    grid-template-columns: repeat(2, 1fr); /* Dos columnas para aprovechar pantallas anchas */
-  }
-  /* Elementos que ocupan todo el ancho en pantallas grandes */
-  .tarea-field-group.full-width,
-  .tarea-actions-group {
-    grid-column: span 2;
-  }
+.tarea-field-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.tarea-field-group label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--accent-green, #2ecc71);
 }
 
 .tarea-input,
 .tarea-textarea {
-  background-color: var(--bg-color);
-  color: var(--text-main);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-sm);
-  padding: 12px; /* Mayor área táctil para dispositivos móviles */
-  width: 100%;
-  box-sizing: border-box;
-  font-size: 16px; /* Evita zoom automático en iOS al hacer clic en inputs */
+    width: 100%;
+    padding: 11px 14px;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 8px;
+    color: #fff;
+    font-size: 14px;
+    box-sizing: border-box;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.tarea-input:focus,
+.tarea-textarea:focus {
+    outline: none;
+    border-color: var(--accent-green, #2ecc71);
+    box-shadow: 0 0 8px rgba(46, 204, 113, 0.3);
 }
 
 .tarea-textarea {
-  resize: vertical;
-  min-height: 80px;
+    resize: vertical;
+    min-height: 80px;
 }
 
+/* Grupo de botones de acción del formulario */
 .tarea-actions-group {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  align-items: stretch;
+    grid-column: 1 / -1;
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 5px;
 }
 
-@media (min-width: 480px) {
-  .tarea-actions-group {
-    flex-direction: row; /* Botones en línea horizontal en pantallas medianas hacia arriba */
-    justify-content: space-between;
+.btn-accion {
+    padding: 11px 18px;
+    font-weight: bold;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-size: 13px;
+    transition: transform 0.1s, opacity 0.2s;
+}
+
+.btn-accion:active {
+    transform: scale(0.98);
+}
+
+.btn-guardar {
+    background-color: var(--accent-green, #2ecc71);
+    color: #111;
+}
+
+.btn-guardar:hover {
+    opacity: 0.9;
+}
+
+.btn-reiniciar {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.btn-reiniciar:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+/* Sección de resumen y seguimiento */
+.resumen-section {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding-top: 20px;
+    margin-top: 20px;
+}
+
+/* Barra de filtros rápidos */
+.filtros-rapidos-bar {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 18px;
     align-items: center;
-  }
+    font-size: 12px;
 }
 
-.btn {
-  border: none;
-  border-radius: var(--radius-sm);
-  padding: 12px 20px;
-  cursor: pointer;
-  font-weight: 600;
-  font-size: 16px;
-  transition: background-color 0.2s, opacity 0.2s;
-  text-align: center;
+.btn-filtro {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #fff;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 600;
+    transition: background 0.2s, border-color 0.2s;
 }
 
-.btn.guardar {
-  background-color: var(--accent-color);
-  color: #FFFFFF;
-  width: 100%;
+.btn-filtro:hover {
+    background: rgba(46, 204, 113, 0.15);
+    border-color: var(--accent-green, #2ecc71);
 }
 
-.btn.guardar:hover {
-  background-color: var(--primary-color);
+/* Contenedor y tabla de tareas */
+.tabla-tareas-container {
+    width: 100%;
+    overflow-x: auto;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.btn.rehacer {
-  background-color: transparent;
-  border: 1px solid var(--border-color);
-  color: var(--text-main);
+.tabla-tareas-hato {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    text-align: left;
+    white-space: nowrap;
 }
 
-.btn.rehacer:hover {
-  background-color: rgba(255, 255, 255, 0.05);
+.tabla-tareas-hato th {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 10px 12px;
+    border-bottom: 2px solid rgba(46, 204, 113, 0.3);
+    color: var(--accent-green, #2ecc71);
+    font-weight: bold;
 }
 
-/* Indicador de semáforo de sincronización */
-.semaforo-indicador {
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  background-color: #ffc107; /* Amarillo por defecto / Sincronizando */
-  display: inline-block;
-  box-shadow: 0 0 8px rgba(0,0,0,0.5);
+.tabla-tareas-hato td {
+    padding: 10px 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    color: #e2e8f0;
+}
+
+.tabla-tareas-hato tbody tr:hover {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+/* Botón de borrado */
+.btn-borrar {
+    background-color: #c0392b;
+    color: #fff;
+    padding: 8px 14px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 12px;
+    transition: opacity 0.2s;
+}
+
+.btn-borrar:hover {
+    opacity: 0.85;
 }
