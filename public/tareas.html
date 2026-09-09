@@ -1,100 +1,64 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Gestión Ganadera - Hato Laguna Brava</title>
-    
-    <!-- Archivos de CSS externos -->
-    <link rel="stylesheet" href="variables.css?v=1.1">
-    <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="tareas.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistema de Gestión Ganadera - Hato Laguna Brava</title>
+  <link rel="stylesheet" href="variables.css?v=1.1">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="tareas.css">
+  <style>
+    .main-header {
+      background-color: var(--header-bg, #1e293b);
+      color: #fff;
+      padding: 1.5rem 1rem;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+    .header-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+    }
+    .flags-top-group { display: flex; align-items: center; gap: 1rem; }
+    .flag-container { width: 60px; height: 40px; border-radius: 4px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.2); flex-shrink: 0; }
+    .header-title-wrapper { flex: 1; text-align: center; min-width: 280px; }
+    .header-title-wrapper h1 { font-size: 1.6rem; font-weight: 800; margin: 0; line-height: 1.2; letter-spacing: -0.025em; }
+    .header-title-wrapper h1 span { font-size: 0.85rem; font-weight: 600; color: #38bdf8; }
+    .header-title-wrapper p { margin: 0.4rem 0 0 0; font-size: 0.95rem; color: #94a3b8; }
+    @media (max-width: 768px) {
+      .header-container { flex-direction: column; text-align: center; }
+      .flags-top-group { justify-content: center; width: 100%; margin-bottom: 0.5rem; }
+    }
+  </style>
+</head>
+<body>
 
-    <style>
-        /* Estilos específicos para alinear las banderas y el título superior perfectamente */
-        .main-header {
-            background-color: var(--header-bg, #1e293b);
-            color: #fff;
-            padding: 1.5rem 1rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        }
-        .header-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 1.5rem;
-            flex-wrap: wrap;
-        }
-        .flags-top-group {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-        .flag-container {
-            width: 60px;
-            height: 40px;
-            border-radius: 4px;
-            overflow: hidden;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-            flex-shrink: 0;
-        }
-        .flag-icon {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
-        }
-        .header-title-wrapper {
-            flex: 1;
-            text-align: center;
-            min-width: 280px;
-        }
-        .animal-silhouettes-top {
-            display: flex;
-            justify-content: center;
-            gap: 1rem;
-            margin-bottom: 0.5rem;
-            color: #38bdf8;
-        }
-        .animal-icon {
-            width: 28px;
-            height: 28px;
-        }
-        .header-title-wrapper h1 {
-            font-size: 1.6rem;
-            font-weight: 800;
-            margin: 0;
-            line-height: 1.2;
-            letter-spacing: -0.025em;
-        }
-        .header-title-wrapper h1 span {
-            font-size: 0.85em;
-            font-weight: 600;
-            color: #38bdf8;
-        }
-        .header-title-wrapper p {
-            margin: 0.4rem 0 0 0;
-            font-size: 0.95rem;
-            color: #94a3b8;
-        }
+  <div id="header-placeholder"></div>
 
-        @media (max-width: 768px) {
-            .header-container {
-                flex-direction: column;
-                text-align: center;
-            }
-            .flags-top-group {
-                justify-content: center;
-                width: 100%;
-                margin-bottom: 0.5rem;
-            }
-        }
-  <body><div id="header-placeholder"></div> <script>
-  fetch('/components/header.html')
-    .then(response => response.text())
-    .then(data => {
-      document.getElementById('header-placeholder').innerHTML = data;
-    });
-</script></body>
+  <main class="dashboard-grid">
+    <article class="card card-tareas">
+      <div>
+        <header class="card-header">
+          <div class="card-icon" aria-hidden="true"></div>
+          <h2 class="card-title">Planificación de Tareas</h2>
+        </header>
+        <p class="card-description">Programación y asignación de labores diarias.</p>
+      </div>
+      <a href="tareas.html" class="card-action" aria-label="Acceder al módulo de tareas">Acceder</a>
+    </article>
+  </main>
+
+  <script>
+    fetch('/components/header.html')
+      .then(response => response.text())
+      .then(data => {
+        document.getElementById('header-placeholder').innerHTML = data;
+      });
+  </script>
+
+</body>
+</html>
