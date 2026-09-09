@@ -93,6 +93,21 @@ taskForm.addEventListener('submit', async (e) => {
         showNotification('Error al guardar datos', 'danger');
     } finally {
         setSyncStatus(false);
+        onSnapshot(collection(db, "tareas"), (snapshot) => {
+    taskTableBody.innerHTML = '';
+    snapshot.forEach((doc) => {
+        const task = doc.data();
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td>${task.fecha}</td>
+            <td>${task.labor}</td>
+            <td>${task.personal}</td>
+            <td>${task.estado}</td>
+            <td><button class="btn-delete" onclick="window.deleteTask('${doc.id}')">Eliminar</button></td>
+        `;
+        taskTableBody.appendChild(tr);
+    });
+});
     }
 });
         const tasksCollection = collection(db, "tareas");
