@@ -12,23 +12,44 @@
     <div class="planificacion-tareas-card">
         <h3>Planificación de Labores</h3>
         <form id="tarea-form" class="tarea-form-grid">
+            
+            <!-- Descripción de tareas -->
             <div class="tarea-field-group">
-                <label for="tarea-labor">Labor:</label>
-                <input type="text" id="tarea-labor" class="tarea-input" required>
-            </div>
-
-            <div class="tarea-field-group">
-                <label for="tarea-desc">Descripción:</label>
+                <label for="tarea-desc">Descripción de Tareas:</label>
                 <textarea id="tarea-desc" class="tarea-textarea" required></textarea>
             </div>
 
+            <!-- Responsable -->
             <div class="tarea-field-group">
-                <label for="tarea-fecha">Fecha:</label>
+                <label for="tarea-responsable">Responsable:</label>
+                <input type="text" id="tarea-responsable" class="tarea-input" required>
+            </div>
+
+            <!-- Observación -->
+            <div class="tarea-field-group">
+                <label for="tarea-observacion">Observación:</label>
+                <textarea id="tarea-observacion" class="tarea-textarea"></textarea>
+            </div>
+
+            <!-- Fecha de asignación -->
+            <div class="tarea-field-group">
+                <label for="tarea-fecha">Fecha de Asignación:</label>
                 <input type="date" id="tarea-fecha" class="tarea-input" required>
             </div>
 
-            <button type="submit" class="btn guardar">Guardar Tarea</button>
+            <!-- Controles: Guardar, Rehacer y Semáforo de Sincronización -->
+            <div class="tarea-actions-group">
+                <button type="submit" class="btn guardar">Guardar y Sincronizar</button>
+                <button type="button" id="btn-rehacer" class="btn rehacer">Rehacer Tarea</button>
+                <div id="sync-semaforo" class="semaforo-indicador" title="Estado de Sincronización"></div>
+            </div>
         </form>
+
+        <!-- Área de resumen de actividades y listado -->
+        <div class="resumen-actividades">
+            <h4>Resumen de Actividades</h4>
+            <ul id="task-list"></ul>
+        </div>
     </div>
 
 </body>
