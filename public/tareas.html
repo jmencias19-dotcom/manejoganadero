@@ -1,3 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planificación de Tareas - Gestión Ganadera</title>
+    <link rel="stylesheet" href="planificacion.css">
+</head>
+<body>
+
+    <header class="main-header">
+        <div class="header-container">
+            <h1>Planificación y Asignación de Tareas</h1>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <!-- Formulario para registrar tareas -->
+        <form id="taskForm">
+            <input type="date" id="fecha" required>
+            <input type="text" id="labor" placeholder="Labor a realizar" required>
+            <input type="text" id="personal" placeholder="Personal asignado" required>
+            <textarea id="observaciones" placeholder="Observaciones"></textarea>
+            <button type="submit">Registrar Labor</button>
+        </form>
+
+        <!-- Tabla para listar las tareas -->
+        <section class="task-list">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Labor</th>
+                        <th>Personal</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="taskTableBody"> 
+                    <!-- Las tareas se cargarán aquí -->
+                </tbody>
+            </table>
+        </section>
+    </main>
+
 <!-- Script con Firebase Firestore y la lógica de la aplicación -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
