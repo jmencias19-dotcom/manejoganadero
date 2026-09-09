@@ -2,7 +2,7 @@ const CACHE_NAME = 'gestion-ganadera-v2';
 const ASSETS_TO_CACHE = [
   '/',
   'index.html',
-  'historial pastoreo',
+  'historial-pastoreo.html',
   'styles.css',
   'dashboard.css',
   'variables.css',
