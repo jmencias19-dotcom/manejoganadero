@@ -73,6 +73,28 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
+        const taskForm = document.getElementById('taskForm');
+taskForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    setSyncStatus(true);
+    try {
+        await addDoc(collection(db, "tareas"), {
+            fecha: document.getElementById('fecha').value,
+            labor: document.getElementById('labor').value,
+            personal: document.getElementById('personal').value,
+            observaciones: document.getElementById('observaciones').value,
+            estado: 'Pendiente',
+            creadoEn: new Date().toISOString()
+        });
+        taskForm.reset();
+        showNotification('Labor registrada y guardada en la nube');
+    } catch (err) {
+        console.error("Error al guardar en Firestore:", err);
+        showNotification('Error al guardar datos', 'danger');
+    } finally {
+        setSyncStatus(false);
+    }
+});
         const tasksCollection = collection(db, "tareas");
 
         const taskForm = document.getElementById('taskForm');
