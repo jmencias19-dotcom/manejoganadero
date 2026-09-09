@@ -1,42 +1,34 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Si cargas planificacion.html dinámicamente, es mejor inicializar 
-    // los elementos o escuchar el evento dentro del contenedor una vez inyectado.
-    
-    fetch('planificacion.html')
-        .then(response => response.text())
-        .then(data => {
-            document.querySelector('.task-management').innerHTML = data;
-            
-            // Inicializamos la lógica de tareas AQUÍ adentro para asegurar 
-            // que el formulario y la lista ya existan en el DOM.
-            initTaskApp();
-        })
-        .catch(error => console.error('Error cargando la planificación:', error));
-});
-
-function initTaskApp() {
     const tareaForm = document.getElementById('tarea-form');
     const tareaLabor = document.getElementById('tarea-labor');
     const taskList = document.getElementById('task-list');
 
+    // Cargar tareas desde localStorage al iniciar
     let tareas = JSON.parse(localStorage.getItem('tareasLabores')) || [];
 
     function renderTasks() {
         if (!taskList) return;
         taskList.innerHTML = '';
+        
+        if (tareas.length === 0) {
+            taskList.innerHTML = '<p class="tarea-meta" style="padding: 10px; text-align: center;">No hay tareas registradas actualmente.</p>';
+            return;
+        }
+
         tareas.forEach((tarea, index) => {
             const li = document.createElement('li');
-            li.className = `tarea-item ${tarea.completada ? 'tarea-completada' : ''}`;
+            li.className = 'tarea-item-resumen';
             li.innerHTML = `
                 <div class="tarea-checkbox-group">
                     <input type="checkbox" class="tarea-checkbox" ${tarea.completada ? 'checked' : ''} data-index="${index}">
-                    <span class="tarea-texto">${tarea.texto}</span>
+                    <span class="tarea-texto ${tarea.completada ? 'tarea-completada' : ''}">${tarea.texto}</span>
                 </div>
-                <button class="btn-borrar" data-index="${index}">Eliminar</button>
+                <button class="btn-tarea btn-borrar" data-index="${index}">Eliminar</button>
             `;
             taskList.appendChild(li);
         });
 
+        // Eventos para marcar como completada
         document.querySelectorAll('.tarea-checkbox').forEach(box => {
             box.addEventListener('change', (e) => {
                 const index = e.target.dataset.index;
@@ -45,6 +37,7 @@ function initTaskApp() {
             });
         });
 
+        // Eventos para eliminar tarea
         document.querySelectorAll('.btn-borrar').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 const index = e.target.dataset.index;
@@ -72,4 +65,4 @@ function initTaskApp() {
     }
 
     renderTasks();
-}
+});
