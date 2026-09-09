@@ -1,21 +1,35 @@
-<div class="planificacion-tareas-card">
-  <h3>Planificación de Labores</h3>
- <form id="tarea-form" class="tarea-form-grid">
-    <div class="tarea-field-group">
-  <label for="tarea-labor">Labor:</label>
-  <input type="text" id="tarea-labor" class="tarea-input" required>
-</div>
-    <div class="tarea-field-group">
-  <label for="tarea-desc">Descripción:</label>
-  <textarea id="tarea-desc" class="tarea-textarea" required></textarea>
-</div>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planificación</title>
+    <link rel="stylesheet" href="planificacion.css">
+    <link rel="stylesheet" href="variables.css">
+</head>
+<body>
 
-<div class="tarea-field-group">
-  <label for="tarea-fecha">Fecha:</label>
-  <input type="date" id="tarea-fecha" class="tarea-input" required>
-</div>
+    <div class="planificacion-tareas-card">
+        <h3>Planificación de Labores</h3>
+        <form id="tarea-form" class="tarea-form-grid">
+            <div class="tarea-field-group">
+                <label for="tarea-labor">Labor:</label>
+                <input type="text" id="tarea-labor" class="tarea-input" required>
+            </div>
 
-<button type="submit" class="btn guardar">Guardar Tarea</button>
+            <div class="tarea-field-group">
+                <label for="tarea-desc">Descripción:</label>
+                <textarea id="tarea-desc" class="tarea-textarea" required></textarea>
+            </div>
 
-  </form>
-</div>
+            <div class="tarea-field-group">
+                <label for="tarea-fecha">Fecha:</label>
+                <input type="date" id="tarea-fecha" class="tarea-input" required>
+            </div>
+
+            <button type="submit" class="btn guardar">Guardar Tarea</button>
+        </form>
+    </div>
+
+</body>
+</html>
