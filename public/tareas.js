@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const taskForm = document.getElementById('task-form');
-    const taskInput = document.getElementById('task-input');
-    const taskList = document.getElementById('task-list');
+  const tareaForm = document.getElementById('tarea-form');
+  const tareaLabor = document.getElementById('tarea-labor');
+  const taskList = document.getElementById('task-list');
 
     // Cargar tareas desde localStorage al iniciar
     let tareas = JSON.parse(localStorage.getItem('tareasLabores')) || [];
