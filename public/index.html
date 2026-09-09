@@ -80,7 +80,7 @@
                 </header>
                 <p class="card-description">Bitácora técnica de rotación de lotes: días de ocupación, períodos de descanso por potrero, remanente de pasto y carga animal sostenida.</p>
             </div>
-            <a href="pastoreo.html" class="card-action" aria-label="Ver Historial de Pastoreo">Ver Historial</a>
+            <a href="#" class="card-action" aria-label="Ver Historial de Pastoreo">Próximamente</a>
         </article>
 
         <!-- Módulo 3 -->
@@ -92,7 +92,7 @@
                 </header>
                 <p class="card-description">Delimitación y estado de potreros: aforo de forraje disponible, disponibilidad de agua, sombras y capacidad de soporte por hectárea.</p>
             </div>
-            <a href="potreros.html" class="card-action" aria-label="Gestionar Potreros">Gestionar Potreros</a>
+            <a href="#" class="card-action" aria-label="Gestionar Potreros">Próximamente</a>
         </article>
 
         <!-- Módulo 4 -->
@@ -104,7 +104,7 @@
                 </header>
                 <p class="card-description">Evaluación del crecimiento ponderal: seguimiento a la ganancia media diaria (GMD), pesajes de destete y curva de desarrollo de mautas/mautes.</p>
             </div>
-            <a href="pesajes.html" class="card-action" aria-label="Registrar Pesajes">Registrar Pesajes</a>
+            <a href="#" class="card-action" aria-label="Registrar Pesajes">Próximamente</a>
         </article>
 
         <!-- Módulo 5 -->
@@ -116,7 +116,7 @@
                 </header>
                 <p class="card-description">Planes zoosanitarios: ciclos de vacunación, esquema de desparasitación, tratamientos clínicos de campo y aislamiento en enfermería.</p>
             </div>
-            <a href="sanidad.html" class="card-action" aria-label="Ver Control Sanitario">Ver Sanidad</a>
+            <a href="#" class="card-action" aria-label="Ver Control Sanitario">Próximamente</a>
         </article>
 
         <!-- Módulo 6 -->
@@ -128,7 +128,7 @@
                 </header>
                 <p class="card-description">Novedades zootécnicas en tiempo real: partos/nacimientos, bajas por mortalidad, ventas, compras y traslados internos de lotes.</p>
             </div>
-            <a href="eventos.html" class="card-action" aria-label="Registrar Evento Zootécnico">Registrar Evento</a>
+            <a href="#" class="card-action" aria-label="Registrar Evento Zootécnico">Próximamente</a>
         </article>
 
         <!-- Módulo 7: Combustible y Maquinarias -->
@@ -140,7 +140,7 @@
                 </header>
                 <p class="card-description">Control de insumos energéticos y parque automotor: inventario de diésel/gasolina, horas-motor (horómetros), mantenimiento preventivo de tractores, camionetas y motos de trabajo.</p>
             </div>
-            <a href="maquinaria.html" class="card-action" aria-label="Gestionar Combustible y Maquinarias">Gestionar Maquinaria</a>
+            <a href="#" class="card-action" aria-label="Gestionar Combustible y Maquinarias">Próximamente</a>
         </article>
 
         <!-- Módulo 8: Logística y Comida -->
@@ -152,7 +152,7 @@
                 </header>
                 <p class="card-description">Administración de víveres e insumos operativos: control de remesas para la cocina del personal de campo, herramientas, repuestos y logística de despachos.</p>
             </div>
-            <a href="logistica.html" class="card-action" aria-label="Gestionar Logística y Comida">Ver Logística</a>
+            <a href="#" class="card-action" aria-label="Gestionar Logística y Comida">Próximamente</a>
         </article>
 
     </main>
@@ -162,56 +162,56 @@
         <div class="planificacion-tareas-card">
             
             <!-- CABECERA DE ESTADO -->
-            <div class="header-ascii-box" style="background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 6px; padding: 12px 15px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; font-size: 13px; font-family: monospace;">
+            <div class="header-ascii-box">
                 <span style="font-weight: bold; color: var(--accent-green, #2ecc71);">CONTROL OPERATIVO DE TAREAS - HATO</span>
                 <div style="display: flex; gap: 15px; flex-wrap: wrap;">
-                    <span class="ascii-status-item" style="display: inline-flex; align-items: center; gap: 6px; font-weight: bold;">
+                    <span class="ascii-status-item">
                         🚦 Estado de Sincronización: <span id="sync-text" style="color: #2ecc71;">VERDE (Conectado)</span>
                         <div id="sync-semaforo" style="display:inline-block; width:10px; height:10px; background:#2ecc71; border-radius:50%; margin-left:4px;"></div>
                     </span>
-                    <span class="ascii-status-item" style="display: inline-flex; align-items: center; gap: 6px; font-weight: bold;">
+                    <span class="ascii-status-item">
                         🔊 Alarma: <span style="color: #2ecc71;">ACTIVA</span>
                     </span>
                 </div>
             </div>
 
             <!-- 1. PANEL DE REGISTRO DE ACTIVIDADES -->
-            <h4 style="margin: 0 0 10px 0; font-size: 14px; color: var(--text-main, #fff);">1. PANEL DE REGISTRO DE ACTIVIDADES</h4>
+            <h4>1. PANEL DE REGISTRO DE ACTIVIDADES</h4>
             
-            <form id="tarea-form" class="tarea-form-grid" style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 15px;">
+            <form id="tarea-form" class="tarea-form-grid">
                 
-                <div class="tarea-field-group" style="display: flex; flex-direction: column; gap: 5px;">
-                    <label for="tarea-fecha" style="font-size: 13px; font-weight: 600; color: var(--accent-green, #2ecc71);">• Fecha de Actividad:</label>
-                    <input type="date" id="tarea-fecha" class="tarea-input" style="width: 100%; padding: 10px; background: rgba(0, 0, 0, 0.2); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 6px; color: #fff; font-size: 14px; box-sizing: border-box;" required>
+                <div class="tarea-field-group">
+                    <label for="tarea-fecha">• Fecha de Actividad:</label>
+                    <input type="date" id="tarea-fecha" class="tarea-input" required>
                 </div>
 
-                <div class="tarea-field-group" style="display: flex; flex-direction: column; gap: 5px;">
-                    <label for="tarea-desc" style="font-size: 13px; font-weight: 600; color: var(--accent-green, #2ecc71);">• Descripción de Tareas:</label>
-                    <textarea id="tarea-desc" class="tarea-textarea" placeholder="Espacio para escritura de la labor..." style="width: 100%; padding: 10px; background: rgba(0, 0, 0, 0.2); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 6px; color: #fff; font-size: 14px; box-sizing: border-box; resize: vertical; min-height: 70px;" required></textarea>
+                <div class="tarea-field-group">
+                    <label for="tarea-desc">• Descripción de Tareas:</label>
+                    <textarea id="tarea-desc" class="tarea-textarea" placeholder="Espacio para escritura de la labor..." required></textarea>
                 </div>
 
-                <div class="tarea-field-group" style="display: flex; flex-direction: column; gap: 5px;">
-                    <label for="tarea-responsable" style="font-size: 13px; font-weight: 600; color: var(--accent-green, #2ecc71);">• Responsable:</label>
-                    <input type="text" id="tarea-responsable" class="tarea-input" placeholder="Seleccionar o escribir responsable..." style="width: 100%; padding: 10px; background: rgba(0, 0, 0, 0.2); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 6px; color: #fff; font-size: 14px; box-sizing: border-box;" required>
+                <div class="tarea-field-group">
+                    <label for="tarea-responsable">• Responsable:</label>
+                    <input type="text" id="tarea-responsable" class="tarea-input" placeholder="Seleccionar o escribir responsable..." required>
                 </div>
 
-                <div class="tarea-field-group" style="display: flex; flex-direction: column; gap: 5px;">
-                    <label for="tarea-observacion" style="font-size: 13px; font-weight: 600; color: var(--accent-green, #2ecc71);">• Observaciones:</label>
-                    <textarea id="tarea-observacion" class="tarea-textarea" placeholder="Espacio para escritura de notas o insumos..." style="width: 100%; padding: 10px; background: rgba(0, 0, 0, 0.2); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 6px; color: #fff; font-size: 14px; box-sizing: border-box; resize: vertical; min-height: 70px;"></textarea>
+                <div class="tarea-field-group">
+                    <label for="tarea-observacion">• Observaciones:</label>
+                    <textarea id="tarea-observacion" class="tarea-textarea" placeholder="Espacio para escritura de notas o insumos..."></textarea>
                 </div>
 
-                <div class="tarea-actions-group" style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 5px; margin-bottom: 20px;">
-                    <button type="submit" class="btn-accion btn-guardar" style="padding: 10px 16px; font-weight: bold; border-radius: 6px; border: none; cursor: pointer; font-size: 13px; background-color: var(--accent-green, #2ecc71); color: #111;">[ 💾 GUARDAR Y SINCRONIZAR ]</button>
-                    <button type="button" id="btn-rehacer" class="btn-accion btn-reiniciar" style="padding: 10px 16px; font-weight: bold; border-radius: 6px; border: none; cursor: pointer; font-size: 13px; background: rgba(255, 255, 255, 0.1); color: #fff;">[ 🔄 REINICIAR TAREAS ]</button>
+                <div class="tarea-actions-group">
+                    <button type="submit" class="btn-accion btn-guardar">[ 💾 GUARDAR Y SINCRONIZAR ]</button>
+                    <button type="button" id="btn-rehacer" class="btn-accion btn-reiniciar">[ 🔄 REINICIAR TAREAS ]</button>
                 </div>
 
             </form>
 
             <!-- 2. ÁREA DE RESUMEN Y SEGUIMIENTO DE ACTIVIDADES -->
-            <div class="resumen-section" style="border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 15px;">
-                <h4 style="margin: 0 0 10px 0; font-size: 14px; color: var(--text-main, #fff);">2. ÁREA DE RESUMEN Y SEGUIMIENTO DE ACTIVIDADES</h4>
+            <div class="resumen-section">
+                <h4>2. ÁREA DE RESUMEN Y SEGUIMIENTO DE ACTIVIDADES</h4>
                 
-                <div class="filtros-rapidos-bar" style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 15px; align-items: center; font-size: 12px;">
+                <div class="filtros-rapidos-bar">
                     <span style="font-weight: bold;">FILTROS RÁPIDOS:</span>
                     <button type="button" class="btn-filtro">[ 📌 Todos ]</button>
                     <button type="button" class="btn-filtro">[ ⏳ En Proceso ]</button>
@@ -219,16 +219,16 @@
                     <button type="button" class="btn-filtro">[ ✅ Ejecutadas ]</button>
                 </div>
 
-                <div class="tabla-tareas-container" style="width: 100%; overflow-x: auto; margin-bottom: 15px;">
-                    <table class="tabla-tareas-hato" style="width: 100%; border-collapse: collapse; font-size: 13px; text-align: left;">
+                <div class="tabla-tareas-container">
+                    <table class="tabla-tareas-hato">
                         <thead>
                             <tr>
-                                <th style="padding: 8px 10px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); color: var(--accent-green, #2ecc71); font-weight: bold;">ID</th>
-                                <th style="padding: 8px 10px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); color: var(--accent-green, #2ecc71); font-weight: bold;">Fecha</th>
-                                <th style="padding: 8px 10px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); color: var(--accent-green, #2ecc71); font-weight: bold;">Descripción</th>
-                                <th style="padding: 8px 10px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); color: var(--accent-green, #2ecc71); font-weight: bold;">Responsable</th>
-                                <th style="padding: 8px 10px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); color: var(--accent-green, #2ecc71); font-weight: bold;">Estado</th>
-                                <th style="padding: 8px 10px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); color: var(--accent-green, #2ecc71); font-weight: bold;">Acciones</th>
+                                <th>ID</th>
+                                <th>Fecha</th>
+                                <th>Descripción</th>
+                                <th>Responsable</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
                             </tr>
                         </thead>
                         <tbody id="tabla-tareas-body">
@@ -238,7 +238,7 @@
                 </div>
 
                 <div>
-                    <button type="button" id="btn-borrar-sel" class="btn-borrar" style="background-color: #c0392b; color: #fff; padding: 6px 12px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px;">[ 🗑️ BORRAR TAREA SELECCIONADA ]</button>
+                    <button type="button" id="btn-borrar-sel" class="btn-borrar">[ 🗑️ BORRAR TAREA SELECCIONADA ]</button>
                 </div>
             </div>
 
