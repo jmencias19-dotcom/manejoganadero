@@ -4,7 +4,7 @@
    ========================================================================== */
 
 /* Tarjeta Principal del Historial */
-.pastoreo-card {
+.historial-pastoreo-card {
   background-color: var(--card-bg);
   border-radius: var(--border-radius);
   padding: 16px;
@@ -14,12 +14,12 @@
   transition: transform 0.15s ease, border-color 0.15s ease;
 }
 
-.pastoreo-card:active {
+.historial-pastoreo-card:active {
   transform: scale(0.99);
 }
 
 /* Cabecera del Registro */
-.pastoreo-header {
+.historial-pastoreo-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -28,7 +28,7 @@
   margin-bottom: 12px;
 }
 
-.pastoreo-title {
+.historial-pastoreo-title {
   font-size: 1.05rem;
   font-weight: 700;
   color: var(--text-light);
@@ -73,14 +73,14 @@
   margin-bottom: 12px;
 }
 
-.pastoreo-item {
+.historial-pastoreo-item {
   background-color: #263238;
   padding: 10px;
   border-radius: 6px;
   border-left: 3px solid var(--accent);
 }
 
-.pastoreo-label {
+.historial-pastoreo-label {
   font-size: 0.75rem;
   color: var(--text-muted);
   display: block;
@@ -89,7 +89,7 @@
   letter-spacing: 0.3px;
 }
 
-.pastoreo-value {
+.historial-pastoreo-value {
   font-size: 0.95rem;
   font-weight: 600;
   color: var(--text-light);
@@ -97,7 +97,7 @@
 }
 
 /* Caja de Observaciones de Forraje / Carga */
-.pastoreo-obs {
+.historial-pastoreo-obs {
   background-color: #12181b;
   border-radius: 6px;
   padding: 10px;
@@ -107,7 +107,7 @@
   border: 1px dashed #37474f;
 }
 
-.pastoreo-obs strong {
+.historial-pastoreo-obs strong {
   color: var(--text-light);
 }
 
