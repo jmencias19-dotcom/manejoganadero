@@ -9,8 +9,8 @@
     <link rel="stylesheet" href="variables.css?v=1.1">
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="dashboard.css">
+    <link rel="stylesheet" href="planificacion.css">
     <link rel="manifest" href="manifest.json">
-
 </head>
 <body>
 
@@ -22,9 +22,7 @@
                     <rect width="900" height="600" fill="#cf142b"/>
                     <rect width="900" height="400" fill="#00247d"/>
                     <rect width="900" height="200" fill="#fcdd09"/>
-                    <!-- Estrellas simplificadas para el diseño responsivo -->
                     <g fill="#ffffff" transform="translate(450, 300) scale(0.7)">
-                        <!-- Representación central estilizada de las estrellas del tricolor -->
                         <circle cx="-120" cy="-30" r="12"/><circle cx="-80" cy="-50" r="12"/><circle cx="-40" cy="-60" r="12"/><circle cx="0" cy="-65" r="12"/><circle cx="40" cy="-60" r="12"/><circle cx="80" cy="-50" r="12"/><circle cx="120" cy="-30" r="12"/>
                     </g>
                 </svg>
@@ -70,7 +68,7 @@
                 </header>
                 <p class="card-description">Programación y asignación de labores diarias del personal de campo (mantenimiento de cercas, roza, limpieza de bebederos y faenas de corral).</p>
             </div>
-            <a href="tareas.html" class="card-action" aria-label="Acceder al módulo de Planificación de Tareas">Acceder a Tareas</a>
+            <a href="#modulo-tareas" class="card-action" aria-label="Acceder al módulo de Planificación de Tareas">Acceder a Tareas</a>
         </article>
 
         <!-- Módulo 2 -->
@@ -158,15 +156,106 @@
         </article>
 
     </main>
+
+    <!-- SECCIÓN INTEGRADA: CONTROL OPERATIVO DE TAREAS - HATO -->
+    <section style="max-width: 1200px; margin: 30px auto; padding: 0 20px;" id="modulo-tareas">
+        <div class="planificacion-tareas-card">
+            
+            <!-- CABECERA DE ESTADO -->
+            <div class="header-ascii-box" style="background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 6px; padding: 12px 15px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; font-size: 13px; font-family: monospace;">
+                <span style="font-weight: bold; color: var(--accent-green, #2ecc71);">CONTROL OPERATIVO DE TAREAS - HATO</span>
+                <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                    <span class="ascii-status-item" style="display: inline-flex; align-items: center; gap: 6px; font-weight: bold;">
+                        🚦 Estado de Sincronización: <span id="sync-text" style="color: #2ecc71;">VERDE (Conectado)</span>
+                        <div id="sync-semaforo" style="display:inline-block; width:10px; height:10px; background:#2ecc71; border-radius:50%; margin-left:4px;"></div>
+                    </span>
+                    <span class="ascii-status-item" style="display: inline-flex; align-items: center; gap: 6px; font-weight: bold;">
+                        🔊 Alarma: <span style="color: #2ecc71;">ACTIVA</span>
+                    </span>
+                </div>
+            </div>
+
+            <!-- 1. PANEL DE REGISTRO DE ACTIVIDADES -->
+            <h4 style="margin: 0 0 10px 0; font-size: 14px; color: var(--text-main, #fff);">1. PANEL DE REGISTRO DE ACTIVIDADES</h4>
+            
+            <form id="tarea-form" class="tarea-form-grid" style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 15px;">
+                
+                <div class="tarea-field-group" style="display: flex; flex-direction: column; gap: 5px;">
+                    <label for="tarea-fecha" style="font-size: 13px; font-weight: 600; color: var(--accent-green, #2ecc71);">• Fecha de Actividad:</label>
+                    <input type="date" id="tarea-fecha" class="tarea-input" style="width: 100%; padding: 10px; background: rgba(0, 0, 0, 0.2); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 6px; color: #fff; font-size: 14px; box-sizing: border-box;" required>
+                </div>
+
+                <div class="tarea-field-group" style="display: flex; flex-direction: column; gap: 5px;">
+                    <label for="tarea-desc" style="font-size: 13px; font-weight: 600; color: var(--accent-green, #2ecc71);">• Descripción de Tareas:</label>
+                    <textarea id="tarea-desc" class="tarea-textarea" placeholder="Espacio para escritura de la labor..." style="width: 100%; padding: 10px; background: rgba(0, 0, 0, 0.2); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 6px; color: #fff; font-size: 14px; box-sizing: border-box; resize: vertical; min-height: 70px;" required></textarea>
+                </div>
+
+                <div class="tarea-field-group" style="display: flex; flex-direction: column; gap: 5px;">
+                    <label for="tarea-responsable" style="font-size: 13px; font-weight: 600; color: var(--accent-green, #2ecc71);">• Responsable:</label>
+                    <input type="text" id="tarea-responsable" class="tarea-input" placeholder="Seleccionar o escribir responsable..." style="width: 100%; padding: 10px; background: rgba(0, 0, 0, 0.2); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 6px; color: #fff; font-size: 14px; box-sizing: border-box;" required>
+                </div>
+
+                <div class="tarea-field-group" style="display: flex; flex-direction: column; gap: 5px;">
+                    <label for="tarea-observacion" style="font-size: 13px; font-weight: 600; color: var(--accent-green, #2ecc71);">• Observaciones:</label>
+                    <textarea id="tarea-observacion" class="tarea-textarea" placeholder="Espacio para escritura de notas o insumos..." style="width: 100%; padding: 10px; background: rgba(0, 0, 0, 0.2); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 6px; color: #fff; font-size: 14px; box-sizing: border-box; resize: vertical; min-height: 70px;"></textarea>
+                </div>
+
+                <div class="tarea-actions-group" style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 5px; margin-bottom: 20px;">
+                    <button type="submit" class="btn-accion btn-guardar" style="padding: 10px 16px; font-weight: bold; border-radius: 6px; border: none; cursor: pointer; font-size: 13px; background-color: var(--accent-green, #2ecc71); color: #111;">[ 💾 GUARDAR Y SINCRONIZAR ]</button>
+                    <button type="button" id="btn-rehacer" class="btn-accion btn-reiniciar" style="padding: 10px 16px; font-weight: bold; border-radius: 6px; border: none; cursor: pointer; font-size: 13px; background: rgba(255, 255, 255, 0.1); color: #fff;">[ 🔄 REINICIAR TAREAS ]</button>
+                </div>
+
+            </form>
+
+            <!-- 2. ÁREA DE RESUMEN Y SEGUIMIENTO DE ACTIVIDADES -->
+            <div class="resumen-section" style="border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 15px;">
+                <h4 style="margin: 0 0 10px 0; font-size: 14px; color: var(--text-main, #fff);">2. ÁREA DE RESUMEN Y SEGUIMIENTO DE ACTIVIDADES</h4>
+                
+                <div class="filtros-rapidos-bar" style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 15px; align-items: center; font-size: 12px;">
+                    <span style="font-weight: bold;">FILTROS RÁPIDOS:</span>
+                    <button type="button" class="btn-filtro">[ 📌 Todos ]</button>
+                    <button type="button" class="btn-filtro">[ ⏳ En Proceso ]</button>
+                    <button type="button" class="btn-filtro">[ ⚠️ Pendientes ]</button>
+                    <button type="button" class="btn-filtro">[ ✅ Ejecutadas ]</button>
+                </div>
+
+                <div class="tabla-tareas-container" style="width: 100%; overflow-x: auto; margin-bottom: 15px;">
+                    <table class="tabla-tareas-hato" style="width: 100%; border-collapse: collapse; font-size: 13px; text-align: left;">
+                        <thead>
+                            <tr>
+                                <th style="padding: 8px 10px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); color: var(--accent-green, #2ecc71); font-weight: bold;">ID</th>
+                                <th style="padding: 8px 10px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); color: var(--accent-green, #2ecc71); font-weight: bold;">Fecha</th>
+                                <th style="padding: 8px 10px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); color: var(--accent-green, #2ecc71); font-weight: bold;">Descripción</th>
+                                <th style="padding: 8px 10px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); color: var(--accent-green, #2ecc71); font-weight: bold;">Responsable</th>
+                                <th style="padding: 8px 10px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); color: var(--accent-green, #2ecc71); font-weight: bold;">Estado</th>
+                                <th style="padding: 8px 10px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); color: var(--accent-green, #2ecc71); font-weight: bold;">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabla-tareas-body">
+                            <!-- Inyección dinámica mediante tareas.js -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div>
+                    <button type="button" id="btn-borrar-sel" class="btn-borrar" style="background-color: #c0392b; color: #fff; padding: 6px 12px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px;">[ 🗑️ BORRAR TAREA SELECCIONADA ]</button>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Scripts de Control -->
+    <script src="tareas.js"></script>
     <script>
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('/service-worker.js')
-        .then(reg => console.log('Service Worker registered', reg.scope))
-        .catch(err => console.log('Service Worker registration failed:', err));
-    });
-  }
-</script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/service-worker.js')
+            .then(reg => console.log('Service Worker registered', reg.scope))
+            .catch(err => console.log('Service Worker registration failed:', err));
+        });
+      }
+    </script>
 
 </body>
 </html>
