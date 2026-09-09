@@ -3,22 +3,43 @@ body {
   font-family: sans-serif;
   color: var(--text-main);
   margin: 0;
-  padding: 20px;
+  padding: 10px; /* Reducido para mejor aprovechamiento en móviles */
 }
+
 .planificacion-tareas-card {
   background-color: var(--card-bg);
   border-radius: var(--radius-lg);
-  padding: 20px;
-  max-width: 500px;
+  padding: 15px;
+  width: 100%;
+  max-width: 700px; /* Ampliado ligeramente para tablets y PC */
   margin: 0 auto;
   border: 1px solid var(--border-color);
   box-shadow: var(--relief-shadow);
+  box-sizing: border-box;
 }
 
 .tarea-form-grid {
   display: grid;
   gap: 15px;
-  grid-template-columns: 1fr;
+  grid-template-columns: 1fr; /* Una columna por defecto para celulares */
+}
+
+/* Adaptación responsiva para tablets y PC */
+@media (min-width: 768px) {
+  body {
+    padding: 30px;
+  }
+  .planificacion-tareas-card {
+    padding: 30px;
+  }
+  .tarea-form-grid {
+    grid-template-columns: repeat(2, 1fr); /* Dos columnas para aprovechar pantallas anchas */
+  }
+  /* Elementos que ocupan todo el ancho en pantallas grandes */
+  .tarea-field-group.full-width,
+  .tarea-actions-group {
+    grid-column: span 2;
+  }
 }
 
 .tarea-input,
@@ -27,23 +48,69 @@ body {
   color: var(--text-main);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-sm);
-  padding: 10px;
+  padding: 12px; /* Mayor área táctil para dispositivos móviles */
   width: 100%;
   box-sizing: border-box;
+  font-size: 16px; /* Evita zoom automático en iOS al hacer clic en inputs */
+}
+
+.tarea-textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.tarea-actions-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: stretch;
+}
+
+@media (min-width: 480px) {
+  .tarea-actions-group {
+    flex-direction: row; /* Botones en línea horizontal en pantallas medianas hacia arriba */
+    justify-content: space-between;
+    align-items: center;
+  }
+}
+
+.btn {
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 12px 20px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 16px;
+  transition: background-color 0.2s, opacity 0.2s;
+  text-align: center;
 }
 
 .btn.guardar {
   background-color: var(--accent-color);
   color: #FFFFFF;
-  border: none;
-  border-radius: var(--radius-sm);
-  padding: 12px 20px;
   width: 100%;
-  cursor: pointer;
-  font-weight: 600;
-  transition: background-color 0.2s;
 }
 
 .btn.guardar:hover {
   background-color: var(--primary-color);
+}
+
+.btn.rehacer {
+  background-color: transparent;
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+}
+
+.btn.rehacer:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Indicador de semáforo de sincronización */
+.semaforo-indicador {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background-color: #ffc107; /* Amarillo por defecto / Sincronizando */
+  display: inline-block;
+  box-shadow: 0 0 8px rgba(0,0,0,0.5);
 }
