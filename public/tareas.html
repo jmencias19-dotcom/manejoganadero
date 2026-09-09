@@ -43,9 +43,20 @@
  <main class="main-content">
  <header class="content-header">
  <h1>Planificación y Asignación de Labores Diarias</h1>
- </header>
+ </header
+  <div class="planificacion-tareas-card">
+   <p class="tarea-meta">Módulo en desarrollo para la programación de cercas, roza y mantenimiento.</p>
+    <form id="task-form">
+        <div class="tarea-form-group">
+            <label for="task-input">Nueva Labor:</label>
+            <input type="text" id="task-input" class="tarea-input" placeholder="Describe la labor de finca..." required>
+        </div>
+        <button type="submit" class="btn-tarea">Registrar Labor</button>
+    </form>
+    <ul id="task-list"></ul>
+</div>
  <section class="task-management">
- <p>Módulo en desarrollo para la programación de cercas, roza y mantenimiento.</p>
+ 
  </section>
  </main>
  <script src="tareas.js"></script>
