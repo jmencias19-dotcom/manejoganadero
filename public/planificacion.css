@@ -1,90 +1,106 @@
-<!-- ==========================================================================
-     MÓDULO DE PLANIFICACIÓN DE TAREAS - HATO LAGUNA BRAVA
-     Estructura HTML limpia y acoplada a planificacion.css
-     ========================================================================== -->
-<section style="max-width: 1200px; margin: 30px auto; padding: 0 20px;" id="modulo-tareas">
-    <div class="planificacion-tareas-card">
-        
-        <!-- CABECERA DE ESTADO Y SEMÁFORO -->
-        <div class="header-ascii-box">
-            <span style="font-weight: bold; color: var(--accent-green, #2ecc71);">CONTROL OPERATIVO DE TAREAS - HATO</span>
-            <div style="display: flex; gap: 15px; flex-wrap: wrap;">
-                <span class="ascii-status-item">
-                    🚦 Estado de Sincronización: <span id="sync-text" style="color: #2ecc71;">VERDE (Conectado)</span>
-                    <div id="sync-semaforo" style="display:inline-block; width:10px; height:10px; background:#2ecc71; border-radius:50%; margin-left:4px;"></div>
-                </span>
-                <span class="ascii-status-item">
-                    🔊 Alarma: <span style="color: #2ecc71;">ACTIVA</span>
-                </span>
-            </div>
-        </div>
-
-        <!-- 1. PANEL DE REGISTRO DE ACTIVIDADES -->
-        <h4>1. PANEL DE REGISTRO DE ACTIVIDADES</h4>
-        
-        <form id="tarea-form" class="tarea-form-grid">
-            
-            <div class="tarea-field-group">
-                <label for="tarea-fecha">• Fecha de Actividad:</label>
-                <input type="date" id="tarea-fecha" class="tarea-input" required>
-            </div>
-
-            <div class="tarea-field-group">
-                <label for="tarea-desc">• Descripción de Tareas:</label>
-                <textarea id="tarea-desc" class="tarea-textarea" placeholder="Espacio para escritura de la labor (ej. mantenimiento de cercas, roza)..." required></textarea>
-            </div>
-
-            <div class="tarea-field-group">
-                <label for="tarea-responsable">• Responsable:</label>
-                <input type="text" id="tarea-responsable" class="tarea-input" placeholder="Seleccionar o escribir responsable..." required>
-            </div>
-
-            <div class="tarea-field-group">
-                <label for="tarea-observacion">• Observaciones:</label>
-                <textarea id="tarea-observacion" class="tarea-textarea" placeholder="Espacio para escritura de notas o insumos..."></textarea>
-            </div>
-
-            <div class="tarea-actions-group">
-                <button type="submit" class="btn-accion btn-guardar">[ 💾 GUARDAR Y SINCRONIZAR ]</button>
-                <button type="button" id="btn-rehacer" class="btn-accion btn-reiniciar">[ 🔄 REINICIAR TAREAS ]</button>
-            </div>
-
-        </form>
-
-        <!-- 2. ÁREA DE RESUMEN Y SEGUIMIENTO DE ACTIVIDADES -->
-        <div class="resumen-section">
-            <h4>2. ÁREA DE RESUMEN Y SEGUIMIENTO DE ACTIVIDADES</h4>
-            
-            <div class="filtros-rapidos-bar">
-                <span style="font-weight: bold; color: var(--text-main, #ffffff);">FILTROS RÁPIDOS:</span>
-                <button type="button" class="btn-filtro">[ 📌 Todos ]</button>
-                <button type="button" class="btn-filtro">[ ⏳ En Proceso ]</button>
-                <button type="button" class="btn-filtro">[ ⚠️ Pendientes ]</button>
-                <button type="button" class="btn-filtro">[ ✅ Ejecutadas ]</button>
-            </div>
-
-            <div class="tabla-tareas-container">
-                <table class="tabla-tareas-hato">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Fecha</th>
-                            <th>Descripción</th>
-                            <th>Responsable</th>
-                            <th>Estado</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tabla-tareas-body">
-                        <!-- Inyección dinámica mediante tareas.js -->
-                    </tbody>
-                </table>
-            </div>
-
-            <div>
-                <button type="button" id="btn-borrar-sel" class="btn-borrar">[ 🗑️ BORRAR TAREA SELECCIONADA ]</button>
-            </div>
-        </div>
-
-    </div>
-</section>
+#modulo-tareas {
+  max-width: 1200px;
+  margin: 30px auto;
+  padding: 0 20px;
+}
+.planificacion-tareas-card {
+  background: var(--card-bg, #1a1a1a);
+  border-radius: 12px;
+  padding: 24px;
+  border: 1px solid var(--border-color, #333);
+}
+.header-ascii-box {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+.ascii-status-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: bold;
+}
+.tarea-form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  margin-bottom: 30px;
+}
+.tarea-field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.tarea-input,
+.tarea-textarea {
+  padding: 12px;
+  border-radius: 8px;
+  background: var(--input-bg, #2a2a2a);
+  border: 1px solid var(--border-color, #444);
+  color: #fff;
+  width: 100%;
+}
+.tarea-actions-group {
+  display: flex;
+  gap: 15px;
+}
+.btn-accion {
+  padding: 12px 24px;
+  border-radius: 8px;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+.btn-guardar {
+  background-color: var(--accent-green, #2ecc71);
+  color: #000;
+}
+.btn-reiniciar {
+  background-color: #e74c3c;
+  color: #fff;
+}
+.resumen-section {
+  margin-bottom: 30px;
+}
+.filtros-rapidos-bar {
+  display: flex;
+  gap: 10px;
+  margin: 15px 0;
+  flex-wrap: wrap;
+}
+.btn-filtro {
+  padding: 8px 16px;
+  border-radius: 20px;
+  border: 1px solid #555;
+  background: transparent;
+  color: #ccc;
+  cursor: pointer;
+}
+.btn-filtro.active {
+  border-color: var(--accent-green, #2ecc71);
+  color: var(--accent-green, #2ecc71);
+}
+.tabla-tareas-container {
+  overflow-x: auto;
+}
+.tabla-tareas-hato {
+  width: 100%;
+  border-collapse: collapse;
+}
+.tabla-tareas-hato th,
+.tabla-tareas-hato td {
+  padding: 15px;
+  text-align: left;
+  border-bottom: 1px solid #444;
+}
+.btn-borrar {
+  background: transparent;
+  color: #e74c3c;
+  border: none;
+  cursor: pointer;
+  font-size: 1.2rem;
+}
