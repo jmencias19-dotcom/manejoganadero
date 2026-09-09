@@ -1,12 +1,28 @@
 document.addEventListener('DOMContentLoaded', () => {
-  const tareaForm = document.getElementById('tarea-form');
-  const tareaLabor = document.getElementById('tarea-labor');
-  const taskList = document.getElementById('task-list');
+    // Si cargas planificacion.html dinámicamente, es mejor inicializar 
+    // los elementos o escuchar el evento dentro del contenedor una vez inyectado.
+    
+    fetch('planificacion.html')
+        .then(response => response.text())
+        .then(data => {
+            document.querySelector('.task-management').innerHTML = data;
+            
+            // Inicializamos la lógica de tareas AQUÍ adentro para asegurar 
+            // que el formulario y la lista ya existan en el DOM.
+            initTaskApp();
+        })
+        .catch(error => console.error('Error cargando la planificación:', error));
+});
 
-    // Cargar tareas desde localStorage al iniciar
+function initTaskApp() {
+    const tareaForm = document.getElementById('tarea-form');
+    const tareaLabor = document.getElementById('tarea-labor');
+    const taskList = document.getElementById('task-list');
+
     let tareas = JSON.parse(localStorage.getItem('tareasLabores')) || [];
 
     function renderTasks() {
+        if (!taskList) return;
         taskList.innerHTML = '';
         tareas.forEach((tarea, index) => {
             const li = document.createElement('li');
@@ -21,7 +37,6 @@ document.addEventListener('DOMContentLoaded', () => {
             taskList.appendChild(li);
         });
 
-        // Eventos para marcar como completada
         document.querySelectorAll('.tarea-checkbox').forEach(box => {
             box.addEventListener('change', (e) => {
                 const index = e.target.dataset.index;
@@ -30,7 +45,6 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
 
-        // Eventos para eliminar tarea
         document.querySelectorAll('.btn-borrar').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 const index = e.target.dataset.index;
@@ -45,19 +59,17 @@ document.addEventListener('DOMContentLoaded', () => {
         renderTasks();
     }
 
-    if (taskForm) {
-        taskForm.addEventListener('submit', (e) => {
+    if (tareaForm && tareaLabor) {
+        tareaForm.addEventListener('submit', (e) => {
             e.preventDefault();
-            const texto = taskInput.value.trim();
+            const texto = tareaLabor.value.trim();
             if (texto !== '') {
                 tareas.push({ texto, completada: false });
-                taskInput.value = '';
+                tareaLabor.value = '';
                 saveAndRender();
             }
         });
     }
 
     renderTasks();
-});
-
-fetch('planificacion.html').then(response => response.text()) .then(data => document.querySelector('.task-management').innerHTML = data);
+}
