@@ -166,7 +166,11 @@
     </main>
 
     <!-- Scripts de Control -->
-    <script src="tareas.js"></script>
+  <script>
+    document.getElementById('ver-historial').addEventListener('click', () => {
+        window.location.href = 'historial-pastoreo.html';
+    });
+</script>
     <script>
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
