@@ -180,6 +180,10 @@
         });
       }
     </script>
-    <script src="historial-pastoreo.js"></script>
+    document.getElementById('ver-historial').addEventListener('click', (event) => {
+    event.preventDefault();
+    document.querySelector('.dashboard-grid').style.display = 'none';
+    document.getElementById('historial-pastoreo-section').style.display = 'block';
+});</script>
 </body>
 </html>
