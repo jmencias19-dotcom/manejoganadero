@@ -166,11 +166,7 @@
     </main>
 
     <!-- Scripts de Control -->
-  <script>
-    document.getElementById('ver-historial').addEventListener('click', () => {
-        window.location.href = 'historial-pastoreo.html';
-    });
-</script>
+ 
     <script>
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
@@ -179,6 +175,21 @@
             .catch(err => console.log('Service Worker registration failed:', err));
         });
       }
+    </script>
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/service-worker.js')
+            .then(reg => console.log('Service Worker registered', reg.scope))
+            .catch(err => console.log('Service Worker registration failed:', err));
+        });
+      }
+
+      document.getElementById('ver-historial').addEventListener('click', (event) => {
+          event.preventDefault();
+          document.querySelector('.dashboard-grid').style.display = 'none';
+          document.getElementById('historial-pastoreo').style.display = 'block';
+      });
     </script>
     document.getElementById('ver-historial').addEventListener('click', (event) => {
     event.preventDefault();
