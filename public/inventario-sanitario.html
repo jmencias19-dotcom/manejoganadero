@@ -1,1 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manejo Sanitario - Hato Laguna Brava</title>
+    <link rel="stylesheet" href="../variables.css">
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+    <header class="main-header">
+        <h1>Gestión Ganadera Hato Laguna Brava</h1>
+        <p>Módulo de Inventario y Control Sanitario</p>
+    </header>
 
+    <main class="container">
+        <section class="form-section">
+            <h2>Registro de Tratamiento Sanitario</h2>
+            <form id="form-sanitario">
+                <div class="form-group">
+                    <label for="arete-animal">Número de Arete:</label>
+                    <input type="text" id="arete-animal" required placeholder="Ej: 4521">
+                </div>
+
+                <div class="form-group">
+                    <label for="tipo-tratamiento">Tipo de Tratamiento:</label>
+                    <select id="tipo-tratamiento" required>
+                        <option value="">Seleccione...</option>
+                        <option value="Vacunacion">Vacunación</option>
+                        <option value="Desparasitacion">Desparasitación</option>
+                        <option value="Vitamina">Vitaminas / Minerales</option>
+                        <option value="Curacion">Curación / Heridas</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="producto-nombre">Nombre del Producto:</label>
+                    <input type="text" id="producto-nombre" required placeholder="Ej: Ivermectina / Aftosa">
+                </div>
+
+                <div class="form-group">
+                    <label for="fecha-aplicacion">Fecha de Aplicación:</label>
+                    <input type="date" id="fecha-aplicacion" required>
+                </div>
+
+                <button type="submit" class="btn-primary">Guardar Registro</button>
+            </form>
+        </section>
+
+        <div class="navigation-actions">
+            <a href="../index.html" class="btn-secondary">Volver al Inicio</a>
+        </div>
+    </main>
+
+    <script src="sanitario.js"></script>
+</body>
+</html>
