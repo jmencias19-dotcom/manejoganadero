@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Historial de Combustible - Hato Laguna Brava</title>
+    <link rel="stylesheet" href="./variables.css">
+    <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+    <header class="main-header">
+        <div class="header-container">
+            <h1>Gestión Ganadera Hato Laguna Brava</h1>
+            <p>Módulo de Control de Combustible</p>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <div class="card">
+            <h2>Historial de Consumo de Combustible</h2>
+            <p>A continuación se visualizan los registros de despacho y consumo de combustible en maquinaria y vehículos.</p>
+            
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Maquinaria / Vehículo</th>
+                            <th>Litros</th>
+                            <th>Horómetro / Odómetro</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-combustible-body">
+                        <!-- Los datos se cargarán dinámicamente desde el almacenamiento local -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="navigation-actions">
+            <a href="./registro-combustible.html" class="btn-secondary">Registrar Nuevo Despacho</a>
+            <a href="./index.html" class="btn-secondary">Volver al Inicio</a>
+        </div>
+    </main>
+
+    <script src="./combustible.js"></script>
+</body>
+</html>
