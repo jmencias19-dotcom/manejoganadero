@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Indicadores de Gestión - Hato Laguna Brava</title>
+    <link rel="stylesheet" href="../variables.css">
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="indicadores-gestion.css">
+</head>
+<body>
+    <header class="main-header">
+        <div class="header-container">
+            <h1>Gestión Ganadera Hato Laguna Brava</h1>
+            <p>Panel de Indicadores de Gestión y Rendimiento</p>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <div class="indicadores-container">
+            <h2>Resumen Estratégico Global</h2>
+            <div class="indicadores-grid">
+                <div class="indicador-card">
+                    <span class="indicador-title">Tasa de Preñez</span>
+                    <span class="indicador-value" id="valor-preyectorias">--</span>
+                    <span class="indicador-footer">Actualizado al periodo</span>
+                </div>
+                <div class="indicador-card">
+                    <span class="indicador-title">Vacas Vacías</span>
+                    <span class="indicador-value" id="valor-vacas-vacias">--</span>
+                    <span class="indicador-footer">Requieren atención</span>
+                </div>
+                <div class="indicador-card">
+                    <span class="indicador-title">Consumo de Combustible</span>
+                    <span class="indicador-value" id="valor-consumo-combustible">--</span>
+                    <span class="indicador-footer">Total mensual</span>
+                </div>
+                <div class="indicador-card">
+                    <span class="indicador-title">Eficiencia Maternal</span>
+                    <span class="indicador-value" id="valor-eficiencia-maternal">--</span>
+                    <span class="indicador-footer">Desarrollo del hato</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="navigation-actions" style="margin-top: 2rem;">
+            <a href="../index.html" class="btn-secondary">Volver al Inicio</a>
+        </div>
+    </main>
+
+    <script src="indicadores-gestion.js"></script>
+</body>
+</html>
