@@ -42,7 +42,6 @@
             grid-template-rows: auto auto 1fr;
         }
 
-        /* Barra superior estilo app ocupando todo el ancho */
         .app-header {
             grid-column: 1 / -1;
             background-color: var(--primary-color);
@@ -65,7 +64,17 @@
             font-size: 1rem;
         }
 
-        /* Paneles principales en PC distribuidos en 2 columnas */
+        .app-icons span {
+            cursor: pointer;
+            padding: 2px 6px;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+
+        .app-icons span:hover {
+            background-color: var(--secondary-color);
+        }
+
         .panel-section {
             padding: 12px 15px;
             border-bottom: 1px solid var(--border-color);
@@ -86,6 +95,9 @@
             text-transform: uppercase;
             border-left: 4px solid var(--secondary-color);
             margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .grid-2 {
@@ -114,7 +126,6 @@
             color: var(--secondary-color);
         }
 
-        /* Botones de navegación */
         .tab-buttons-container {
             grid-column: 1 / -1;
             display: grid;
@@ -151,15 +162,6 @@
             box-shadow: inset 0 3px 5px rgba(0,0,0,0.2);
         }
 
-        .tab-btn:active {
-            transform: scale(0.98);
-        }
-
-        .tab-icon {
-            font-size: 1.2rem;
-        }
-
-        /* Secciones desplegables operativas en PC */
         .collapsible-content {
             grid-column: 1 / -1;
             display: none;
@@ -181,7 +183,6 @@
             font-weight: bold;
         }
 
-        /* Controles interactivos dinámicos operativos */
         .interactive-box {
             background: #ffffff;
             border: 1px solid var(--border-color);
@@ -193,10 +194,10 @@
         .interactive-input {
             padding: 6px;
             width: 100%;
-            max-width: 250px;
-            margin-top: 4px;
             border: 1px solid var(--border-color);
             border-radius: 4px;
+            margin-top: 4px;
+            font-size: 0.9rem;
         }
 
         .action-btn {
@@ -212,6 +213,12 @@
 
         .action-btn:hover {
             background-color: var(--primary-color);
+        }
+
+        .save-container {
+            margin-top: 10px;
+            display: flex;
+            justify-content: flex-end;
         }
 
         @media (max-width: 900px) {
@@ -230,27 +237,30 @@
 <body>
 
     <div class="tablet-container">
-        <!-- Barra de Navegación Superior -->
+        <!-- Barra de Navegación Superior con Funciones Operativas -->
         <div class="app-header">
             <div class="app-title">☰ PANEL DE CONTROL ZOOTÉCNICO - HATO LAGUNA BRAVA</div>
             <div class="app-icons">
-                <span>🔍</span>
-                <span>📡</span>
-                <span>⋮</span>
+                <span title="Buscar ID / Areta" onclick="buscarAnimalPrompt()">🔍</span>
+                <span title="Lectura RFID (Chip)" onclick="leerChipRFID()">📡</span>
+                <span title="Menú de Opciones">⋮</span>
             </div>
         </div>
 
-        <!-- Identificación y Datos de Ingreso -->
+        <!-- Identificación y Datos de Ingreso Operativos -->
         <div class="panel-section">
-            <div class="section-title">Identificación y Datos de Ingreso</div>
+            <div class="section-title">
+                Identificación y Datos de Ingreso
+                <span style="font-size: 0.75rem; font-weight: normal; color: var(--secondary-color);" id="estado-sinc">Sincronizado</span>
+            </div>
             <div class="grid-2">
                 <div class="data-item">
-                    <div class="data-label">ID Visual / Chip</div>
-                    <div class="data-value">384 | 982000412345678 <span class="badge-ok">CHIP OK</span></div>
+                    <div class="data-label">ID Visual / Chip (Editable)</div>
+                    <input type="text" id="input-id-chip" class="interactive-input" value="384 | 982000412345678">
                 </div>
                 <div class="data-item">
-                    <div class="data-label">Grupo y Lote</div>
-                    <div class="data-value">Novillo de Levante | Potrero 4A (Machos)</div>
+                    <div class="data-label">Grupo y Lote (Escritura)</div>
+                    <input type="text" id="input-grupo-lote" class="interactive-input" value="Novillo de Levante | Potrero 4A (Machos)">
                 </div>
             </div>
         </div>
@@ -265,7 +275,7 @@
                 </div>
                 <div class="data-item">
                     <div class="data-label">Eficiencia Maternal</div>
-                    <div class="data-value">Cría 384C: 210 kg (ajustado 205 d)</div>
+                    <div class="data-value" id="val-eficiencia">Cría 384C: 210 kg (ajustado 205 d)</div>
                 </div>
                 <div class="data-item">
                     <div class="data-label">Ganancia Diaria (GDP)</div>
@@ -276,12 +286,12 @@
                     <div class="data-value" id="val-gpa">142 kg</div>
                 </div>
             </div>
+            
             <!-- Módulo interactivo de recálculo de peso en manga -->
             <div class="interactive-box">
                 <div class="data-label">Simular Nuevo Pesaje en Manga:</div>
                 <input type="number" id="input-nuevo-peso" class="interactive-input" placeholder="Ej. 445.0" step="0.5">
-                <br>
-                <button class="action-btn" onclick="actualizarMetrica()">Actualizar Métrica</button>
+                <button class="action-btn" onclick="actualizarMetrica()">Recalcular Métrica</button>
             </div>
         </div>
 
@@ -292,6 +302,10 @@
                 <strong>Meta de Salida:</strong> 520 kg en 2.5 meses. <br>
                 <strong>Alerta Sanitaria:</strong> Ninguna incidencia activa en el lote. <br>
                 <strong>Directriz Táctica:</strong> Ralgro se consolida como el tratamiento de mayor retorno de inversión. Planificar logística de potreros para prevenir pérdida de peso por inicio de lluvias.
+            </div>
+            <!-- Botón de Guardado General de Datos -->
+            <div class="save-container">
+                <button class="action-btn" style="background-color: var(--primary-color); padding: 8px 16px;" onclick="guardarDatosFinca()">💾 Guardar Registro en Base de Datos</button>
             </div>
         </div>
 
@@ -311,7 +325,7 @@
             </button>
         </div>
 
-        <!-- Sección Oculta 1: Evaluación Comparativa -->
+        <!-- Sección Oculta 1 -->
         <div id="sec-tratamientos" class="collapsible-content">
             <div class="section-title">Evaluación Comparativa de Tratamientos (Contexto: Verano / Levante)</div>
             <ul style="font-size: 0.85rem; padding-left: 20px; line-height: 1.5;">
@@ -322,7 +336,7 @@
             </ul>
         </div>
 
-        <!-- Sección Oculta 2: Resultados de Laboratorio -->
+        <!-- Sección Oculta 2 -->
         <div id="sec-laboratorio" class="collapsible-content">
             <div class="section-title">Módulo de Laboratorio (Procesamiento Visual IA)</div>
             <div class="grid-2" style="font-size: 0.85rem;">
@@ -337,7 +351,7 @@
             </div>
         </div>
 
-        <!-- Sección Oculta 3: Historial Clínico Completo -->
+        <!-- Sección Oculta 3 -->
         <div id="sec-historial" class="collapsible-content">
             <div class="section-title">Historial de Intervenciones Sanitarias</div>
             <p style="font-size: 0.85rem; color: var(--text-muted);">
@@ -358,11 +372,9 @@
             
             const isAlreadyActive = section.classList.contains('active');
 
-            // Cierra todas y quita estado activo a botones
             allSections.forEach(sec => sec.classList.remove('active'));
             allButtons.forEach(btn => btn.classList.remove('active-tab'));
 
-            // Si no estaba activa, la abre y marca el botón
             if (!isAlreadyActive) {
                 section.classList.add('active');
                 btnElement.classList.add('active-tab');
@@ -372,21 +384,65 @@
         function actualizarMetrica() {
             const inputVal = parseFloat(document.getElementById('input-nuevo-peso').value);
             if (isNaN(inputVal)) {
-                alert("Por favor ingrese un valor de peso válido.");
+                alert("Por favor ingrese un valor de peso válido en la manga.");
                 return;
             }
 
             const pesoAnterior = 438.5;
             const diferencia = inputVal - pesoAnterior;
 
-            // Actualiza en pantalla dinámicamente
             document.getElementById('val-peso').innerText = inputVal.toFixed(1) + " kg";
-            
             const nuevaGPA = 142 + diferencia;
             document.getElementById('val-gpa').innerText = nuevaGPA.toFixed(1) + " kg";
 
-            // Simulación de recálculo métrico por la IA
             alert("Métrica zootécnica recalculada exitosamente en manga. Ganancia acumulada ajustada a: " + nuevaGPA.toFixed(1) + " kg.");
+        }
+
+        // Función interactiva para el botón de búsqueda (🔍)
+        function buscarAnimalPrompt() {
+            const idBusqueda = prompt("Ingrese el ID Visual o Número de Areta a consultar en el Hato Laguna Brava:");
+            if (idBusqueda) {
+                document.getElementById('input-id-chip').value = idBusqueda + " | 9820004" + Math.floor(10000000 + Math.random() * 90000000);
+                document.getElementById('estado-sinc').innerText = "Animal cargado: " + idBusqueda;
+            }
+        }
+
+        // Simulación de lectura de lector de chip RFID por bastón / antena (📡)
+        function leerChipRFID() {
+            const listaChips = [
+                "385 | 982000487654321",
+                "390 | 982000499887766",
+                "412 | 982000411223344",
+                "384 | 982000412345678"
+            ];
+            const chipAleatorio = listaChips[Math.floor(Math.random() * listaChips.length)];
+            const pesoAleatorio = (420 + Math.random() * 40).toFixed(1);
+
+            document.getElementById('input-id-chip').value = chipAleatorio;
+            document.getElementById('val-peso').innerText = pesoAleatorio + " kg";
+            document.getElementById('estado-sinc').innerText = "Lectura RFID Exitosa 📡";
+            
+            setTimeout(() => {
+                document.getElementById('estado-sinc').innerText = "Sincronizado";
+            }, 3000);
+        }
+
+        // Función de Guardado de Datos
+        function guardarDatosFinca() {
+            const idChip = document.getElementById('input-id-chip').value;
+            const grupoLote = document.getElementById('input-grupo-lote').value;
+            const pesoActual = document.getElementById('val-peso').innerText;
+
+            // Simulación de persistencia local o envío de datos
+            const registroZootecnico = {
+                id: idChip,
+                lote: grupoLote,
+                peso: pesoActual,
+                fecha: new Date().toISOString()
+            };
+
+            console.log("Datos guardados:", registroZootecnico);
+            alert("¡Registro guardado con éxito para el animal " + idChip.split('|')[0].trim() + "! Datos almacenados en el sistema del Hato Laguna Brava.");
         }
     </script>
 </body>
