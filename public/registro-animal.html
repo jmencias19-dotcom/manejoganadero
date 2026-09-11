@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Animal - Hato Laguna Brava</title>
+    <link rel="stylesheet" href="../variables.css">
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="registro-animal.css">
+</head>
+<body>
+    <header class="main-header">
+        <div class="header-container">
+            <h1>Gestión Ganadera Hato Laguna Brava</h1>
+            <p>Módulo de Registro e Historial del Animal</p>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <div class="card">
+            <h2>Panel de Búsqueda de Animal</h2>
+            <form id="form-busqueda-animal">
+                <div class="form-group">
+                    <label for="buscar-chip">Número de Cuero, Arete o Chip:</label>
+                    <input type="text" id="buscar-chip" placeholder="Ingrese el identificador" required>
+                </div>
+                <button type="submit" class="btn-primary">Buscar Animal</button>
+            </form>
+        </div>
+
+        <div id="panel-resultado-animal" class="card" style="display: none;">
+            <h2>Ficha del Animal</h2>
+            <div id="datos-animal">
+                <!-- Aquí se cargarán los datos del animal dinámicamente -->
+            </div>
+            <div class="navigation-actions">
+                <button class="btn-primary" id="btn-editar-datos">Editar Datos</button>
+                <button class="btn-secondary" id="btn-nuevo-evento">Registrar Nuevo Evento</button>
+            </div>
+        </div>
+
+        <div class="navigation-actions">
+            <a href="../index.html" class="btn-secondary">Volver al Inicio</a>
+        </div>
+    </main>
+</body>
+</html>
