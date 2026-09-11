@@ -26,21 +26,25 @@
         body {
             background-color: var(--bg-color);
             color: var(--text-main);
-            padding: 15px;
+            padding: 20px;
         }
 
         .tablet-container {
-            max-width: 900px;
+            max-width: 1350px;
             margin: 0 auto;
             background-color: var(--card-bg);
             border: 8px solid #333333;
             border-radius: 16px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.2);
             overflow: hidden;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: auto auto 1fr;
         }
 
-        /* Barra superior estilo app */
+        /* Barra superior estilo app ocupando todo el ancho */
         .app-header {
+            grid-column: 1 / -1;
             background-color: var(--primary-color);
             color: white;
             padding: 12px 15px;
@@ -61,10 +65,16 @@
             font-size: 1rem;
         }
 
-        /* Secciones del panel */
+        /* Paneles principales en PC distribuidos en 2 columnas */
         .panel-section {
             padding: 12px 15px;
             border-bottom: 1px solid var(--border-color);
+            border-right: 1px solid var(--border-color);
+        }
+
+        .panel-section.full-width {
+            grid-column: 1 / -1;
+            border-right: none;
         }
 
         .section-title {
@@ -104,8 +114,9 @@
             color: var(--secondary-color);
         }
 
-        /* Botones de navegación para pestañas ocultas / secundarias */
+        /* Botones de navegación */
         .tab-buttons-container {
+            grid-column: 1 / -1;
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 10px;
@@ -135,6 +146,11 @@
             background-color: var(--secondary-color);
         }
 
+        .tab-btn.active-tab {
+            background-color: var(--secondary-color);
+            box-shadow: inset 0 3px 5px rgba(0,0,0,0.2);
+        }
+
         .tab-btn:active {
             transform: scale(0.98);
         }
@@ -143,8 +159,9 @@
             font-size: 1.2rem;
         }
 
-        /* Secciones desplegables secundarias (Ocultas por defecto) */
+        /* Secciones desplegables operativas en PC */
         .collapsible-content {
+            grid-column: 1 / -1;
             display: none;
             padding: 15px;
             background-color: #fafafa;
@@ -164,9 +181,45 @@
             font-weight: bold;
         }
 
-        @media (max-width: 600px) {
-            .grid-2 {
+        /* Controles interactivos dinámicos operativos */
+        .interactive-box {
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            padding: 10px;
+            border-radius: 6px;
+            margin-top: 8px;
+        }
+
+        .interactive-input {
+            padding: 6px;
+            width: 100%;
+            max-width: 250px;
+            margin-top: 4px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+        }
+
+        .action-btn {
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 6px;
+        }
+
+        .action-btn:hover {
+            background-color: var(--primary-color);
+        }
+
+        @media (max-width: 900px) {
+            .tablet-container {
                 grid-template-columns: 1fr;
+            }
+            .panel-section {
+                border-right: none;
             }
             .tab-buttons-container {
                 grid-template-columns: 1fr;
@@ -202,13 +255,13 @@
             </div>
         </div>
 
-        <!-- Métrica Zootécnica -->
+        <!-- Métrica Zootécnica Operativa -->
         <div class="panel-section">
-            <div class="section-title">Métrica Zootécnica</div>
+            <div class="section-title">Métrica Zootécnica (Dinámica)</div>
             <div class="grid-2">
                 <div class="data-item">
                     <div class="data-label">Peso Actual</div>
-                    <div class="data-value highlight-value">438.5 kg</div>
+                    <div class="data-value highlight-value" id="val-peso">438.5 kg</div>
                 </div>
                 <div class="data-item">
                     <div class="data-label">Eficiencia Maternal</div>
@@ -216,36 +269,43 @@
                 </div>
                 <div class="data-item">
                     <div class="data-label">Ganancia Diaria (GDP)</div>
-                    <div class="data-value">+850 g/día</div>
+                    <div class="data-value" id="val-gdp">+850 g/día</div>
                 </div>
                 <div class="data-item">
                     <div class="data-label">Ganancia Acumulada (GPA)</div>
-                    <div class="data-value">142 kg</div>
+                    <div class="data-value" id="val-gpa">142 kg</div>
                 </div>
+            </div>
+            <!-- Módulo interactivo de recálculo de peso en manga -->
+            <div class="interactive-box">
+                <div class="data-label">Simular Nuevo Pesaje en Manga:</div>
+                <input type="number" id="input-nuevo-peso" class="interactive-input" placeholder="Ej. 445.0" step="0.5">
+                <br>
+                <button class="action-btn" onclick="actualizarMetrica()">Actualizar Métrica</button>
             </div>
         </div>
 
         <!-- Proyección, Alertas y Dirección Táctica -->
-        <div class="panel-section">
+        <div class="panel-section full-width">
             <div class="section-title">Proyección, Alertas y Dirección Táctica (RancherAI)</div>
-            <div class="data-item" style="font-size: 0.9rem; padding: 4px 0;">
+            <div class="data-item" style="font-size: 0.9rem; padding: 4px 0;" id="texto-proyeccion">
                 <strong>Meta de Salida:</strong> 520 kg en 2.5 meses. <br>
                 <strong>Alerta Sanitaria:</strong> Ninguna incidencia activa en el lote. <br>
                 <strong>Directriz Táctica:</strong> Ralgro se consolida como el tratamiento de mayor retorno de inversión. Planificar logística de potreros para prevenir pérdida de peso por inicio de lluvias.
             </div>
         </div>
 
-        <!-- Botones de Acceso a Pestañas Ocultas (Frecuencia Secundaria) -->
+        <!-- Botones de Acceso a Pestañas Ocultas -->
         <div class="tab-buttons-container">
-            <button class="tab-btn" onclick="toggleSection('sec-tratamientos')">
+            <button class="tab-btn" id="btn-tratamientos" onclick="toggleSection('sec-tratamientos', this)">
                 <span class="tab-icon">📈</span>
                 Evaluación Comparativa de Tratamientos (IA)
             </button>
-            <button class="tab-btn" onclick="toggleSection('sec-laboratorio')">
+            <button class="tab-btn" id="btn-laboratorio" onclick="toggleSection('sec-laboratorio', this)">
                 <span class="tab-icon">🔬</span>
                 Resultados de Laboratorio
             </button>
-            <button class="tab-btn" onclick="toggleSection('sec-historial')">
+            <button class="tab-btn" id="btn-historial" onclick="toggleSection('sec-historial', this)">
                 <span class="tab-icon">📋</span>
                 Historial Clínico Completo
             </button>
@@ -291,15 +351,42 @@
     </div>
 
     <script>
-        function toggleSection(sectionId) {
+        function toggleSection(sectionId, btnElement) {
             const section = document.getElementById(sectionId);
             const allSections = document.querySelectorAll('.collapsible-content');
-            allSections.forEach(sec => {
-                if(sec.id !== sectionId) {
-                    sec.classList.remove('active');
-                }
-            });
-            section.classList.toggle('active');
+            const allButtons = document.querySelectorAll('.tab-btn');
+            
+            const isAlreadyActive = section.classList.contains('active');
+
+            // Cierra todas y quita estado activo a botones
+            allSections.forEach(sec => sec.classList.remove('active'));
+            allButtons.forEach(btn => btn.classList.remove('active-tab'));
+
+            // Si no estaba activa, la abre y marca el botón
+            if (!isAlreadyActive) {
+                section.classList.add('active');
+                btnElement.classList.add('active-tab');
+            }
+        }
+
+        function actualizarMetrica() {
+            const inputVal = parseFloat(document.getElementById('input-nuevo-peso').value);
+            if (isNaN(inputVal)) {
+                alert("Por favor ingrese un valor de peso válido.");
+                return;
+            }
+
+            const pesoAnterior = 438.5;
+            const diferencia = inputVal - pesoAnterior;
+
+            // Actualiza en pantalla dinámicamente
+            document.getElementById('val-peso').innerText = inputVal.toFixed(1) + " kg";
+            
+            const nuevaGPA = 142 + diferencia;
+            document.getElementById('val-gpa').innerText = nuevaGPA.toFixed(1) + " kg";
+
+            // Simulación de recálculo métrico por la IA
+            alert("Métrica zootécnica recalculada exitosamente en manga. Ganancia acumulada ajustada a: " + nuevaGPA.toFixed(1) + " kg.");
         }
     </script>
 </body>
