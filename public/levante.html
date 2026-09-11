@@ -3,59 +3,304 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Control de Levante - Hato Laguna Brava</title>
-    <link rel="stylesheet" href="variables.css">
-    <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="dashboard.css">
-    <link rel="stylesheet" href="levante.css">
-    <link rel="manifest" href="manifest.json">
+    <title>Panel de Control Zootécnico - Hato Laguna Brava</title>
+    <style>
+        :root {
+            --primary-color: #1e4620;
+            --secondary-color: #2e7d32;
+            --accent-color: #81c784;
+            --bg-color: #f4f6f4;
+            --card-bg: #ffffff;
+            --text-main: #333333;
+            --text-muted: #666666;
+            --border-color: #d0d7d0;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            padding: 15px;
+        }
+
+        .tablet-container {
+            max-width: 900px;
+            margin: 0 auto;
+            background-color: var(--card-bg);
+            border: 8px solid #333333;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+
+        /* Barra superior estilo app */
+        .app-header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 12px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .app-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+        }
+
+        .app-icons {
+            display: flex;
+            gap: 15px;
+            font-size: 1rem;
+        }
+
+        /* Secciones del panel */
+        .panel-section {
+            padding: 12px 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .section-title {
+            background-color: #e8f5e9;
+            color: var(--primary-color);
+            padding: 6px 10px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            border-left: 4px solid var(--secondary-color);
+            margin-bottom: 8px;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            font-size: 0.9rem;
+        }
+
+        .data-item {
+            margin-bottom: 4px;
+        }
+
+        .data-label {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+
+        .data-value {
+            font-weight: bold;
+            color: var(--text-main);
+        }
+
+        .highlight-value {
+            font-size: 1.3rem;
+            color: var(--secondary-color);
+        }
+
+        /* Botones de navegación para pestañas ocultas / secundarias */
+        .tab-buttons-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            padding: 15px;
+            background-color: #f9fbf9;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .tab-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 10px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            transition: background-color 0.2s, transform 0.1s;
+            text-align: center;
+        }
+
+        .tab-btn:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .tab-btn:active {
+            transform: scale(0.98);
+        }
+
+        .tab-icon {
+            font-size: 1.2rem;
+        }
+
+        /* Secciones desplegables secundarias (Ocultas por defecto) */
+        .collapsible-content {
+            display: none;
+            padding: 15px;
+            background-color: #fafafa;
+            border-top: 2px dashed var(--secondary-color);
+        }
+
+        .collapsible-content.active {
+            display: block;
+        }
+
+        .badge-ok {
+            background-color: #c8e6c9;
+            color: #256029;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+
+        @media (max-width: 600px) {
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+            .tab-buttons-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 <body>
-    <header class="main-header">
-        <div class="header-container">
-            <div class="flag-container" aria-label="Bandera de Venezuela">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600" class="flag-icon">
-                    <rect width="900" height="200" fill="#ffcc00"/>
-                    <rect y="200" width="900" height="200" fill="#00247d"/>
-                    <rect y="400" width="900" height="200" fill="#cf142b"/>
-                    <g fill="#ffffff" transform="translate(450,300) scale(0.7)">
-                        <circle cx="-120" cy="-70" r="12"/>
-                        <circle cx="-90" cy="-90" r="12"/>
-                        <circle cx="-50" cy="-100" r="12"/>
-                        <circle cx="0" cy="-105" r="12"/>
-                        <circle cx="50" cy="-100" r="12"/>
-                        <circle cx="90" cy="-90" r="12"/>
-                        <circle cx="120" cy="-70" r="12"/>
-                        <circle cx="-135" cy="-30" r="12"/>
-                        <circle cx="135" cy="-30" r="12"/>
-                        <circle cx="-140" cy="15" r="12"/>
-                        <circle cx="140" cy="15" r="12"/>
-                        <circle cx="-120" cy="60" r="12"/>
-                        <circle cx="120" cy="60" r="12"/>
-                        <circle cx="-90" cy="90" r="12"/>
-                        <circle cx="90" cy="90" r="12"/>
-                        <circle cx="-50" cy="110" r="12"/>
-                        <circle cx="50" cy="110" r="12"/>
-                        <circle cx="0" cy="120" r="12"/>
-                    </g>
-                </svg>
-            </div>
-            <div class="header-title-wrapper">
-                <h1>Gestión Ganadera Hato Laguna Brava</h1>
-                <span>Grupo Imperatori</span>
-                <p>Panel de Control Directo - Operaciones de Campo</p>
+
+    <div class="tablet-container">
+        <!-- Barra de Navegación Superior -->
+        <div class="app-header">
+            <div class="app-title">☰ PANEL DE CONTROL ZOOTÉCNICO - HATO LAGUNA BRAVA</div>
+            <div class="app-icons">
+                <span>🔍</span>
+                <span>📡</span>
+                <span>⋮</span>
             </div>
         </div>
-    </header>
 
-    <main class="dashboard-grid">
-        <article class="card">
-            <h2>Control de Levante</h2>
-            <p>Aquí se registrará y gestionará el desarrollo y peso del ganado en etapa de levante.</p>
-            <a href="index.html" class="card-action">Volver al Inicio</a>
-        </article>
-    </main>
+        <!-- Identificación y Datos de Ingreso -->
+        <div class="panel-section">
+            <div class="section-title">Identificación y Datos de Ingreso</div>
+            <div class="grid-2">
+                <div class="data-item">
+                    <div class="data-label">ID Visual / Chip</div>
+                    <div class="data-value">384 | 982000412345678 <span class="badge-ok">CHIP OK</span></div>
+                </div>
+                <div class="data-item">
+                    <div class="data-label">Grupo y Lote</div>
+                    <div class="data-value">Novillo de Levante | Potrero 4A (Machos)</div>
+                </div>
+            </div>
+        </div>
 
-    <script src="levante.js"></script>
+        <!-- Métrica Zootécnica -->
+        <div class="panel-section">
+            <div class="section-title">Métrica Zootécnica</div>
+            <div class="grid-2">
+                <div class="data-item">
+                    <div class="data-label">Peso Actual</div>
+                    <div class="data-value highlight-value">438.5 kg</div>
+                </div>
+                <div class="data-item">
+                    <div class="data-label">Eficiencia Maternal</div>
+                    <div class="data-value">Cría 384C: 210 kg (ajustado 205 d)</div>
+                </div>
+                <div class="data-item">
+                    <div class="data-label">Ganancia Diaria (GDP)</div>
+                    <div class="data-value">+850 g/día</div>
+                </div>
+                <div class="data-item">
+                    <div class="data-label">Ganancia Acumulada (GPA)</div>
+                    <div class="data-value">142 kg</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Proyección, Alertas y Dirección Táctica -->
+        <div class="panel-section">
+            <div class="section-title">Proyección, Alertas y Dirección Táctica (RancherAI)</div>
+            <div class="data-item" style="font-size: 0.9rem; padding: 4px 0;">
+                <strong>Meta de Salida:</strong> 520 kg en 2.5 meses. <br>
+                <strong>Alerta Sanitaria:</strong> Ninguna incidencia activa en el lote. <br>
+                <strong>Directriz Táctica:</strong> Ralgro se consolida como el tratamiento de mayor retorno de inversión. Planificar logística de potreros para prevenir pérdida de peso por inicio de lluvias.
+            </div>
+        </div>
+
+        <!-- Botones de Acceso a Pestañas Ocultas (Frecuencia Secundaria) -->
+        <div class="tab-buttons-container">
+            <button class="tab-btn" onclick="toggleSection('sec-tratamientos')">
+                <span class="tab-icon">📈</span>
+                Evaluación Comparativa de Tratamientos (IA)
+            </button>
+            <button class="tab-btn" onclick="toggleSection('sec-laboratorio')">
+                <span class="tab-icon">🔬</span>
+                Resultados de Laboratorio
+            </button>
+            <button class="tab-btn" onclick="toggleSection('sec-historial')">
+                <span class="tab-icon">📋</span>
+                Historial Clínico Completo
+            </button>
+        </div>
+
+        <!-- Sección Oculta 1: Evaluación Comparativa -->
+        <div id="sec-tratamientos" class="collapsible-content">
+            <div class="section-title">Evaluación Comparativa de Tratamientos (Contexto: Verano / Levante)</div>
+            <ul style="font-size: 0.85rem; padding-left: 20px; line-height: 1.5;">
+                <li><strong>Ralgro (1 implante):</strong> +180 g/día. <span style="color:var(--secondary-color); font-weight:bold;">[Tratamiento Mejor Evaluado]</span></li>
+                <li><strong>Fullplus Plus (10 ml):</strong> +120 g/día. Excelente respuesta metabólica.</li>
+                <li><strong>Hemato-B12 (15 ml):</strong> +85 g/día. Soporte eritropoyético adecuado.</li>
+                <li><strong>Vigortone Mineral (100g/d):</strong> +55 g/día. Nivel de mantenimiento estándar.</li>
+            </ul>
+        </div>
+
+        <!-- Sección Oculta 2: Resultados de Laboratorio -->
+        <div id="sec-laboratorio" class="collapsible-content">
+            <div class="section-title">Módulo de Laboratorio (Procesamiento Visual IA)</div>
+            <div class="grid-2" style="font-size: 0.85rem;">
+                <div>
+                    <strong>Coprológico:</strong> HPG = 150 <br>
+                    <span class="badge-ok">Carga baja - Negativo a Fasciola</span>
+                </div>
+                <div>
+                    <strong>Hematológico:</strong> Hto: 36%, Hb: 12.2 g/dL <br>
+                    <span class="badge-ok">Perfil Fisiológico Óptimo</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sección Oculta 3: Historial Clínico Completo -->
+        <div id="sec-historial" class="collapsible-content">
+            <div class="section-title">Historial de Intervenciones Sanitarias</div>
+            <p style="font-size: 0.85rem; color: var(--text-muted);">
+                • 10/09/2023: Fullplus Plus (10 ml)<br>
+                • 25/08/2023: Vigortone Mineral (100 g/día)<br>
+                • 01/10/2023: Hemato-B12 (15 ml)<br>
+                • 15/07/2023: Ralgro (1 implante)
+            </p>
+        </div>
+
+    </div>
+
+    <script>
+        function toggleSection(sectionId) {
+            const section = document.getElementById(sectionId);
+            const allSections = document.querySelectorAll('.collapsible-content');
+            allSections.forEach(sec => {
+                if(sec.id !== sectionId) {
+                    sec.classList.remove('active');
+                }
+            });
+            section.classList.toggle('active');
+        }
+    </script>
 </body>
 </html>
