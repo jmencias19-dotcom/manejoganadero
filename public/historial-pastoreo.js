@@ -21,7 +21,6 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
 
     const paddockForm = document.getElementById('paddockForm');
     const fIngreso = document.getElementById('f-ingreso');
