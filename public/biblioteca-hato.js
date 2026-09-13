@@ -84,6 +84,22 @@ class BibliotecaHato {
             totalReproduccion: this.reproduccion.length,
             totalNutricion: this.nutricion.length
         };
+   // Función para actualizar la vista de la lista de documentos en el HTML
+function actualizarListaDocumentos() {
+    const listaHtml = document.getElementById('lista-documentos');
+    if (!listaHtml) return;
+    
+    listaHtml.innerHTML = '';
+    
+    // Suponiendo que 'biblioteca' es tu instancia de BibliotecaHato
+    if (window.bibliotecaHato && window.bibliotecaHato.documentos) {
+        window.bibliotecaHato.documentos.forEach(doc => {
+            const item = document.createElement('li');
+            item.textContent = `${doc.titulo} (${doc.categoria}) - Archivo: ${doc.archivo}`;
+            listaHtml.appendChild(item);
+        });
+    }
+}
     }
 }
 
