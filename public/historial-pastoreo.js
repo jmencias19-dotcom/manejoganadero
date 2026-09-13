@@ -103,4 +103,4 @@ const analytics = getAnalytics(app);
                 alert("Ocurrió un error al guardar el registro.");
             }
         });
- 
+ }
