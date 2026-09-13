@@ -4,54 +4,48 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Biblioteca del Hato - Sistema de Gestión</title>
-    <link rel="stylesheet" href="biblioteca_hato.css">
+    <link rel="stylesheet" href="biblioteca-hato.css">
 </head>
 <body>
-
     <div class="library-container">
         <!-- Encabezado de la Biblioteca -->
         <header>
-            <h1 class="section-title">Biblioteca Digital del Hato</h1>
-            <p>Centro de gestión, información técnica, clínica y administrativa para bovinos y búfalos.</p>
+            <div class="section-title">Biblioteca Digital del Hato</div>
+            <p>Acceso al repositorio documental (Manual Merck, guías), fichas de pastos y parámetros técnicos.</p>
         </header>
 
-        <!-- Panel de Control / Resumen -->
+        <!-- Contenido principal y Secciones de Apoyo -->
         <section>
-            <h2 class="section-title">Panel de Control</h2>
+            <div class="section-title">Repositorio Documental</div>
             <div class="grid-library">
                 <div class="card">
                     <div class="card-title">Repositorio Documental</div>
-                    <div class="card-content" id="resumen-docs">Manuales, libros y PDFs técnicos (Manual Merck, etc.).</div>
-                    <button class="upload-btn" onclick="triggerUpload('documento')">Subir Documento</button>
-                   <ul id="lista-documentos"></ul>
-                </div>
-                <div class="card">
-                    <div class="card-title">Fichas de Pastos</div>
-                    <div class="card-content" id="resumen-pastos">Fotografías, identificación, consumo y pisoteo.</div>
-                    <button class="upload-btn" onclick="triggerUpload('pasto')">Agregar Pasto</button>
-                </div>
-                <div class="card">
-                    <div class="card-title">Estructura del Rebaño</div>
-                    <div class="card-content" id="resumen-rebano">Clasificación por edades y etapas productivas.</div>
+                    <div class="card-content">Manuales, libros y documentos de interés pecuario.</div>
+                    <button class="upload-btn" onclick="triggerUpload('documento')">Ingresar a Biblioteca</button>
+                    <ul id="lista-documentos"></ul>
                 </div>
             </div>
         </section>
 
-        <!-- Secciones Operativas y de Apoyo -->
         <section>
-            <h2 class="section-title">Registros y Datos de Campo</h2>
+            <div class="section-title">Registros y Datos de Campo</div>
             <div class="grid-library">
                 <div class="card">
-                    <div class="card-title">Historial Reproductivo</div>
-                    <div class="card-content">Registros de monta natural y preñeces.</div>
+                    <div class="card-title">Fichas de Pastos</div>
+                    <div class="card-content">Fotografías, identificación, ciclo de consumo y pisoteo.</div>
+                    <button class="upload-btn" onclick="triggerUpload('pasto')">Ficha de Pasto</button>
                 </div>
                 <div class="card">
-                    <div class="card-title">Nutrición y Suplementación</div>
-                    <div class="card-content">Control de minerales, alimentos e insumos.</div>
+                    <div class="card-title">Estructura del Rebaño</div>
+                    <div class="card-content">Clasificación por edades, categorías productivas.</div>
                 </div>
                 <div class="card">
-                    <div class="card-title">Historial Clínico y Parásitos</div>
-                    <div class="card-content">Control sanitario y tratamientos aplicados.</div>
+                    <div class="card-title">Historial Clínico</div>
+                    <div class="card-content">Control sanitarios, tratamientos e insumos.</div>
+                </div>
+                <div class="card">
+                    <div class="card-title">Control de Minerales</div>
+                    <div class="card-content">Plan de suplementación y registros aplicados.</div>
                 </div>
             </div>
         </section>
@@ -59,20 +53,6 @@
 
     <!-- Enlace al archivo JavaScript -->
     <script src="biblioteca-hato.js"></script>
-    <script>
-        function triggerUpload(tipo) {
-            const titulo = prompt(`Ingrese el título o nombre del nuevo ${tipo}:`);
-            if (titulo) {
-                if (tipo === 'documento') {
-                    miBibliotecaHato.agregarDocumento(titulo, "General", "archivo_ejemplo.pdf");
-                    alert(`Documento "${titulo}" registrado en la biblioteca.`);
-                } else if (tipo === 'pasto') {
-                    miBibliotecaHato.agregarPasto(titulo, "Medio", "Bajo", "foto_ejemplo.jpg");
-                    alert(`Ficha de pasto "${titulo}" agregada.`);
-                }
-            }
-        }
-    </script>
-    <script src="cuestionario_biblioteca.js"></script>
+    <script src="cuestionario-biblioteca.js"></script>
 </body>
 </html>
