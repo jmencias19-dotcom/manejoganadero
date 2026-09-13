@@ -4,7 +4,6 @@ import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.g
 
 // 1. Configuración e Inicialización de Firebase
 // Import the functions you need from the SDKs you need
-import { getAnalytics } from "firebase/analytics";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -24,7 +23,6 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 
-document.addEventListener('DOMContentLoaded', () => {
     const paddockForm = document.getElementById('paddockForm');
     const fIngreso = document.getElementById('f-ingreso');
     const fSalida = document.getElementById('f-salida');
