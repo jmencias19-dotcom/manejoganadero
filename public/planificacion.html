@@ -17,6 +17,8 @@
             --danger: #e63946;
             --warning: #f4a261;
             --success: #2a9d8f;
+            --border-color: #d8dad8;
+            --divider-color: #e2e8e0;
         }
 
         body {
@@ -32,6 +34,7 @@
             color: white;
             padding: 1.5rem 1rem;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border-bottom: 4px solid var(--accent-color);
         }
 
         .header-container {
@@ -50,10 +53,43 @@
             }
         }
 
+        .header-brand {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
         .header-container h1 {
             margin: 0;
             font-size: 1.5rem;
             text-align: center;
+        }
+
+        /* Botón de Volver al Panel */
+        .btn-dashboard {
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: background-color 0.2s, transform 0.1s;
+        }
+
+        .btn-dashboard:hover {
+            background-color: rgba(255, 255, 255, 0.35);
+        }
+
+        .btn-dashboard:active {
+            transform: scale(0.97);
         }
 
         /* Semáforo de Sincronización */
@@ -65,6 +101,7 @@
             padding: 6px 12px;
             border-radius: 20px;
             font-size: 0.85rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         .sync-light {
@@ -93,18 +130,35 @@
             margin: 2rem auto;
             padding: 0 1rem;
             display: grid;
-            gap: 2rem;
+            gap: 2.5rem;
         }
 
-        /* Formulario Estilizado */
-        #taskForm {
+        /* Contenedores con líneas y bordes definidos */
+        .section-box {
             background: var(--card-bg);
-            padding: 1.5rem;
+            border: 1px solid var(--border-color);
             border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+            padding: 1.8rem;
+        }
+
+        .section-title {
+            margin-top: 0;
+            margin-bottom: 1.2rem;
+            font-size: 1.2rem;
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--divider-color);
+            padding-bottom: 0.6rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Formulario Estilizado con rejilla de casillas delimitadas */
+        #taskForm {
             display: grid;
             grid-template-columns: 1fr;
-            gap: 1rem;
+            gap: 1.2rem;
         }
 
         @media (min-width: 768px) {
@@ -116,24 +170,48 @@
             }
         }
 
-        #taskForm input, #taskForm textarea {
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .input-group label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        #taskForm input, #taskForm textarea, #taskForm select {
             width: 100%;
-            padding: 0.75rem;
-            border: 1px solid #ced4da;
+            padding: 0.85rem;
+            border: 1.5px solid var(--border-color);
             border-radius: 8px;
             font-size: 1rem;
             box-sizing: border-box;
+            background-color: #fafbfc;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        #taskForm input:focus, #taskForm textarea:focus {
+            border-color: var(--accent-color);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(82, 183, 136, 0.15);
+            background-color: #fff;
         }
 
         #taskForm textarea {
             resize: vertical;
-            min-height: 80px;
+            min-height: 90px;
         }
 
         .form-actions {
             display: flex;
             gap: 1rem;
             flex-wrap: wrap;
+            margin-top: 0.5rem;
+            border-top: 1px solid var(--divider-color);
+            padding-top: 1.2rem;
         }
 
         button {
@@ -160,42 +238,54 @@
             background-color: var(--primary-color);
         }
 
-        .btn-reset {
-            background-color: #6c757d;
-            color: white;
+        .btn-undo {
+            background-color: var(--warning);
+            color: #000;
             flex: 1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
         }
 
-        .btn-reset:hover {
-            background-color: #5a6268;
+        .btn-undo:hover {
+            background-color: #e08e4f;
         }
 
-        /* Tabla Responsiva */
+        .btn-undo:disabled {
+            background-color: #e0e0e0;
+            color: #999;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Tabla Responsiva con líneas divisorias claras */
         .task-list {
-            background: var(--card-bg);
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
             overflow-x: auto;
-            padding: 1rem;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
             text-align: left;
-            min-width: 600px;
+            min-width: 650px;
         }
 
         th, td {
-            padding: 12px 15px;
-            border-bottom: 1px solid #e9ecef;
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--divider-color);
             font-size: 0.95rem;
         }
 
         th {
-            background-color: #f8f9fa;
+            background-color: #f1f4f1;
             color: var(--primary-color);
             font-weight: 700;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        tr:hover {
+            background-color: #f9fbf9;
         }
 
         /* Selectores de Estado con Color */
@@ -238,37 +328,53 @@
             background-color: #c82333;
         }
 
-        /* Notificaciones Toast */
+        /* Notificaciones Toast con Icono y Alerta Visual Destacada */
         .toast-notification {
             position: fixed;
-            bottom: 20px;
-            right: 20px;
+            bottom: 25px;
+            right: 25px;
             background: #333;
             color: white;
-            padding: 12px 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            padding: 14px 22px;
+            border-radius: 10px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.25);
             opacity: 0;
             pointer-events: none;
-            transition: opacity 0.3s ease-in-out;
+            transition: opacity 0.3s ease-in-out, transform 0.3s;
+            transform: translateY(20px);
             z-index: 1000;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-left: 5px solid var(--accent-color);
         }
 
         .toast-notification.show {
             opacity: 1;
+            transform: translateY(0);
         }
 
-        .toast-notification.success { background-color: var(--success); }
-        .toast-notification.danger { background-color: var(--danger); }
-        .toast-notification.warning { background-color: var(--warning); color: #000; }
+        .toast-notification.success { background-color: #1b4332; border-left-color: var(--success); }
+        .toast-notification.danger { background-color: #780000; border-left-color: var(--danger); }
+        .toast-notification.warning { background-color: #ca6702; color: #fff; border-left-color: var(--warning); }
+        
+        .toast-icon {
+            font-size: 1.2rem;
+        }
     </style>
 </head>
 <body>
 
     <header class="main-header">
         <div class="header-container">
-            <h1>Planificación y Asignación de Tareas</h1>
+            <div class="header-brand">
+                <!-- Botón de Volver al Panel Principal -->
+                <a href="panel.html" class="btn-dashboard">
+                    <span>⬅</span> Volver al Panel
+                </a>
+                <h1>Planificación y Asignación de Tareas</h1>
+            </div>
             <div class="sync-indicator">
                 <div id="light" class="sync-light"></div>
                 <span id="statusText">Conectado a la Nube</span>
@@ -277,20 +383,39 @@
     </header>
 
     <main class="main-container">
-        <!-- Formulario para registrar tareas -->
-        <form id="taskForm">
-            <input type="date" id="fecha" required>
-            <input type="text" id="labor" placeholder="Labor a realizar" required>
-            <input type="text" id="personal" placeholder="Personal asignado" required>
-            <textarea id="observaciones" placeholder="Observaciones operativas"></textarea>
-            <div class="form-actions">
-                <button type="submit">Guardar tarea y sincronizar</button>
-                <button type="button" class="btn-reset" id="btnReset">Rehacer / Limpiar</button>
-            </div>
-        </form>
+        <!-- Formulario para registrar tareas con delimitación clara -->
+        <section class="section-box">
+            <h2 class="section-title">📋 Registro de Nueva Labor Operativa</h2>
+            <form id="taskForm">
+                <div class="input-group">
+                    <label for="fecha">Fecha de Ejecución (Horizonte de 1 Mes):</label>
+                    <input type="date" id="fecha" required>
+                </div>
+                <div class="input-group">
+                    <label for="labor">Labor a Realizar:</label>
+                    <input type="text" id="labor" placeholder="Ej. Vacunación lote Brahman, mantenimiento de potrero..." required>
+                </div>
+                <div class="input-group">
+                    <label for="personal">Personal Asignado:</label>
+                    <input type="text" id="personal" placeholder="Nombre del responsable o cuadrilla" required>
+                </div>
+                <div class="input-group">
+                    <label for="observaciones">Observaciones Operativas:</label>
+                    <textarea id="observaciones" placeholder="Detalles de insumos, herramientas o especificaciones..."></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="submit">Guardar tarea y sincronizar</button>
+                    <!-- Botón para restaurar/reincorporar última tarea eliminada -->
+                    <button type="button" class="btn-undo" id="btnUndo" disabled title="No hay tareas eliminadas recientemente para reincorporar">
+                        <span>♻️</span> Rehacer / Reincorporar
+                    </button>
+                </div>
+            </form>
+        </section>
 
-        <!-- Tabla para listar las tareas -->
-        <section class="task-list">
+        <!-- Tabla para listar las tareas organizadas cronológicamente -->
+        <section class="section-box task-list">
+            <h2 class="section-title">📅 Cronograma de Tareas Activas</h2>
             <table>
                 <thead>
                     <tr>
@@ -310,6 +435,7 @@
     </main>
 
     <div id="toast" class="toast-notification">
+        <span id="toastIcon" class="toast-icon">ℹ️</span>
         <span id="toastMessage">Notificación</span>
     </div>
 
@@ -345,12 +471,36 @@
         const tasksCollection = collection(db, "tareas");
 
         const taskForm = document.getElementById('taskForm');
-        const btnReset = document.getElementById('btnReset');
+        const btnUndo = document.getElementById('btnUndo');
         const taskTableBody = document.getElementById('taskTableBody');
         const light = document.getElementById('light');
         const statusText = document.getElementById('statusText');
         const toast = document.getElementById('toast');
         const toastMessage = document.getElementById('toastMessage');
+        const toastIcon = document.getElementById('toastIcon');
+        const inputFecha = document.getElementById('fecha');
+
+        // Pila temporal para almacenar la última tarea eliminada (permite reincorporarla)
+        let lastDeletedTask = null;
+
+        // Configuración lógica de fechas: Fecha actual como mínimo y máximo a 1 mes (30 días)
+        function configurarRangoFechas() {
+            const hoy = new Date();
+            const anio = hoy.getFullYear();
+            const mes = String(hoy.getMonth() + 1).padStart(2, '0');
+            const dia = String(hoy.getDate()).padStart(2, '0');
+            const fechaMinima = `${anio}-${mes}-${dia}`;
+            inputFecha.value = fechaMinima;
+            inputFecha.min = fechaMinima;
+
+            const fechaFutura = new Date();
+            fechaFutura.setDate(hoy.getDate() + 30);
+            const anioMax = fechaFutura.getFullYear();
+            const mesMax = String(fechaFutura.getMonth() + 1).padStart(2, '0');
+            const diaMax = String(fechaFutura.getDate()).padStart(2, '0');
+            inputFecha.max = `${anioMax}-${mesMax}-${diaMax}`;
+        }
+        configurarRangoFechas();
 
         // Generador de alerta sonora utilizando Web Audio API
         function playAlertSound(type = 'success') {
@@ -397,7 +547,13 @@
             if (!toast || !toastMessage) return;
             toastMessage.textContent = message;
             toast.className = `toast-notification ${type} show`;
-            setTimeout(() => toast.classList.remove('show'), 3500);
+            
+            if (type === 'success') toastIcon.textContent = '✅';
+            else if (type === 'danger') toastIcon.textContent = '⚠️';
+            else if (type === 'warning') toastIcon.textContent = '🔔';
+            else toastIcon.textContent = 'ℹ️';
+
+            setTimeout(() => toast.classList.remove('show'), 3800);
         }
 
         function getStatusClass(status) {
@@ -406,16 +562,50 @@
             return 'status-pendiente';
         }
 
-        // Botón Rehacer / Limpiar Formulario
-        if (btnReset) {
-            btnReset.addEventListener('click', () => {
-                taskForm.reset();
-                showNotification('Formulario reiniciado', 'warning');
-                playAlertSound('warning');
+        // Depuración automática de tareas completadas con más de 3 días de antigüedad
+        async function verificarDepuracionCompletadas(snapshot) {
+            const ahora = new Date().getTime();
+            const tresDiasMs = 3 * 24 * 60 * 60 * 1000;
+
+            snapshot.forEach(async (docSnapshot) => {
+                const task = docSnapshot.data();
+                if (task.estado === 'Completada' && task.completadaEn) {
+                    const tiempoCompletada = new Date(task.completadaEn).getTime();
+                    if ((ahora - tiempoCompletada) > tresDiasMs) {
+                        try {
+                            await deleteDoc(doc(db, "tareas", docSnapshot.id));
+                            console.log(`Tarea completada ${docSnapshot.id} eliminada automáticamente tras 3 días.`);
+                        } catch (e) {
+                            console.error("Error al auto-eliminar tarea completada:", e);
+                        }
+                    }
+                }
             });
         }
 
-        // Escuchar cambios en tiempo real desde Firestore
+        // Botón Deshacer / Reincorporar tarea eliminada
+        if (btnUndo) {
+            btnUndo.addEventListener('click', async () => {
+                if (!lastDeletedTask) return;
+                setSyncStatus(true);
+                try {
+                    await addDoc(tasksCollection, lastDeletedTask);
+                    showNotification('Tarea reincorporada exitosamente al cronograma', 'success');
+                    playAlertSound('success');
+                    lastDeletedTask = null;
+                    btnUndo.disabled = true;
+                    btnUndo.title = "No hay tareas eliminadas recientemente para reincorporar";
+                } catch (err) {
+                    console.error("Error al reincorporar tarea:", err);
+                    showNotification('Error al reincorporar tarea', 'danger');
+                    playAlertSound('danger');
+                } finally {
+                    setSyncStatus(false);
+                }
+            });
+        }
+
+        // Escuchar cambios en tiempo real desde Firestore y ordenar cronológicamente
         onSnapshot(tasksCollection, (snapshot) => {
             if (!taskTableBody) return;
             taskTableBody.innerHTML = '';
@@ -426,9 +616,19 @@
                 return;
             }
 
+            // Ejecutar revisión de auto-depuración para tareas completadas hace más de 3 días
+            verificarDepuracionCompletadas(snapshot);
+
+            // Mapear y ordenar tareas por fecha de manera ascendente (cronológica)
+            let taskList = [];
             snapshot.forEach((docSnapshot) => {
-                const task = docSnapshot.data();
-                const id = docSnapshot.id;
+                taskList.push({ id: docSnapshot.id, ...docSnapshot.data() });
+            });
+
+            taskList.sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
+
+            taskList.forEach((task) => {
+                const id = task.id;
                 const tr = document.createElement('tr');
                 const statusClass = getStatusClass(task.estado);
 
@@ -468,10 +668,12 @@
                         personal: document.getElementById('personal').value,
                         observaciones: document.getElementById('observaciones').value,
                         estado: 'Pendiente',
-                        creadoEn: new Date().toISOString()
+                        creadoEn: new Date().toISOString(),
+                        completadaEn: null
                     });
 
                     taskForm.reset();
+                    configurarRangoFechas();
                     showNotification('Labor registrada y guardada en la nube', 'success');
                     playAlertSound('success');
                 } catch (err) {
@@ -489,7 +691,14 @@
             setSyncStatus(true);
             try {
                 const taskRef = doc(db, "tareas", id);
-                await updateDoc(taskRef, { estado: newStatus });
+                const updateData = { estado: newStatus };
+                if (newStatus === 'Completada') {
+                    updateData.completadaEn = new Date().toISOString();
+                } else {
+                    updateData.completadaEn = null;
+                }
+
+                await updateDoc(taskRef, updateData);
                 showNotification(`Estado actualizado a "${newStatus}"`, 'warning');
                 playAlertSound('warning');
             } catch (err) {
@@ -501,13 +710,30 @@
             }
         };
 
-        // Eliminar Tarea
+        // Eliminar Tarea y respaldarla para posible reincorporación
         window.deleteTask = async (id) => {
             if (confirm('¿Deseas eliminar este registro de la base de datos central?')) {
                 setSyncStatus(true);
                 try {
+                    // Buscar la tarea actual en el DOM o extraerla para el respaldo de "Deshacer"
+                    const trElement = document.querySelector(`select[data-id="${id}"]`)?.closest('tr');
+                    if (trElement) {
+                        const tds = trElement.querySelectorAll('td');
+                        lastDeletedTask = {
+                            fecha: tds[0].textContent,
+                            labor: tds[1].textContent,
+                            personal: tds[2].textContent,
+                            observaciones: tds[3].textContent === '-' ? '' : tds[3].textContent,
+                            estado: trElement.querySelector('select').value,
+                            creadoEn: new Date().toISOString(),
+                            completadaEn: null
+                        };
+                        btnUndo.disabled = false;
+                        btnUndo.title = "Reincorporar la última tarea eliminada";
+                    }
+
                     await deleteDoc(doc(db, "tareas", id));
-                    showNotification('Tarea eliminada de la nube', 'danger');
+                    showNotification('Tarea eliminada. Puedes reincorporarla con el botón "Rehacer".', 'danger');
                     playAlertSound('danger');
                 } catch (err) {
                     console.error("Error al eliminar en Firestore:", err);
