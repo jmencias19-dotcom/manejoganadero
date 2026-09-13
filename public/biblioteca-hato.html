@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Biblioteca del Hato - Sistema de Gestión</title>
+    <link rel="stylesheet" href="biblioteca_hato.css">
+</head>
+<body>
+
+    <div class="library-container">
+        <!-- Encabezado de la Biblioteca -->
+        <header>
+            <h1 class="section-title">Biblioteca Digital del Hato</h1>
+            <p>Centro de gestión, información técnica, clínica y administrativa para bovinos y búfalos.</p>
+        </header>
+
+        <!-- Panel de Control / Resumen -->
+        <section>
+            <h2 class="section-title">Panel de Control</h2>
+            <div class="grid-library">
+                <div class="card">
+                    <div class="card-title">Repositorio Documental</div>
+                    <div class="card-content" id="resumen-docs">Manuales, libros y PDFs técnicos (Manual Merck, etc.).</div>
+                    <button class="upload-btn" onclick="triggerUpload('documento')">Subir Documento</button>
+                </div>
+                <div class="card">
+                    <div class="card-title">Fichas de Pastos</div>
+                    <div class="card-content" id="resumen-pastos">Fotografías, identificación, consumo y pisoteo.</div>
+                    <button class="upload-btn" onclick="triggerUpload('pasto')">Agregar Pasto</button>
+                </div>
+                <div class="card">
+                    <div class="card-title">Estructura del Rebaño</div>
+                    <div class="card-content" id="resumen-rebano">Clasificación por edades y etapas productivas.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Secciones Operativas y de Apoyo -->
+        <section>
+            <h2 class="section-title">Registros y Datos de Campo</h2>
+            <div class="grid-library">
+                <div class="card">
+                    <div class="card-title">Historial Reproductivo</div>
+                    <div class="card-content">Registros de monta natural y preñeces.</div>
+                </div>
+                <div class="card">
+                    <div class="card-title">Nutrición y Suplementación</div>
+                    <div class="card-content">Control de minerales, alimentos e insumos.</div>
+                </div>
+                <div class="card">
+                    <div class="card-title">Historial Clínico y Parásitos</div>
+                    <div class="card-content">Control sanitario y tratamientos aplicados.</div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Enlace al archivo JavaScript -->
+    <script src="biblioteca-hato.js"></script>
+    <script>
+        function triggerUpload(tipo) {
+            const titulo = prompt(`Ingrese el título o nombre del nuevo ${tipo}:`);
+            if (titulo) {
+                if (tipo === 'documento') {
+                    miBibliotecaHato.agregarDocumento(titulo, "General", "archivo_ejemplo.pdf");
+                    alert(`Documento "${titulo}" registrado en la biblioteca.`);
+                } else if (tipo === 'pasto') {
+                    miBibliotecaHato.agregarPasto(titulo, "Medio", "Bajo", "foto_ejemplo.jpg");
+                    alert(`Ficha de pasto "${titulo}" agregada.`);
+                }
+            }
+        }
+    </script>
+</body>
+</html>
