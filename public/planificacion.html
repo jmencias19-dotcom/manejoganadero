@@ -154,7 +154,7 @@
             gap: 8px;
         }
 
-        /* Formulario Estilizado con rejilla de casillas delimitadas y proporción coherente */
+        /* Formulario Estilizado con rejilla de casillas delimitadas */
         #taskForm {
             display: grid;
             grid-template-columns: 1fr;
@@ -163,23 +163,10 @@
 
         @media (min-width: 768px) {
             #taskForm {
-                grid-template-columns: repeat(12, 1fr);
+                grid-template-columns: repeat(2, 1fr);
             }
-            /* Distribución coherente de tamaños de casillas */
-            .group-fecha {
-                grid-column: span 4;
-            }
-            .group-labor {
-                grid-column: span 8;
-            }
-            .group-personal {
-                grid-column: span 6;
-            }
-            .group-observaciones {
-                grid-column: span 6;
-            }
-            #taskForm .form-actions {
-                grid-column: span 12;
+            #taskForm textarea, #taskForm .form-actions {
+                grid-column: span 2;
             }
         }
 
@@ -215,8 +202,7 @@
 
         #taskForm textarea {
             resize: vertical;
-            min-height: 52px;
-            max-height: 150px;
+            min-height: 90px;
         }
 
         .form-actions {
@@ -401,19 +387,19 @@
         <section class="section-box">
             <h2 class="section-title">📋 Registro de Nueva Labor Operativa</h2>
             <form id="taskForm">
-                <div class="input-group group-fecha">
-                    <label for="fecha">Fecha de Ejecución:</label>
+                <div class="input-group">
+                    <label for="fecha">Fecha de Ejecución (Horizonte de 1 Mes):</label>
                     <input type="date" id="fecha" required>
                 </div>
-                <div class="input-group group-labor">
+                <div class="input-group">
                     <label for="labor">Labor a Realizar:</label>
                     <input type="text" id="labor" placeholder="Ej. Vacunación lote Brahman, mantenimiento de potrero..." required>
                 </div>
-                <div class="input-group group-personal">
-                    <label for="personal">Personal / Responsable Asignado:</label>
+                <div class="input-group">
+                    <label for="personal">Personal Asignado:</label>
                     <input type="text" id="personal" placeholder="Nombre del responsable o cuadrilla" required>
                 </div>
-                <div class="input-group group-observaciones">
+                <div class="input-group">
                     <label for="observaciones">Observaciones Operativas:</label>
                     <textarea id="observaciones" placeholder="Detalles de insumos, herramientas o especificaciones..."></textarea>
                 </div>
@@ -516,7 +502,7 @@
         }
         configurarRangoFechas();
 
-        // Generador de alerta sonora utilizando Web Audio API (Volumen aumentado a 0.4 para sonar más duro)
+        // Generador de alerta sonora utilizando Web Audio API
         function playAlertSound(type = 'success') {
             try {
                 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -532,15 +518,14 @@
                     oscillator.frequency.setValueAtTime(330, audioCtx.currentTime); // E4
                 }
 
-                // Volumen incrementado notablemente de 0.1 a 0.4 para que suene mucho más duro
-                gainNode.gain.setValueAtTime(0.4, audioCtx.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.35);
+                gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.3);
 
                 oscillator.connect(gainNode);
                 gainNode.connect(audioCtx.destination);
 
                 oscillator.start();
-                oscillator.stop(audioCtx.currentTime + 0.35);
+                oscillator.stop(audioCtx.currentTime + 0.3);
             } catch (e) {
                 console.log("Audio contextual no soportado o bloqueado por el navegador.");
             }
@@ -631,8 +616,10 @@
                 return;
             }
 
+            // Ejecutar revisión de auto-depuración para tareas completadas hace más de 3 días
             verificarDepuracionCompletadas(snapshot);
 
+            // Mapear y ordenar tareas por fecha de manera ascendente (cronológica)
             let taskList = [];
             snapshot.forEach((docSnapshot) => {
                 taskList.push({ id: docSnapshot.id, ...docSnapshot.data() });
@@ -728,6 +715,7 @@
             if (confirm('¿Deseas eliminar este registro de la base de datos central?')) {
                 setSyncStatus(true);
                 try {
+                    // Buscar la tarea actual en el DOM o extraerla para el respaldo de "Deshacer"
                     const trElement = document.querySelector(`select[data-id="${id}"]`)?.closest('tr');
                     if (trElement) {
                         const tds = trElement.querySelectorAll('td');
@@ -752,7 +740,7 @@
                     showNotification('Error al eliminar', 'danger');
                     playAlertSound('danger');
                 } finally {
-                    setSyncStatus(false); 
+                    setSyncStatus(false);
                 }
             } else {
                 setSyncStatus(false);
