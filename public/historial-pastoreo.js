@@ -25,9 +25,6 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-
 document.addEventListener('DOMContentLoaded', () => {
     const paddockForm = document.getElementById('paddockForm');
     const fIngreso = document.getElementById('f-ingreso');
