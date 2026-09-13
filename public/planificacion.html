@@ -3,14 +3,276 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Planificación de Tareas - Gestión Ganadera</title>
-    <link rel="stylesheet" href="dashboard.css">
+    <title>Planificación y Asignación de Tareas - Hato Laguna Brava</title>
+    <link rel="stylesheet" href="planificacion.css">
+    <style>
+        :root {
+            --primary-color: #1b4332;
+            --secondary-color: #2d6a4f;
+            --accent-color: #52b788;
+            --bg-color: #f4f6f4;
+            --card-bg: #ffffff;
+            --text-main: #2b2b2b;
+            --text-muted: #6c757d;
+            --danger: #e63946;
+            --warning: #f4a261;
+            --success: #2a9d8f;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+        }
+
+        .main-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 1.5rem 1rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        @media (min-width: 768px) {
+            .header-container {
+                flex-direction: row;
+            }
+        }
+
+        .header-container h1 {
+            margin: 0;
+            font-size: 1.5rem;
+            text-align: center;
+        }
+
+        /* Semáforo de Sincronización */
+        .sync-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.15);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+        }
+
+        .sync-light {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: var(--success);
+            box-shadow: 0 0 8px var(--success);
+            transition: background-color 0.3s;
+        }
+
+        .sync-light.syncing {
+            background-color: var(--warning);
+            box-shadow: 0 0 8px var(--warning);
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.4; }
+            100% { opacity: 1; }
+        }
+
+        .main-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+            display: grid;
+            gap: 2rem;
+        }
+
+        /* Formulario Estilizado */
+        #taskForm {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+
+        @media (min-width: 768px) {
+            #taskForm {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            #taskForm textarea, #taskForm .form-actions {
+                grid-column: span 2;
+            }
+        }
+
+        #taskForm input, #taskForm textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ced4da;
+            border-radius: 8px;
+            font-size: 1rem;
+            box-sizing: border-box;
+        }
+
+        #taskForm textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        button[type="submit"] {
+            background-color: var(--secondary-color);
+            color: white;
+            flex: 2;
+        }
+
+        button[type="submit"]:hover {
+            background-color: var(--primary-color);
+        }
+
+        .btn-reset {
+            background-color: #6c757d;
+            color: white;
+            flex: 1;
+        }
+
+        .btn-reset:hover {
+            background-color: #5a6268;
+        }
+
+        /* Tabla Responsiva */
+        .task-list {
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            overflow-x: auto;
+            padding: 1rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            min-width: 600px;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e9ecef;
+            font-size: 0.95rem;
+        }
+
+        th {
+            background-color: #f8f9fa;
+            color: var(--primary-color);
+            font-weight: 700;
+        }
+
+        /* Selectores de Estado con Color */
+        .status-select {
+            padding: 6px 10px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+        }
+
+        .status-pendiente {
+            background-color: #fff3cd;
+            color: #856404;
+            border-color: #ffeeba;
+        }
+
+        .status-proceso {
+            background-color: #cce5ff;
+            color: #004085;
+            border-color: #b8daff;
+        }
+
+        .status-completada {
+            background-color: #d4edda;
+            color: #155724;
+            border-color: #c3e6cb;
+        }
+
+        .btn-delete {
+            background-color: var(--danger);
+            color: white;
+            padding: 6px 12px;
+            font-size: 0.85rem;
+            border-radius: 6px;
+        }
+
+        .btn-delete:hover {
+            background-color: #c82333;
+        }
+
+        /* Notificaciones Toast */
+        .toast-notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #333;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease-in-out;
+            z-index: 1000;
+            font-size: 0.9rem;
+        }
+
+        .toast-notification.show {
+            opacity: 1;
+        }
+
+        .toast-notification.success { background-color: var(--success); }
+        .toast-notification.danger { background-color: var(--danger); }
+        .toast-notification.warning { background-color: var(--warning); color: #000; }
+    </style>
 </head>
 <body>
 
     <header class="main-header">
         <div class="header-container">
             <h1>Planificación y Asignación de Tareas</h1>
+            <div class="sync-indicator">
+                <div id="light" class="sync-light"></div>
+                <span id="statusText">Conectado a la Nube</span>
+            </div>
         </div>
     </header>
 
@@ -20,8 +282,11 @@
             <input type="date" id="fecha" required>
             <input type="text" id="labor" placeholder="Labor a realizar" required>
             <input type="text" id="personal" placeholder="Personal asignado" required>
-            <textarea id="observaciones" placeholder="Observaciones"></textarea>
-            <button type="submit">Registrar Labor</button>
+            <textarea id="observaciones" placeholder="Observaciones operativas"></textarea>
+            <div class="form-actions">
+                <button type="submit">Guardar tarea y sincronizar</button>
+                <button type="button" class="btn-reset" id="btnReset">Rehacer / Limpiar</button>
+            </div>
         </form>
 
         <!-- Tabla para listar las tareas -->
@@ -32,31 +297,35 @@
                         <th>Fecha</th>
                         <th>Labor</th>
                         <th>Personal</th>
+                        <th>Observaciones</th>
                         <th>Estado</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
-                <tbody id="taskTableBody"> 
-                    <!-- Las tareas se cargarán aquí -->
+                <tbody id="taskTableBody">  
+                    <!-- Las tareas se cargarán dinámicamente aquí -->
                 </tbody>
             </table>
         </section>
     </main>
 
-<!-- Script con Firebase Firestore y la lógica de la aplicación -->
+    <div id="toast" class="toast-notification">
+        <span id="toastMessage">Notificación</span>
+    </div>
+
+    <!-- Script con Firebase Firestore y la lógica de la aplicación -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { 
-            getFirestore, 
-            collection, 
-            addDoc, 
-            updateDoc, 
-            deleteDoc, 
-            doc, 
-            onSnapshot 
+        import {  
+            getFirestore,  
+            collection,  
+            addDoc,  
+            updateDoc,  
+            deleteDoc,  
+            doc,  
+            onSnapshot  
         } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // Capturador global para ver el error exacto en la consola si vuelve a ocurrir
         window.addEventListener('unhandledrejection', event => {
             console.error('Error detallado de promesa no capturada:', event.reason);
         });
@@ -73,50 +342,44 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-        const taskForm = document.getElementById('taskForm');
-taskForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    setSyncStatus(true);
-    try {
-        await addDoc(collection(db, "tareas"), {
-            fecha: document.getElementById('fecha').value,
-            labor: document.getElementById('labor').value,
-            personal: document.getElementById('personal').value,
-            observaciones: document.getElementById('observaciones').value,
-            estado: 'Pendiente',
-            creadoEn: new Date().toISOString()
-        });
-        taskForm.reset();
-        showNotification('Labor registrada y guardada en la nube');
-    } catch (err) {
-        console.error("Error al guardar en Firestore:", err);
-        showNotification('Error al guardar datos', 'danger');
-    } finally {
-        setSyncStatus(false);
-        onSnapshot(collection(db, "tareas"), (snapshot) => {
-    taskTableBody.innerHTML = '';
-    snapshot.forEach((doc) => {
-        const task = doc.data();
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-            <td>${task.fecha}</td>
-            <td>${task.labor}</td>
-            <td>${task.personal}</td>
-            <td>${task.estado}</td>
-            <td><button class="btn-delete" onclick="window.deleteTask('${doc.id}')">Eliminar</button></td>
-        `;
-        taskTableBody.appendChild(tr);
-    });
-});
-    }
-});
         const tasksCollection = collection(db, "tareas");
 
+        const taskForm = document.getElementById('taskForm');
+        const btnReset = document.getElementById('btnReset');
         const taskTableBody = document.getElementById('taskTableBody');
         const light = document.getElementById('light');
         const statusText = document.getElementById('statusText');
         const toast = document.getElementById('toast');
         const toastMessage = document.getElementById('toastMessage');
+
+        // Generador de alerta sonora utilizando Web Audio API
+        function playAlertSound(type = 'success') {
+            try {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioCtx.createOscillator();
+                const gainNode = audioCtx.createGain();
+
+                oscillator.type = 'sine';
+                if (type === 'success') {
+                    oscillator.frequency.setValueAtTime(587.33, audioCtx.currentTime); // D5
+                } else if (type === 'warning') {
+                    oscillator.frequency.setValueAtTime(440, audioCtx.currentTime); // A4
+                } else {
+                    oscillator.frequency.setValueAtTime(330, audioCtx.currentTime); // E4
+                }
+
+                gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.3);
+
+                oscillator.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+
+                oscillator.start();
+                oscillator.stop(audioCtx.currentTime + 0.3);
+            } catch (e) {
+                console.log("Audio contextual no soportado o bloqueado por el navegador.");
+            }
+        }
 
         function setSyncStatus(isSyncing) {
             if (light && statusText) {
@@ -143,6 +406,16 @@ taskForm.addEventListener('submit', async (e) => {
             return 'status-pendiente';
         }
 
+        // Botón Rehacer / Limpiar Formulario
+        if (btnReset) {
+            btnReset.addEventListener('click', () => {
+                taskForm.reset();
+                showNotification('Formulario reiniciado', 'warning');
+                playAlertSound('warning');
+            });
+        }
+
+        // Escuchar cambios en tiempo real desde Firestore
         onSnapshot(tasksCollection, (snapshot) => {
             if (!taskTableBody) return;
             taskTableBody.innerHTML = '';
@@ -182,6 +455,7 @@ taskForm.addEventListener('submit', async (e) => {
             setSyncStatus(false);
         });
 
+        // Registro de Tareas
         if (taskForm) {
             taskForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
@@ -199,41 +473,53 @@ taskForm.addEventListener('submit', async (e) => {
 
                     taskForm.reset();
                     showNotification('Labor registrada y guardada en la nube', 'success');
+                    playAlertSound('success');
                 } catch (err) {
                     console.error("Error al guardar en Firestore:", err);
                     showNotification('Error al guardar datos', 'danger');
+                    playAlertSound('danger');
                 } finally {
                     setSyncStatus(false);
                 }
             });
         }
 
+        // Actualizar Estado de Tarea Individual
         window.updateTaskStatus = async (id, newStatus) => {
             setSyncStatus(true);
             try {
                 const taskRef = doc(db, "tareas", id);
                 await updateDoc(taskRef, { estado: newStatus });
                 showNotification(`Estado actualizado a "${newStatus}"`, 'warning');
+                playAlertSound('warning');
             } catch (err) {
                 console.error("Error al actualizar en Firestore:", err);
                 showNotification('Error al actualizar estado', 'danger');
+                playAlertSound('danger');
             } finally {
                 setSyncStatus(false);
             }
         };
 
+        // Eliminar Tarea
         window.deleteTask = async (id) => {
             if (confirm('¿Deseas eliminar este registro de la base de datos central?')) {
                 setSyncStatus(true);
                 try {
                     await deleteDoc(doc(db, "tareas", id));
                     showNotification('Tarea eliminada de la nube', 'danger');
+                    playAlertSound('danger');
                 } catch (err) {
                     console.error("Error al eliminar en Firestore:", err);
                     showNotification('Error al eliminar', 'danger');
+                    playAlertSound('danger');
                 } finally {
                     setSyncStatus(false);
                 }
+            } else {
+                setSyncStatus(false);
             }
         };
     </script>
+</body>
+</html>
