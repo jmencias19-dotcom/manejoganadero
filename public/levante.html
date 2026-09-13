@@ -3,73 +3,445 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hato Laguna Brava - Control Zootécnico</title>
+    <title>Panel de Control Zootécnico - Hato Laguna Brava</title>
     <style>
-        body { font-family: Arial, sans-serif; background-color: #f4f6f8; margin: 0; padding: 20px; color: #333; }
-        .container { max-width: 800px; margin: 0 auto; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        h1 { color: #1b4d3e; font-size: 24px; border-bottom: 2px solid #1b4d3e; padding-bottom: 10px; }
-        .section { margin-bottom: 20px; padding: 15px; background: #fafafa; border-left: 4px solid #1b4d3e; border-radius: 4px; }
-        .section h2 { font-size: 18px; margin-top: 0; color: #1b4d3e; }
-        label { display: block; margin-bottom: 5px; font-weight: bold; }
-        input, select { width: 100%; padding: 8px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 4px; }
-        .metrics { display: flex; justify-content: space-between; gap: 10px; }
-        .metric-box { flex: 1; background: #eef2f1; padding: 10px; border-radius: 4px; text-align: center; }
-        button { background-color: #1b4d3e; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; width: 100%; }
-        button:hover { background-color: #14382c; }
+        :root {
+           --primary-color: #1e4620;
+           --secondary-color: #2e7d32;
+           --accent-color: #81c784;
+           --bg-color: #f4f6f4;
+           --card-bg: #ffffff;
+           --text-main: #333333;
+           --text-muted: #666666;
+           --border-color: #d0d7d0;
+        }
+
+        * {
+           box-sizing: border-box;
+           margin: 0;
+           padding: 0;
+           font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+           background-color: var(--bg-color);
+           color: var(--text-main);
+           padding: 20px;
+        }
+
+       .tablet-container {
+            max-width: 1350px;
+            margin: 0 auto;
+           background-color: var(--card-bg);
+            border: 8px solid #333333;
+           border-radius: 16px;
+           box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            overflow: hidden;
+            display: grid;
+           grid-template-columns: 1fr 1fr;
+           grid-template-rows: auto auto 1fr;
+        }
+
+        .app-header {
+           grid-column: 1 / -1;
+           background-color: var(--primary-color);
+            color: white;
+            padding: 12px 15px;
+            display: flex;
+           justify-content: space-between;
+            align-items: center;
+        }
+
+        .app-title {
+            font-size: 1.1rem;
+           font-weight: bold;
+           letter-spacing: 0.5px;
+        }
+
+        .app-icons {
+            display: flex;
+            gap: 15px;
+            font-size: 1rem;
+        }
+
+        .app-icons span {
+            cursor: pointer;
+            padding: 2px 6px;
+           border-radius: 4px;
+           transition: background 0.2s;
+        }
+
+        .app-icons span:hover {
+           background-color: var(--secondary-color);
+        }
+
+        .panel-section {
+            padding: 12px 15px;
+           border-bottom: 1px solid var(--border-color);
+           border-right: 1px solid var(--border-color);
+        }
+
+        .panel-section.full-width {
+           grid-column: 1 / -1;
+           border-right: none;
+        }
+
+        .section-title {
+           background-color: #e8f5e9;
+            color: var(--primary-color);
+            padding: 6px 10px;
+            font-size: 0.85rem;
+           font-weight: bold;
+           text-transform: uppercase;
+           border-left: 4px solid var(--secondary-color);
+           margin-bottom: 8px;
+            display: flex;
+           justify-content: space-between;
+            align-items: center;
+        }
+
+        .grid-2 {
+            display: grid;
+           grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            font-size: 0.9rem;
+        }
+
+        .data-item {
+           margin-bottom: 4px;
+        }
+
+        .data-label {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+
+        .data-value {
+           font-weight: bold;
+            color: var(--text-main);
+        }
+
+       .highlight-value {
+            font-size: 1.3rem;
+            color: var(--secondary-color);
+        }
+
+       .tab-buttons-container {
+           grid-column: 1 / -1;
+            display: grid;
+           grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            padding: 15px;
+           background-color: #f9fbf9;
+           border-top: 1px solid var(--border-color);
+        }
+
+        .tab-btn {
+           background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 10px;
+           border-radius: 8px;
+            font-size: 0.85rem;
+           font-weight: bold;
+            cursor: pointer;
+            display: flex;
+           flex-direction: column;
+           align-items: center;
+            gap: 6px;
+            transition: background-color 0.2s, transform 0.1s;
+           text-align: center;
+        }
+
+        .tab-btn:hover {
+           background-color: var(--secondary-color);
+        }
+
+       .tab-btn.active-tab {
+           background-color: var(--secondary-color);
+           box-shadow: inset 0 3px 5px rgba(0,0,0,0.2);
+        }
+
+       .collapsible-content {
+           grid-column: 1 / -1;
+            display: none;
+            padding: 15px;
+            background-color: #fafafa;
+           border-top: 2px dashed var(--secondary-color);
+        }
+
+       .collapsible-content.active {
+            display: block;
+        }
+
+        .badge-ok {
+           background-color: #c8e6c9;
+            color: #256029;
+            padding: 2px 6px;
+           border-radius: 4px;
+            font-size: 0.75rem;
+           font-weight: bold;
+        }
+
+       .interactive-box {
+           background: #ffffff;
+            border: 1px solid var(--border-color);
+            padding: 10px;
+           border-radius: 6px;
+           margin-top: 8px;
+        }
+
+       .interactive-input {
+            padding: 6px;
+            width: 100%;
+            border: 1px solid var(--border-color);
+           border-radius: 4px;
+           margin-top: 4px;
+            font-size: 0.9rem;
+        }
+
+        .action-btn {
+           background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+           font-weight: bold;
+           margin-top: 6px;
+        }
+
+       .action-btn:hover {
+           background-color: var(--primary-color);
+        }
+
+       .save-container {
+           margin-top: 10px;
+            display: flex;
+           justify-content: flex-end;
+        }
+
+        @media (max-width: 900px) {
+           .tablet-container {
+               grid-template-columns: 1fr;
+            }
+           .panel-section {
+               border-right: none;
+            }
+           .tab-buttons-container {
+               grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h1>Hato Laguna Brava - Módulo de Pesaje</h1>
-
-    <!-- Identificación del Lote -->
-    <div class="section">
-        <h2>Identificación del Lote</h2>
-        <label for="lote">Lote / Potrero</label>
-        <select id="lote">
-            <option value="brahman_comercial">Brahman Comercial - Modulos</option>
-            <option value="levante">Levante y Ceba</option>
-        </select>
-        
-        <label for="fecha-pesaje">Fecha de Pesaje</label>
-        <input type="date" id="fecha-pesaje">
-    </div>
-
-    <!-- Métricas Zootécnicas -->
-    <div class="section">
-        <h2>Métricas y Rendimiento</h2>
-        <div class="metrics">
-            <div class="metric-box">
-                <strong>GDP</strong>
-                <p id="gdp-val">0.00 kg/día</p>
-            </div>
-            <div class="metric-box">
-                <strong>GPA</strong>
-                <p id="gpa-val">0.00 kg</p>
+    <div class="tablet-container">
+        <!-- Barra de Navegación Superior con Funciones Operativas -->
+        <div class="app-header">
+            <div class="app-title">☰ PANEL DE CONTROL ZOOTÉCNICO - HATO LAGUNA BRAVA</div>
+            <div class="app-icons">
+               <span title="Buscar ID / Areta" onclick="buscarAnimalPrompt()">🔍</span>
+               <span title="Lectura RFID (Chip)" onclick="leerChipRFID()">📡</span>
+                <span title="Menú de Opciones">⋮</span>
             </div>
         </div>
-    </div>
 
-    <!-- Módulo Rancherai (Proyecciones y Alertas) -->
-    <div class="section">
-        <h2>Rancherai - Proyecciones y Alertas</h2>
-        <label for="meta-salida">Meta de Salida Estimada</label>
-        <input type="date" id="meta-salida">
+        <!-- Identificación y Datos de Ingreso Operativos -->
+        <div class="panel-section">
+            <div class="section-title">
+               Identificación y Datos de Ingreso
+               <span style="font-size: 0.75rem; font-weight: normal; color: var(--secondary-color);" id="estado-sinc">Sincronizado</span>
+            </div>
+            <div class="grid-2">
+               <!-- Casilla 1: ID Visual / Chip -->
+               <div class="interactive-box" style="margin-top: 0;">
+                    <div class="data-label">ID Visual / Chip (Editable)</div>
+                   <input type="text" id="input-id-chip" class="interactive-input" value="384 | 982000412345678">
+                </div>
+                <!-- Casilla 2: Grupo y Lote -->
+                <div class="interactive-box" style="margin-top: 0;">
+                    <div class="data-label">Grupo y Lote (Escritura)</div>
+                    <input type="text" id="input-grupo-lote" class="interactive-input" value="Brahman Comercial | Módulos (Apure)">
+                </div>
+            </div>
+        </div>
         
-        <label for="alerta-sanitaria">Directrices / Alerta Sanitaria</label>
-        <input type="text" id="alerta-sanitaria" placeholder="Ej: Revisar plan de desparasitación">
+        <!-- Métrica Zootécnica Operativa -->
+        <div class="panel-section">
+            <div class="section-title">Métrica Zootécnica (Dinámica)</div>
+            <div class="grid-2">
+               <div class="data-item">
+                   <div class="data-label">Peso Actual</div>
+                   <div class="data-value highlight-value" id="val-peso">438.5 kg</div>
+               </div>
+               <div class="data-item">
+                   <div class="data-label">Eficiencia Zootécnica</div>
+                   <div class="data-value" id="val-eficiencia">Lote Módulos: Desarrollo Tropical</div>
+               </div>
+                <div class="data-item">
+                    <div class="data-label">Ganancia Diaria (GDP)</div>
+                    <div class="data-value" id="val-gdp">+850 g/día</div>
+               </div>
+               <div class="data-item">
+                    <div class="data-label">Ganancia Acumulada (GPA)</div>
+                    <div class="data-value" id="val-gpa">142 kg</div>
+                </div>
+            </div>
+            
+            <!-- Módulo interactivo de recálculo de peso en manga -->
+            <div class="interactive-box">
+               <div class="data-label">Simular Nuevo Pesaje en Manga:</div>
+               <input type="number" id="input-nuevo-peso" class="interactive-input" placeholder="Ej. 445.0" step="0.5">
+                <button class="action-btn" onclick="actualizarMetrica()">Recalcular Métrica</button>
+            </div>
+        </div>
+
+        <!-- Proyección, Alertas y Dirección Táctica -->
+        <div class="panel-section full-width">
+            <div class="section-title">Proyección, Alertas y Dirección Táctica (RancherAI)</div>
+            <div class="data-item" style="font-size: 0.9rem; padding: 4px 0;" id="texto-proyeccion">
+                <strong>Meta de Salida:</strong> 520 kg en 2.5 meses. <br>
+                <strong>Alerta Sanitaria:</strong> Ninguna incidencia activa en el hato. <br>
+                <strong>Directriz Táctica:</strong> Optimización de pastos tropicales y seguimiento riguroso en condiciones de estero. Planificar rotación para mitigar fluctuaciones estacionales.
+            </div>
+            <!-- Botón de Guardado General de Datos -->
+            <div class="save-container">
+               <button class="action-btn" style="background-color: var(--primary-color); padding: 8px 16px;" onclick="guardarDatosFinca()">💾 Guardar Registro en Base de Datos</button>
+            </div>
+        </div>
+
+        <!-- Botones de Acceso a Pestañas Ocultas -->
+        <div class="tab-buttons-container">
+            <button class="tab-btn" id="btn-tratamientos" onclick="toggleSection('sec-tratamientos', this)">
+               <span class="tab-icon">📈</span>
+                Evaluación Comparativa de Tratamientos (IA)
+            </button>
+            <button class="tab-btn" id="btn-laboratorio" onclick="toggleSection('sec-laboratorio', this)">
+               <span class="tab-icon">🔬</span>
+               Resultados de Laboratorio
+            </button>
+            <button class="tab-btn" id="btn-historial" onclick="toggleSection('sec-historial', this)">
+               <span class="tab-icon">📋</span>
+                Historial Clínico Completo
+            </button>
+        </div>
+
+        <!-- Sección Oculta 1 -->
+        <div id="sec-tratamientos" class="collapsible-content">
+            <div class="section-title">Evaluación Comparativa de Tratamientos (Contexto: Trópico / Brahman)</div>
+            <ul style="font-size: 0.85rem; padding-left: 20px; line-height: 1.5;">
+               <li><strong>Ralgro (1 implante):</strong> +180 g/día. <span style="color:var(--secondary-color); font-weight:bold;">[Tratamiento Mejor Evaluado]</span></li>
+               <li><strong>Fullplus Plus (10 ml):</strong> +120 g/día. Excelente respuesta metabólica.</li>
+               <li><strong>Hemato-B12 (15 ml):</strong> +85 g/día. Soporte eritropoyético adecuado.</li>
+               <li><strong>Vigortone Mineral (100g/d):</strong> +55 g/día. Nivel de mantenimiento estándar.</li>
+            </ul>
+        </div>
+
+        <!-- Sección Oculta 2 -->
+        <div id="sec-laboratorio" class="collapsible-content">
+            <div class="section-title">Módulo de Laboratorio (Procesamiento Visual IA)</div>
+            <div class="grid-2" style="font-size: 0.85rem;">
+               <div>
+                    <strong>Coprológico:</strong> HPG = 150 <br>
+                    <span class="badge-ok">Carga baja - Negativo a Parásitos</span>
+               </div>
+               <div>
+                    <strong>Hematológico:</strong> Hto: 36%, Hb: 12.2 g/dL <br>
+                    <span class="badge-ok">Perfil Fisiológico Óptimo</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sección Oculta 3 -->
+        <div id="sec-historial" class="collapsible-content">
+            <div class="section-title">Historial de Intervenciones Sanitarias</div>
+            <p style="font-size: 0.85rem; color: var(--text-muted);">
+                • 10/09/2026: Fullplus Plus (10 ml)<br>
+               • 25/08/2026: Vigortone Mineral (100 g/día)<br>
+                • 01/10/2026: Hemato-B12 (15 ml)<br>
+                • 15/07/2026: Ralgro (1 implante)
+            </p>
+        </div>
+
     </div>
 
-    <!-- Botón de Acción -->
-    <button type="button" onclick="evaluarLote()">Evaluar Lote y Registrar</button>
-</div>
+    <script>
+        function toggleSection(sectionId, btnElement) {
+            const section = document.getElementById(sectionId);
+            const allSections = document.querySelectorAll('.collapsible-content');
+            const allButtons = document.querySelectorAll('.tab-btn');
+            
+            const isAlreadyActive = section.classList.contains('active');
 
-<script>
-    function evaluarLote() {
-        alert("Datos del Hato Laguna Brava procesados correctamente.");
-    }
-</script>
+            allSections.forEach(sec => sec.classList.remove('active'));
+            allButtons.forEach(btn => btn.classList.remove('active-tab'));
 
+            if (!isAlreadyActive) {
+                section.classList.add('active');
+                btnElement.classList.add('active-tab');
+            }
+        }
+
+        function actualizarMetrica() {
+            const inputVal = parseFloat(document.getElementById('input-nuevo-peso').value);
+            if (isNaN(inputVal)) {
+                alert("Por favor ingrese un valor de peso válido en la manga.");
+                return;
+            }
+
+            const pesoAnterior = 438.5;
+            const diferencia = inputVal - pesoAnterior;
+
+            document.getElementById('val-peso').innerText = inputVal.toFixed(1) + " kg";
+            const nuevaGPA = 142 + diferencia;
+            document.getElementById('val-gpa').innerText = nuevaGPA.toFixed(1) + " kg";
+
+            alert("Métrica zootécnica recalculada exitosamente en manga. Ganancia acumulada ajustada a: " + nuevaGPA.toFixed(1) + " kg.");
+        }
+
+        function buscarAnimalPrompt() {
+            const idBusqueda = prompt("Ingrese el ID Visual o Número de Areta a consultar en el Hato Laguna Brava:");
+            if (idBusqueda) {
+                document.getElementById('input-id-chip').value = idBusqueda + " | 9820004" + Math.floor(10000000 + Math.random() * 90000000);
+                document.getElementById('estado-sinc').innerText = "Animal cargado: " + idBusqueda;
+            }
+        }
+
+        function leerChipRFID() {
+            const listaChips = [
+               "385 | 982000487654321",
+               "390 | 982000499887766",
+               "412 | 982000411223344",
+               "384 | 982000412345678"
+            ];
+            const chipAleatorio = listaChips[Math.floor(Math.random() * listaChips.length)];
+            const pesoAleatorio = (420 + Math.random() * 40).toFixed(1);
+
+            document.getElementById('input-id-chip').value = chipAleatorio;
+            document.getElementById('val-peso').innerText = pesoAleatorio + " kg";
+            document.getElementById('estado-sinc').innerText = "Lectura RFID Exitosa 📡";
+            
+            setTimeout(() => {
+                document.getElementById('estado-sinc').innerText = "Sincronizado";
+            }, 3000);
+        }
+
+        function guardarDatosFinca() {
+            const idChip = document.getElementById('input-id-chip').value;
+            const grupoLote = document.getElementById('input-grupo-lote').value;
+            const pesoActual = document.getElementById('val-peso').innerText;
+
+            const registroZootecnico = {
+                id: idChip,
+                lote: grupoLote,
+                peso: pesoActual,
+                fecha: new Date().toISOString()
+            };
+
+            console.log("Datos guardados:", registroZootecnico);
+            alert("¡Registro guardado con éxito para el animal " + idChip.split('|')[0].trim() + "! Datos almacenados en el sistema del Hato Laguna Brava.");
+        }
+    </script>
 </body>
 </html>
