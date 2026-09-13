@@ -1,4 +1,4 @@
-// Importar módulos SDK de Firebase v9+
+// Importar módulos SDK de Firebase v9+ 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
