@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (actionButton) {
         actionButton.addEventListener('click', (e) => {
             // Ejemplo de comportamiento al hacer clic en el botón
-            console.log('Accediendo a la sección de indicadores...');
+            window.location.href = 'indicadores-gestion.html';
         });
     }
 });
