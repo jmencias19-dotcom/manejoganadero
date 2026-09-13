@@ -9,7 +9,7 @@ dotenv.config();
 
 const app = express();
 app.use(express.json());
-app.use(cors({ origin: https:https://manejoganadero-*.vercel.app
+app.use(cors({ origin: 'https://manejoganadero-*.vercel.app' }));
 // Inicialización de Supabase
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
