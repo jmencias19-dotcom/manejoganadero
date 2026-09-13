@@ -1,44 +1,97 @@
-/* Módulo de Indicadores de Gestión */
-.indicadores-container {
-    padding: 1.5rem;
+/* Contenedor principal de la sección de indicadores */
+.library-container {
+    padding: 2rem;
     max-width: 1200px;
     margin: 0 auto;
 }
 
-.indicadores-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 1.5rem;
-    margin-top: 1.5rem;
-}
-
-.indicador-card {
-    background-color: var(--card-bg, #ffffff);
-    border-radius: var(--border-radius, 8px);
-    padding: 1.5rem;
-    box-shadow: var(--box-shadow, 0 4px 6px rgba(0, 0, 0, 0.1));
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: space-between;
-    border-left: 5px solid var(--primary-color, #2c3e50);
-    gap: 1rem;
-}
-
-.indicador-title {
-    font-size: 1rem;
-    color: var(--text-muted, #7f8c8d);
+/* Encabezado de la sección */
+.library-container h1 {
+    font-size: 1.75rem;
+    color: #ffffff;
     margin-bottom: 0.5rem;
 }
 
-.indicador-value {
-    font-size: 1.8rem;
-    font-weight: bold;
-    color: var(--text-color, #2c3e50);
+.library-container p {
+    color: #a0aec0;
+    margin-bottom: 2rem;
 }
 
-.indicador-footer {
-    margin-top: 1rem;
-    font-size: 0.85rem;
-    color: var(--success-color, #27ae60);
+/* Cuadrícula de tarjetas */
+.grid-library {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+}
+
+/* Estructura general de la tarjeta */
+.card {
+    background-color: #1a202c;
+    border-radius: 0.75rem;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* Cabecera de la tarjeta con icono */
+.card-header {
+    background-color: #2d3748;
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.card-icon {
+    width: 34px;
+    height: 34px;
+    stroke: #63b3ed;
+}
+
+/* Contenido interior de la tarjeta (Título y Descripción) */
+.card-content {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.card-title {
+    font-size: 1.25rem;
+    color: #ffffff;
+    margin-bottom: 0.75rem;
+    font-weight: 600;
+}
+
+.card-description {
+    color: #cbd5e0;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    margin-bottom: 1.5rem;
+    flex-grow: 1;
+}
+
+/* Botón de acción dentro de la tarjeta */
+.card-action {
+    display: inline-block;
+    background-color: #3182ce;
+    color: #ffffff;
+    padding: 0.65rem 1.25rem;
+    border-radius: 0.375rem;
+    text-decoration: none;
+    text-align: center;
+    font-weight: 500;
+    transition: background-color 0.2s ease;
+    margin-top: auto;
+}
+
+.card-action:hover {
+    background-color: #2b6cb0;
 }
