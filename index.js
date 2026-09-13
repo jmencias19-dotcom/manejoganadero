@@ -3,11 +3,13 @@ import express from 'express';
 import TelegramBot from 'node-telegram-bot-api';
 import { createClient } from '@supabase/supabase-js';
 import dotenv from 'dotenv';
+import cors from 'cors';
 
 dotenv.config();
 
 const app = express();
 app.use(express.json());
+app.use(cors());
 
 // Inicialización de Supabase
 const supabaseUrl = process.env.SUPABASE_URL;
