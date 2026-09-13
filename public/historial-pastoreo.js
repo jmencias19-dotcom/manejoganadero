@@ -104,4 +104,4 @@ const analytics = getAnalytics(app);
             }
         });
     }
-});
+};
