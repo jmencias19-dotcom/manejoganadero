@@ -3,6 +3,162 @@
    Alineado con los tokens y variables CSS globales del proyecto.
    ========================================================================== */
 
+/* ==========================================================================
+   1. Estilos del Formulario de Registro (Nuevas Reglas Añadidas)
+   ========================================================================== */
+.form-section {
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+.card-subtitle {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-top: -8px;
+  margin-bottom: 20px;
+}
+
+/* Filas del Formulario (Dos columnas en PC, una columna en móvil) */
+.form-group-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+@media (min-width: 768px) {
+  .form-group-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.form-group label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-light);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+/* Entradas, Selectores y Áreas de Texto */
+.form-group input,
+.form-group select,
+.form-group textarea {
+  background-color: #263238;
+  color: var(--text-light);
+  border: 1px solid #37474f;
+  border-radius: var(--border-radius, 6px);
+  padding: 12px;
+  font-size: 0.95rem;
+  font-family: inherit;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(0, 230, 118, 0.2); /* Sombra suave con el color acento */
+}
+
+/* Caja de Métricas Calculadas en Tiempo Real por JS */
+.metrics-summary {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  background-color: #12181b;
+  border: 1px dashed #37474f;
+  border-radius: var(--border-radius, 6px);
+  padding: 14px;
+  margin: 20px 0;
+}
+
+.metric-box {
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.metric-label {
+  display: block;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+  letter-spacing: 0.3px;
+}
+
+.metric-value {
+  display: inline-block;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--accent);
+  margin-right: 2px;
+}
+
+/* Botones y Acciones del Formulario */
+.form-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+@media (min-width: 480px) {
+  .form-actions {
+    flex-direction: row-reverse;
+    justify-content: space-between;
+    align-items: center;
+  }
+}
+
+.btn-primary {
+  background-color: var(--accent);
+  color: #000000; /* Alto contraste para legibilidad en campo */
+  font-weight: 700;
+  border: none;
+  border-radius: var(--border-radius, 6px);
+  padding: 14px 24px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.btn-primary:hover {
+  filter: brightness(1.1);
+}
+
+.btn-primary:active {
+  transform: scale(0.98);
+}
+
+.btn-back {
+  text-align: center;
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 0.9rem;
+  padding: 10px;
+  transition: color 0.2s ease;
+}
+
+.btn-back:hover {
+  color: var(--text-light);
+}
+
+
+/* ==========================================================================
+   2. Estilos Originales: Tarjetas de Historial y Línea de Tiempo
+   ========================================================================== */
+
 /* Tarjeta Principal del Historial */
 .historial-pastoreo-card {
   background-color: var(--card-bg);
@@ -111,7 +267,7 @@
   color: var(--text-light);
 }
 
-/* Estilos para Línea de Tiempo de Rotación (Opcional para vistas detalladas) */
+/* Estilos para Línea de Tiempo de Rotación */
 .timeline-container {
   display: flex;
   flex-direction: column;
