@@ -102,6 +102,7 @@
             border-radius: 50%;
             background-color: var(--success);
             box-shadow: 0 0 8px var(--success);
+            transition: background-color 0.3s, box-shadow 0.3s;
         }
 
         .main-container {
@@ -166,7 +167,7 @@
 
         #taskForm input, #taskForm textarea, #taskForm select {
             width: 100%;
-            padding: 14px 12px;
+            padding: 12px;
             border: 1.5px solid var(--border-color);
             border-radius: 8px;
             font-size: 1rem;
@@ -175,11 +176,13 @@
             color: var(--text-main);
         }
 
-        #taskForm input:focus, #taskForm textarea:focus {
+        #taskForm input:focus, #taskForm textarea:focus, #taskForm select:focus {
             border-color: var(--accent-color);
             outline: none;
             background-color: #ffffff;
         }
+
+        #taskForm textarea { min-height: 75px; resize: vertical; }
 
         .form-actions {
             display: flex;
@@ -234,6 +237,7 @@
         .task-card-date { font-size: 0.8rem; font-weight: 700; color: var(--secondary-color); background-color: #e2e8e0; padding: 2px 8px; border-radius: 4px; }
         .task-card-labor { font-size: 1rem; font-weight: 600; color: var(--text-main); word-break: break-word; }
         .task-card-meta { font-size: 0.85rem; color: var(--text-muted); }
+        .task-card-obs { font-size: 0.85rem; color: var(--text-main); background: #f0f2f0; padding: 6px 8px; border-radius: 6px; font-style: italic; border-left: 3px solid var(--accent-color); }
         .task-card-actions { display: flex; gap: 10px; align-items: center; margin-top: 4px; border-top: 1px solid var(--divider-color); padding-top: 8px; }
 
         .status-select { padding: 8px; border-radius: 6px; border: 1px solid #cccccc; font-weight: 700; font-size: 0.85rem; flex: 1; height: 38px; cursor: pointer; }
@@ -273,7 +277,7 @@
             </div>
             <div class="sync-indicator">
                 <div id="light" class="sync-light"></div>
-                <span id="statusText">Local Activo</span>
+                <span id="statusText">Sincronizado Local</span>
             </div>
         </div>
     </header>
@@ -294,6 +298,10 @@
                 <div class="input-group">
                     <label for="personal">Personal Asignado:</label>
                     <input type="text" id="personal" placeholder="Nombre del responsable" required>
+                </div>
+                <div class="input-group">
+                    <label for="observaciones">Observaciones / Notas de Campo:</label>
+                    <textarea id="observaciones" placeholder="Detalles de potreros, insumos o instrucciones adicionales..."></textarea>
                 </div>
                 <div class="form-actions">
                     <button type="submit">💾 Guardar y Sincronizar Tarea</button>
@@ -324,7 +332,7 @@
                 const gainNode = audioCtx.createGain();
 
                 oscillator.type = type === 'delete' ? 'sawtooth' : 'sine';
-                oscillator.frequency.setValueAtTime(type === 'delete' ? 220 : 587.33, audioCtx.currentTime); // D3 o D5
+                oscillator.frequency.setValueAtTime(type === 'delete' ? 220 : 587.33, audioCtx.currentTime);
                 if (type === 'success') {
                     oscillator.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.15);
                 }
@@ -342,6 +350,24 @@
             }
         }
 
+        // Indicador visual dinámico de Sincronización
+        function updateSyncStatus(state, text) {
+            const light = document.getElementById('light');
+            const statusText = document.getElementById('statusText');
+            statusText.innerText = text;
+            
+            if (state === 'syncing') {
+                light.style.backgroundColor = 'var(--warning)';
+                light.style.boxShadow = '0 0 8px var(--warning)';
+            } else if (state === 'success') {
+                light.style.backgroundColor = 'var(--success)';
+                light.style.boxShadow = '0 0 8px var(--success)';
+            } else if (state === 'error') {
+                light.style.backgroundColor = 'var(--danger)';
+                light.style.boxShadow = '0 0 8px var(--danger)';
+            }
+        }
+
         // Mostrar Notificación Toast
         function showToast(message) {
             const toast = document.getElementById('toast');
@@ -352,16 +378,35 @@
             }, 3000);
         }
 
-        // Almacenamiento Local (LocalStorage)
+        // Almacenamiento Local (LocalStorage) con validación de sincronización
         const STORAGE_KEY = 'laguna_brava_tareas';
 
         function getTasks() {
-            const data = localStorage.getItem(STORAGE_KEY);
-            return data ? JSON.parse(data) : [];
+            try {
+                updateSyncStatus('syncing', 'Sincronizando...');
+                const data = localStorage.getItem(STORAGE_KEY);
+                const tasks = data ? JSON.parse(data) : [];
+                setTimeout(() => updateSyncStatus('success', 'Sincronizado Local'), 300);
+                return tasks;
+            } catch (e) {
+                console.error("Error al leer almacenamiento local:", e);
+                updateSyncStatus('error', 'Error de Sincronización');
+                return [];
+            }
         }
 
         function saveTasks(tasks) {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
+            try {
+                updateSyncStatus('syncing', 'Guardando cambios...');
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
+                setTimeout(() => updateSyncStatus('success', 'Sincronizado Local'), 400);
+                return true;
+            } catch (e) {
+                console.error("Error al guardar en almacenamiento local:", e);
+                updateSyncStatus('error', 'Fallo al Guardar');
+                showToast("⚠️ Error: No se pudo guardar en el almacenamiento local.");
+                return false;
+            }
         }
 
         // Revisar y autoeliminar tareas ejecutadas hace más de 3 días
@@ -374,7 +419,7 @@
                 if (task.status === 'ejecutada' && task.executionTimestamp) {
                     if (now - task.executionTimestamp >= THREE_DAYS_MS) {
                         modified = true;
-                        return false; // Eliminar tarea
+                        return false; 
                     }
                 }
                 return true;
@@ -416,6 +461,7 @@
                         <span class="task-card-meta">Resp: <strong>${task.personal}</strong></span>
                     </div>
                     <div class="task-card-labor">${task.labor}</div>
+                    ${task.observaciones ? `<div class="task-card-obs">📝 ${task.observaciones}</div>` : ''}
                     <div class="task-card-actions">
                         <select class="status-select ${statusClass}" onchange="updateStatus(${index}, this.value)">
                             <option value="cola" ${task.status === 'cola' ? 'selected' : ''}>En Cola</option>
@@ -435,28 +481,34 @@
             const fecha = document.getElementById('fecha').value;
             const labor = document.getElementById('labor').value;
             const personal = document.getElementById('personal').value;
+            const observaciones = document.getElementById('observaciones').value.trim();
 
             const newTask = {
                 fecha,
                 labor,
                 personal,
+                observaciones,
                 status: 'cola',
                 executionTimestamp: null
             };
 
             const tasks = getTasks();
             tasks.push(newTask);
-            saveTasks(tasks);
-
-            playBeep('success');
-            showToast("✅ Tarea guardada y sincronizada correctamente.");
-            this.reset();
-            renderTasks();
+            
+            if (saveTasks(tasks)) {
+                playBeep('success');
+                showToast("✅ Tarea guardada y sincronizada correctamente.");
+                this.reset();
+                document.getElementById('fecha').value = new Date().toISOString().split('T')[0];
+                renderTasks();
+            }
         });
 
         // Botón Rehacer / Limpiar formulario
         document.getElementById('btnRehacer').addEventListener('click', function() {
             document.getElementById('taskForm').reset();
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('fecha').value = today;
             playBeep('success');
             showToast("🔄 Campos restablecidos.");
         });
@@ -473,9 +525,10 @@
                 tasks[index].executionTimestamp = null;
             }
 
-            saveTasks(tasks);
-            playBeep('success');
-            renderTasks();
+            if (saveTasks(tasks)) {
+                playBeep('success');
+                renderTasks();
+            }
         }
 
         // Eliminar Tarea Manualmente
@@ -483,16 +536,16 @@
             if (confirm("¿Estás seguro de eliminar esta tarea permanentemente?")) {
                 const tasks = getTasks();
                 tasks.splice(index, 1);
-                saveTasks(tasks);
-                playBeep('delete');
-                showToast("🗑️ Tarea eliminada.");
-                renderTasks();
+                if (saveTasks(tasks)) {
+                    playBeep('delete');
+                    showToast("🗑️ Tarea eliminada.");
+                    renderTasks();
+                }
             }
         }
 
         // Inicializar al cargar la página
         window.onload = function() {
-            // Asignar fecha actual por defecto en el input
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('fecha').value = today;
             renderTasks();
