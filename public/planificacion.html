@@ -4,9 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Planificación de Tareas - Hato Laguna Brava</title>
-    <!-- Carga del SDK de Firebase en modo de compatibilidad universal (Inmune a bloqueos de Mini-Apps) -->
-    <script src="https://gstatic.com"></script>
-    <script src="https://gstatic.com"></script>
     <style>
         :root {
             --primary-color: #1b4332;
@@ -105,18 +102,6 @@
             border-radius: 50%;
             background-color: var(--success);
             box-shadow: 0 0 8px var(--success);
-        }
-
-        .sync-light.syncing {
-            background-color: var(--warning);
-            box-shadow: 0 0 8px var(--warning);
-            animation: pulse 1s infinite;
-        }
-
-        @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.4; }
-            100% { opacity: 1; }
         }
 
         .main-container {
@@ -281,7 +266,7 @@
             </div>
             <div class="sync-indicator">
                 <div id="light" class="sync-light"></div>
-                <span id="statusText">Conectado</span>
+                <span id="statusText">Local Activo</span>
             </div>
         </div>
     </header>
@@ -294,5 +279,13 @@
                 <div class="input-group">
                     <label for="fecha">Fecha de Ejecución:</label>
                     <input type="date" id="fecha" required>
+                </div>
+                <div class="input-group">
+                    <label for="labor">Labor a Realizar:</label>
+                    <input type="text" id="labor" placeholder="Ej. Vacunación Brahman, arreglar cerca..." required>
+                </div>
+                <div class="input-group">
+                    <label for="personal">Personal Asignado:</label>
+                    <input type="text" id="personal" placeholder="Nombre del responsable" required>
                 </div>
                 <div class="input-group">
