@@ -15,6 +15,7 @@ const firebaseConfig = {
 
 // Inicializar Firebase
 const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
 // SOLUCIÓN AL ERROR: Inicializar Firestore y definir la variable 'db'
 const db = getFirestore(app); 
