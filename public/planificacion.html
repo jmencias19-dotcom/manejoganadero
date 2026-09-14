@@ -27,14 +27,10 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
-        /* AJUSTE CRÍTICO: Obliga al cuerpo a permitir scroll infinito y estiramiento */
-        html, body {
-            height: auto !important;
-            min-height: 100vh;
+        body {
             background-color: var(--bg-color);
             color: var(--text-main);
             overflow-x: hidden;
-            overflow-y: auto !important; /* Habilita el scroll con el dedo */
             -webkit-tap-highlight-color: transparent;
         }
 
@@ -108,15 +104,13 @@
             box-shadow: 0 0 8px var(--success);
         }
 
-        /* AJUSTE CRÍTICO: Asegura que el contenedor de las tarjetas crezca verticalmente */
         .main-container {
             max-width: 1200px;
             margin: 1rem auto;
-            padding: 0 0.8rem 3rem 0.8rem; /* Margen inferior extra para que no tape el último elemento */
+            padding: 0 0.8rem;
             display: flex;
             flex-direction: column;
             gap: 1.5rem;
-            height: auto !important; 
         }
 
         .section-box {
@@ -126,7 +120,6 @@
             box-shadow: 0 4px 12px rgba(0,0,0,0.04);
             padding: 1.2rem;
             width: 100%;
-            height: auto !important;
         }
 
         .section-title {
@@ -289,3 +282,10 @@
                 </div>
                 <div class="input-group">
                     <label for="labor">Labor a Realizar:</label>
+                    <input type="text" id="labor" placeholder="Ej. Vacunación Brahman, arreglar cerca..." required>
+                </div>
+                <div class="input-group">
+                    <label for="personal">Personal Asignado:</label>
+                    <input type="text" id="personal" placeholder="Nombre del responsable" required>
+                </div>
+                <div class="input-group">
