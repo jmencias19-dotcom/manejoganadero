@@ -13,8 +13,8 @@
     <link rel="manifest" href="manifest.json">
 </head>
 <body>
- <a href="planificacion.html">Planificación</a>
     
+    <!-- Encabezado Principal con Banderas de Identidad Corporativa -->
     <header class="main-header">
         <div class="header-container">
             <!-- Bandera de Venezuela (SVG) -->
@@ -29,15 +29,15 @@
                 </svg>
             </div>
      
-            <!-- Título Central con Siluetas de Ganado -->
+            <!-- Título Central con Siluetas de Ganado y Crédito Técnico -->
             <div class="header-title-wrapper">
-                <div class="animal-silhouettes-top">
+                <div class="animal-silhouettes-top" aria-hidden="true">
                     <!-- Silueta Vaca Cebú/Brahman -->
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="animal-icon" fill="currentColor" aria-hidden="true">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="animal-icon" fill="currentColor">
                         <path d="M4 8h2V6h2v2h8V6h2v2h2v4h-1v6h-2v-2H7v2H5v-6H4V8zm3 2v2h10v-2H7z"/>
                     </svg>
                     <!-- Silueta Búfalo de Agua -->
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="animal-icon" fill="currentColor" aria-hidden="true">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="animal-icon" fill="currentColor">
                         <path d="M2 10c0-2 2-4 5-4h1V5h2v1h6V5h2v1h1c3 0 5 2 5 4v3h-2v4h-2v-2H6v2H4v-4H2v-3zm5-2c-1.1 0-2 .9-2 2v1h2V8h-2zm10 0v3h2V9c0-1.1-.9-2-2-2z"/>
                     </svg>
                 </div>
@@ -45,6 +45,11 @@
                     <br><span style="font-size: 0.75em; font-weight: 600;">Grupo Imperatori</span>
                 </h1>
                 <p>Panel de Control Directo - Operaciones de Campo</p>
+                
+                <!-- RETOQUE PROFESIONAL: Firma de autoría técnica integrada -->
+                <p class="header-author" style="margin-top: 6px; font-size: 0.85rem; color: var(--accent, #00e676); font-weight: 600; letter-spacing: 0.5px;">
+                    📋 Responsable Técnico: M.V. Juan Mencias
+                </p>
             </div>
 
             <!-- Bandera de Italia (SVG) -->
@@ -57,7 +62,27 @@
             </div>
         </div>
     </header>      
+
+    <!-- Rejilla Principal de Trabajo -->
     <main class="dashboard-grid">
+        
+        <!-- Tarjeta de Planificación de Tareas (Corregida) -->
+        <article class="card card-tareas">
+            <div class="card-header">
+                <!-- Se movió aria-hidden exclusivamente al icono decorativo -->
+                <div class="card-icon" aria-hidden="true">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                        <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                        <path d="M9 12h6"></path>
+                        <path d="M9 16h6"></path>
+                    </svg>
+                </div>
+                <h2 class="card-title">Planificación de Tareas</h2>
+            </div>
+            <p class="card-description">Programación y asignación de labores diarias del personal de campo.</p>
+            <a href="planificacion.html" class="card-action">Acceder a Tareas</a>
+        </article>
         
 <article class="card card-tareas">
   <div class="card-header">
