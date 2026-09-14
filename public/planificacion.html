@@ -67,7 +67,6 @@
             text-align: center;
         }
 
-        /* Botón de Volver al Panel */
         .btn-dashboard {
             background-color: rgba(255, 255, 255, 0.2);
             color: white;
@@ -84,15 +83,9 @@
             transition: background-color 0.2s, transform 0.1s;
         }
 
-        .btn-dashboard:hover {
-            background-color: rgba(255, 255, 255, 0.35);
-        }
+        .btn-dashboard:hover { background-color: rgba(255, 255, 255, 0.35); }
+        .btn-dashboard:active { transform: scale(0.97); }
 
-        .btn-dashboard:active {
-            transform: scale(0.97);
-        }
-
-        /* Semáforo de Sincronización */
         .sync-indicator {
             display: flex;
             align-items: center;
@@ -198,10 +191,7 @@
             background-color: #fff;
         }
 
-        #taskForm textarea {
-            resize: vertical;
-            min-height: 90px;
-        }
+        #taskForm textarea { resize: vertical; min-height: 90px; }
 
         .form-actions {
             display: flex;
@@ -222,19 +212,9 @@
             transition: background 0.2s, transform 0.1s;
         }
 
-        button:active {
-            transform: scale(0.98);
-        }
-
-        button[type="submit"] {
-            background-color: var(--secondary-color);
-            color: white;
-            flex: 2;
-        }
-
-        button[type="submit"]:hover {
-            background-color: var(--primary-color);
-        }
+        button:active { transform: scale(0.98); }
+        button[type="submit"] { background-color: var(--secondary-color); color: white; flex: 2; }
+        button[type="submit"]:hover { background-color: var(--primary-color); }
 
         .btn-undo {
             background-color: var(--warning);
@@ -246,68 +226,21 @@
             gap: 6px;
         }
 
-        .btn-undo:hover {
-            background-color: #e08e4f;
-        }
+        .btn-undo:hover { background-color: #e08e4f; }
+        .btn-undo:disabled { background-color: #e0e0e0; color: #999; cursor: not-allowed; transform: none; }
 
-        .btn-undo:disabled {
-            background-color: #e0e0e0;
-            color: #999;
-            cursor: not-allowed;
-            transform: none;
-        }
+        .task-list { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; text-align: left; min-width: 650px; }
+        th, td { padding: 14px 16px; border-bottom: 1px solid var(--divider-color); font-size: 0.95rem; }
+        th { background-color: #f1f4f1; color: var(--primary-color); font-weight: 700; border-bottom: 2px solid var(--border-color); }
+        tr:hover { background-color: #f9fbf9; }
 
-        .task-list {
-            overflow-x: auto;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: left;
-            min-width: 650px;
-        }
-
-        th, td {
-            padding: 14px 16px;
-            border-bottom: 1px solid var(--divider-color);
-            font-size: 0.95rem;
-        }
-
-        th {
-            background-color: #f1f4f1;
-            color: var(--primary-color);
-            font-weight: 700;
-            border-bottom: 2px solid var(--border-color);
-        }
-
-        tr:hover {
-            background-color: #f9fbf9;
-        }
-
-        .status-select {
-            padding: 6px 10px;
-            border-radius: 6px;
-            border: 1px solid #ccc;
-            font-weight: 600;
-            font-size: 0.85rem;
-            cursor: pointer;
-        }
-
+        .status-select { padding: 6px 10px; border-radius: 6px; border: 1px solid #ccc; font-weight: 600; font-size: 0.85rem; cursor: pointer; }
         .status-pendiente { background-color: #fff3cd; color: #856404; border-color: #ffeeba; }
         .status-proceso { background-color: #cce5ff; color: #004085; border-color: #b8daff; }
         .status-completada { background-color: #d4edda; color: #155724; border-color: #c3e6cb; }
 
-        .btn-delete {
-            background-color: var(--danger);
-            color: white;
-            padding: 6px 12px;
-            font-size: 0.85rem;
-            border-radius: 6px;
-            border: none;
-            cursor: pointer;
-        }
-
+        .btn-delete { background-color: var(--danger); color: white; padding: 6px 12px; font-size: 0.85rem; border-radius: 6px; border: none; cursor: pointer; }
         .btn-delete:hover { background-color: #c82333; }
 
         .toast-notification {
@@ -340,10 +273,27 @@
 </head>
 <body>
 
-    <!-- Encabezado con la Autoría Unificada -->
     <header class="main-header">
         <div class="header-container">
             <div class="header-brand">
                 <a href="index.html" class="btn-dashboard">
                     <span>⬅</span> Volver al Panel
                 </a>
+                <div>
+                    <h1>Planificación y Asignación de Tareas</h1>
+                    <p style="margin: 4px 0 0 0; font-size: 0.9rem; opacity: 0.9;">Hato Laguna Brava - Grupo Imperatori</p>
+                </div>
+            </div>
+            <div class="sync-indicator">
+                <div id="light" class="sync-light"></div>
+                <span id="statusText">Conectado a la Nube</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- SOLUCIÓN AL ERROR: Se agregó la etiqueta de apertura principal obligatoria -->
+    <main class="main-container">
+
+        <section class="section-box">
+            <h2 class="section-title">📋 Registro de Nueva Labor Operativa</h2>
+            <form id="taskForm">
