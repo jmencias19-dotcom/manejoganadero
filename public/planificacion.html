@@ -20,7 +20,6 @@
             --divider-color: #e2e8e0;
         }
 
-        /* Bloqueo de desbordamientos laterales en pantallas móviles */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -147,7 +146,6 @@
             gap: 8px;
         }
 
-        /* AJUSTE TÁCTICO MÓVIL: Flujo vertical obligatorio para evitar cortes visuales */
         #taskForm {
             display: flex;
             flex-direction: column;
@@ -155,7 +153,6 @@
             width: 100%;
         }
 
-        /* CASILLAS EN BLOQUES SINCRIZADOS: Estructura de inputs robustos */
         .input-group {
             display: flex;
             flex-direction: column;
@@ -173,7 +170,7 @@
 
         #taskForm input, #taskForm textarea, #taskForm select {
             width: 100%;
-            padding: 14px 12px; /* Mayor área de presión para los dedos */
+            padding: 14px 12px;
             border: 1.5px solid var(--border-color);
             border-radius: 8px;
             font-size: 1rem;
@@ -181,7 +178,7 @@
             background-color: #fafbfc;
             color: var(--text-main);
             transition: border-color 0.2s, background-color 0.2s;
-            -webkit-appearance: none; /* Elimina estilos heredados de iOS */
+            -webkit-appearance: none;
         }
 
         #taskForm input:focus, #taskForm textarea:focus {
@@ -193,7 +190,6 @@
 
         #taskForm textarea { min-height: 90px; resize: vertical; }
 
-        /* Botonera de Acción en Pantallas Móviles */
         .form-actions {
             display: flex;
             gap: 10px;
@@ -228,7 +224,6 @@
         }
         button:disabled { background-color: #e0e0e0; color: #999999; cursor: not-allowed; transform: none; }
 
-        /* Tarjetas de Resumen Dinámico Adaptadas */
         .resumen-container {
             display: flex;
             flex-direction: column;
@@ -332,3 +327,17 @@
             border-left: 5px solid var(--accent-color);
         }
         .toast-notification.show { opacity: 1; transform: translateY(0); }
+        .toast-notification.success { background-color: #1b4332; }
+        .toast-notification.danger { background-color: #780000; }
+        .toast-notification.warning { background-color: #ca6702; }
+    </style>
+</head>
+<body>
+
+    <header class="main-header">
+        <div class="header-container">
+            <div class="header-brand">
+                <a href="index.html" class="btn-dashboard">
+                    <span>⬅</span> Volver al Panel
+                </a>
+                <div>
