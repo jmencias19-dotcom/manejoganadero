@@ -48,9 +48,7 @@
         }
 
         @media (min-width: 768px) {
-            .header-container {
-                flex-direction: row;
-            }
+            .header-container { flex-direction: row; }
         }
 
         .header-brand {
@@ -153,12 +151,8 @@
         }
 
         @media (min-width: 768px) {
-            #taskForm {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            #taskForm textarea, #taskForm .form-actions {
-                grid-column: span 2;
-            }
+            #taskForm { grid-template-columns: repeat(2, 1fr); }
+            #taskForm textarea, #taskForm .form-actions { grid-column: span 2; }
         }
 
         .input-group {
@@ -291,9 +285,10 @@
         </div>
     </header>
 
-    <!-- SOLUCIÓN AL ERROR: Se agregó la etiqueta de apertura principal obligatoria -->
+    <!-- AGREGADO: Contenedor semántico principal -->
     <main class="main-container">
 
         <section class="section-box">
             <h2 class="section-title">📋 Registro de Nueva Labor Operativa</h2>
             <form id="taskForm">
+                <div class="input-group">
