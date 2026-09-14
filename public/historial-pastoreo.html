@@ -11,27 +11,25 @@
     <link rel="manifest" href="manifest.json">
 </head>
 <body>
+    <!-- Encabezado Principal de la Aplicación -->
     <header class="main-header">
         <div class="header-container">
             <div class="flag-container" aria-label="Bandera de Venezuela">
-               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600" class="flag-icon">
+                <!-- SVG Oficial con el arco simétrico de 8 estrellas -->
+                <svg xmlns="http://w3.org" viewBox="0 0 900 600" class="flag-icon">
                     <rect width="900" height="600" fill="#cf142b"/>
                     <rect width="900" height="400" fill="#00247d"/>
                     <rect width="900" height="200" fill="#fcdd09"/>
-                    <g fill="#ffffff" transform="translate(450, 300) scale(0.7)">
-                        <circle cx="-120" cy="-30" r="12"/>
-                        <circle cx="-80" cy="-50" r="12"/>
-                        <circle cx="-30" cy="-60" r="12"/>
-                        <circle cx="30" cy="-60" r="12"/>
-                        <circle cx="80" cy="-50" r="12"/>
-                        <circle cx="120" cy="-30" r="12"/>
-                        <circle cx="-120" cy="30" r="12"/>
-                        <circle cx="-80" cy="50" r="12"/>
-                        <circle cx="-30" cy="60" r="12"/>
-                        <circle cx="30" cy="60" r="12"/>
-                        <circle cx="80" cy="50" r="12"/>
-                        <circle cx="120" cy="30" r="12"/>
-                        <circle cx="0" cy="0" r="24"/>
+                    <!-- Grupo de 8 estrellas blancas en arco sobre la franja azul -->
+                    <g fill="#ffffff" transform="translate(450, 335)">
+                        <circle cx="-135" cy="-20" r="12"/>
+                        <circle cx="-100" cy="-60" r="12"/>
+                        <circle cx="-55" cy="-90" r="12"/>
+                        <circle cx="-15" cy="-105" r="12"/>
+                        <circle cx="15" cy="-105" r="12"/>
+                        <circle cx="55" cy="-90" r="12"/>
+                        <circle cx="100" cy="-60" r="12"/>
+                        <circle cx="135" cy="-20" r="12"/>
                     </g>
                 </svg>
             </div>
@@ -43,14 +41,111 @@
         </div>
     </header>
 
+    <!-- Área de Contenido Principal -->
     <main class="dashboard-grid">
-       <article class="card">
-            <h2>Historial de Pastoreo</h2>
-            <p>Aquí se registrarán y visualizarán las rotaciones de potreros y el seguimiento de la carga animal.</p>
-            <a href="index.html" class="card-action">Volver al Inicio</a>
-        </article>
+        <!-- Tarjeta del Formulario de Registro de Rotaciones -->
+        <section class="card form-section">
+            <h2>Registrar Rotación de Pastoreo</h2>
+            <p class="card-subtitle">Complete los datos de la operación de campo actual.</p>
+
+            <form id="paddockForm">
+                <!-- Bloque: Selección de Ubicación y Lote -->
+                <div class="form-group-row">
+                    <div class="form-group">
+                        <label for="potrero">Potrero / Lote de Tierra:</label>
+                        <select id="potrero" required>
+                            <option value="" disabled selected>Seleccione un potrero...</option>
+                            <option value="potrero-1">Potrero 1 - Bajo Grande</option>
+                            <option value="potrero-2">Potrero 2 - El Palmar</option>
+                            <option value="potrero-3">Potrero 3 - La Laguna</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="lote">Lote de Ganado:</label>
+                        <select id="lote" required>
+                            <option value="" disabled selected>Seleccione el lote...</option>
+                            <option value="lote-vacas-ordeno">Vacas en Ordeño</option>
+                            <option value="lote-novillas">Novillas de Reemplazo</option>
+                            <option value="lote-mn">Mautes / Toros</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Bloque: Fechas y Cálculos de Tiempo -->
+                <div class="form-group-row">
+                    <div class="form-group">
+                        <label for="f-ingreso">Fecha de Ingreso:</label>
+                        <input type="date" id="f-ingreso" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="f-salida">Fecha de Salida:</label>
+                        <input type="date" id="f-salida" required>
+                    </div>
+                </div>
+
+                <!-- Bloque: Datos del Ganado -->
+                <div class="form-group-row">
+                    <div class="form-group">
+                        <label for="cabezas">Número de Cabezas:</label>
+                        <input type="number" id="cabezas" min="1" placeholder="Ej. 50" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="peso">Peso Promedio Animal (kg):</label>
+                        <input type="number" id="peso" step="0.1" min="1" placeholder="Ej. 420" required>
+                    </div>
+                </div>
+
+                <!-- Bloque: Datos de la Pastura (Procesados por JS) -->
+                <div class="form-group-row">
+                    <div class="form-group">
+                        <label for="alt-ingreso">Alt. Pasto Ingreso (cm):</label>
+                        <input type="number" id="alt-ingreso" step="0.1" placeholder="Ej. 35.5">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="alt-salida">Alt. Pasto Salida (cm):</label>
+                        <input type="number" id="alt-salida" step="0.1" placeholder="Ej. 10.0">
+                    </div>
+                </div>
+
+                <div class="form-group-row">
+                    <div class="form-group">
+                        <label for="especie">Especie Forrajera:</label>
+                        <input type="text" id="especie" placeholder="Ej. Brachiaria decumbens, Carimagua">
+                    </div>
+                </div>
+
+                <!-- Cuadro de Observaciones -->
+                <div class="form-group">
+                    <label for="observaciones-paddock">Observaciones de Campo:</label>
+                    <textarea id="observaciones-paddock" rows="3" placeholder="Estado sanitario del lote, condiciones climáticas, disponibilidad de agua..."></textarea>
+                </div>
+
+                <!-- Bloque Informativo Visual (Métricas calculadas dinámicamente por JS) -->
+                <div class="metrics-summary">
+                    <div class="metric-box">
+                        <span class="metric-label">Días de Ocupación:</span>
+                        <span id="dias-ocupacion-val" class="metric-value">0</span> días
+                    </div>
+                    <div class="metric-box">
+                        <span class="metric-label">Carga Animal Estimada:</span>
+                        <span id="ua-val" class="metric-value">0.00</span> UA
+                    </div>
+                </div>
+
+                <!-- Botones de Acción -->
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">Guardar Registro en la Nube</button>
+                    <a href="index.html" class="card-action btn-back">Volver al Inicio</a>
+                </div>
+            </form>
+        </section>
     </main>
 
+    <!-- Carga del Script Lógico como Módulo -->
     <script type="module" src="historial-pastoreo.js"></script>
 </body>
 </html>
