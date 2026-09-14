@@ -1,73 +1,45 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Gestión Ganadera - Hato Laguna Brava</title>
-    <link rel="stylesheet" href="variables.css">
+    <title>Indicadores de Gestión - Hato Laguna Brava</title>
+    <link rel="stylesheet" href="variables.css?v=1.1">
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="dashboard.css">
+    <link rel="manifest" href="manifest.json">
 </head>
 <body>
+    
+    <!-- Encabezado de la página interna -->
     <header class="main-header">
         <div class="header-container">
-            <h1>Gestión Ganadera Hato Laguna Brava</h1>
-            <p>Panel de Control Directo - Operaciones de Campo</p>
+            <!-- Enlace de regreso corregido -->
+            <a href="index.html" class="back-action" style="color: var(--text-light); text-decoration: none; font-weight: 600; display: block; margin-bottom: 10px;">← Volver al Panel</a>
+            <h1>Indicadores de Gestión</h1>
+            <p>Panel de control con métricas estratégicas y estadísticas del hato.</p>
         </div>
     </header>
 
+    <!-- Contenedor principal de reportes -->
     <main class="library-container">
         <section class="grid-library">
-           
-                <div class="card-content">
-                    <h2 class="card-title">Indicadores de Gestión</h2>
-                    <p class="card-description">Panel de control con métricas estratégicas, estadísticas del hato y resolución operativa.</p>
-                    <a href="indicadores-gestion/index.html" class="card-action">Acceder a Indicadores</a>
-                </div>
-            </article>
-
-           <section class="grid-library">
-    <article class="card">
-        <div class="card-icon" aria-hidden="true">
-            <!-- SVG del icono -->
-        </div>
-        <div class="card-content">
-            <h2 class="card-title">Indicadores de Gestión</h2>
-            <p class="card-description">Panel de control con métricas estratégicas, estadísticas del hato y resolución operativa.</p>
-            <a href="indicadores-gestion.html" class="card-action">Acceder a Indicadores</a>
-        </div>
-    </article>
-                <!-- Tarjeta de Indicadores de Gestión -->
+            
             <article class="card">
-                <div class="card-header" aria-hidden="true">
-                    <div class="card-icon" id="indicadores-gestion-icon">
+                <div class="card-header">
+                    <div class="card-icon" id="estadisticas-icon" aria-hidden="true"> 
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <line x1="18" y1="20" x2="18" y2="10"></line>
                             <line x1="12" y1="20" x2="12" y2="4"></line>
                             <line x1="6" y1="20" x2="6" y2="14"></line>
                         </svg>
                     </div>
-                    </div>
-                   <div class="card-content"> 
-                       <article class="card">
-  <div class="card-header" aria-hidden="true">
-    <div class="card-icon" id="estadisticas-icon">
-      <!-- SVG del icono -->
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <line x1="12" y1="20" x2="12" y2="10"></line>
-        <line x1="18" y1="20" x2="18" y2="4"></line>
-        <line x1="6" y1="20" x2="6" y2="14"></line>
-      </svg>
-    </div>
-  </div>
-  <div class="card-content">
-    <h2>Estadísticas Principales</h2>
-    <p>Visualización de datos clave sobre el rebaño, producción e inventario.</p>
-    <a href="indicadores-gestion/index.html" class="card-action">Acceder</a>
-  </div>
-</article>
-                 </article>
-           </section>
+                    <h2 class="card-title">Estadísticas Principales</h2>
+                </div>
+                <div class="card-content">
+                    <p class="card-description">Visualización de datos clave sobre el rebaño, producción e inventario.</p>
+                </div>
+            </article>
+
         </section>
     </main>
-</body>
-</html>
