@@ -2,8 +2,8 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Planificación y Asignación de Tareas - Hato Laguna Brava</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Planificación de Tareas - Hato Laguna Brava</title>
     <style>
         :root {
             --primary-color: #1b4332;
@@ -20,13 +20,19 @@
             --divider-color: #e2e8e0;
         }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-main);
+        /* Bloqueo de desbordamientos laterales en pantallas móviles */
+        * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
             overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
         }
 
         .main-header {
@@ -69,7 +75,7 @@
             background-color: rgba(255, 255, 255, 0.2);
             color: white;
             border: 1px solid rgba(255, 255, 255, 0.4);
-            padding: 6px 12px;
+            padding: 8px 14px;
             border-radius: 8px;
             font-size: 0.85rem;
             font-weight: 600;
@@ -111,7 +117,6 @@
             100% { opacity: 1; }
         }
 
-        /* AJUSTE PARA MINI-APPS: Contenedor con distribución vertical fluida */
         .main-container {
             max-width: 1200px;
             margin: 1rem auto;
@@ -132,7 +137,7 @@
 
         .section-title {
             margin-top: 0;
-            margin-bottom: 1rem;
+            margin-bottom: 1.2rem;
             font-size: 1.1rem;
             color: var(--primary-color);
             border-bottom: 2px solid var(--divider-color);
@@ -142,14 +147,15 @@
             gap: 8px;
         }
 
-        /* AJUSTE PARA MINI-APPS: El formulario se despliega verticalmente por defecto */
+        /* AJUSTE TÁCTICO MÓVIL: Flujo vertical obligatorio para evitar cortes visuales */
         #taskForm {
             display: flex;
             flex-direction: column;
-            gap: 1rem;
+            gap: 1.2rem;
             width: 100%;
         }
 
+        /* CASILLAS EN BLOQUES SINCRIZADOS: Estructura de inputs robustos */
         .input-group {
             display: flex;
             flex-direction: column;
@@ -159,77 +165,159 @@
 
         .input-group label {
             font-size: 0.85rem;
-            font-weight: 600;
+            font-weight: 700;
             color: var(--primary-color);
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
         }
 
         #taskForm input, #taskForm textarea, #taskForm select {
             width: 100%;
-            padding: 0.75rem;
+            padding: 14px 12px; /* Mayor área de presión para los dedos */
             border: 1.5px solid var(--border-color);
             border-radius: 8px;
-            font-size: 0.95rem;
+            font-size: 1rem;
             box-sizing: border-box;
             background-color: #fafbfc;
             color: var(--text-main);
+            transition: border-color 0.2s, background-color 0.2s;
+            -webkit-appearance: none; /* Elimina estilos heredados de iOS */
         }
 
         #taskForm input:focus, #taskForm textarea:focus {
             border-color: var(--accent-color);
             outline: none;
-            background-color: #fff;
+            background-color: #ffffff;
+            box-shadow: 0 0 0 3px rgba(82, 183, 136, 0.12);
         }
 
-        #taskForm textarea { min-height: 80px; resize: vertical; }
+        #taskForm textarea { min-height: 90px; resize: vertical; }
 
+        /* Botonera de Acción en Pantallas Móviles */
         .form-actions {
             display: flex;
-            gap: 0.8rem;
+            gap: 10px;
             flex-direction: column;
             margin-top: 0.5rem;
             border-top: 1px solid var(--divider-color);
-            padding-top: 1rem;
+            padding-top: 1.2rem;
             width: 100%;
-        }
-
-        @media (min-width: 480px) {
-            .form-actions { flex-direction: row; }
         }
 
         button {
-            padding: 0.75rem 1.2rem;
+            padding: 14px;
             border: none;
             border-radius: 8px;
-            font-size: 0.95rem;
-            font-weight: 600;
+            font-size: 1rem;
+            font-weight: 700;
             cursor: pointer;
             width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.1s;
         }
 
+        button:active { transform: scale(0.98); }
         button[type="submit"] { background-color: var(--secondary-color); color: white; }
-        .btn-undo { background-color: var(--warning); color: #000; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
-        button:disabled { background-color: #e0e0e0; color: #999; cursor: not-allowed; }
+        
+        .btn-undo { 
+            background-color: var(--warning); 
+            color: #000000; 
+            gap: 6px; 
+        }
+        button:disabled { background-color: #e0e0e0; color: #999999; cursor: not-allowed; transform: none; }
 
-        /* Tabla responsiva adaptada a Mini-Apps */
-        .task-list { overflow-x: auto; width: 100%; }
-        table { width: 100%; border-collapse: collapse; text-align: left; min-width: 600px; }
-        th, td { padding: 12px 14px; border-bottom: 1px solid var(--divider-color); font-size: 0.9rem; }
-        th { background-color: #f1f4f1; color: var(--primary-color); font-weight: 700; }
+        /* Tarjetas de Resumen Dinámico Adaptadas */
+        .resumen-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 5px;
+        }
 
-        .status-select { padding: 4px 8px; border-radius: 6px; border: 1px solid #ccc; font-weight: 600; font-size: 0.8rem; }
-        .status-pendiente { background-color: #fff3cd; color: #856404; }
+        .task-card-item {
+            background-color: #fafbfc;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+
+        .task-card-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .task-card-date {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--secondary-color);
+            background-color: #e2e8e0;
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+
+        .task-card-labor {
+            font-size: 1rem;
+            color: var(--text-main);
+            word-break: break-word;
+        }
+
+        .task-card-meta {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .task-card-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-top: 4px;
+            border-top: 1px solid var(--divider-color);
+            padding-top: 8px;
+        }
+
+        .status-select { 
+            padding: 8px; 
+            border-radius: 6px; 
+            border: 1px solid #cccccc; 
+            font-weight: 700; 
+            font-size: 0.85rem; 
+            flex: 1;
+            height: 38px;
+        }
+        .status-cola { background-color: #fff3cd; color: #856404; }
         .status-proceso { background-color: #cce5ff; color: #004085; }
-        .status-completada { background-color: #d4edda; color: #155724; }
+        .status-ejecutada { background-color: #d4edda; color: #155724; }
 
-        .btn-delete { background-color: var(--danger); color: white; padding: 4px 10px; font-size: 0.8rem; border-radius: 6px; border: none; }
+        .btn-delete { 
+            background-color: var(--danger); 
+            color: white; 
+            padding: 0 14px; 
+            font-size: 0.85rem; 
+            border-radius: 6px; 
+            border: none; 
+            height: 38px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
 
         .toast-notification {
             position: fixed;
             bottom: 20px;
-            right: 20px;
-            background: #333;
+            left: 5%;
+            right: 5%;
+            width: 90%;
+            background: #333333;
             color: white;
-            padding: 12px 20px;
+            padding: 12px 16px;
             border-radius: 10px;
             box-shadow: 0 6px 20px rgba(0,0,0,0.2);
             opacity: 0;
@@ -244,52 +332,3 @@
             border-left: 5px solid var(--accent-color);
         }
         .toast-notification.show { opacity: 1; transform: translateY(0); }
-        .toast-notification.success { background-color: #1b4332; }
-        .toast-notification.danger { background-color: #780000; }
-        .toast-notification.warning { background-color: #ca6702; }
-    </style>
-</head>
-<body>
-
-    <header class="main-header">
-        <div class="header-container">
-            <div class="header-brand">
-                <a href="index.html" class="btn-dashboard">
-                    <span>⬅</span> Volver al Panel
-                </a>
-                <div>
-                    <h1>Planificación de Tareas</h1>
-                    <p style="margin: 2px 0 0 0; font-size: 0.8rem; opacity: 0.8;">Hato Laguna Brava</p>
-                </div>
-            </div>
-            <div class="sync-indicator">
-                <div id="light" class="sync-light"></div>
-                <span id="statusText">Conectado</span>
-            </div>
-        </div>
-    </header>
-
-    <main class="main-container">
-
-        <!-- Sección del Formulario Completo -->
-        <section class="section-box">
-            <h2 class="section-title">📋 Registro de Nueva Labor Operativa</h2>
-            <form id="taskForm">
-                <div class="input-group">
-                    <label for="fecha">Fecha de Ejecución:</label>
-                    <input type="date" id="fecha" required>
-                </div>
-                <div class="input-group">
-                    <label for="labor">Labor a Realizar:</label>
-                    <input type="text" id="labor" placeholder="Ej. Vacunación Brahman, arreglar cerca..." required>
-                </div>
-                <div class="input-group">
-                    <label for="personal">Personal Asignado:</label>
-                    <input type="text" id="personal" placeholder="Nombre del responsable o cuadrilla" required>
-                </div>
-                <div class="input-group">
-                    <label for="observaciones">Observaciones Operativas:</label>
-                    <textarea id="observaciones" placeholder="Detalles de insumos, herramientas..."></textarea>
-                </div>
-                <div class="form-actions">
-                    <button type="submit">Guardar y sincronizar</button>
