@@ -133,7 +133,6 @@
             gap: 2.5rem;
         }
 
-        /* Contenedores con líneas y bordes definidos */
         .section-box {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
@@ -154,7 +153,6 @@
             gap: 8px;
         }
 
-        /* Formulario Estilizado con rejilla de casillas delimitadas */
         #taskForm {
             display: grid;
             grid-template-columns: 1fr;
@@ -259,7 +257,6 @@
             transform: none;
         }
 
-        /* Tabla Responsiva con líneas divisorias claras */
         .task-list {
             overflow-x: auto;
         }
@@ -288,7 +285,6 @@
             background-color: #f9fbf9;
         }
 
-        /* Selectores de Estado con Color */
         .status-select {
             padding: 6px 10px;
             border-radius: 6px;
@@ -298,23 +294,9 @@
             cursor: pointer;
         }
 
-        .status-pendiente {
-            background-color: #fff3cd;
-            color: #856404;
-            border-color: #ffeeba;
-        }
-
-        .status-proceso {
-            background-color: #cce5ff;
-            color: #004085;
-            border-color: #b8daff;
-        }
-
-        .status-completada {
-            background-color: #d4edda;
-            color: #155724;
-            border-color: #c3e6cb;
-        }
+        .status-pendiente { background-color: #fff3cd; color: #856404; border-color: #ffeeba; }
+        .status-proceso { background-color: #cce5ff; color: #004085; border-color: #b8daff; }
+        .status-completada { background-color: #d4edda; color: #155724; border-color: #c3e6cb; }
 
         .btn-delete {
             background-color: var(--danger);
@@ -322,13 +304,12 @@
             padding: 6px 12px;
             font-size: 0.85rem;
             border-radius: 6px;
+            border: none;
+            cursor: pointer;
         }
 
-        .btn-delete:hover {
-            background-color: #c82333;
-        }
+        .btn-delete:hover { background-color: #c82333; }
 
-        /* Notificaciones Toast con Icono y Alerta Visual Destacada */
         .toast-notification {
             position: fixed;
             bottom: 25px;
@@ -350,402 +331,19 @@
             border-left: 5px solid var(--accent-color);
         }
 
-        .toast-notification.show {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
+        .toast-notification.show { opacity: 1; transform: translateY(0); }
         .toast-notification.success { background-color: #1b4332; border-left-color: var(--success); }
         .toast-notification.danger { background-color: #780000; border-left-color: var(--danger); }
         .toast-notification.warning { background-color: #ca6702; color: #fff; border-left-color: var(--warning); }
-        
-        .toast-icon {
-            font-size: 1.2rem;
-        }
+        .toast-icon { font-size: 1.2rem; }
     </style>
 </head>
 <body>
 
+    <!-- Encabezado con la Autoría Unificada -->
     <header class="main-header">
         <div class="header-container">
             <div class="header-brand">
-                <!-- Botón de Volver al Panel Principal -->
-                <a href="panel.html" class="btn-dashboard">
+                <a href="index.html" class="btn-dashboard">
                     <span>⬅</span> Volver al Panel
                 </a>
-                <h1>Planificación y Asignación de Tareas</h1>
-            </div>
-            <div class="sync-indicator">
-                <div id="light" class="sync-light"></div>
-                <span id="statusText">Conectado a la Nube</span>
-            </div>
-        </div>
-    </header>
-
-    <main class="main-container">
-        <!-- Formulario para registrar tareas con delimitación clara -->
-        <section class="section-box">
-            <h2 class="section-title">📋 Registro de Nueva Labor Operativa</h2>
-            <form id="taskForm">
-                <div class="input-group">
-                    <label for="fecha">Fecha de Ejecución (Horizonte de 1 Mes):</label>
-                    <input type="date" id="fecha" required>
-                </div>
-                <div class="input-group">
-                    <label for="labor">Labor a Realizar:</label>
-                    <input type="text" id="labor" placeholder="Ej. Vacunación lote Brahman, mantenimiento de potrero..." required>
-                </div>
-                <div class="input-group">
-                    <label for="personal">Personal Asignado:</label>
-                    <input type="text" id="personal" placeholder="Nombre del responsable o cuadrilla" required>
-                </div>
-                <div class="input-group">
-                    <label for="observaciones">Observaciones Operativas:</label>
-                    <textarea id="observaciones" placeholder="Detalles de insumos, herramientas o especificaciones..."></textarea>
-                </div>
-                <div class="form-actions">
-                    <button type="submit">Guardar tarea y sincronizar</button>
-                    <!-- Botón para restaurar/reincorporar última tarea eliminada -->
-                    <button type="button" class="btn-undo" id="btnUndo" disabled title="No hay tareas eliminadas recientemente para reincorporar">
-                        <span>♻️</span> Rehacer / Reincorporar
-                    </button>
-                </div>
-            </form>
-        </section>
-
-        <!-- Tabla para listar las tareas organizadas cronológicamente -->
-        <section class="section-box task-list">
-            <h2 class="section-title">📅 Cronograma de Tareas Activas</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Fecha</th>
-                        <th>Labor</th>
-                        <th>Personal</th>
-                        <th>Observaciones</th>
-                        <th>Estado</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody id="taskTableBody">  
-                    <!-- Las tareas se cargarán dinámicamente aquí -->
-                </tbody>
-            </table>
-        </section>
-    </main>
-
-    <div id="toast" class="toast-notification">
-        <span id="toastIcon" class="toast-icon">ℹ️</span>
-        <span id="toastMessage">Notificación</span>
-    </div>
-
-    <!-- Script con Firebase Firestore y la lógica de la aplicación -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import {  
-            getFirestore,  
-            collection,  
-            addDoc,  
-            updateDoc,  
-            deleteDoc,  
-            doc,  
-            onSnapshot  
-        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
-        window.addEventListener('unhandledrejection', event => {
-            console.error('Error detallado de promesa no capturada:', event.reason);
-        });
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyBnIB0rPQULTOfs55YSnsX2C-2rN5pTANk",
-            authDomain: "hato-laguna-brava.firebaseapp.com",
-            projectId: "hato-laguna-brava",
-            storageBucket: "hato-laguna-brava.firebasestorage.app",
-            messagingSenderId: "1053099733476",
-            appId: "1:1053099733476:web:541a115776b2e80047d7f1",
-            measurementId: "G-RSW0XSHF1F"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        const tasksCollection = collection(db, "tareas");
-
-        const taskForm = document.getElementById('taskForm');
-        const btnUndo = document.getElementById('btnUndo');
-        const taskTableBody = document.getElementById('taskTableBody');
-        const light = document.getElementById('light');
-        const statusText = document.getElementById('statusText');
-        const toast = document.getElementById('toast');
-        const toastMessage = document.getElementById('toastMessage');
-        const toastIcon = document.getElementById('toastIcon');
-        const inputFecha = document.getElementById('fecha');
-
-        // Pila temporal para almacenar la última tarea eliminada (permite reincorporarla)
-        let lastDeletedTask = null;
-
-        // Configuración lógica de fechas: Fecha actual como mínimo y máximo a 1 mes (30 días)
-        function configurarRangoFechas() {
-            const hoy = new Date();
-            const anio = hoy.getFullYear();
-            const mes = String(hoy.getMonth() + 1).padStart(2, '0');
-            const dia = String(hoy.getDate()).padStart(2, '0');
-            const fechaMinima = `${anio}-${mes}-${dia}`;
-            inputFecha.value = fechaMinima;
-            inputFecha.min = fechaMinima;
-
-            const fechaFutura = new Date();
-            fechaFutura.setDate(hoy.getDate() + 30);
-            const anioMax = fechaFutura.getFullYear();
-            const mesMax = String(fechaFutura.getMonth() + 1).padStart(2, '0');
-            const diaMax = String(fechaFutura.getDate()).padStart(2, '0');
-            inputFecha.max = `${anioMax}-${mesMax}-${diaMax}`;
-        }
-        configurarRangoFechas();
-
-        // Generador de alerta sonora utilizando Web Audio API
-        function playAlertSound(type = 'success') {
-            try {
-                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                const oscillator = audioCtx.createOscillator();
-                const gainNode = audioCtx.createGain();
-
-                oscillator.type = 'sine';
-                if (type === 'success') {
-                    oscillator.frequency.setValueAtTime(587.33, audioCtx.currentTime); // D5
-                } else if (type === 'warning') {
-                    oscillator.frequency.setValueAtTime(440, audioCtx.currentTime); // A4
-                } else {
-                    oscillator.frequency.setValueAtTime(330, audioCtx.currentTime); // E4
-                }
-
-                gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.3);
-
-                oscillator.connect(gainNode);
-                gainNode.connect(audioCtx.destination);
-
-                oscillator.start();
-                oscillator.stop(audioCtx.currentTime + 0.3);
-            } catch (e) {
-                console.log("Audio contextual no soportado o bloqueado por el navegador.");
-            }
-        }
-
-        function setSyncStatus(isSyncing) {
-            if (light && statusText) {
-                if (isSyncing) {
-                    light.classList.add('syncing');
-                    statusText.textContent = 'Sincronizando...';
-                } else {
-                    light.classList.remove('syncing');
-                    statusText.textContent = 'Conectado a la Nube';
-                }
-            }
-        }
-
-        function showNotification(message, type = 'success') {
-            if (!toast || !toastMessage) return;
-            toastMessage.textContent = message;
-            toast.className = `toast-notification ${type} show`;
-            
-            if (type === 'success') toastIcon.textContent = '✅';
-            else if (type === 'danger') toastIcon.textContent = '⚠️';
-            else if (type === 'warning') toastIcon.textContent = '🔔';
-            else toastIcon.textContent = 'ℹ️';
-
-            setTimeout(() => toast.classList.remove('show'), 3800);
-        }
-
-        function getStatusClass(status) {
-            if (status === 'En Proceso') return 'status-proceso';
-            if (status === 'Completada') return 'status-completada';
-            return 'status-pendiente';
-        }
-
-        // Depuración automática de tareas completadas con más de 3 días de antigüedad
-        async function verificarDepuracionCompletadas(snapshot) {
-            const ahora = new Date().getTime();
-            const tresDiasMs = 3 * 24 * 60 * 60 * 1000;
-
-            snapshot.forEach(async (docSnapshot) => {
-                const task = docSnapshot.data();
-                if (task.estado === 'Completada' && task.completadaEn) {
-                    const tiempoCompletada = new Date(task.completadaEn).getTime();
-                    if ((ahora - tiempoCompletada) > tresDiasMs) {
-                        try {
-                            await deleteDoc(doc(db, "tareas", docSnapshot.id));
-                            console.log(`Tarea completada ${docSnapshot.id} eliminada automáticamente tras 3 días.`);
-                        } catch (e) {
-                            console.error("Error al auto-eliminar tarea completada:", e);
-                        }
-                    }
-                }
-            });
-        }
-
-        // Botón Deshacer / Reincorporar tarea eliminada
-        if (btnUndo) {
-            btnUndo.addEventListener('click', async () => {
-                if (!lastDeletedTask) return;
-                setSyncStatus(true);
-                try {
-                    await addDoc(tasksCollection, lastDeletedTask);
-                    showNotification('Tarea reincorporada exitosamente al cronograma', 'success');
-                    playAlertSound('success');
-                    lastDeletedTask = null;
-                    btnUndo.disabled = true;
-                    btnUndo.title = "No hay tareas eliminadas recientemente para reincorporar";
-                } catch (err) {
-                    console.error("Error al reincorporar tarea:", err);
-                    showNotification('Error al reincorporar tarea', 'danger');
-                    playAlertSound('danger');
-                } finally {
-                    setSyncStatus(false);
-                }
-            });
-        }
-
-        // Escuchar cambios en tiempo real desde Firestore y ordenar cronológicamente
-        onSnapshot(tasksCollection, (snapshot) => {
-            if (!taskTableBody) return;
-            taskTableBody.innerHTML = '';
-            
-            if (snapshot.empty) {
-                taskTableBody.innerHTML = `<tr><td colspan="6" style="text-align:center; color: var(--text-muted);">No hay tareas registradas en el servidor.</td></tr>`;
-                setSyncStatus(false);
-                return;
-            }
-
-            // Ejecutar revisión de auto-depuración para tareas completadas hace más de 3 días
-            verificarDepuracionCompletadas(snapshot);
-
-            // Mapear y ordenar tareas por fecha de manera ascendente (cronológica)
-            let taskList = [];
-            snapshot.forEach((docSnapshot) => {
-                taskList.push({ id: docSnapshot.id, ...docSnapshot.data() });
-            });
-
-            taskList.sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
-
-            taskList.forEach((task) => {
-                const id = task.id;
-                const tr = document.createElement('tr');
-                const statusClass = getStatusClass(task.estado);
-
-                tr.innerHTML = `
-                    <td>${task.fecha || ''}</td>
-                    <td><strong>${task.labor || ''}</strong></td>
-                    <td>${task.personal || ''}</td>
-                    <td>${task.observaciones || '-'}</td>
-                    <td>
-                        <select class="status-select ${statusClass}" data-id="${id}" onchange="window.updateTaskStatus('${id}', this.value)">
-                            <option value="Pendiente" ${task.estado === 'Pendiente' ? 'selected' : ''}>Pendiente</option>
-                            <option value="En Proceso" ${task.estado === 'En Proceso' ? 'selected' : ''}>En Proceso</option>
-                            <option value="Completada" ${task.estado === 'Completada' ? 'selected' : ''}>Completada</option>
-                        </select>
-                    </td>
-                    <td><button class="btn-delete" onclick="window.deleteTask('${id}')">Eliminar</button></td>
-                `;
-                taskTableBody.appendChild(tr);
-            });
-            setSyncStatus(false);
-        }, (error) => {
-            console.error("Error en onSnapshot de Firestore:", error);
-            if (statusText) statusText.textContent = "Error de Conexión";
-            setSyncStatus(false);
-        });
-
-        // Registro de Tareas
-        if (taskForm) {
-            taskForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                setSyncStatus(true);
-
-                try {
-                    await addDoc(tasksCollection, {
-                        fecha: document.getElementById('fecha').value,
-                        labor: document.getElementById('labor').value,
-                        personal: document.getElementById('personal').value,
-                        observaciones: document.getElementById('observaciones').value,
-                        estado: 'Pendiente',
-                        creadoEn: new Date().toISOString(),
-                        completadaEn: null
-                    });
-
-                    taskForm.reset();
-                    configurarRangoFechas();
-                    showNotification('Labor registrada y guardada en la nube', 'success');
-                    playAlertSound('success');
-                } catch (err) {
-                    console.error("Error al guardar en Firestore:", err);
-                    showNotification('Error al guardar datos', 'danger');
-                    playAlertSound('danger');
-                } finally {
-                    setSyncStatus(false);
-                }
-            });
-        }
-
-        // Actualizar Estado de Tarea Individual
-        window.updateTaskStatus = async (id, newStatus) => {
-            setSyncStatus(true);
-            try {
-                const taskRef = doc(db, "tareas", id);
-                const updateData = { estado: newStatus };
-                if (newStatus === 'Completada') {
-                    updateData.completadaEn = new Date().toISOString();
-                } else {
-                    updateData.completadaEn = null;
-                }
-
-                await updateDoc(taskRef, updateData);
-                showNotification(`Estado actualizado a "${newStatus}"`, 'warning');
-                playAlertSound('warning');
-            } catch (err) {
-                console.error("Error al actualizar en Firestore:", err);
-                showNotification('Error al actualizar estado', 'danger');
-                playAlertSound('danger');
-            } finally {
-                setSyncStatus(false);
-            }
-        };
-
-        // Eliminar Tarea y respaldarla para posible reincorporación
-        window.deleteTask = async (id) => {
-            if (confirm('¿Deseas eliminar este registro de la base de datos central?')) {
-                setSyncStatus(true);
-                try {
-                    // Buscar la tarea actual en el DOM o extraerla para el respaldo de "Deshacer"
-                    const trElement = document.querySelector(`select[data-id="${id}"]`)?.closest('tr');
-                    if (trElement) {
-                        const tds = trElement.querySelectorAll('td');
-                        lastDeletedTask = {
-                            fecha: tds[0].textContent,
-                            labor: tds[1].textContent,
-                            personal: tds[2].textContent,
-                            observaciones: tds[3].textContent === '-' ? '' : tds[3].textContent,
-                            estado: trElement.querySelector('select').value,
-                            creadoEn: new Date().toISOString(),
-                            completadaEn: null
-                        };
-                        btnUndo.disabled = false;
-                        btnUndo.title = "Reincorporar la última tarea eliminada";
-                    }
-
-                    await deleteDoc(doc(db, "tareas", id));
-                    showNotification('Tarea eliminada. Puedes reincorporarla con el botón "Rehacer".', 'danger');
-                    playAlertSound('danger');
-                } catch (err) {
-                    console.error("Error al eliminar en Firestore:", err);
-                    showNotification('Error al eliminar', 'danger');
-                    playAlertSound('danger');
-                } finally {
-                    setSyncStatus(false);
-                }
-            } else {
-                setSyncStatus(false);
-            }
-        };
-    </script>
-</body>
-</html>
