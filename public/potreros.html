@@ -7,7 +7,7 @@
     <link rel="manifest" href="manifest.json">
     <style>
         /* ==========================================================================
-           Fichas Estilizadas y Tokens de Identidad Visual - Hato Laguna Brava
+           Tokens de Identidad Visual y Fichas Estilizadas - Hato Laguna Brava
            ========================================================================== */
         :root {
             --primary-color: #1b4332;
@@ -162,10 +162,32 @@
         }
 
         /* 3. Estilos del Formulario Ocupacional */
-        #potreroForm {
+        #form-mod1 {
             display: flex;
             flex-direction: column;
-            gap: 1.2rem;
+            gap: 1rem;
+        }
+
+        .form-row {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .flex-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .span-2 {
+            grid-column: span 2;
+        }
+
+        @media (min-width: 768px) {
+            .flex-row {
+                grid-template-columns: repeat(4, 1fr);
+            }
         }
 
         .input-group {
@@ -182,7 +204,7 @@
             letter-spacing: 0.3px;
         }
 
-        #potreroForm input, #potreroForm select {
+        .form-control {
             width: 100%;
             padding: 12px;
             border: 1.5px solid var(--border-color);
@@ -193,13 +215,69 @@
             color: var(--text-main);
         }
 
-        #potreroForm input:focus, #potreroForm select:focus {
+        .form-control:focus {
             border-color: var(--accent-color);
             outline: none;
             background-color: #ffffff;
         }
 
-        .form-actions {
+        .etarios-title {
+            font-size: 11px;
+            font-weight: bold;
+            margin: 6px 0 2px 0;
+            display: block;
+            color: var(--primary-color);
+            text-transform: uppercase;
+        }
+
+        /* Cuadrícula de Categorías Ganaderas */
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            background-color: #f0f2f0;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        @media (min-width: 480px) {
+            .category-grid { grid-template-columns: repeat(3, 1fr); }
+        }
+
+        .etario-item {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .etario-item label {
+            font-size: 0.75rem !important;
+            font-weight: 700;
+            color: var(--secondary-color);
+            text-transform: none !important;
+        }
+
+        .etario-item input {
+            padding: 8px !important;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .readonly-box {
+            background-color: #e2e8e0 !important;
+            font-weight: 800;
+            text-align: center;
+            color: var(--text-main);
+        }
+
+        .white-box-blue {
+            color: #004085 !important;
+            background-color: #cce5ff !important;
+        }
+
+        /* Botonera de Acción */
+        .btn-group {
             display: flex;
             gap: 10px;
             margin-top: 0.5rem;
@@ -207,25 +285,56 @@
             padding-top: 1.2rem;
         }
 
-        .form-actions button {
+        .btn-action {
             padding: 14px;
             border: none;
             border-radius: 8px;
             font-size: 1rem;
             font-weight: 700;
             cursor: pointer;
-            flex: 1;
+            flex: 2;
             display: inline-flex;
             align-items: center;
             justify-content: center;
             transition: transform 0.1s;
+            background-color: var(--secondary-color);
+            color: white;
         }
 
-        .form-actions button:active { transform: scale(0.98); }
-        button[type="submit"] { background-color: var(--secondary-color); color: white; }
-        .btn-clear { background-color: var(--warning); color: #000000; }
+        .btn-action:active { transform: scale(0.98); }
+        .btn-reset { background-color: var(--warning); color: #000000; flex: 1; }
 
-        /* 4. Estilos de las Tarjetas UGM y Aforo Inyectadas */
+        /* 4. Estilos de las Tarjetas UGM y Tablero KPI */
+        .kpi-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 8px;
+            margin-bottom: 12px;
+        }
+
+        .kpi-card {
+            background: linear-gradient(135deg, #f4f6f4, #e2e8e0);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+        }
+
+        .kpi-title {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--secondary-color);
+            text-transform: uppercase;
+        }
+
+        .kpi-value {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--primary-color);
+            margin-top: 4px;
+        }
+
         .potreros-container {
             display: flex;
             flex-direction: column;
@@ -252,63 +361,3 @@
         }
 
         .potreros-ugm-title {
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: var(--text-main);
-            word-break: break-word;
-        }
-
-        .status-badge {
-            font-size: 0.8rem;
-            font-weight: 700;
-            padding: 6px 12px;
-            border-radius: 20px;
-            text-transform: uppercase;
-            white-space: nowrap;
-        }
-        .status-vacio { background-color: rgba(42, 157, 143, 0.15); color: #2a9d8f; }
-        .status-ocupado { background-color: rgba(244, 162, 97, 0.15); color: #e76f51; }
-        .status-descanso { background-color: rgba(0, 64, 133, 0.1); color: #004085; }
-
-        .potreros-ugm-metrics {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
-            gap: 12px;
-            margin-top: 10px;
-            background-color: #f0f2f0;
-            padding: 12px;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-        }
-
-        .potreros-metric-item { display: flex; flex-direction: column; gap: 2px; }
-        .potreros-metric-label { font-size: 0.75rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; }
-        .potreros-metric-value { font-size: 1.05rem; font-weight: 800; color: var(--text-main); }
-
-        /* 5. Alertas Toast del Sistema */
-        .toast-notification {
-            position: fixed;
-            bottom: 20px;
-            left: 5%; right: 5%; width: 90%;
-            background: #333333; color: white;
-            padding: 12px 16px; border-radius: 10px;
-            opacity: 0; pointer-events: none;
-            transition: opacity 0.3s, transform 0.3s;
-            transform: translateY(20px); z-index: 1000; font-size: 0.9rem;
-            display: flex; align-items: center; gap: 10px;
-            border-left: 5px solid var(--accent-color);
-        }
-        .toast-notification.show { opacity: 1; transform: translateY(0); }
-        @media (min-width: 768px) { .toast-notification { left: auto; right: 20px; width: 350px; } }
-    </style>
-</head>
-<body>
-
-    <header class="main-header">
-        <div class="header-container">
-            <div class="flag-container" aria-label="Bandera de Venezuela">
-               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600" class="flag-icon">
-                    <rect width="900" height="600" fill="#cf142b"/>
-                    <rect width="900" height="400" fill="#00247d"/>
-                    <rect width="900" height="200" fill="#fcdd09"/>
-                    <g fill="#ffffff" transform="translate(450, 300) scale(0.7)">
