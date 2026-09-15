@@ -1,213 +1,87 @@
-```javascript
-const PASTOREO_STORAGE_KEY = 'laguna_brava_pastoreo_movimientos';
-
-const CATEGORIAS_BOVINOS = [
-    { id: 'vacas_criando', nombre: 'Vacas Criando', factor: 1.0 },
-    { id: 'vacas_criando_pre', nombre: 'Vacas Criando Preñada', factor: 1.0 },
-    { id: 'vacas_vacia', nombre: 'Vacas Vacías', factor: 1.0 },
-    { id: 'vacas_prenadas', nombre: 'Vacas Preñadas', factor: 1.0 },
-    { id: 'vacas_descarte', nombre: 'Vacas Descarte', factor: 1.0 },
-    { id: 'novillas_vacia', nombre: 'Novillas Vacías', factor: 0.8 },
-    { id: 'novillas_descarte', nombre: 'Novillas Descarte', factor: 0.8 },
-    { id: 'novillas_prenada', nombre: 'Novillas Preñadas', factor: 0.8 },
-    { id: 'novillas_monta', nombre: 'Novillas en Monta', factor: 0.8 },
-    { id: 'mautes_machos', nombre: 'Mautes Machos', factor: 0.5 },
-    { id: 'mautas_hembras', nombre: 'Mautas Hembras', factor: 0.5 },
-    { id: 'becerros_lactantes', nombre: 'Becerros / Lactantes', factor: 0.25 },
-    { id: 'becerras_lactantes', nombre: 'Becerras / Lactantes', factor: 0.25 },
-    { id: 'toros_padrotes', nombre: 'Toros Padrotes', factor: 1.25 },
-    { id: 'toros_pad_descarte', nombre: 'Toros Padres Descarte', factor: 1.25 }
-];
-
-const CATEGORIAS_BUFALINOS = [
-    { id: 'bufalas_criando', nombre: 'Búfalas Criando', factor: 1.2 },
-    { id: 'bufalas_criando_pre', nombre: 'Búfalas Criando Preñada', factor: 1.2 },
-    { id: 'bufalas_vacia', nombre: 'Búfalas Vacías', factor: 1.2 },
-    { id: 'bufalas_prenadas', nombre: 'Búfalas Preñadas', factor: 1.2 },
-    { id: 'bufalas_descarte', nombre: 'Búfalas Descarte', factor: 1.2 },
-    { id: 'buvillas_vacia', nombre: 'Buvillas Vacías', factor: 0.95 },
-    { id: 'buvillas_descarte', nombre: 'Buvillas Descarte', factor: 0.95 },
-    { id: 'buvillas_prenada', nombre: 'Buvillas Preñadas', factor: 0.95 },
-    { id: 'buvillas_monta', merge: 'Buvillas en Monta', factor: 0.95 },
-    { id: 'baute_machos', nombre: 'Baute Machos (bautes)', factor: 0.6 },
-    { id: 'bauta_hembras', nombre: 'Bauta Hembras (bautas)', factor: 0.6 },
-    { id: 'bucerros_lactantes', nombre: 'Bucerros / Lactantes', factor: 0.3 },
-    { id: 'bucerras_lactantes', nombre: 'Bucerras / Lactantes', factor: 0.3 },
-    { id: 'bufalos_padrotes', nombre: 'Búfalos Padrotes', factor: 1.5 },
-    { id: 'bufalos_pad_descarte', nombre: 'Búfalos Padres Descarte', factor: 1.5 }
-];
-
-let especieActiva = 'Bovino';
-
 document.addEventListener('DOMContentLoaded', () => {
-    initModuloPastoreo();
-});
+    console.log('Módulo de Potreros inicializado correctamente.');
 
-function initModuloPastoreo() {
-    inyectarSelectorEspecie();
-    inyectarCamposCategorias();
-    establecerFechaHoy();
-    renderPastoreo();
-    
-    const form = document.getElementById('form-mod1');
-    if (form) {
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
-            guardarRegistroMod1();
+    // 1. Cargar base de datos local (localStorage) o iniciar vacío
+    let baseDatosPotreros = JSON.parse(localStorage.getItem('hato_potreros')) || [];
+
+    // 2. Elementos del DOM
+    const formulario = document.getElementById('form-mod1');
+    const listaContenedor = document.querySelector('.potreros-container');
+    const kpiTotal = document.getElementById('kpi-total-potreros');
+    const kpiHectareas = document.getElementById('kpi-total-ha');
+
+    // 3. Función para recalcular contadores e imprimir las tarjetas
+    function actualizarPantalla() {
+        if (!listaContenedor) return;
+
+        // Calcular Totales de los KPIs
+        const totalPotreros = baseDatosPotreros.length;
+        const totalHa = baseDatosPotreros.reduce((suma, p) => suma + Number(p.superficie), 0);
+
+        if (kpiTotal) kpiTotal.textContent = totalPotreros;
+        if (kpiHectareas) kpiHectareas.textContent = `${totalHa} Ha`;
+
+        // Caso: No hay datos guardados
+        if (baseDatosPotreros.length === 0) {
+            listaContenedor.innerHTML = `
+                <div style="text-align:center; padding:30px; color:var(--text-muted); border: 2px dashed var(--border-color); border-radius:8px;">
+                    <p style="font-weight:bold; margin-bottom:5px;">No hay potreros registrados.</p>
+                    <p style="font-size:0.85rem;">Completa el formulario de la izquierda para agregar uno.</p>
+                </div>`;
+            return;
+        }
+
+        // Caso: Hay datos, renderizar tarjetas
+        listaContenedor.innerHTML = baseDatosPotreros.map((potrero, index) => `
+            <div class="potreros-ugm-card">
+                <div class="potreros-ugm-header">
+                    <span class="potreros-ugm-title">🏞️ ${potrero.nombre}</span>
+                    <span style="font-size:0.8rem; font-weight:bold; color:var(--success); background-color:#e8f5e9; padding:4px 8px; border-radius:12px;">Activo</span>
+                </div>
+                <div style="font-size:0.9rem; color:var(--text-main); margin-bottom:12px;">
+                    <p><strong>Área total:</strong> ${potrero.superficie} Hectáreas</p>
+                </div>
+                <div style="text-align: right; border-top: 1px solid var(--divider-color); padding-top:8px;">
+                    <button onclick="eliminarPotrero(${index})" style="background:none; border:none; color:var(--danger); font-size:0.85rem; font-weight:bold; cursor:pointer;">
+                        🗑️ Eliminar Potrero
+                    </button>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    // 4. Capturar el evento de guardar formulario
+    if (formulario) {
+        formulario.addEventListener('submit', (evento) => {
+            evento.preventDefault();
+
+            const inputNombre = document.getElementById('nombre-potrero');
+            const inputSuperficie = document.getElementById('superficie-potrero');
+
+            // Crear objeto nuevo
+            const nuevoPotrero = {
+                nombre: inputNombre.value.trim(),
+                superficie: parseFloat(inputSuperficie.value)
+            };
+
+            // Insertar a la lista, guardar en LocalStorage y refrescar
+            baseDatosPotreros.push(nuevoPotrero);
+            localStorage.setItem('hato_potreros', JSON.stringify(baseDatosPotreros));
+            
+            formulario.reset();
+            actualizarPantalla();
         });
     }
-}
 
-function inyectarSelectorEspecie() {
-    const containerEtarios = document.getElementById('m1-etarios-container');
-    if (!containerEtarios) return;
-
-    if (!document.getElementById('wrapper-especie')) {
-        const divEspecie = document.createElement('div');
-        divEspecie.id = 'wrapper-especie';
-        divEspecie.className = 'input-group';
-        divEspecie.style.marginBottom = '12px';
-        divEspecie.innerHTML = `
-            <label style="color: var(--primary-color); font-weight: bold;">Especie Ganadera:</label>
-            <select id="m1-especie" class="form-control" style="background-color: #fceddb; border-color: #ddb892; font-weight: bold; color: #7f5539;" onchange="cambiarEspecie(this.value)">
-                <option value="Bovino">🐂 Vacuno / Bovino</option>
-                <option value="Bufalino">🦬 Bufalino</option>
-            </select>
-        `;
-        containerEtarios.parentNode.insertBefore(divEspecie, containerEtarios);
-    }
-}
-
-function cambiarEspecie(nuevaEspecie) {
-    especieActiva = nuevaEspecie;
-    inyectarCamposCategorias();
-    window.calcularUGM1();
-}
-
-function inyectarCamposCategorias() {
-    const container = document.getElementById('m1-etarios-container');
-    if (!container) return;
-    container.innerHTML = '';
-    
-    const listaCategorias = especieActiva === 'Bovino' ? CATEGORIAS_BOVINOS : CATEGORIAS_BUFALINOS;
-    
-    listaCategorias.forEach(cat => {
-        const div = document.createElement('div');
-        div.className = 'etario-item';
-        div.innerHTML = `
-            <label>${cat.nombre}:</label>
-            <input type="number" id="cat-${cat.id}" class="form-control" value="0" min="0" oninput="window.calcularUGM1()">
-        `;
-        container.appendChild(div);
-    });
-}
-
-// CORREGIDO: Globalizado explícitamente en el objeto window para evitar bloqueos inline en Mini-Apps
-window.calcularUGM1 = function() {
-    const selectPotrero = document.getElementById('m1-potrero');
-    if (!selectPotrero) return { totalCabezas: 0, totalUGM: 0, cargaHa: 0 };
-    
-    const hectareas = parseFloat(selectPotrero.value) || 1;
-    const listaCategorias = especieActiva === 'Bovino' ? CATEGORIAS_BOVINOS : CATEGORIAS_BUFALINOS;
-    
-    let totalCabezas = 0;
-    let totalUGM = 0;
-    
-    listaCategorias.forEach(cat => {
-        const input = document.getElementById(`cat-${cat.id}`);
-        const cantidad = input ? parseInt(input.value) || 0 : 0;
-        
-        totalCabezas += cantidad;
-        totalUGM += (cantidad * cat.factor);
-    });
-    
-    const cargaHa = totalUGM / hectareas;
-    
-    if(document.getElementById('m1-total-cabezas')) document.getElementById('m1-total-cabezas').value = totalCabezas;
-    if(document.getElementById('m1-total-ugm')) document.getElementById('m1-total-ugm').value = totalUGM.toFixed(1) + " UGM";
-    if(document.getElementById('m1-carga-ha')) document.getElementById('m1-carga-ha').value = cargaHa.toFixed(2) + " UGM/ha";
-    
-    return { totalCabezas, totalUGM, cargaHa };
-}
-
-function guardarRegistroMod1() {
-    const selectPotrero = document.getElementById('m1-potrero');
-    if (!selectPotrero) return;
-    
-    const hectareas = selectPotrero.value;
-    const nombrePotrero = selectPotrero.options[selectPotrero.selectedIndex].text;
-    
-    const { totalCabezas, totalUGM, cargaHa } = window.calcularUGM1();
-    const listaCategorias = especieActiva === 'Bovino' ? CATEGORIAS_BOVINOS : CATEGORIAS_BUFALINOS;
-    
-    let detalleCategorias = [];
-    listaCategorias.forEach(cat => {
-        const input = document.getElementById(`cat-${cat.id}`);
-        const cant = input ? parseInt(input.value) || 0 : 0;
-        if(cant > 0) detalleCategorias.push(`${cat.nombre}: ${cant}`);
-    });
-
-    const nuevoMovimiento = {
-        especie: especieActiva,
-        potrero: nombrePotrero,
-        ha: hectareas,
-        epoca: document.getElementById('m1-epoca').value,
-        movimiento: document.getElementById('m1-movimiento').value,
-        fIngreso: document.getElementById('m1-f-ingreso').value,
-        fSalida: document.getElementById('m1-f-salida').value || 'N/A',
-        responsable: document.getElementById('m1-responsable').value.trim(),
-        obs: document.getElementById('m1-obs').value.trim() || 'Sin notas',
-        cabezas: totalCabezas,
-        ugmHa: cargaHa.toFixed(2),
-        totalUgmRecord: totalUGM.toFixed(1),
-        detalle: detalleCategorias.join(', ') || 'Ninguno'
+    // 5. Función Global para borrar registros
+    window.eliminarPotrero = function(index) {
+        if (confirm('¿Deseas eliminar permanentemente este potrero del inventario?')) {
+            baseDatosPotreros.splice(index, 1);
+            localStorage.setItem('hato_potreros', JSON.stringify(baseDatosPotreros));
+            actualizarPantalla();
+        }
     };
 
-    const registros = JSON.parse(localStorage.getItem(PASTOREO_STORAGE_KEY)) || [];
-    registros.push(nuevoMovimiento);
-    localStorage.setItem(PASTOREO_STORAGE_KEY, JSON.stringify(registros));
-    
-    showToastNotification("✅ Registro de carga de potrero guardado.");
-    window.limpiarFormMod1();
-    renderPastoreo();
-}
-
-function renderPastoreo() {
-    const registros = JSON.parse(localStorage.getItem(PASTOREO_STORAGE_KEY)) || [];
-    const container = document.getElementById('cardsPastoreoContainer');
-    
-    let globalCabezas = 0;
-    let globalUGM = 0;
-    
-    if (container) container.innerHTML = '';
-
-    registros.forEach((reg, index) => {
-        globalCabezas += reg.cabezas;
-        globalUGM += parseFloat(reg.totalUgmRecord);
-
-        if (container) {
-            const statusClass = reg.movimiento === 'Ingreso' ? 'status-ocupado' : 'status-vacio';
-            const iconoEspecie = reg.especie === 'Bovino' ? '🐂' : '🦬';
-            
-            const card = document.createElement('div');
-            card.className = 'potreros-ugm-card';
-            card.innerHTML = `
-                <div class="potreros-ugm-header">
-                    <span class="potreros-ugm-title">🌿 ${reg.potrero}</span>
-                    <span class="status-badge ${statusClass}">${reg.movimiento}</span>
-                </div>
-                <div class="potrero-meta">Especie: <strong>${iconoEspecie} ${reg.especie}</strong> | Época: <strong>${reg.epoca}</strong></div>
-                <div class="potrero-meta">Responsable: <strong>${reg.responsable}</strong></div>
-                <div class="pastoreo-detail-text">📋 Conteo: ${reg.detalle}</div>
-                
-                <div class="potreros-ugm-metrics">
-                    <div class="potreros-metric-item"><span class="potreros-metric-label">Cabezas</span><span class="potreros-metric-value">${reg.cabezas} Animales</span></div>
-                    <div class="potreros-metric-item"><span class="potreros-metric-label">Densidad Carga</span><span class="potreros-metric-value">${reg.ugmHa} UGM/Ha</span></div>
-                </div>
-                <div class="potrero-meta" style="margin-top:6px; font-style:italic;">📝 Notas: ${reg.obs}</div>
-                <div style="display:flex; justify-content:flex-end; margin-top:8px;">
-
-                    // Lanzar carga inicial al abrir el módulo
+    // Lanzar carga inicial al abrir el módulo
     actualizarPantalla();
 });
-
