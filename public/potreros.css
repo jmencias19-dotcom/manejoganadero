@@ -1,225 +1,87 @@
-:root {
-    --primary-color: #1b4332;
-    --secondary-color: #2d6a4f;
-    --accent-color: #52b788;
-    --bg-color: #f4f6f4;
-    --card-bg: #ffffff;
-    --text-main: #2b2b2b;
-    --text-muted: #6c757d;
-    --danger: #e63946;
-    --warning: #f4a261;
-    --success: #2a9d8f;
-    --border-color: #d8dad8;
-    --divider-color: #e2e8e0;
-}
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('Módulo de Potreros inicializado correctamente.');
 
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
+    // 1. Cargar base de datos local (localStorage) o iniciar vacío
+    let baseDatosPotreros = JSON.parse(localStorage.getItem('hato_potreros')) || [];
 
-body {
-    background-color: var(--bg-color);
-    color: var(--text-main);
-    overflow-x: hidden;
-}
+    // 2. Elementos del DOM
+    const formulario = document.getElementById('form-mod1');
+    const listaContenedor = document.querySelector('.potreros-container');
+    const kpiTotal = document.getElementById('kpi-total-potreros');
+    const kpiHectareas = document.getElementById('kpi-total-ha');
 
-.main-header {
-    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-    color: white;
-    padding: 1.2rem 1rem;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    border-bottom: 4px solid var(--accent-color);
-}
+    // 3. Función para recalcular contadores e imprimir las tarjetas
+    function actualizarPantalla() {
+        if (!listaContenedor) return;
 
-.header-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1rem;
-}
+        // Calcular Totales de los KPIs
+        const totalPotreros = baseDatosPotreros.length;
+        const totalHa = baseDatosPotreros.reduce((suma, p) => suma + Number(p.superficie), 0);
 
-@media (min-width: 768px) {
-    .header-container {
-        flex-direction: row;
-        justify-content: space-between;
+        if (kpiTotal) kpiTotal.textContent = totalPotreros;
+        if (kpiHectareas) kpiHectareas.textContent = `${totalHa} Ha`;
+
+        // Caso: No hay datos guardados
+        if (baseDatosPotreros.length === 0) {
+            listaContenedor.innerHTML = `
+                <div style="text-align:center; padding:30px; color:var(--text-muted); border: 2px dashed var(--border-color); border-radius:8px;">
+                    <p style="font-weight:bold; margin-bottom:5px;">No hay potreros registrados.</p>
+                    <p style="font-size:0.85rem;">Completa el formulario de la izquierda para agregar uno.</p>
+                </div>`;
+            return;
+        }
+
+        // Caso: Hay datos, renderizar tarjetas
+        listaContenedor.innerHTML = baseDatosPotreros.map((potrero, index) => `
+            <div class="potreros-ugm-card">
+                <div class="potreros-ugm-header">
+                    <span class="potreros-ugm-title">🏞️ ${potrero.nombre}</span>
+                    <span style="font-size:0.8rem; font-weight:bold; color:var(--success); background-color:#e8f5e9; padding:4px 8px; border-radius:12px;">Activo</span>
+                </div>
+                <div style="font-size:0.9rem; color:var(--text-main); margin-bottom:12px;">
+                    <p><strong>Área total:</strong> ${potrero.superficie} Hectáreas</p>
+                </div>
+                <div style="text-align: right; border-top: 1px solid var(--divider-color); padding-top:8px;">
+                    <button onclick="eliminarPotrero(${index})" style="background:none; border:none; color:var(--danger); font-size:0.85rem; font-weight:bold; cursor:pointer;">
+                        🗑️ Eliminar Potrero
+                    </button>
+                </div>
+            </div>
+        `).join('');
     }
-}
 
-.header-title-wrapper {
-    text-align: center;
-    flex-grow: 1;
-}
+    // 4. Capturar el evento de guardar formulario
+    if (formulario) {
+        formulario.addEventListener('submit', (evento) => {
+            evento.preventDefault();
 
-@media (min-width: 768px) {
-    .header-title-wrapper {
-        text-align: left;
+            const inputNombre = document.getElementById('nombre-potrero');
+            const inputSuperficie = document.getElementById('superficie-potrero');
+
+            // Crear objeto nuevo
+            const nuevoPotrero = {
+                nombre: inputNombre.value.trim(),
+                superficie: parseFloat(inputSuperficie.value)
+            };
+
+            // Insertar a la lista, guardar en LocalStorage y refrescar
+            baseDatosPotreros.push(nuevoPotrero);
+            localStorage.setItem('hato_potreros', JSON.stringify(baseDatosPotreros));
+            
+            formulario.reset();
+            actualizarPantalla();
+        });
     }
-}
 
-.header-title-wrapper h1 {
-    font-size: 1.3rem;
-    line-height: 1.2;
-}
+    // 5. Función Global para borrar registros
+    window.eliminarPotrero = function(index) {
+        if (confirm('¿Deseas eliminar permanentemente este potrero del inventario?')) {
+            baseDatosPotreros.splice(index, 1);
+            localStorage.setItem('hato_potreros', JSON.stringify(baseDatosPotreros));
+            actualizarPantalla();
+        }
+    };
 
-.header-title-wrapper h1 span {
-    font-size: 0.95rem;
-    font-weight: 400;
-    opacity: 0.9;
-}
-
-.header-title-wrapper p {
-    font-size: 0.8rem;
-    opacity: 0.75;
-    margin-top: 2px;
-}
-
-.main-container {
-    max-width: 1200px;
-    margin: 1.5rem auto;
-    padding: 0 0.8rem;
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-    width: 100%;
-}
-
-@media (min-width: 992px) {
-    .main-container {
-        display: grid;
-        grid-template-columns: 1fr 1.2fr;
-        align-items: start;
-    }
-}
-
-.section-box {
-    background: var(--card-bg);
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.04);
-    padding: 1.5rem;
-    width: 100%;
-}
-
-.section-title {
-    margin-top: 0;
-    margin-bottom: 1.2rem;
-    font-size: 1.2rem;
-    color: var(--primary-color);
-    border-bottom: 2px solid var(--divider-color);
-    padding-bottom: 0.5rem;
-}
-
-.input-group {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-}
-
-.input-group label {
-    font-size: 0.85rem;
-    font-weight: 700;
-    color: var(--primary-color);
-    text-transform: uppercase;
-}
-
-.form-control {
-    width: 100%;
-    padding: 12px;
-    border: 1.5px solid var(--border-color);
-    border-radius: 8px;
-    font-size: 1rem;
-    background-color: #fafbfc;
-    color: var(--text-main);
-}
-
-.form-control:focus {
-    border-color: var(--accent-color);
-    outline: none;
-    background-color: #ffffff;
-}
-
-.btn-group {
-    display: flex;
-    gap: 10px;
-    margin-top: 0.5rem;
-    border-top: 1px solid var(--divider-color);
-    padding-top: 1.2rem;
-}
-
-.btn-action {
-    padding: 14px;
-    border: none;
-    border-radius: 8px;
-    font-size: 1rem;
-    font-weight: 700;
-    cursor: pointer;
-    width: 100%;
-    background-color: var(--secondary-color);
-    color: white;
-    transition: transform 0.1s;
-}
-
-.btn-action:active { transform: scale(0.98); }
-
-.kpi-container {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin-bottom: 15px;
-}
-
-.kpi-card {
-    background: linear-gradient(135deg, #f4f6f4, #e2e8e0);
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    padding: 12px;
-    text-align: center;
-}
-
-.kpi-title {
-    font-size: 0.75rem;
-    font-weight: 700;
-    color: var(--secondary-color);
-    text-transform: uppercase;
-}
-
-.kpi-value {
-    font-size: 1.4rem;
-    font-weight: 800;
-    color: var(--primary-color);
-    margin-top: 4px;
-}
-
-.potreros-container {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    max-height: 500px;
-    overflow-y: auto;
-}
-
-.potreros-ugm-card {
-    background-color: var(--card-bg);
-    border-left: 5px solid var(--primary-color);
-    border-radius: 12px;
-    padding: 16px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
-}
-
-.potreros-ugm-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 8px;
-}
-
-.potreros-ugm-title {
-    font-size: 1.1rem;
-    font-weight: 700;
-    color: var(--primary-color);
-}
+    // Lanzar carga inicial al abrir el módulo
+    actualizarPantalla();
+});
