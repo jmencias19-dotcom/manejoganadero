@@ -39,3 +39,46 @@
     overflow-y: auto !important;
     padding: 4px !important;
 }
+
+
+/* ========================================================
+   Ajustes de Envoltura del Contenedor de Potreros 
+   ======================================================== */
+.main-container {
+    max-width: 1200px !important;
+    margin: 20px auto !important;
+    padding: 0 15px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 20px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+@media (min-width: 992px) {
+    .main-container {
+        display: grid !important;
+        grid-template-columns: 1fr 1.2fr !important;
+        gap: 24px !important;
+        align-items: start !important;
+    }
+}
+
+.section-box {
+    background: var(--card-bg) !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: 12px !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.04) !important;
+    padding: 20px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+.potreros-container {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 12px !important;
+    max-height: 500px !important;
+    overflow-y: auto !important;
+    padding: 4px !important;
+}
