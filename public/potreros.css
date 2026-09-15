@@ -1,12 +1,16 @@
 /* ==========================================================================
    1. MÓDULO: POTREROS - UGM (Unidad Gran Ganado / Aforo de Pasto)
+   Optimizado para Alta Legibilidad en Campo y Entornos Móviles
    ========================================================================== */
 .potreros-ugm-card {
-  background-color: var(--card-bg);
-  border-left: 5px solid var(--primary);
-  border-radius: var(--border-radius);
+  background-color: var(--card-bg, #ffffff);
+  /* Corregido: Enlazado a tu variable original --primary-color con respaldo */
+  border-left: 5px solid var(--primary-color, #1b4332);
+  border-radius: var(--border-radius, 12px);
   padding: 16px;
   margin-bottom: 14px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+  width: 100%; /* Asegura flujo vertical anti-duplicados */
 }
 
 .potreros-ugm-header {
@@ -14,45 +18,56 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 10px;
+  gap: 10px; /* Evita que el título y el badge colisionen en móviles */
 }
 
 .potreros-ugm-title {
   font-size: 1.1rem;
   font-weight: 700;
-  color: var(--text-main);
+  color: var(--text-main, #2b2b2b);
+  word-break: break-word; /* Protege contra nombres de potreros muy largos */
 }
 
 .potreros-ugm-badge {
-  background-color: rgba(46, 125, 50, 0.2);
-  color: #81c784;
-  padding: 4px 10px;
+  /* Corregido: Mayor contraste de color para lectura bajo el sol */
+  background-color: rgba(43, 141, 95, 0.15);
+  color: var(--secondary-color, #2d6a4f);
+  padding: 6px 12px;
   border-radius: 20px;
   font-size: 0.8rem;
-  font-weight: 600;
+  font-weight: 700;
+  white-space: nowrap; /* Evita que el badge se rompa en dos líneas */
 }
 
 .potreros-ugm-metrics {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 10px;
+  /* Corregido: Grid flexible que baja a una sola columna si la pantalla es ultra pequeña */
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  gap: 12px;
   margin-top: 10px;
-  background-color: rgba(0, 0, 0, 0.2);
-  padding: 10px;
+  /* Corregido: Se cambió a fondo claro/grisáceo para mantener la consistencia llanera de la app */
+  background-color: #f0f2f0;
+  padding: 12px;
   border-radius: 8px;
+  border: 1px solid var(--border-color, #d8dad8);
 }
 
 .potreros-metric-item {
   display: flex;
   flex-direction: column;
+  gap: 2px;
 }
 
 .potreros-metric-label {
   font-size: 0.75rem;
-  color: var(--text-muted);
+  font-weight: 600;
+  color: var(--text-muted, #6c757d);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
 }
 
 .potreros-metric-value {
-  font-size: 1rem;
-  font-weight: bold;
-  color: var(--text-main);
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--text-main, #2b2b2b);
 }
