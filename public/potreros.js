@@ -1,12 +1,6 @@
-// ==========================================================================
-// Módulo: Gestión de Potreros y Carga UGM (Bovino / Bufalino)
-// Versión Multi-Especie y Estado Fisiológico - Hato Laguna Brava
-// PRODUCCIÓN BLINDADA
-// ==========================================================================
-
+```javascript
 const PASTOREO_STORAGE_KEY = 'laguna_brava_pastoreo_movimientos';
 
-// Matrices Técnicas de Conversión Ganadera Oficiales del Hato
 const CATEGORIAS_BOVINOS = [
     { id: 'vacas_criando', nombre: 'Vacas Criando', factor: 1.0 },
     { id: 'vacas_criando_pre', nombre: 'Vacas Criando Preñada', factor: 1.0 },
@@ -34,7 +28,7 @@ const CATEGORIAS_BUFALINOS = [
     { id: 'buvillas_vacia', nombre: 'Buvillas Vacías', factor: 0.95 },
     { id: 'buvillas_descarte', nombre: 'Buvillas Descarte', factor: 0.95 },
     { id: 'buvillas_prenada', nombre: 'Buvillas Preñadas', factor: 0.95 },
-    { id: 'buvillas_monta', nombre: 'Buvillas en Monta', factor: 0.95 },
+    { id: 'buvillas_monta', merge: 'Buvillas en Monta', factor: 0.95 },
     { id: 'baute_machos', nombre: 'Baute Machos (bautes)', factor: 0.6 },
     { id: 'bauta_hembras', nombre: 'Bauta Hembras (bautas)', factor: 0.6 },
     { id: 'bucerros_lactantes', nombre: 'Bucerros / Lactantes', factor: 0.3 },
@@ -87,7 +81,7 @@ function inyectarSelectorEspecie() {
 function cambiarEspecie(nuevaEspecie) {
     especieActiva = nuevaEspecie;
     inyectarCamposCategorias();
-    calcularUGM1();
+    window.calcularUGM1();
 }
 
 function inyectarCamposCategorias() {
@@ -102,13 +96,14 @@ function inyectarCamposCategorias() {
         div.className = 'etario-item';
         div.innerHTML = `
             <label>${cat.nombre}:</label>
-            <input type="number" id="cat-${cat.id}" class="form-control" value="0" min="0" oninput="calcularUGM1()">
+            <input type="number" id="cat-${cat.id}" class="form-control" value="0" min="0" oninput="window.calcularUGM1()">
         `;
         container.appendChild(div);
     });
 }
 
-function calcularUGM1() {
+// CORREGIDO: Globalizado explícitamente en el objeto window para evitar bloqueos inline en Mini-Apps
+window.calcularUGM1 = function() {
     const selectPotrero = document.getElementById('m1-potrero');
     if (!selectPotrero) return { totalCabezas: 0, totalUGM: 0, cargaHa: 0 };
     
@@ -142,7 +137,7 @@ function guardarRegistroMod1() {
     const hectareas = selectPotrero.value;
     const nombrePotrero = selectPotrero.options[selectPotrero.selectedIndex].text;
     
-    const { totalCabezas, totalUGM, cargaHa } = calcularUGM1();
+    const { totalCabezas, totalUGM, cargaHa } = window.calcularUGM1();
     const listaCategorias = especieActiva === 'Bovino' ? CATEGORIAS_BOVINOS : CATEGORIAS_BUFALINOS;
     
     let detalleCategorias = [];
@@ -173,7 +168,7 @@ function guardarRegistroMod1() {
     localStorage.setItem(PASTOREO_STORAGE_KEY, JSON.stringify(registros));
     
     showToastNotification("✅ Registro de carga de potrero guardado.");
-    limpiarFormMod1();
+    window.limpiarFormMod1();
     renderPastoreo();
 }
 
@@ -198,7 +193,7 @@ function renderPastoreo() {
             card.className = 'potreros-ugm-card';
             card.innerHTML = `
                 <div class="potreros-ugm-header">
-                    <span class="potreros-ugm-title">🌿 Potrero: ${reg.potrero}</span>
+                    <span class="potreros-ugm-title">🌿 ${reg.potrero}</span>
                     <span class="status-badge ${statusClass}">${reg.movimiento}</span>
                 </div>
                 <div class="potrero-meta">Especie: <strong>${iconoEspecie} ${reg.especie}</strong> | Época: <strong>${reg.epoca}</strong></div>
@@ -207,7 +202,7 @@ function renderPastoreo() {
                 
                 <div class="potreros-ugm-metrics">
                     <div class="potreros-metric-item"><span class="potreros-metric-label">Cabezas</span><span class="potreros-metric-value">${reg.cabezas} Animales</span></div>
-                    <div class="potreros-metric-item"><span class="potreros-metric-label">Carga Registrada</span><span class="potreros-metric-value">${reg.ugmHa} UGM/Ha</span></div>
+                    <div class="potreros-metric-item"><span class="potreros-metric-label">Densidad Carga</span><span class="potreros-metric-value">${reg.ugmHa} UGM/Ha</span></div>
                 </div>
                 <div class="potrero-meta" style="margin-top:6px; font-style:italic;">📝 Notas: ${reg.obs}</div>
                 <div style="display:flex; justify-content:flex-end; margin-top:8px;">
