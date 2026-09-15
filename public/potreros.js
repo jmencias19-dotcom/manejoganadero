@@ -1,30 +1,10 @@
 // ==========================================================================
 // Módulo: Gestión de Potreros y Carga UGM (Bovino / Bufalino)
 // Versión Multi-Especie y Estado Fisiológico - Hato Laguna Brava
+// PRODUCCIÓN BLINDADA
 // ==========================================================================
 
 const PASTOREO_STORAGE_KEY = 'laguna_brava_pastoreo_movimientos';
-
-// Base de Datos Estructurada de los Potreros del Hato (Nombres y Áreas Exactas)
-const DATA_POTREROS_HATO = {
-    "432": "Macanillal",
-    "569": "El Galpón",
-    "80": "Mata del Muerto",
-    "234": "Manguito",
-    "205": "Mata de Piña",
-    "102": "Las Rallas",
-    "703": "Potrero del Medio",
-    "77": "Cuatro Esquinas",
-    "418": "Paulero",
-    "422": "Jobo Gacho",
-    "40": "Curva del Peligro",
-    "36": "Módulo", // Manejado dinámicamente por índice si se repite Ha
-    "143": "Módulo F",
-    "125": "Saladillal",
-    "142": "Carretera",
-    "32": "María del Carmen",
-    "26": "Casa"
-};
 
 // Matrices Técnicas de Conversión Ganadera Oficiales del Hato
 const CATEGORIAS_BOVINOS = [
@@ -75,24 +55,26 @@ function initModuloPastoreo() {
     establecerFechaHoy();
     renderPastoreo();
     
-    document.getElementById('form-mod1').addEventListener('submit', function(e) {
-        e.preventDefault();
-        guardarRegistroMod1();
-    });
+    const form = document.getElementById('form-mod1');
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            guardarRegistroMod1();
+        });
+    }
 }
 
 function inyectarSelectorEspecie() {
-    const form = document.getElementById('form-mod1');
     const containerEtarios = document.getElementById('m1-etarios-container');
-    if (!form || !containerEtarios) return;
+    if (!containerEtarios) return;
 
     if (!document.getElementById('wrapper-especie')) {
         const divEspecie = document.createElement('div');
         divEspecie.id = 'wrapper-especie';
         divEspecie.className = 'input-group';
-        divEspecie.style.marginBottom = '10px';
+        divEspecie.style.marginBottom = '12px';
         divEspecie.innerHTML = `
-            <label style="color: var(--primary-color); font-weight: bold;">Especie a Registrar:</label>
+            <label style="color: var(--primary-color); font-weight: bold;">Especie Ganadera:</label>
             <select id="m1-especie" class="form-control" style="background-color: #fceddb; border-color: #ddb892; font-weight: bold; color: #7f5539;" onchange="cambiarEspecie(this.value)">
                 <option value="Bovino">🐂 Vacuno / Bovino</option>
                 <option value="Bufalino">🦬 Bufalino</option>
@@ -153,14 +135,12 @@ function calcularUGM1() {
     return { totalCabezas, totalUGM, cargaHa };
 }
 
-// Guardar Movimiento Extrayendo la Línea Completa del Selector del Hato
 function guardarRegistroMod1() {
     const selectPotrero = document.getElementById('m1-potrero');
     if (!selectPotrero) return;
     
-    const hectareas = parseFloat(selectPotrero.value) || 0;
-    // CORREGIDO: Captura de forma íntegra el texto completo del Potrero (Nombre + Ha) para las tarjetas fijas
-    const textoCompletoPotrero = selectPotrero.options[selectPotrero.selectedIndex].text;
+    const hectareas = selectPotrero.value;
+    const nombrePotrero = selectPotrero.options[selectPotrero.selectedIndex].text;
     
     const { totalCabezas, totalUGM, cargaHa } = calcularUGM1();
     const listaCategorias = especieActiva === 'Bovino' ? CATEGORIAS_BOVINOS : CATEGORIAS_BUFALINOS;
@@ -174,7 +154,7 @@ function guardarRegistroMod1() {
 
     const nuevoMovimiento = {
         especie: especieActiva,
-        potrero: textoCompletoPotrero, // Almacena Ej. "Paulero (418 ha)" completo
+        potrero: nombrePotrero,
         ha: hectareas,
         epoca: document.getElementById('m1-epoca').value,
         movimiento: document.getElementById('m1-movimiento').value,
@@ -214,12 +194,6 @@ function renderPastoreo() {
             const statusClass = reg.movimiento === 'Ingreso' ? 'status-ocupado' : 'status-vacio';
             const iconoEspecie = reg.especie === 'Bovino' ? '🐂' : '🦬';
             
-          // ==========================================================================
-// Módulo: Gestión de Potreros y Carga UGM (Bovino / Bufalino)
-// Versión Multi-Especie y Estado Fisiológico - Hato Laguna Brava
-// CONSOLIDADO PARTE 2
-// ==========================================================================
-
             const card = document.createElement('div');
             card.className = 'potreros-ugm-card';
             card.innerHTML = `
@@ -237,54 +211,3 @@ function renderPastoreo() {
                 </div>
                 <div class="potrero-meta" style="margin-top:6px; font-style:italic;">📝 Notas: ${reg.obs}</div>
                 <div style="display:flex; justify-content:flex-end; margin-top:8px;">
-                    <button onclick="eliminarMovimiento(${index})" style="background-color:#e63946; color:white; border:none; padding:6px 12px; border-radius:6px; font-size:0.75rem; font-weight:bold; width:auto; cursor:pointer;">🗑️ Remover</button>
-                </div>
-            `;
-            container.appendChild(card);
-        }
-    });
-
-    if(document.getElementById('stat-cabezas')) document.getElementById('stat-cabezas').innerText = globalCabezas;
-    if(document.getElementById('stat-ugm')) document.getElementById('stat-ugm').innerText = globalUGM.toFixed(1) + " UGM";
-}
-
-window.eliminarMovimiento = function(index) {
-    if(confirm("¿Deseas purgar este movimiento de rotación?")) {
-        const registros = JSON.parse(localStorage.getItem(PASTOREO_STORAGE_KEY)) || [];
-        registros.splice(index, 1);
-        localStorage.setItem(PASTOREO_STORAGE_KEY, JSON.stringify(registros));
-        renderPastoreo();
-        showToastNotification("🗑️ Registro eliminado.");
-    }
-};
-
-window.limpiarFormMod1 = function() {
-    const form = document.getElementById('form-mod1');
-    if (form) form.reset();
-    if (document.getElementById('m1-especie')) document.getElementById('m1-especie').value = especieActiva;
-    establecerFechaHoy();
-    
-    const listaCategorias = especieActiva === 'Bovino' ? CATEGORIAS_BOVINOS : CATEGORIAS_BUFALINOS;
-    listaCategorias.forEach(cat => {
-        const input = document.getElementById(`cat-${cat.id}`);
-        if(input) input.value = "0";
-    });
-    calcularUGM1();
-}
-
-function establecerFechaHoy() {
-    // CORREGIDO: Inserción del índice de matriz [0] indispensable para renderizado móvil en Mini-Apps
-    const today = new Date().toISOString().split('T')[0];
-    const fIngreso = document.getElementById('m1-f-ingreso');
-    if(fIngreso) fIngreso.value = today;
-}
-
-function showToastNotification(message) {
-    const toast = document.getElementById('toast');
-    const msg = document.getElementById('toastMsg');
-    if (toast && msg) {
-        msg.innerText = message;
-        toast.classList.add('show');
-        setTimeout(() => toast.classList.remove('show'), 3000);
-    }
-}
