@@ -1,87 +1,41 @@
-document.addEventListener('DOMContentLoaded', () => {
-    console.log('Módulo de Potreros inicializado correctamente.');
+/* ========================================================
+   Ajustes de Envoltura del Contenedor de Potreros 
+   ======================================================== */
+.main-container {
+    max-width: 1200px !important;
+    margin: 20px auto !important;
+    padding: 0 15px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 20px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
 
-    // 1. Cargar base de datos local (localStorage) o iniciar vacío
-    let baseDatosPotreros = JSON.parse(localStorage.getItem('hato_potreros')) || [];
-
-    // 2. Elementos del DOM
-    const formulario = document.getElementById('form-mod1');
-    const listaContenedor = document.querySelector('.potreros-container');
-    const kpiTotal = document.getElementById('kpi-total-potreros');
-    const kpiHectareas = document.getElementById('kpi-total-ha');
-
-    // 3. Función para recalcular contadores e imprimir las tarjetas
-    function actualizarPantalla() {
-        if (!listaContenedor) return;
-
-        // Calcular Totales de los KPIs
-        const totalPotreros = baseDatosPotreros.length;
-        const totalHa = baseDatosPotreros.reduce((suma, p) => suma + Number(p.superficie), 0);
-
-        if (kpiTotal) kpiTotal.textContent = totalPotreros;
-        if (kpiHectareas) kpiHectareas.textContent = `${totalHa} Ha`;
-
-        // Caso: No hay datos guardados
-        if (baseDatosPotreros.length === 0) {
-            listaContenedor.innerHTML = `
-                <div style="text-align:center; padding:30px; color:var(--text-muted); border: 2px dashed var(--border-color); border-radius:8px;">
-                    <p style="font-weight:bold; margin-bottom:5px;">No hay potreros registrados.</p>
-                    <p style="font-size:0.85rem;">Completa el formulario de la izquierda para agregar uno.</p>
-                </div>`;
-            return;
-        }
-
-        // Caso: Hay datos, renderizar tarjetas
-        listaContenedor.innerHTML = baseDatosPotreros.map((potrero, index) => `
-            <div class="potreros-ugm-card">
-                <div class="potreros-ugm-header">
-                    <span class="potreros-ugm-title">🏞️ ${potrero.nombre}</span>
-                    <span style="font-size:0.8rem; font-weight:bold; color:var(--success); background-color:#e8f5e9; padding:4px 8px; border-radius:12px;">Activo</span>
-                </div>
-                <div style="font-size:0.9rem; color:var(--text-main); margin-bottom:12px;">
-                    <p><strong>Área total:</strong> ${potrero.superficie} Hectáreas</p>
-                </div>
-                <div style="text-align: right; border-top: 1px solid var(--divider-color); padding-top:8px;">
-                    <button onclick="eliminarPotrero(${index})" style="background:none; border:none; color:var(--danger); font-size:0.85rem; font-weight:bold; cursor:pointer;">
-                        🗑️ Eliminar Potrero
-                    </button>
-                </div>
-            </div>
-        `).join('');
+@media (min-width: 992px) {
+    .main-container {
+        display: grid !important;
+        grid-template-columns: 1fr 1.2fr !important;
+        gap: 24px !important;
+        align-items: start !important;
     }
+}
 
-    // 4. Capturar el evento de guardar formulario
-    if (formulario) {
-        formulario.addEventListener('submit', (evento) => {
-            evento.preventDefault();
+.section-box {
+    background: var(--card-bg) !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: 12px !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.04) !important;
+    padding: 20px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
 
-            const inputNombre = document.getElementById('nombre-potrero');
-            const inputSuperficie = document.getElementById('superficie-potrero');
-
-            // Crear objeto nuevo
-            const nuevoPotrero = {
-                nombre: inputNombre.value.trim(),
-                superficie: parseFloat(inputSuperficie.value)
-            };
-
-            // Insertar a la lista, guardar en LocalStorage y refrescar
-            baseDatosPotreros.push(nuevoPotrero);
-            localStorage.setItem('hato_potreros', JSON.stringify(baseDatosPotreros));
-            
-            formulario.reset();
-            actualizarPantalla();
-        });
-    }
-
-    // 5. Función Global para borrar registros
-    window.eliminarPotrero = function(index) {
-        if (confirm('¿Deseas eliminar permanentemente este potrero del inventario?')) {
-            baseDatosPotreros.splice(index, 1);
-            localStorage.setItem('hato_potreros', JSON.stringify(baseDatosPotreros));
-            actualizarPantalla();
-        }
-    };
-
-    // Lanzar carga inicial al abrir el módulo
-    actualizarPantalla();
-});
+.potreros-container {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 12px !important;
+    max-height: 500px !important;
+    overflow-y: auto !important;
+    padding: 4px !important;
+}
