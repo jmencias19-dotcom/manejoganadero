@@ -1,4 +1,5 @@
 {
+  "cleanUrls": true,
   "headers": [
     {
       "source": "/(.*)",
@@ -9,5 +10,12 @@
         }
       ]
     }
+  ],
+  "rewrites": [
+    { "source": "/potreros", "destination": "/potreros.html" },
+    { "source": "/historial-pastoreo", "destination": "/historial-pastoreo.html" },
+    { "source": "/planificacion", "destination": "/planificacion.html" },
+    { "source": "/combustible", "destination": "/combustible.html" },
+    { "source": "/inventario-sanitario", "destination": "/inventario-sanitario.html" }
   ]
 }
