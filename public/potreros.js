@@ -1,7 +1,11 @@
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('Matrices técnicas del Hato Laguna Brava cargadas de forma modular.');
+    console.log('Motor de Carga Mixta y Alertas Estacionales inicializado.');
 
-    // Matrices Oficiales corregidas sintácticamente
+    // Parámetros de Carga Oficiales (UGM/Ha)
+    const CARGA_RECOMENDADA_INVIERNO = 1.20;
+    const CARGA_RECOMENDADA_VERANO = 0.76;
+
+    // Matrices Técnicas Oficiales
     const CATEGORIAS_BOVINOS = [
         { id: 'vacas_criando', nombre: 'Vacas Criando', factor: 1.0 },
         { id: 'vacas_criando_pre', nombre: 'Vacas Criando Preñada', factor: 1.0 },
@@ -38,10 +42,9 @@ document.addEventListener('DOMContentLoaded', () => {
         { id: 'bufalos_pad_descarte', nombre: 'Búfalos Padres Descarte', factor: 1.5 }
     ];
 
-    // Cargar registros almacenados
-    let ocupacionHato = JSON.parse(localStorage.getItem('hato_ocupacion_v2')) || [];
+    // Base de datos de registros individuales
+    let registrosGanado = JSON.parse(localStorage.getItem('hato_registros_ganado')) || [];
 
-    // Captura de elementos DOM
     const formulario = document.getElementById('form-mod1');
     const selectEspecie = document.getElementById('select-especie');
     const selectCategoria = document.getElementById('select-categoria');
@@ -49,36 +52,53 @@ document.addEventListener('DOMContentLoaded', () => {
     const kpiCabezas = document.getElementById('kpi-total-cabezas');
     const kpiUgm = document.getElementById('kpi-total-ugm');
 
-    // Función para renderizar el listado dinámico de categorías según la especie elegida
     function cargarCategorias() {
         const especie = selectEspecie.value;
         const lista = especie === 'BOVINOS' ? CATEGORIAS_BOVINOS : CATEGORIAS_BUFALINOS;
-        
         selectCategoria.innerHTML = lista.map(c => 
-            `<option value="${c.id}" data-factor="${c.factor}">${c.nombre} (Factor: ${c.factor})</option>`
+            `<option value="${c.id}" data-factor="${c.factor}">${c.nombre}</option>`
         ).join('');
     }
 
-    if (selectEspecie) {
-        selectEspecie.addEventListener('change', cargarCategorias);
-    }
+    if (selectEspecie) { selectEspecie.addEventListener('change', cargarCategorias); }
 
-    // Calcular y pintar resultados
     function refrescarTablero() {
         if (!listaContenedor) return;
 
         let globalCabezas = 0;
         let globalUgm = 0.0;
 
-        ocupacionHato.forEach(reg => {
+        // Agrupar los lotes por Potrero para soportar rebaños mixtos
+        const potrerosAgrupados = {};
+
+        registrosGanado.forEach((reg, index) => {
             globalCabezas += Number(reg.cabezas);
             globalUgm += parseFloat(reg.ugmTotal);
+
+            if (!potrerosAgrupados[reg.potrero]) {
+                potrerosAgrupados[reg.potrero] = {
+                    nombre: reg.potrero,
+                    ha: Number(reg.ha),
+                    totalCabezas: 0,
+                    totalUgm: 0.0,
+                    lotes: []
+                };
+            }
+            
+            potrerosAgrupados[reg.potrero].totalCabezas += Number(reg.cabezas);
+            potrerosAgrupados[reg.potrero].totalUgm += parseFloat(reg.ugmTotal);
+            potrerosAgrupados[reg.potrero].lotes.push({
+                indexOriginal: index,
+                descripcion: `${reg.cabezas} cabezas de ${reg.categoriaText} (${reg.especie})`
+            });
         });
 
         if (kpiCabezas) kpiCabezas.textContent = globalCabezas;
         if (kpiUgm) kpiUgm.textContent = globalUgm.toFixed(2);
 
-        if (ocupacionHato.length === 0) {
+        const nombresPotreros = Object.keys(potrerosAgrupados);
+
+        if (nombresPotreros.length === 0) {
             listaContenedor.innerHTML = `
                 <div style="text-align:center; padding:30px; color:var(--text-muted); border: 2px dashed var(--border-color); border-radius:8px;">
                     <p style="font-weight:bold;">Hato actualmente libre de ganado.</p>
@@ -87,31 +107,61 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        listaContenedor.innerHTML = ocupacionHato.map((item, index) => {
-            const cargaPorHa = (parseFloat(item.ugmTotal) / Number(item.ha)).toFixed(3);
+        listaContenedor.innerHTML = nombresPotreros.map(nombre => {
+            const pot = potrerosAgrupados[nombre];
+            const presionReal = (pot.totalUgm / pot.ha).toFixed(3);
+
+            // Evaluar alertas estacionales
+            const sobrepasaInvierno = presionReal > CARGA_RECOMENDADA_INVIERNO;
+            const sobrepasaVerano = presionReal > CARGA_RECOMENDADA_VERANO;
+
+            let colorAlerta = 'var(--success)'; // Verde óptimo
+            let mensajeAlerta = '✅ Carga Óptima';
+
+            if (sobrepasaInvierno) {
+                colorAlerta = 'var(--danger)'; // Rojo crítico
+                mensajeAlerta = '🚨 SOBREPASTOREO CRÍTICO';
+            } else if (sobrepasaVerano) {
+                colorAlerta = 'var(--warning)'; // Naranja de advertencia
+                mensajeAlerta = '⚠️ Alerta en Verano';
+            }
+
             return `
-                <div class="potreros-ugm-card">
+                <div class="potreros-ugm-card" style="border-left: 6px solid ${colorAlerta}; margin-bottom:15px;">
                     <div class="potreros-ugm-header">
-                        <span class="potreros-ugm-title">🏞️ ${item.potrero}</span>
-                        <span style="font-size:0.75rem; font-weight:bold; color:white; background-color:var(--primary-color); padding:3px 8px; border-radius:12px;">${item.especie}</span>
+                        <span class="potreros-ugm-title">🏞️ Potrero: ${pot.nombre}</span>
+                        <span style="font-size:0.75rem; font-weight:bold; color:white; background-color:${colorAlerta}; padding:4px 10px; border-radius:12px;">${mensajeAlerta}</span>
                     </div>
-                    <div style="font-size:0.85rem; color:var(--text-main); line-height:1.5;">
-                        <p><strong>Área base:</strong> ${item.ha} Hectáreas</p>
-                        <p><strong>Lote asignado:</strong> ${item.cabezas} cabezas de <em>${item.categoriaNombre}</em></p>
-                        <p><strong>Carga equivalente:</strong> <span style="color:var(--secondary-color); font-weight:bold;">${parseFloat(item.ugmTotal).toFixed(2)} UGM</span></p>
-                        <p><strong>Presión de pastoreo:</strong> <strong>${cargaPorHa} UGM/Ha</strong></p>
+                    
+                    <div style="font-size:0.85rem; color:var(--text-main); line-height:1.6; background-color:#fafbfc; padding:10px; border-radius:8px; border:1px solid var(--border-color);">
+                        <p><strong>Área base:</strong> ${pot.ha} Hectáreas</p>
+                        <p><strong>Carga equivalente total:</strong> <span style="font-weight:bold; color:var(--primary-color);">${pot.totalUgm.toFixed(2)} UGM</span></p>
+                        <p><strong>Presión de pastoreo actual:</strong> <span style="font-weight:bold; color:${colorAlerta}; font-size:1rem;">${presionReal} UGM/Ha</span></p>
                     </div>
-                    <div style="text-align: right; border-top: 1px solid var(--divider-color); padding-top:6px; margin-top:8px;">
-                        <button onclick="retirarLote(${index})" style="background:none; border:none; color:var(--danger); font-size:0.85rem; font-weight:bold; cursor:pointer;">
-                            🚨 Retirar Ganado (Vaciar)
-                        </button>
+
+                    <!-- Sección de Metas Estacionales Solicitada -->
+                    <div style="font-size:0.75rem; margin-top:8px; padding:6px 10px; background-color:#f0f2f0; border-radius:6px; color:var(--text-muted); display:flex; justify-content:space-between;">
+                        <span><strong>Carga Rec. Invierno:</strong> ${CARGA_RECOMENDADA_INVIERNO} UGM/Ha</span>
+                        <span><strong>Carga Rec. Verano:</strong> ${CARGA_RECOMENDADA_VERANO} UGM/Ha</span>
+                    </div>
+
+                    <!-- Desglose de Rebaño Mixto -->
+                    <div style="margin-top:10px; border-top:1px dashed var(--border-color); padding-top:8px;">
+                        <p style="font-size:0.8rem; font-weight:bold; color:var(--secondary-color); margin-bottom:5px;">📋 Composición del Rebaño Mixto (${pot.totalCabezas} Cabezas):</p>
+                        <ul style="font-size:0.8rem; padding-left:15px; color:#495057;">
+                            ${pot.lotes.map(lote => `
+                                <li style="margin-bottom:4px; display:flex; justify-content:space-between; align-items:center;">
+                                    <span>${lote.descripcion}</span>
+                                    <button onclick="eliminarLoteEspecifico(${lote.indexOriginal})" style="background:none; border:none; color:var(--danger); cursor:pointer; font-size:0.75rem; font-weight:bold;">[Retirar]</button>
+                                </li>
+                            `).join('')}
+                        </ul>
                     </div>
                 </div>
             `;
         }).join('');
     }
 
-    // Evento para procesar el envío del formulario
     if (formulario) {
         formulario.addEventListener('submit', (e) => {
             e.preventDefault();
@@ -122,41 +172,11 @@ document.addEventListener('DOMContentLoaded', () => {
             
             const especie = selectEspecie.value;
             const catOption = selectCategoria.options[selectCategoria.selectedIndex];
-            const categoriaNombre = catOption.text.split(' (')[0];
+            const categoriaText = catOption.text;
             const factorConversion = parseFloat(catOption.getAttribute('data-factor'));
             
             const cabezas = parseInt(document.getElementById('cantidad-cabezas').value);
-
-            // Fórmula zootécnica de UGM
             const ugmCalculado = cabezas * factorConversion;
 
-            const nuevaCarga = {
+            const nuevoLote = {
                 potrero: potreroNombre,
-                ha: haPotrero,
-                especie: especie,
-                categoriaNombre: categoriaNombre,
-                cabezas: cabezas,
-                ugmTotal: ugmCalculado
-            };
-
-            ocupacionHato.push(nuevaCarga);
-            localStorage.setItem('hato_ocupacion_v2', JSON.stringify(ocupacionHato));
-            
-            document.getElementById('cantidad-cabezas').value = '';
-            refrescarTablero();
-        });
-    }
-
-    // Borrar / desocupar potrero
-    window.retirarLote = function(index) {
-        if (confirm('¿Confirmas el movimiento de desocupación para este potrero?')) {
-            ocupacionHato.splice(index, 1);
-            localStorage.setItem('hato_ocupacion_v2', JSON.stringify(ocupacionHato));
-            refrescarTablero();
-        }
-    };
-
-    // Arranque inicial
-    cargarCategorias();
-    refrescarTablero();
-});
