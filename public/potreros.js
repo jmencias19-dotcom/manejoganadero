@@ -214,6 +214,12 @@ function renderPastoreo() {
             const statusClass = reg.movimiento === 'Ingreso' ? 'status-ocupado' : 'status-vacio';
             const iconoEspecie = reg.especie === 'Bovino' ? '🐂' : '🦬';
             
+          // ==========================================================================
+// Módulo: Gestión de Potreros y Carga UGM (Bovino / Bufalino)
+// Versión Multi-Especie y Estado Fisiológico - Hato Laguna Brava
+// CONSOLIDADO PARTE 2
+// ==========================================================================
+
             const card = document.createElement('div');
             card.className = 'potreros-ugm-card';
             card.innerHTML = `
@@ -223,3 +229,62 @@ function renderPastoreo() {
                 </div>
                 <div class="potrero-meta">Especie: <strong>${iconoEspecie} ${reg.especie}</strong> | Época: <strong>${reg.epoca}</strong></div>
                 <div class="potrero-meta">Responsable: <strong>${reg.responsable}</strong></div>
+                <div class="pastoreo-detail-text">📋 Conteo: ${reg.detalle}</div>
+                
+                <div class="potreros-ugm-metrics">
+                    <div class="potreros-metric-item"><span class="potreros-metric-label">Cabezas</span><span class="potreros-metric-value">${reg.cabezas} Animales</span></div>
+                    <div class="potreros-metric-item"><span class="potreros-metric-label">Carga Registrada</span><span class="potreros-metric-value">${reg.ugmHa} UGM/Ha</span></div>
+                </div>
+                <div class="potrero-meta" style="margin-top:6px; font-style:italic;">📝 Notas: ${reg.obs}</div>
+                <div style="display:flex; justify-content:flex-end; margin-top:8px;">
+                    <button onclick="eliminarMovimiento(${index})" style="background-color:#e63946; color:white; border:none; padding:6px 12px; border-radius:6px; font-size:0.75rem; font-weight:bold; width:auto; cursor:pointer;">🗑️ Remover</button>
+                </div>
+            `;
+            container.appendChild(card);
+        }
+    });
+
+    if(document.getElementById('stat-cabezas')) document.getElementById('stat-cabezas').innerText = globalCabezas;
+    if(document.getElementById('stat-ugm')) document.getElementById('stat-ugm').innerText = globalUGM.toFixed(1) + " UGM";
+}
+
+window.eliminarMovimiento = function(index) {
+    if(confirm("¿Deseas purgar este movimiento de rotación?")) {
+        const registros = JSON.parse(localStorage.getItem(PASTOREO_STORAGE_KEY)) || [];
+        registros.splice(index, 1);
+        localStorage.setItem(PASTOREO_STORAGE_KEY, JSON.stringify(registros));
+        renderPastoreo();
+        showToastNotification("🗑️ Registro eliminado.");
+    }
+};
+
+window.limpiarFormMod1 = function() {
+    const form = document.getElementById('form-mod1');
+    if (form) form.reset();
+    if (document.getElementById('m1-especie')) document.getElementById('m1-especie').value = especieActiva;
+    establecerFechaHoy();
+    
+    const listaCategorias = especieActiva === 'Bovino' ? CATEGORIAS_BOVINOS : CATEGORIAS_BUFALINOS;
+    listaCategorias.forEach(cat => {
+        const input = document.getElementById(`cat-${cat.id}`);
+        if(input) input.value = "0";
+    });
+    calcularUGM1();
+}
+
+function establecerFechaHoy() {
+    // CORREGIDO: Inserción del índice de matriz [0] indispensable para renderizado móvil en Mini-Apps
+    const today = new Date().toISOString().split('T')[0];
+    const fIngreso = document.getElementById('m1-f-ingreso');
+    if(fIngreso) fIngreso.value = today;
+}
+
+function showToastNotification(message) {
+    const toast = document.getElementById('toast');
+    const msg = document.getElementById('toastMsg');
+    if (toast && msg) {
+        msg.innerText = message;
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 3000);
+    }
+}
