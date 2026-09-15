@@ -83,6 +83,11 @@
             display: inline-flex;
             align-items: center;
             gap: 6px;
+            transition: background-color 0.2s;
+        }
+
+        .btn-dashboard:hover {
+            background-color: rgba(255, 255, 255, 0.35);
         }
 
         .sync-indicator {
@@ -105,26 +110,23 @@
             transition: background-color 0.3s, box-shadow 0.3s;
         }
 
-       /* Forzar comportamiento en lista vertical limpia para celulares */
-.main-container {
-    max-width: 1200px;
-    margin: 1rem auto;
-    padding: 0 0.8rem;
-    display: flex;          
-    flex-direction: column; 
-    gap: 1.5rem;
-    width: 100%;
-}
+        .main-container {
+            max-width: 1200px;
+            margin: 1rem auto;
+            padding: 0 0.8rem;
+            display: flex;          
+            flex-direction: column; 
+            gap: 1.5rem;
+            width: 100%;
+        }
 
-/* Activar la cuadrícula de dos columnas SOLO en computadoras */
-@media (min-width: 992px) {
-    .main-container {
-        display: grid;       
-        grid-template-columns: 1fr 1fr;
-        align-items: start;
-    }
-}
-
+        @media (min-width: 992px) {
+            .main-container {
+                display: grid;       
+                grid-template-columns: 1fr 1fr;
+                align-items: start;
+            }
+        }
 
         .section-box {
             background: var(--card-bg);
@@ -271,7 +273,8 @@
     <header class="main-header">
         <div class="header-container">
             <div class="header-brand">
-                <a href="#" class="btn-dashboard">
+                <!-- Botón Volver al Panel vinculado correctamente -->
+                <a href="index.html" class="btn-dashboard">
                     <span>⬅</span> Volver al Panel
                 </a>
                 <div>
@@ -315,20 +318,19 @@
         </section>
 
         <!-- Sección de Resumen y Organización -->
-                <section class="section-box">
+        <section class="section-box">
             <h2 class="section-title">🤠 Tareas Programadas</h2>
             <div class="resumen-container" id="resumenContainer">
                 <!-- Se deja vacío. JavaScript inyectará las tarjetas aquí limpiamente -->
             </div>
         </section>
-
+    </main>
 
     <div id="toast" class="toast-notification">
         <span id="toastMsg">Notificación del Sistema</span>
     </div>
 
     <script>
-        // Sistema de Sonido (Alarma sonora integrada mediante Web Audio API)
         function playBeep(type = 'success') {
             try {
                 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -354,7 +356,6 @@
             }
         }
 
-        // Indicador visual dinámico de Sincronización
         function updateSyncStatus(state, text) {
             const light = document.getElementById('light');
             const statusText = document.getElementById('statusText');
@@ -372,7 +373,6 @@
             }
         }
 
-        // Mostrar Notificación Toast
         function showToast(message) {
             const toast = document.getElementById('toast');
             document.getElementById('toastMsg').innerText = message;
@@ -382,7 +382,6 @@
             }, 3000);
         }
 
-        // Almacenamiento Local (LocalStorage) con validación de sincronización
         const STORAGE_KEY = 'laguna_brava_tareas';
 
         function getTasks() {
@@ -413,7 +412,6 @@
             }
         }
 
-        // Revisar y autoeliminar tareas ejecutadas hace más de 3 días
         function checkAutoDelete(tasks) {
             const now = new Date().getTime();
             const THREE_DAYS_MS = 3 * 24 * 60 * 60 * 1000;
@@ -436,12 +434,10 @@
             return filtered;
         }
 
-        // Renderizar tareas ordenadas por fecha
         function renderTasks() {
             let tasks = getTasks();
             tasks = checkAutoDelete(tasks);
 
-            // Ordenar por fecha cronológicamente
             tasks.sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
 
             const container = document.getElementById('resumenContainer');
@@ -479,7 +475,6 @@
             });
         }
 
-        // Evento Enviar Formulario (Guardar y Sincronizar)
         document.getElementById('taskForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const fecha = document.getElementById('fecha').value;
@@ -508,7 +503,6 @@
             }
         });
 
-        // Botón Rehacer / Limpiar formulario
         document.getElementById('btnRehacer').addEventListener('click', function() {
             document.getElementById('taskForm').reset();
             const today = new Date().toISOString().split('T')[0];
@@ -517,7 +511,6 @@
             showToast("🔄 Campos restablecidos.");
         });
 
-        // Actualizar Estado de Tarea
         window.updateStatus = function(index, newStatus) {
             const tasks = getTasks();
             tasks[index].status = newStatus;
@@ -535,7 +528,6 @@
             }
         }
 
-        // Eliminar Tarea Manualmente
         window.deleteTask = function(index) {
             if (confirm("¿Estás seguro de eliminar esta tarea permanentemente?")) {
                 const tasks = getTasks();
@@ -548,7 +540,6 @@
             }
         }
 
-        // Inicializar al cargar la página
         window.onload = function() {
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('fecha').value = today;
