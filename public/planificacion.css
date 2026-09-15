@@ -108,13 +108,23 @@ body {
     100% { opacity: 1; }
 }
 
-/* 3. Contenedor Grid Principal */
+/* 3. Contenedor Principal (CORREGIDO PARA EVITAR DUPLICACIÓN EN MÓVILES) */
 .main-container {
     max-width: 1200px;
     margin: 2rem auto;
     padding: 0 1rem;
-    display: grid;
+    display: flex;          /* Cambiado a flex dinámico para entornos móviles */
+    flex-direction: column; /* Apilamiento vertical limpio sin errores de renderizado */
     gap: 2.5rem;
+    width: 100%;
+}
+
+@media (min-width: 992px) {
+    .main-container {
+        display: grid;       /* El Grid se activa únicamente en pantallas de PC */
+        grid-template-columns: 1fr 1fr;
+        align-items: start;
+    }
 }
 
 /* Cajas contenedoras del Formulario y de la Tabla */
@@ -124,6 +134,7 @@ body {
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
     padding: 1.8rem;
+    width: 100%;            /* Asegura ancho completo dentro del flujo */
 }
 
 .section-title {
