@@ -206,3 +206,8 @@ function renderPastoreo() {
                 </div>
                 <div class="potrero-meta" style="margin-top:6px; font-style:italic;">📝 Notas: ${reg.obs}</div>
                 <div style="display:flex; justify-content:flex-end; margin-top:8px;">
+
+                    // Lanzar carga inicial al abrir el módulo
+    actualizarPantalla();
+});
+
