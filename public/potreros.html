@@ -15,7 +15,7 @@
         <div class="header-container">
             <div class="header-title-wrapper">
                 <h1>Hato Laguna Brava - <span>Gestión de Potreros</span></h1>
-                <p>Módulo de Control de Capacidad de Carga y UGM</p>
+                <p>Matriz Técnica Oficial de Carga Animal y Control de UGM</p>
             </div>
         </div>
     </header>
@@ -23,39 +23,82 @@
     <!-- Contenedor Principal (Rejilla Responsiva) -->
     <main class="main-container">
         
-        <!-- Bloque Izquierdo: Formulario de Registro -->
+        <!-- Bloque Izquierdo: Formulario de Registro Dinámico -->
         <section class="section-box">
-            <h2 class="section-title">Registrar Nuevo Potrero</h2>
+            <h2 class="section-title">Asignar Ganado a Potrero</h2>
             <form id="form-mod1">
+                
+                <!-- Selección de Potrero Oficial (20 potreros del Hato) -->
                 <div class="input-group">
-                    <label for="nombre-potrero">Nombre del Potrero</label>
-                    <input type="text" id="nombre-potrero" class="form-control" placeholder="Ej: Las Matas, El Caño" required>
+                    <label for="select-potrero">Seleccionar Potrero</label>
+                    <select id="select-potrero" class="form-control" required>
+                        <option value="" disabled selected>-- Elija un Potrero --</option>
+                        <option value="Macanillal" data-ha="432">Macanillal (432 ha)</option>
+                        <option value="El Galpón" data-ha="569">El Galpón (569 ha)</option>
+                        <option value="Mata del Muerto" data-ha="80">Mata del Muerto (80 ha)</option>
+                        <option value="Manguito" data-ha="234">Manguito (234 ha)</option>
+                        <option value="Mata de Piña" data-ha="205">Mata de Piña (205 ha)</option>
+                        <option value="Las Rallas" data-ha="102">Las Rallas (102 ha)</option>
+                        <option value="Potrero del Medio" data-ha="703">Potrero del Medio (703 ha)</option>
+                        <option value="Cuatro Esquinas" data-ha="77">Cuatro Esquinas (77 ha)</option>
+                        <option value="Paulero" data-ha="418">Paulero (418 ha)</option>
+                        <option value="Jobo Gacho" data-ha="422">Jobo Gacho (422 ha)</option>
+                        <option value="Curva del Peligro" data-ha="40">Curva del Peligro (40 ha)</option>
+                        <option value="Módulo A" data-ha="36">Módulo A (36 ha)</option>
+                        <option value="Módulo B" data-ha="36">Módulo B (36 ha)</option>
+                        <option value="Módulo C" data-ha="36">Módulo C (36 ha)</option>
+                        <option value="Módulo D" data-ha="36">Módulo D (36 ha)</option>
+                        <option value="Módulo F" data-ha="143">Módulo F (143 ha)</option>
+                        <option value="Saladillal" data-ha="125">Saladillal (125 ha)</option>
+                        <option value="Carretera" data-ha="142">Carretera (142 ha)</option>
+                        <!-- NUEVOS POTREROS ANEXADOS -->
+                        <option value="María del Carmen" data-ha="32">María del Carmen (32 ha)</option>
+                        <option value="Casa" data-ha="26">Casa (26 ha)</option>
+                    </select>
+                </div>
+
+                <!-- Selección de Tipo de Especie -->
+                <div class="input-group" style="margin-top: 12px;">
+                    <label for="select-especie">Especie Ganadera</label>
+                    <select id="select-especie" class="form-control" required>
+                        <option value="BOVINOS">Bovinos (Vacunos)</option>
+                        <option value="BUFALINOS">Bufalinos (Búfalos)</option>
+                    </select>
                 </div>
                 
+                <!-- Categorías Zootécnicas Dinámicas -->
                 <div class="input-group" style="margin-top: 12px;">
-                    <label for="superficie-potrero">Superficie (Hectáreas)</label>
-                    <input type="number" id="superficie-potrero" class="form-control" placeholder="Ej: 45" min="1" required>
+                    <label for="select-categoria">Categoría Zootécnica</label>
+                    <select id="select-categoria" class="form-control" required>
+                        <!-- El script potreros.js inyectará dinámicamente las opciones aquí -->
+                    </select>
+                </div>
+
+                <!-- Cantidad de Animales -->
+                <div class="input-group" style="margin-top: 12px;">
+                    <label for="cantidad-cabezas">Cantidad de Cabezas (Animales)</label>
+                    <input type="number" id="cantidad-cabezas" class="form-control" placeholder="Ej: 80" min="1" required>
                 </div>
 
                 <div class="btn-group">
-                    <button type="submit" class="btn-action">💾 Guardar Potrero</button>
+                    <button type="submit" class="btn-action">💾 Registrar Carga Animal</button>
                 </div>
             </form>
         </section>
 
-        <!-- Bloque Derecho: Inventario y Tarjetas -->
+        <!-- Bloque Derecho: Inventario y Tarjetas KPI -->
         <section class="section-box">
-            <h2 class="section-title">Inventario de Potreros</h2>
+            <h2 class="section-title">Estado de Carga Ecológica del Hato</h2>
             
             <!-- Tablero de Indicadores Rápidos -->
             <div class="kpi-container">
                 <div class="kpi-card">
-                    <div class="kpi-title">Total Potreros</div>
-                    <div id="kpi-total-potreros" class="kpi-value">0</div>
+                    <div class="kpi-title">Total Animales</div>
+                    <div id="kpi-total-cabezas" class="kpi-value">0</div>
                 </div>
                 <div class="kpi-card">
-                    <div class="kpi-title">Total Hectáreas</div>
-                    <div id="kpi-total-ha" class="kpi-value">0 Ha</div>
+                    <div class="kpi-title">Total UGM Global</div>
+                    <div id="kpi-total-ugm" class="kpi-value">0.00</div>
                 </div>
             </div>
 
