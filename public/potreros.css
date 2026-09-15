@@ -1,99 +1,225 @@
-/* ==========================================================================
-   1. MÓDULO: POTREROS - UGM (Unidad Gran Ganado / Aforo de Pasto)
-   Optimizado para Alta Legibilidad en Campo y Entornos Móviles - Hato Laguna Brava
-   ========================================================================== */
+:root {
+    --primary-color: #1b4332;
+    --secondary-color: #2d6a4f;
+    --accent-color: #52b788;
+    --bg-color: #f4f6f4;
+    --card-bg: #ffffff;
+    --text-main: #2b2b2b;
+    --text-muted: #6c757d;
+    --danger: #e63946;
+    --warning: #f4a261;
+    --success: #2a9d8f;
+    --border-color: #d8dad8;
+    --divider-color: #e2e8e0;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-main);
+    overflow-x: hidden;
+}
+
+.main-header {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    padding: 1.2rem 1rem;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    border-bottom: 4px solid var(--accent-color);
+}
+
+.header-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+@media (min-width: 768px) {
+    .header-container {
+        flex-direction: row;
+        justify-content: space-between;
+    }
+}
+
+.header-title-wrapper {
+    text-align: center;
+    flex-grow: 1;
+}
+
+@media (min-width: 768px) {
+    .header-title-wrapper {
+        text-align: left;
+    }
+}
+
+.header-title-wrapper h1 {
+    font-size: 1.3rem;
+    line-height: 1.2;
+}
+
+.header-title-wrapper h1 span {
+    font-size: 0.95rem;
+    font-weight: 400;
+    opacity: 0.9;
+}
+
+.header-title-wrapper p {
+    font-size: 0.8rem;
+    opacity: 0.75;
+    margin-top: 2px;
+}
+
+.main-container {
+    max-width: 1200px;
+    margin: 1.5rem auto;
+    padding: 0 0.8rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    width: 100%;
+}
+
+@media (min-width: 992px) {
+    .main-container {
+        display: grid;
+        grid-template-columns: 1fr 1.2fr;
+        align-items: start;
+    }
+}
+
+.section-box {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+    padding: 1.5rem;
+    width: 100%;
+}
+
+.section-title {
+    margin-top: 0;
+    margin-bottom: 1.2rem;
+    font-size: 1.2rem;
+    color: var(--primary-color);
+    border-bottom: 2px solid var(--divider-color);
+    padding-bottom: 0.5rem;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.input-group label {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    text-transform: uppercase;
+}
+
+.form-control {
+    width: 100%;
+    padding: 12px;
+    border: 1.5px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 1rem;
+    background-color: #fafbfc;
+    color: var(--text-main);
+}
+
+.form-control:focus {
+    border-color: var(--accent-color);
+    outline: none;
+    background-color: #ffffff;
+}
+
+.btn-group {
+    display: flex;
+    gap: 10px;
+    margin-top: 0.5rem;
+    border-top: 1px solid var(--divider-color);
+    padding-top: 1.2rem;
+}
+
+.btn-action {
+    padding: 14px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    width: 100%;
+    background-color: var(--secondary-color);
+    color: white;
+    transition: transform 0.1s;
+}
+
+.btn-action:active { transform: scale(0.98); }
+
+.kpi-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.kpi-card {
+    background: linear-gradient(135deg, #f4f6f4, #e2e8e0);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 12px;
+    text-align: center;
+}
+
+.kpi-title {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--secondary-color);
+    text-transform: uppercase;
+}
+
+.kpi-value {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: var(--primary-color);
+    margin-top: 4px;
+}
+
+.potreros-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-height: 500px;
+    overflow-y: auto;
+}
+
 .potreros-ugm-card {
-  background-color: var(--card-bg, #ffffff);
-  border-left: 5px solid var(--primary-color, #1b4332);
-  border-radius: var(--border-radius, 12px);
-  padding: 16px;
-  margin-bottom: 14px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
-  width: 100%; /* Asegura flujo vertical anti-duplicados */
+    background-color: var(--card-bg);
+    border-left: 5px solid var(--primary-color);
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
 }
 
 .potreros-ugm-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
-  gap: 10px; /* Evita que el título y el badge colisionen en móviles */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
 }
 
 .potreros-ugm-title {
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: var(--text-main, #2b2b2b);
-  word-break: break-word; /* Protege contra nombres de potreros muy largos */
-}
-
-/* Selector base para el Badge */
-.status-badge {
-  font-size: 0.8rem;
-  font-weight: 700;
-  padding: 6px 12px;
-  border-radius: 20px;
-  text-transform: uppercase;
-  white-space: nowrap; /* Evita que el badge se rompa en dos líneas */
-}
-
-/* ADAPTADO: Semáforos climáticos y de movimiento ganadero para el llano */
-.status-vacio { 
-  background-color: rgba(42, 157, 143, 0.15); 
-  color: #2a9d8f; 
-}
-.status-ocupado { 
-  background-color: rgba(230, 57, 70, 0.15); 
-  color: #e63946; 
-}
-
-/* ADAPTADO: Texto del desglose de mautes, vacas o bucerros inyectados */
-.pastoreo-detail-text {
-  font-size: 0.85rem;
-  color: #4a574d;
-  background-color: #e2e8e0;
-  padding: 8px;
-  border-radius: 6px;
-  margin: 8px 0;
-  line-height: 1.4;
-  border-left: 3px solid var(--accent-color, #52b788);
-}
-
-.potreros-ugm-metrics {
-  display: grid;
-  /* Grid flexible que baja a una sola columna si la pantalla es muy compacta */
-  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
-  gap: 12px;
-  margin-top: 10px;
-  background-color: #f0f2f0;
-  padding: 12px;
-  border-radius: 8px;
-  border: 1px solid var(--border-color, #d8dad8);
-}
-
-.potreros-metric-item {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.potreros-metric-label {
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: var(--text-muted, #6c757d);
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
-}
-
-.potreros-metric-value {
-  font-size: 1.05rem;
-  font-weight: 800;
-  color: var(--text-main, #2b2b2b);
-}
-
-/* Metadatos informativos (Especie, Época, Responsable) */
-.potrero-meta {
-  font-size: 0.85rem;
-  color: var(--text-muted, #6c757d);
-  margin-top: 2px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--primary-color);
 }
