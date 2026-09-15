@@ -1,6 +1,6 @@
 // ==========================================================================
 // Módulo: Gestión de Potreros - Lógica Operativa (Aforo y Capacidad UGM)
-// Optimizado para Entornos de Campo y Mini-Apps - Hato Laguna Brava
+// Sincronizado exactamente con el formato unificado - Hato Laguna Brava
 // ==========================================================================
 
 const POTREROS_STORAGE_KEY = 'laguna_brava_potreros_ugm';
@@ -11,12 +11,11 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function initPotreros() {
-    // Configurar la fecha por defecto si existiera un campo de fecha
     renderPotrerosUGM();
     setupFormEventListeners();
 }
 
-// 🔊 Sistema de Alertas Sonoras mediante Web Audio API (Para entornos de faena)
+// 🔊 Sistema de Alertas Sonoras mediante Web Audio API
 function playFAENABeep(type = 'success') {
     try {
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -38,7 +37,7 @@ function playFAENABeep(type = 'success') {
         oscillator.start();
         oscillator.stop(audioCtx.currentTime + 0.25);
     } catch (e) {
-        console.log("Audio contextual no soportado o bloqueado por el navegador.");
+        console.log("Audio contextual bloqueado o no soportado.");
     }
 }
 
@@ -72,15 +71,14 @@ function savePotrerosToStorage(potreros) {
         return true;
     } catch (e) {
         console.error("Error al escribir en LocalStorage:", e);
-        showPotreroToast("⚠️ Error: Memoria llena o no permitida.");
+        showPotreroToast("⚠️ Error: Espacio de memoria lleno.");
         return false;
     }
 }
 
 // 🧮 Fórmulas de Cálculo Agropecuario Automatizado
 function calcularCapacidadUGM(superficie, tipoPasto) {
-    // Estimación técnica estándar de Unidades Gran Ganado (UGM) recomendadas por Hectárea según el pasto en el llano
-    let factorCarga = 0.8; // Por defecto (Pasto Natural / Sabana)
+    let factorCarga = 0.8; // Carga base por hectárea para Pasto Natural / Sabana
     
     switch (tipoPasto) {
         case 'Brachiaria Humidicola':
@@ -90,7 +88,7 @@ function calcularCapacidadUGM(superficie, tipoPasto) {
             factorCarga = 1.5;
             break;
         case 'Pasto Guinea / Panicum maximum':
-            factorCarga = 2.0; // Alta productividad con manejo intensivo
+            factorCarga = 2.0; // Mayor aforo bajo pastoreo rotacional eficiente
             break;
         case 'Carimagua':
             factorCarga = 1.0;
@@ -100,17 +98,14 @@ function calcularCapacidadUGM(superficie, tipoPasto) {
     return parseFloat((superficie * factorCarga).toFixed(1));
 }
 
-// 🔄 Renderizado Limpio de Tarjetas (EVITA DUPLICACIONES EN PC Y MÓVILES)
+// 🔄 Renderizado Inyectado (CORREGIDO: Sincronizado con las variables del formulario)
 function renderPotrerosUGM() {
     const potreros = getPotrerosFromStorage();
     const container = document.getElementById('potrerosContainer');
     
-    if (!container) {
-        console.error("No se encontró el contenedor '#potrerosContainer' en el HTML.");
-        return;
-    }
+    if (!container) return;
     
-    // Crucial: Limpieza absoluta del contenedor antes de inyectar datos dinámicos
+    // Limpieza absoluta del contenedor para evitar duplicados en PC y móvil
     container.innerHTML = '';
 
     if (potreros.length === 0) {
@@ -118,13 +113,13 @@ function renderPotrerosUGM() {
         return;
     }
 
-    // Ordenar los potreros alfabéticamente por su nombre
+    // Ordenar los potreros alfabéticamente
     potreros.sort((a, b) => a.nombre.localeCompare(b.nombre));
 
     potreros.forEach((potrero, index) => {
+        // CORRECCIÓN DE LLAVES: Mapeo exacto de los atributos almacenados
         const capacidadUGM = calcularCapacidadUGM(potrero.superficie, potrero.pasto);
         
-        // Asignación dinámica de clases CSS para los semáforos de estado llanero
         let statusClass = 'status-vacio';
         let statusText = 'Vacío';
         if (potrero.estado === 'ocupado') { statusClass = 'status-ocupado'; statusText = 'Ocupado'; }
@@ -141,7 +136,7 @@ function renderPotrerosUGM() {
             
             <div class="potreros-ugm-metrics">
                 <div class="potreros-metric-item">
-                    <span class="potreros-metric-label">Capacidad Recomendada</span>
+                    <span class="potreros-metric-label">Capacidad Estimada</span>
                     <span class="potreros-metric-value">${capacidadUGM} UGM</span>
                 </div>
                 <div class="potreros-metric-item">
@@ -151,19 +146,19 @@ function renderPotrerosUGM() {
             </div>
 
             <div class="potrero-actions">
-                <select class="status-select" onchange="updatePotreroEstado(${index}, this.value)" style="padding: 6px; border-radius: 6px; font-weight:600; flex: 1; cursor: pointer; height: 34px; margin-top: 8px;">
+                <select class="status-select" onchange="updatePotreroEstado(${index}, this.value)" style="padding: 6px; border-radius: 6px; font-weight:600; flex: 1; cursor: pointer; height: 34px; margin-top: 8px; border: 1px solid #cccccc;">
                     <option value="vacio" ${potrero.estado === 'vacio' ? 'selected' : ''}>Marcar Vacío</option>
                     <option value="ocupado" ${potrero.estado === 'ocupado' ? 'selected' : ''}>Marcar Ocupado</option>
                     <option value="descanso" ${potrero.estado === 'descanso' ? 'selected' : ''}>Enviar a Descanso</option>
                 </select>
-                <button class="btn-delete-card" onclick="deletePotrero(${index})" title="Eliminar Potrero" style="background-color: #e63946; color: white; border: none; padding: 0 12px; border-radius: 6px; cursor: pointer; height: 34px; margin-top: 8px; font-weight: bold;">🗑️</button>
+                <button class="btn-delete-card" onclick="deletePotrero(${index})" title="Eliminar Potrero" style="background-color: #e63946; color: white; border: none; padding: 0 12px; border-radius: 6px; cursor: pointer; height: 34px; margin-top: 8px; font-weight: bold; margin-left: 8px;">🗑️</button>
             </div>
         `;
         container.appendChild(card);
     });
 }
 
-// 🛠️ Controladores de Eventos e Interacciones del Formulario
+// 🛠️ Controladores de Eventos del Formulario
 function setupFormEventListeners() {
     const form = document.getElementById('potreroForm');
     const btnLimpiar = document.getElementById('btnLimpiar');
@@ -172,15 +167,16 @@ function setupFormEventListeners() {
         form.addEventListener('submit', function(e) {
             e.preventDefault();
             
+            // CORRECCIÓN DE CAPTURA: Asegurando nombres limpios para el objeto
             const nombre = document.getElementById('nombrePotrero').value.trim();
             const superficie = parseFloat(document.getElementById('superficie').value);
             const pasto = document.getElementById('tipoPasto').value;
 
             const newPotrero = {
-                nombre,
-                superficie,
-                pasto,
-                estado: 'vacio' // Todo potrero nuevo inicia descansado/vacío
+                nombre: nombre,
+                superficie: superficie,
+                pasto: pasto,
+                estado: 'vacio' 
             };
 
             const potreros = getPotrerosFromStorage();
@@ -199,12 +195,12 @@ function setupFormEventListeners() {
         btnLimpiar.addEventListener('click', function() {
             if (form) form.reset();
             playFAENABeep('success');
-            showPotreroToast("🔄 Formulario restablecido.");
+            showPotreroToast("🔄 Campos del formulario limpios.");
         });
     }
 }
 
-// 🔄 Cambios de Estado Dinámicos desde las Tarjetas (Globalizados para el HTML Inline)
+// 🔄 Cambios de Estado Dinámicos
 window.updatePotreroEstado = function(index, nuevoEstado) {
     const potreros = getPotrerosFromStorage();
     if (potreros[index]) {
@@ -217,9 +213,9 @@ window.updatePotreroEstado = function(index, nuevoEstado) {
     }
 };
 
-// 🗑️ Remoción Completa de Registros (Globalizado para el HTML Inline)
+// 🗑️ Remoción de Registros
 window.deletePotrero = function(index) {
-    if (confirm("¿Estás totalmente seguro de eliminar este potrero del registro del Hato? Esto borrará sus métricas de aforo de forma permanente.")) {
+    if (confirm("¿Estás seguro de eliminar este potrero? Esto removerá permanentemente sus cálculos de aforo.")) {
         const potreros = getPotrerosFromStorage();
         if (potreros[index]) {
             potreros.splice(index, 1);
