@@ -115,14 +115,14 @@ document.addEventListener('DOMContentLoaded', () => {
             const sobrepasaInvierno = presionReal > CARGA_RECOMENDADA_INVIERNO;
             const sobrepasaVerano = presionReal > CARGA_RECOMENDADA_VERANO;
 
-            let colorAlerta = 'var(--success)'; // Verde óptimo
+            let colorAlerta = 'var(--success)'; 
             let mensajeAlerta = '✅ Carga Óptima';
 
             if (sobrepasaInvierno) {
-                colorAlerta = 'var(--danger)'; // Rojo crítico
+                colorAlerta = 'var(--danger)'; 
                 mensajeAlerta = '🚨 SOBREPASTOREO CRÍTICO';
             } else if (sobrepasaVerano) {
-                colorAlerta = 'var(--warning)'; // Naranja de advertencia
+                colorAlerta = 'var(--warning)'; 
                 mensajeAlerta = '⚠️ Alerta en Verano';
             }
 
@@ -139,13 +139,11 @@ document.addEventListener('DOMContentLoaded', () => {
                         <p><strong>Presión de pastoreo actual:</strong> <span style="font-weight:bold; color:${colorAlerta}; font-size:1rem;">${presionReal} UGM/Ha</span></p>
                     </div>
 
-                    <!-- Sección de Metas Estacionales Solicitada -->
                     <div style="font-size:0.75rem; margin-top:8px; padding:6px 10px; background-color:#f0f2f0; border-radius:6px; color:var(--text-muted); display:flex; justify-content:space-between;">
                         <span><strong>Carga Rec. Invierno:</strong> ${CARGA_RECOMENDADA_INVIERNO} UGM/Ha</span>
                         <span><strong>Carga Rec. Verano:</strong> ${CARGA_RECOMENDADA_VERANO} UGM/Ha</span>
                     </div>
 
-                    <!-- Desglose de Rebaño Mixto -->
                     <div style="margin-top:10px; border-top:1px dashed var(--border-color); padding-top:8px;">
                         <p style="font-size:0.8rem; font-weight:bold; color:var(--secondary-color); margin-bottom:5px;">📋 Composición del Rebaño Mixto (${pot.totalCabezas} Cabezas):</p>
                         <ul style="font-size:0.8rem; padding-left:15px; color:#495057;">
@@ -180,3 +178,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const nuevoLote = {
                 potrero: potreroNombre,
+                ha: haPotrero,
+                especie: especie,
+                categoriaText: categoriaText,
+                cabezas: cabezas,
+                ugmTotal: ugmCalculado
