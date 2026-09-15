@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
         { id: 'bufalas_prenadas', nombre: 'Búfalas Preñadas', factor: 1.2 },
         { id: 'bufalas_descarte', nombre: 'Búfalas Descarte', factor: 1.2 },
         { id: 'buvillas_vacia', nombre: 'Buvillas Vacías', factor: 0.95 },
-        { id: 'buvillas_descarte', font: 0.95, nombre: 'Buvillas Descarte', factor: 0.95 },
+        { id: 'buvillas_descarte', nombre: 'Buvillas Descarte', factor: 0.95 },
         { id: 'buvillas_prenada', nombre: 'Buvillas Preñadas', factor: 0.95 },
         { id: 'buvillas_monta', nombre: 'Buvillas en Monta', factor: 0.95 },
         { id: 'baute_machos', nombre: 'Baute Machos (bautes)', factor: 0.6 },
@@ -106,7 +106,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             return `
                 <div class="potreros-ugm-card" style="border-left: 6px solid ${colorAlerta}; margin-bottom:15px; background:var(--card-bg); padding:16px; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.04);">
-                    <div class="potreros-ugm-header" style="display:flex; justify-content:between; align-items:center; margin-bottom:8px;">
+                    <div class="potreros-ugm-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
                         <span class="potreros-ugm-title" style="font-weight:bold; color:var(--primary-color); font-size:1.1rem;">🏞️ Potrero: ${pot.nombre}</span>
                         <span style="font-size:0.75rem; font-weight:bold; color:white; background-color:${colorAlerta}; padding:4px 10px; border-radius:12px;">${mensajeAlerta}</span>
                     </div>
