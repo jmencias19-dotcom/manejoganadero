@@ -2,16 +2,309 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Gestión de Potreros - Hato Laguna Brava</title>
-    <link rel="stylesheet" href="variables.css?v=1.1">
-    <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="dashboard.css">
-    <link rel="stylesheet" href="potreros.css">
     <link rel="manifest" href="manifest.json">
+    <style>
+        /* ==========================================================================
+           Fichas Estilizadas y Tokens de Identidad Visual - Hato Laguna Brava
+           ========================================================================== */
+        :root {
+            --primary-color: #1b4332;
+            --secondary-color: #2d6a4f;
+            --accent-color: #52b788;
+            --bg-color: #f4f6f4;
+            --card-bg: #ffffff;
+            --text-main: #2b2b2b;
+            --text-muted: #6c757d;
+            --danger: #e63946;
+            --warning: #f4a261;
+            --success: #2a9d8f;
+            --border-color: #d8dad8;
+            --divider-color: #e2e8e0;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* 1. Arquitectura del Encabezado (Header) */
+        .main-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 1.2rem 1rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border-bottom: 4px solid var(--accent-color);
+        }
+
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        @media (min-width: 768px) {
+            .header-container {
+                flex-direction: row;
+                justify-content: space-between;
+            }
+        }
+
+        .flag-container {
+            width: 60px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+        }
+
+        .flag-icon {
+            width: 100%;
+            height: 100%;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .header-title-wrapper {
+            text-align: center;
+            flex-grow: 1;
+        }
+
+        @media (min-width: 768px) {
+            .header-title-wrapper {
+                text-align: left;
+                padding-left: 1.5rem;
+            }
+        }
+
+        .header-title-wrapper h1 {
+            font-size: 1.3rem;
+            line-height: 1.2;
+        }
+
+        .header-title-wrapper h1 span {
+            font-size: 0.95rem;
+            font-weight: 400;
+            opacity: 0.9;
+        }
+
+        .header-title-wrapper p {
+            font-size: 0.8rem;
+            opacity: 0.75;
+            margin-top: 2px;
+        }
+
+        .btn-dashboard {
+            background-color: rgba(255, 255, 255, 0.15);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: background-color 0.2s, transform 0.1s;
+        }
+
+        .btn-dashboard:hover { background-color: rgba(255, 255, 255, 0.25); }
+        .btn-dashboard:active { transform: scale(0.97); }
+
+        /* 2. Contenedor Grid Responsivo (Anti-Duplicación) */
+        .main-container {
+            max-width: 1200px;
+            margin: 1.5rem auto;
+            padding: 0 0.8rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            width: 100%;
+        }
+
+        @media (min-width: 992px) {
+            .main-container {
+                display: grid;
+                grid-template-columns: 1fr 1.2fr;
+                align-items: start;
+            }
+        }
+
+        .section-box {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+            padding: 1.5rem;
+            width: 100%;
+        }
+
+        .section-title {
+            margin-top: 0;
+            margin-bottom: 1.2rem;
+            font-size: 1.2rem;
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--divider-color);
+            padding-bottom: 0.5rem;
+        }
+
+        /* 3. Estilos del Formulario Ocupacional */
+        #potreroForm {
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .input-group label {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        #potreroForm input, #potreroForm select {
+            width: 100%;
+            padding: 12px;
+            border: 1.5px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            box-sizing: border-box;
+            background-color: #fafbfc;
+            color: var(--text-main);
+        }
+
+        #potreroForm input:focus, #potreroForm select:focus {
+            border-color: var(--accent-color);
+            outline: none;
+            background-color: #ffffff;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 0.5rem;
+            border-top: 1px solid var(--divider-color);
+            padding-top: 1.2rem;
+        }
+
+        .form-actions button {
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            flex: 1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.1s;
+        }
+
+        .form-actions button:active { transform: scale(0.98); }
+        button[type="submit"] { background-color: var(--secondary-color); color: white; }
+        .btn-clear { background-color: var(--warning); color: #000000; }
+
+        /* 4. Estilos de las Tarjetas UGM y Aforo Inyectadas */
+        .potreros-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .potreros-ugm-card {
+            background-color: var(--card-bg);
+            border-left: 5px solid var(--primary-color);
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+            width: 100%;
+        }
+
+        .potreros-ugm-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            gap: 10px;
+        }
+
+        .potreros-ugm-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-main);
+            word-break: break-word;
+        }
+
+        .status-badge {
+            font-size: 0.8rem;
+            font-weight: 700;
+            padding: 6px 12px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+        .status-vacio { background-color: rgba(42, 157, 143, 0.15); color: #2a9d8f; }
+        .status-ocupado { background-color: rgba(244, 162, 97, 0.15); color: #e76f51; }
+        .status-descanso { background-color: rgba(0, 64, 133, 0.1); color: #004085; }
+
+        .potreros-ugm-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+            gap: 12px;
+            margin-top: 10px;
+            background-color: #f0f2f0;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .potreros-metric-item { display: flex; flex-direction: column; gap: 2px; }
+        .potreros-metric-label { font-size: 0.75rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; }
+        .potreros-metric-value { font-size: 1.05rem; font-weight: 800; color: var(--text-main); }
+
+        /* 5. Alertas Toast del Sistema */
+        .toast-notification {
+            position: fixed;
+            bottom: 20px;
+            left: 5%; right: 5%; width: 90%;
+            background: #333333; color: white;
+            padding: 12px 16px; border-radius: 10px;
+            opacity: 0; pointer-events: none;
+            transition: opacity 0.3s, transform 0.3s;
+            transform: translateY(20px); z-index: 1000; font-size: 0.9rem;
+            display: flex; align-items: center; gap: 10px;
+            border-left: 5px solid var(--accent-color);
+        }
+        .toast-notification.show { opacity: 1; transform: translateY(0); }
+        @media (min-width: 768px) { .toast-notification { left: auto; right: 20px; width: 350px; } }
+    </style>
 </head>
 <body>
-             <header class="main-header">
+
+    <header class="main-header">
         <div class="header-container">
             <div class="flag-container" aria-label="Bandera de Venezuela">
                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600" class="flag-icon">
@@ -19,46 +312,3 @@
                     <rect width="900" height="400" fill="#00247d"/>
                     <rect width="900" height="200" fill="#fcdd09"/>
                     <g fill="#ffffff" transform="translate(450, 300) scale(0.7)">
-                        <circle cx="-120" cy="-30" r="12"/>
-                        <circle cx="-80" cy="-50" r="12"/>
-                        <circle cx="-30" cy="-60" r="12"/>
-                        <circle cx="30" cy="-60" r="12"/>
-                        <circle cx="80" cy="-50" r="12"/>
-                        <circle cx="120" cy="-30" r="12"/>
-                        <circle cx="-120" cy="30" r="12"/>
-                        <circle cx="-80" cy="50" r="12"/>
-                        <circle cx="-30" cy="60" r="12"/>
-                        <circle cx="30" cy="60" r="12"/>
-                        <circle cx="80" cy="50" r="12"/>
-                        <circle cx="120" cy="30" r="12"/>
-                        <circle cx="0" cy="0" r="24"/>
-                    </g>
-                </svg>
-            </div>
-            
-            <div class="header-title-wrapper">
-                <h1>Gestión Ganadera Hato Laguna Brava<br>
-                <span>Grupo Imperatori</span></h1>
-                <p>Panel de Control Directo - Operaciones de Campo</p>
-            </div>
-
-            <!-- AJUSTADO: Botón de regreso seguro e integrado en la arquitectura del encabezado -->
-            <div class="header-actions">
-                <a href="index.html" onclick="if(window.history.length > 1) { window.history.back(); return false; }" class="btn-dashboard">
-                    <span>⬅</span> Volver al Panel
-                </a>
-            </div>
-        </div>
-    </header>
-
-    <main class="dashboard-grid">
-       <article class="card">
-            <h2>Gestión de Potreros</h2>
-            <p>Aquí podrás visualizar y administrar el estado, capacidad y rotación de los potreros.</p>
-            <a href="index.html" class="card-action">Volver al Inicio</a>
-        </article>
-    </main>
-
-    <script src="potreros.js"></script>
-</body>
-</html>
