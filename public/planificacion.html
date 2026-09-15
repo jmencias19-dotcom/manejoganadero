@@ -105,22 +105,26 @@
             transition: background-color 0.3s, box-shadow 0.3s;
         }
 
-        .main-container {
-            max-width: 1200px;
-            margin: 1rem auto;
-            padding: 0 0.8rem;
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-        }
+       /* Forzar comportamiento en lista vertical limpia para celulares */
+.main-container {
+    max-width: 1200px;
+    margin: 1rem auto;
+    padding: 0 0.8rem;
+    display: flex;          
+    flex-direction: column; 
+    gap: 1.5rem;
+    width: 100%;
+}
 
-        @media (min-width: 992px) {
-            .main-container {
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-                align-items: start;
-            }
-        }
+/* Activar la cuadrícula de dos columnas SOLO en computadoras */
+@media (min-width: 992px) {
+    .main-container {
+        display: grid;       
+        grid-template-columns: 1fr 1fr;
+        align-items: start;
+    }
+}
+
 
         .section-box {
             background: var(--card-bg);
