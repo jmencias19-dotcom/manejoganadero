@@ -65,3 +65,85 @@
   font-size: 0.75rem;
   color: var(--text-muted);
 }
+/* ==========================================================================
+   3. MÓDULO: LEVANTE - PESAJES (Ganancia Media Diaria - GMD)
+   Alineado con los colores corporativos del Hato Laguna Brava
+   ========================================================================== */
+.levante-pesajes-card {
+  background-color: var(--card-bg, #ffffff);
+  border-radius: var(--border-radius, 12px);
+  padding: 16px;
+  margin-bottom: 14px;
+  border: 1px solid var(--border-color, #d8dad8);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+}
+
+.levante-pesaje-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--divider-color, #e2e8e0);
+}
+
+.levante-pesaje-row:last-child {
+  border-bottom: none;
+}
+
+/* Indicador de Ganancia de Peso (Verde Éxito Zootécnico) */
+.levante-gmd-positive {
+  color: var(--success, #2a9d8f);
+  font-weight: 800;
+  font-size: 0.95rem;
+}
+
+/* Indicador de Pérdida o Estancamiento (Rojo de Alerta Crítica) */
+.levante-gmd-negative {
+  color: var(--danger, #e63946);
+  font-weight: 800;
+  font-size: 0.95rem;
+}
+
+/* ==========================================================================
+   4. MÓDULO: HISTORIAL - ROTACIÓN (Pastoreo Voisin / Cambios de Potrero)
+   Ajuste estricto al flujo estructural de la línea de tiempo
+   ========================================================================== */
+.historial-rotacion-timeline {
+  border-left: 2px solid var(--secondary-color, #2d6a4f); /* Cambiado a Verde Sabana */
+  margin-left: 12px;
+  padding-left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.historial-rotacion-item {
+  position: relative;
+  margin-bottom: 16px;
+  background-color: var(--card-bg, #ffffff);
+  padding: 14px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color, #d8dad8);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+}
+
+/* Nodo / Círculo de la línea de tiempo adaptado al color corporativo */
+.historial-rotacion-item::before {
+  content: '';
+  position: absolute;
+  left: -27px; /* Centrado preciso sobre el eje de la línea izquierda */
+  top: 16px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: var(--accent-color, #52b788); /* Verde Vegetación */
+  box-shadow: 0 0 0 3px var(--card-bg, #ffffff); /* Anillo protector de fondo */
+}
+
+.historial-fecha {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-muted, #6c757d);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
