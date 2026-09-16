@@ -153,10 +153,10 @@ body {
 }
 
 /* ==========================================================================
-   3. CONTENEDORES DE PANTALLA ADAPTABLES (CORRECCIÓN DE DISPERSIÓN)
+   3. CONTENEDORES DE PANTALLA ADAPTABLES (RESOLUCIÓN DE RENDERIZADO)
    ========================================================================== */
 
-/* Contenedor Base General: Limpio para que index.html y formularios no choquen */
+/* Contenedor Base Estándar y Limpio para todo el sistema */
 .main-container {
     display: block;
     width: 100%;
@@ -166,9 +166,9 @@ body {
     box-sizing: border-box;
 }
 
-/* Regla Exclusiva para las pantallas con Formulario e Historial (Potreros, Levante, Sanidad)
-   Solo se activará en computadoras si las secciones están sueltas dentro de .main-container */
+/* Regla estructural adaptativa para pantallas de PC y Tabletas Horizontales */
 @media (min-width: 992px) {
+    /* Esta alineación en fila solo se aplicará a los formularios técnicos que tengan secciones internas */
     .main-container {
         display: flex;
         flex-direction: row;
@@ -176,26 +176,28 @@ body {
         align-items: flex-start;
     }
 
-    /* Bloque de Formulario (Izquierda) */
+    /* Módulos de Registro (Formulario Izquierdo - 45% del espacio) */
     .main-container > section:first-of-type {
         flex: 1 1 45%;
         min-width: 340px;
     }
 
-    /* Bloque de Historial/Tablero (Derecha) */
+    /* Módulos de Control (Tablero e Historial Derecho - 55% del espacio) */
     .main-container > section:last-of-type {
         flex: 1 1 55%;
         min-width: 380px;
     }
-    
-    /* Si lo que hay dentro es la rejilla del menú, cancelamos el flex y usamos Grid */
-    .main-container:has(.menu-grid) {
-        display: block;
+
+    /* SI EL CONTENEDOR TIENE ADENTRO LA REJILLA DEL MENÚ PRINCIPAL (INDEX.HTML), 
+       ANULAMOS EL COMENTARIO FLEX DE ARRIBA Y FORZAMOS EL FLUJO DE BLOQUE NATIVO */
+    .main-container.panel-principal,
+    .main-container:not(:has(section)) {
+        display: block !important;
     }
 }
 
 /* ==========================================================================
-   REJILLA DE TARJETAS DEL MENÚ PRINCIPAL (INDEX.HTML)
+   REJILLA DE TARJETAS DEL PANEL DE INICIO
    ========================================================================== */
 .menu-grid {
     display: grid;
