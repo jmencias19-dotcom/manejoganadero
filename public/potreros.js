@@ -1,219 +1,196 @@
-// ==========================================================================
-// Módulo: Planificación de Tareas - Hato Laguna Brava
-// Integración con Firebase Firestore v10+ y Telemetría del Semáforo
-// ==========================================================================
-import { initializeApp } from "https://gstatic.com";
-import { 
-    getFirestore, 
-    collection, 
-    addDoc, 
-    onSnapshot, 
-    query, 
-    orderBy, 
-    deleteDoc, 
-    doc,
-    updateDoc,
-    serverTimestamp 
-} from "https://gstatic.com";
-
-// 1. Inicialización Única de la Plataforma Cloud
-const firebaseConfig = {
-    apiKey: "AIzaSyADbn4gV6ROrppvanBM835IRyX3U8wdAnk", 
-    authDomain: "://firebaseapp.com",
-    projectId: "hato-laguna-brava",
-    storageBucket: "hato-laguna-brava.firebasestorage.app",
-    messagingSenderId: "1053099733476",
-    appId: "1:1053099733476:web:624514d41b08d1b347d7f1",
-    measurementId: "G-2E517DTZFS"
+// Matriz de Equivalencias Zootécnicas para Carga Animal (Base UGM = 450-500 kg)
+const EQUIVALENCIAS_UGM = {
+    "BOVINOS": {
+        "Vacas Paridas": 1.00,
+        "Vacas Escoteras": 0.85,
+        "Novillas (2-3 años)": 0.75,
+        "Maute / Torete": 0.60,
+        "Becerros/as": 0.30,
+        "Toros Padrotes": 1.30
+    },
+    "BUFALINOS": {
+        "Búfalas de Ordeño": 1.20,
+        "Búfalas Secas": 1.00,
+        "Bubillas": 0.80,
+        "Búfalos de Engorde": 0.85,
+        "Bucerros/as": 0.40,
+        "Búfalos Padrotes": 1.50
+    }
 };
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app); // Línea 21 unificada para evitar el error de doble declaración
+// Base de Datos Temporal en Memoria (Sincronizada con LocalStorage para persistencia local)
+let inventarioCargas = JSON.parse(localStorage.getItem('hato_cargas_v1')) || [];
 
-// 2. Referencias a los Elementos de Interfaz (DOM)
-const taskForm = document.getElementById('taskForm');
-const tasksWrapper = document.getElementById('tasks-wrapper');
+// Elementos del DOM con validación de existencia (Doble Entorno: Index vs Potreros)
+const form = document.getElementById('form-mod1');
+const selectEspecie = document.getElementById('select-especie');
+const selectCategoria = document.getElementById('select-categoria');
 const alertSound = document.getElementById('alert-sound');
-const btnUndoTask = document.getElementById('btn-undo-task');
 
-// Selectores inteligentes para el Semáforo de Red
+// Selectores dinámicos para el Semáforo (Detecta si es Panel Principal o Módulo Potreros)
 const semaforo = document.getElementById('sync-semaphore') || document.getElementById('sync-semaphore-main');
 const syncText = document.getElementById('sync-text') || document.getElementById('sync-text-main');
 
-// Variable global en memoria para rastrear el ID del último documento guardado en la sesión
-let ultimoDocId = null;
-
-// 3. Funciones de Feedback Técnico para el Personal de Campo
-function emitirAlertaSonora() {
-    if (alertSound) {
-        alertSound.currentTime = 0;
-        // Blindaje contra errores de Vercel si la ruta local no fue cargada correctamente
-        if (alertSound.src.endsWith('.co') || alertSound.src.endsWith('.co/') || alertSound.src.includes('404')) {
-            alertSound.src = "https://mixkit.co";
-        }
-        alertSound.play().catch(err => console.log("Audio retenido temporalmente por políticas del navegador.", err));
+// 1. Cargar Categorías Zootécnicas Dinámicas (Solo si el formulario existe en pantalla)
+function actualizarCategorias() {
+    if (!selectEspecie || !selectCategoria) return;
+    
+    const especieSeleccionada = selectEspecie.value;
+    selectCategoria.innerHTML = '';
+    
+    if (EQUIVALENCIAS_UGM[especieSeleccionada]) {
+        Object.keys(EQUIVALENCIAS_UGM[especieSeleccionada]).forEach(cat => {
+            const option = document.createElement('option');
+            option.value = cat;
+            option.textContent = `${cat} (Factor: ${EQUIVALENCIAS_UGM[especieSeleccionada][cat]} UGM)`;
+            selectCategoria.appendChild(option);
+        });
     }
 }
 
+// 2. Alarma Sonora blindada contra errores 404 en servidores remotos
+function emitirAlertaSonora() {
+    if (alertSound) {
+        alertSound.currentTime = 0;
+        // Respaldo inmediato en la nube si la ruta local genera conflicto de carga
+        if(alertSound.src.endsWith('.co') || alertSound.src.endsWith('.co/') || alertSound.src.includes('404')) {
+            alertSound.src = "https://mixkit.co";
+        }
+        alertSound.play().catch(error => console.log("Se requiere interacción previa del usuario para reproducir audio corporativo.", error));
+    }
+}
+
+// 3. Control de Estados del Semáforo de Sincronización (Modificado para usar clases CSS)
 function ejecutarSincronizacionVisual(estado) {
     if (!semaforo || !syncText) return;
 
     if (estado === 'sincronizado') {
         semaforo.className = 'semaphore online';
         semaforo.style.backgroundColor = '#2e7d32'; // Verde Sabana
-        syncText.textContent = 'Sincronizado';
-        syncText.style.color = '#2e7d32';
+        if (form) {
+            syncText.textContent = 'Sincronizado';
+            syncText.style.color = '#2e7d32';
+        } else {
+            syncText.textContent = 'Sistema En Línea'; // Texto específico para Index
+            syncText.style.color = '#ffffff';
+        }
     } else if (estado === 'procesando') {
         semaforo.className = 'semaphore processing';
-        semaforo.style.backgroundColor = '#f57c00'; // Naranja Satelital
-        syncText.textContent = 'Sincronizando...';
+        semaforo.style.backgroundColor = '#f57c00'; // Naranja (Subiendo datos)
+        syncText.textContent = 'Sincronizando datos...';
         syncText.style.color = '#f57c00';
     } else {
         semaforo.className = 'semaphore offline';
         semaforo.style.backgroundColor = '#d32f2f'; // Rojo Alerta
-        syncText.textContent = 'Error de Red';
+        syncText.textContent = 'Desconectado / Error';
         syncText.style.color = '#d32f2f';
     }
 }
 
-// 4. Envío de Órdenes de Trabajo a la Colección en la Nube
-if (taskForm) {
-    taskForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
+// 4. Procesamiento Técnico del Formulario (Inicio de la captura de datos de pastoreo)
+if (form) {
+    selectEspecie.addEventListener('change', actualizarCategorias);
+    // Nota: El evento 'submit' se complementa en la Parte 2 con los cálculos de fechas y renderizado
+}
 
-        emitirAlertaSonora();
-        ejecutarSincronizacionVisual('procesando');
 
-        // Captura estructurada de las casillas de entrada
-        const personal = document.getElementById('task-personal').value;
-        const potrero = document.getElementById('task-potrero').value;
-        const labor = document.getElementById('task-labor').value;
-        const fecha = document.getElementById('task-fecha').value;
-        const observaciones = document.getElementById('task-obs').value.trim();
+        const fIngreso = new Date(document.getElementById('fecha-ingreso').value + 'T00:00:00');
+        const fSalida = new Date(document.getElementById('fecha-salida').value + 'T00:00:00');
 
-        const nuevaTarea = {
-            personal_asignado: personal,
-            potrero_ubicacion: potrero,
-            tipo_labor: labor,
-            fecha_programada: fecha,
-            observaciones_instrucciones: observaciones || 'Ninguna',
-            estatus_codigo: 'COLA', // Estatus base por defecto (En Cola, En Proceso, Ejecutada)
-            timestamp: serverTimestamp()
+        // Cálculo matemático exacto de Días de Ocupación
+        const diferenciaTiempo = fSalida.getTime() - fIngreso.getTime();
+        const diasOcupacion = Math.max(0, Math.ceil(diferenciaTiempo / (1000 * 60 * 60 * 24)));
+
+        // Cálculo de Carga Ecológica bajo normas zootécnicas
+        const factorUGM = EQUIVALENCIAS_UGM[especie][categoria];
+        const totalUGM = cantidadCabezas * factorUGM;
+        const cargaEcologica = totalUGM / hectareas; 
+
+        // Empaquetado del registro de pastoreo
+        const nuevaCarga = {
+            id: Date.now(),
+            potreroNombre,
+            hectareas,
+            especie,
+            categoria,
+            cantidadCabezas,
+            temporada,
+            diasOcupacion,
+            totalUGM,
+            cargaEcologica: cargaEcologica.toFixed(2)
         };
 
-        try {
-            const docRef = await addDoc(collection(db, "ordenes_trabajo"), nuevaTarea);
-            ultimoDocId = docRef.id; // Almacenar referencia para la función "Deshacer"
-            
-            if (btnUndoTask) btnUndoTask.style.display = 'inline-flex';
-            
+        // Persistencia y actualización de estructuras
+        inventarioCargas.push(nuevaCarga);
+        localStorage.setItem('hato_cargas_v1', JSON.stringify(inventarioCargas));
+
+        // Simulación de retraso de red satelital en hato (800ms) antes de confirmar sincronización
+        setTimeout(() => {
+            renderizarTableroKPI();
+            renderizarTarjetasPotreros();
             ejecutarSincronizacionVisual('sincronizado');
-            taskForm.reset();
-        } catch (error) {
-            console.error("Error al transmitir orden de trabajo: ", error);
-            ejecutarSincronizacionVisual('error');
-            alert("Error crítico de transmisión. Verifique la antena satelital del hato.");
-        }
+            form.reset();
+            actualizarCategorias();
+        }, 800);
     });
 }
 
-// 5. Función de Emergencia Técnica: Deshacer Último Registro Erróneo
-if (btnUndoTask) {
-    btnUndoTask.addEventListener('click', async () => {
-        if (!ultimoDocId) return;
-        
-        if (confirm('¿Desea revocar y eliminar de la nube el último registro de tarea ingresado?')) {
-            emitirAlertaSonora();
-            ejecutarSincronizacionVisual('procesando');
-            
-            try {
-                await deleteDoc(doc(db, "ordenes_trabajo", ultimoDocId));
-                ultimoDocId = null;
-                btnUndoTask.style.display = 'none';
-                ejecutarSincronizacionVisual('sincronizado');
-                alert("Último registro revocado con éxito de la base de datos.");
-            } catch (error) {
-                console.error("Error al revocar documento: ", error);
-                ejecutarSincronizacionVisual('error');
-            }
-        }
+// 5. Renderizado de Métricas Globales del Hato (KPIs)
+function renderizarTableroKPI() {
+    if (!document.getElementById('kpi-total-cabezas')) return;
+
+    const totalCabezas = inventarioCargas.reduce((sum, item) => sum + item.cantidadCabezas, 0);
+    const totalUGM = inventarioCargas.reduce((sum, item) => sum + item.totalUGM, 0);
+
+    document.getElementById('kpi-total-cabezas').textContent = totalCabezas;
+    document.getElementById('kpi-total-ugm').textContent = totalUGM.toFixed(2);
+}
+
+// 6. Generación Dinámica de Bloques de Control por Potrero Trabajado
+function renderizarTarjetasPotreros() {
+    const contenedor = document.querySelector('.potreros-container');
+    if (!contenedor) return;
+    
+    contenedor.innerHTML = '';
+
+    if (inventarioCargas.length === 0) {
+        contenedor.innerHTML = `<p style="color:#666; font-style:italic; text-align:center; padding:20px;">No hay cargas animales registradas en este ciclo.</p>`;
+        return;
+    }
+
+    // Muestra los registros ordenados desde el más reciente en la parte superior
+    [...inventarioCargas].reverse().forEach(item => {
+        const card = document.createElement('div');
+        // SE AJUSTÓ: Reemplazada por la clase nativa que declaraste en tu potreros.css
+        card.className = 'potreros-ugm-card';
+        card.style.marginBottom = '14px';
+
+        // Mapeo técnico legible de la temporada agroecológica
+        const formatoTemporada = item.temporada ? item.temporada.replace('_', ' ').toLowerCase() : 'N/A';
+
+        card.innerHTML = `
+            <div class="potreros-ugm-header" style="border-bottom: 1px solid var(--divider-color); padding-bottom: 6px; margin-bottom: 8px;">
+                <span class="potreros-ugm-title">📍 ${item.potreroNombre}</span>
+                <span class="kpi-title" style="color: var(--secondary-color); font-weight: bold; background-color: #f4f6f4; padding: 2px 8px; border-radius: 12px;">${item.hectareas} Ha</span>
+            </div>
+            <div style="font-size: 0.95rem; color: var(--text-main); line-height: 1.5;">
+                <p><strong>Lote:</strong> ${item.cantidadCabezas} Cabezas — ${item.especie} (${item.categoria})</p>
+                <p style="text-transform: capitalize;"><strong>Época:</strong> ${formatoTemporada}</p>
+                <p style="color: var(--danger); font-weight: bold; margin-top: 4px;"><strong>⏱️ Ocupación Activa:</strong> ${item.diasOcupacion} Días</p>
+                <div style="margin-top: 10px; padding-top: 6px; border-top: 1px dashed var(--border-color); display: flex; justify-content: space-between; font-size: 0.9rem;">
+                    <span><strong>Presión:</strong> ${item.totalUGM.toFixed(2)} UGM</span>
+                    <span style="color: var(--secondary-color); font-weight: bold;"><strong>Carga Real:</strong> ${item.cargaEcologica} UGM/Ha</span>
+                </div>
+            </div>
+        `;
+        contenedor.appendChild(card);
     });
 }
 
-// 6. Transmisión Bidireccional en Tiempo Real (Firestore -> Pantalla)
-function inicializarEscuchadorTareas() {
-    if (!tasksWrapper) return;
-
-    ejecutarSincronizacionVisual('procesando');
-
-    // Consulta ordenada cronológicamente (Marcas de tiempo del servidor más recientes primero)
-    const q = query(collection(db, "ordenes_trabajo"), orderBy("timestamp", "desc"));
-
-    onSnapshot(q, (snapshot) => {
-        tasksWrapper.innerHTML = '';
-
-        if (snapshot.empty) {
-            tasksWrapper.innerHTML = `<p style="color:var(--text-muted); font-style:italic; text-align:center; padding:20px;">No existen labores programadas en este ciclo.</p>`;
-            ejecutarSincronizacionVisual('sincronizado');
-            return;
-        }
-
-        snapshot.forEach((docSnap) => {
-            const id = docSnap.id;
-            const data = docSnap.data();
-
-            // Determinar clases dinámicas del selector de estatus según el valor guardado
-            let claseEstatus = 'status-cola';
-            if (data.estatus_codigo === 'PROCESO') claseEstatus = 'status-proceso';
-            if (data.estatus_codigo === 'EJECUTADA') claseEstatus = 'status-ejecutada';
-
-            const taskCard = document.createElement('article');
-            taskCard.className = 'task-card-item';
-            taskCard.style.marginBottom = '12px';
-
-            taskCard.innerHTML = `
-                <div class="task-card-row">
-                    <span class="task-card-date">📅 Prog: ${data.fecha_programada || 'N/A'}</span>
-                    <span style="font-size:0.8rem; font-weight:bold; color:var(--text-muted);">ID: ${id.substring(0,6)}...</span>
-                </div>
-                <h3 class="task-card-labor">🔨 ${data.tipo_labor}</h3>
-                <div class="task-card-meta">
-                    <p><strong>Ubicación:</strong> ${data.potrero_ubicacion}</p>
-                    <p><strong>Responsable:</strong> ${data.personal_asignado}</p>
-                </div>
-                ${data.observaciones_instrucciones !== 'Ninguna' ? `
-                    <p class="task-card-obs">"${data.observaciones_instrucciones}"</p>
-                ` : ''}
-                
-                <div class="task-card-actions">
-                    <!-- Control dinámico que permite a los encargados mutar el estatus desde los corrales -->
-                    <select class="status-select ${claseEstatus}" data-id="${id}">
-                        <option value="COLA" ${data.estatus_codigo === 'COLA' ? 'selected' : ''}>⏳ En Cola (Pendiente)</option>
-                        <option value="PROCESO" ${data.estatus_codigo === 'PROCESO' ? 'selected' : ''}>⚡ En Proceso</option>
-                        <option value="EJECUTADA" ${data.estatus_codigo === 'EJECUTADA' ? 'selected' : ''}>✅ Ejecutada</option>
-                    </select>
-                    <button class="btn-delete-task" data-id="${id}" style="background-color:var(--danger); color:white; padding:0 12px; font-size:0.85rem; border-radius:6px; height:38px; cursor:pointer; width:auto; border:none; font-weight:700;">❌</button>
-                </div>
-            `;
-            tasksWrapper.appendChild(taskCard);
-        });
-
-        // 7. Enlazar Eventos Dinámicos a los Elementos Inyectados (Estatus y Borrado)
-        document.querySelectorAll('.status-select').forEach(select => {
-            select.addEventListener('change', async (e) => {
-                const docId = e.target.getAttribute('data-id');
-                const nuevoEstatus = e.target.value;
-                ejecutarSincronizacionVisual('procesando');
-                
-                try {
-                    await updateDoc(doc(db, "ordenes_trabajo", docId), { estatus_codigo: nuevoEstatus });
-                    ejecutarSincronizacionVisual('sincronizado');
-                } catch (err) {
-                    console.error("Error al actualizar estatus: ", err);
-                    ejecutarSincronizacionVisual('error');
-                }
-            });
-        });
-
-        document.querySelectorAll('.btn-delete-task').forEach(btn => {
-
+// Inicialización Automática según entorno de ejecución
+document.addEventListener('DOMContentLoaded', () => {
+    actualizarCategorias();
+    renderizarTableroKPI();
+    renderizarTarjetasPotreros();
+    ejecutarSincronizacionVisual('sincronizado');
+});
