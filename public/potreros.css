@@ -1,6 +1,6 @@
 /* ==========================================================================
    SISTEMA GANADERO - HATO LAGUNA BRAVA
-   Diseño de Contenedores y Identidad Corporativa Unificada
+   Diseño de Contenedores e Identidad Corporativa Unificada (Versión Blindada)
    ========================================================================== */
 
 :root {
@@ -16,7 +16,7 @@
     --divider-color: #e2e8e0;     /* Línea Divisoria de Módulos */
 }
 
-/* Configuración de Lectura y Accesibilidad */
+/* Configuración de Lectura y Accesibilidad Universal */
 * {
     box-sizing: border-box;
     margin: 0;
@@ -29,6 +29,56 @@ body {
     color: var(--text-main);
     overflow-x: hidden;
     padding-bottom: 40px;
+    -webkit-font-smoothing: antialiased; /* Mejora la nitidez en pantallas móviles */
+}
+
+/* ==========================================================================
+   ESTRUCTURACIÓN Y ENCABEZADO MAESTRO (INCLUIDO PARA EVITAR CONFLICTOS)
+   ========================================================================== */
+.main-header {
+    background: linear-gradient(135deg, #001f3f 0%, #00247d 50%, #001226 100%);
+    color: #ffffff;
+    padding: 16px 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+    border-bottom: 3px solid #fcdd09;
+    width: 100%;
+}
+
+.header-container {
+    max-width: 1240px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    box-sizing: border-box;
+}
+
+.flag-container {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+}
+
+.flag-icon {
+    width: 42px;
+    height: auto;
+    border-radius: 4px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+.header-title-wrapper {
+    flex-grow: 1;
+    text-align: center;
+}
+
+.header-title-wrapper h1 {
+    font-size: 1.35rem;
+    font-weight: 700;
+    margin: 4px 0;
+    line-height: 1.2;
+    color: #ffffff;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
 }
 
 /* ==========================================================================
@@ -45,10 +95,10 @@ body {
 /* Rejilla de Tarjetas Centrada y Responsiva Nivel PWA */
 .menu-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* Ajustado ligeramente para evitar desbordes en teléfonos pequeños */
     gap: 28px;
     width: 100%;
-    justify-content: center; /* Centra los elementos si queda espacio sobrante */
+    justify-content: center;
     box-sizing: border-box;
 }
 
@@ -58,22 +108,22 @@ body {
 .card {
     background-color: var(--card-bg);
     border: 1px solid var(--border-color);
-    border-top: 5px solid var(--primary-color); /* Línea superior corporativa */
+    border-top: 5px solid var(--primary-color);
     border-radius: 12px;
     padding: 26px;
-    box-shadow: 0 4px 14px rgba(27, 67, 50, 0.06); /* Sombra suave con tinte Verde */
+    box-shadow: 0 4px 14px rgba(27, 67, 50, 0.06);
     display: flex;
     flex-direction: column;
     gap: 14px;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
     box-sizing: border-box;
+    height: 100%; /* Asegura que todas las tarjetas mantengan un alto armónico en la grilla */
 }
 
-/* Efecto de elevación al pasar el mouse o tocar en el teléfono */
 .card:hover {
     transform: translateY(-4px);
     box-shadow: 0 8px 20px rgba(27, 67, 50, 0.12);
-    border-top-color: var(--accent-color); /* Cambia el color del borde superior al enfocar */
+    border-top-color: var(--accent-color);
 }
 
 .card-header {
@@ -89,13 +139,14 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: #e8f5e9; /* Fondo suave verde para el icono */
+    background-color: #e8f5e9;
     padding: 8px;
     border-radius: 8px;
+    flex-shrink: 0;
 }
 
 .card-title {
-    font-size: 1.25rem;
+    font-size: 1.2rem;
     color: var(--primary-color);
     font-weight: 700;
 }
@@ -104,7 +155,7 @@ body {
     font-size: 0.92rem;
     color: var(--text-muted);
     line-height: 1.5;
-    flex-grow: 1; /* Empuja el botón de acción hacia la parte inferior */
+    flex-grow: 1;
 }
 
 /* Botones de Acción Estilizados con la Identidad del Hato */
@@ -136,7 +187,6 @@ body {
    DISEÑO ADAPTATIVO PARA FORMULARIOS TÉCNICOS (OTRAS PÁGINAS)
    ========================================================================== */
 @media (min-width: 992px) {
-    /* Si el contenedor no tiene la clase panel-principal, se comporta en doble columna */
     .main-container:not(.panel-principal) {
         display: flex;
         flex-direction: row;
@@ -169,4 +219,25 @@ body {
     color: var(--primary-color);
     border-bottom: 2px solid var(--divider-color);
     padding-bottom: 0.5rem;
+}
+
+/* ==========================================================================
+   AJUSTES RESPONSIVOS MÓVILES EXTREMOS (SABANA Y CAMPO)
+   ========================================================================== */
+@media (max-width: 576px) {
+    .main-container {
+        padding: 20px 12px; /* Reduce márgenes laterales para ganar espacio útil en teléfonos */
+    }
+    
+    .header-container {
+        padding: 0 4px;
+    }
+
+    .header-title-wrapper h1 {
+        font-size: 1.1rem; /* Evita que el título se rompa de mala manera en pantallas angostas */
+    }
+
+    .flag-icon {
+        width: 34px;
+    }
 }
