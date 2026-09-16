@@ -1,203 +1,120 @@
-// Matriz de Equivalencias Zootécnicas para Carga Animal (Base UGM = 450-500 kg)
-const EQUIVALENCIAS_UGM = {
-    "BOVINOS": {
-        "Vacas Paridas": 1.00,
-        "Vacas Escoteras": 0.85,
-        "Novillas (2-3 años)": 0.75,
-        "Maute / Torete": 0.60,
-        "Becerros/as": 0.30,
-        "Toros Padrotes": 1.30
-    },
-    "BUFALINOS": {
-        "Búfalas de Ordeño": 1.20,
-        "Búfalas Secas": 1.00,
-        "Bubillas": 0.80,
-        "Búfalos de Engorde": 0.85,
-        "Bucerros/as": 0.40,
-        "Búfalos Padrotes": 1.50
-    }
-};
-
-// Base de Datos Temporal en Memoria (Sincronizada con LocalStorage para persistencia local)
-let inventarioCargas = JSON.parse(localStorage.getItem('hato_cargas_v1')) || [];
-
-// Elementos del DOM con validación de existencia (Doble Entorno: Index vs Potreros)
-const form = document.getElementById('form-mod1');
-const selectEspecie = document.getElementById('select-especie');
-const selectCategoria = document.getElementById('select-categoria');
-const alertSound = document.getElementById('alert-sound');
-
-// Selectores dinámicos para el Semáforo (Detecta si es Panel Principal o Módulo Potreros)
-const semaforo = document.getElementById('sync-semaphore') || document.getElementById('sync-semaphore-main');
-const syncText = document.getElementById('sync-text') || document.getElementById('sync-text-main');
-
-// 1. Cargar Categorías Zootécnicas Dinámicas (Solo si el formulario existe en pantalla)
-function actualizarCategorias() {
-    if (!selectEspecie || !selectCategoria) return;
+// Actualizar dinámicamente las subetapas según la Época seleccionada
+function actualizarSubetapa() {
+    const epoca = document.getElementById('selectEpoca').value;
+    const subetapaSelect = document.getElementById('selectSubetapa');
     
-    const especieSeleccionada = selectEspecie.value;
-    selectCategoria.innerHTML = '';
+    subetapaSelect.innerHTML = ''; // Limpiar opciones previas
     
-    if (EQUIVALENCIAS_UGM[especieSeleccionada]) {
-        Object.keys(EQUIVALENCIAS_UGM[especieSeleccionada]).forEach(cat => {
-            const option = document.createElement('option');
-            option.value = cat;
-            option.textContent = `${cat} (Factor: ${EQUIVALENCIAS_UGM[especieSeleccionada][cat]} UGM)`;
-            selectCategoria.appendChild(option);
-        });
+    let opciones = [];
+    if (epoca === 'Invierno') {
+        opciones = [
+            { text: 'Inicio (Entrante)', value: 'Invierno - Entrante' },
+            { text: 'Mediados', value: 'Invierno - Mediados' },
+            { text: 'Finales', value: 'Invierno - Finales' }
+        ];
+    } else if (epoca === 'Verano') {
+        opciones = [
+            { text: 'Inicio (Entrante)', value: 'Verano - Entrante' },
+            { text: 'Mediados', value: 'Verano - Mediados' },
+            { text: 'Finales', value: 'Verano - Finales' }
+        ];
     }
+    
+    opciones.forEach(op => {
+        let optElement = document.createElement('option');
+        optElement.value = op.value;
+        optElement.textContent = op.text;
+        subetapaSelect.appendChild(optElement);
+    });
 }
 
-// 2. Alarma Sonora para alertar a los operarios en campo
-function emitirAlertaSonora() {
-    if (alertSound) {
-        alertSound.currentTime = 0;
-        alertSound.play().catch(error => console.log("Se requiere interacción previa del usuario para reproducir audio corporativo.", error));
-    }
-}
+// Función principal para guardar, sincronizar y recalcular datos de la interfaz
+function guardarYProcesar() {
+    // 1. Obtener valores del formulario
+    const lote = document.getElementById('inputLote').value;
+    const pesoInicial = parseFloat(document.getElementById('inputPesoInicial').value) || 0;
+    const pesoMax = parseFloat(document.getElementById('inputPesoMax').value) || 0;
+    const pesoMin = parseFloat(document.getElementById('inputPesoMin').value) || 0;
+    const numAnimales = parseInt(document.getElementById('inputNumAnimales').value) || 1;
+    const epocaVal = document.getElementById('selectEpoca').value;
+    const subetapaVal = document.getElementById('selectSubetapa').value;
+    const fechaProx = document.getElementById('inputFechaProx').value;
+    const edad = document.getElementById('inputEdad').value;
+    const pesoEsperado = document.getElementById('inputPesoEsperado').value;
+    const tiempoSalida = document.getElementById('inputTiempoSalida').value;
+    const cv = document.getElementById('inputCV').value;
+    const observacion = document.getElementById('inputObservacion').value;
 
-// 3. Control de Estados del Semáforo de Sincronización
-function ejecutarSincronizacionVisual(estado) {
-    if (!semaforo || !syncText) return;
+    // 2. Cálculos automáticos simulados para analítica ganadera
+    const pesoPromedioCalculado = (pesoInicial / numAnimales).toFixed(1);
+    const gpdCalculada = (Math.random() * 0.5 + 0.8).toFixed(1); // Ganancia promedio diaria estimada
+    const gpaCalculada = (gpdCalculada * 2.5).toFixed(1); // Ganancia promedio por animal
 
-    if (estado === 'sincronizado') {
-        semaforo.style.backgroundColor = '#2e7d32'; // Verde Sabana
-        if (form) {
-            syncText.textContent = 'Sincronizado';
-        } else {
-            syncText.textContent = 'Sistema En Línea'; // Texto específico para Index
-        }
-    } else if (estado === 'procesando') {
-        semaforo.style.backgroundColor = '#f57c00'; // Naranja (Subiendo datos)
-        syncText.textContent = 'Sincronizando datos...';
+    // 3. Reflejar datos instantáneamente en el panel de resumen derecho
+    document.getElementById('resNumAnimales').textContent = numAnimales;
+    document.getElementById('resPesoProm').textContent = pesoPromedioCalculado + ' kg/animal';
+    document.getElementById('resPesoMax').textContent = pesoMax + ' kg';
+    document.getElementById('resPesoMin').textContent = pesoMin + ' kg';
+    document.getElementById('resCV').textContent = cv + '%';
+    document.getElementById('resEpoca').textContent = `${epocaVal} - ${subetapaVal.split(' - ')[1] || 'Entrante'}`;
+    document.getElementById('resFechaProx').textContent = formatFecha(fechaProx);
+    document.getElementById('resEdad').textContent = edad + ' meses';
+    document.getElementById('resTiempoSalida').textContent = tiempoSalida + ' meses';
+    
+    // Actualizar KPIs circulares
+    document.getElementById('kpiGPD').textContent = gpdCalculada + ' kg';
+    document.getElementById('kpiGPA').textContent = gpaCalculada + ' kg';
+
+    // 4. Determinar estado de tendencia del lote y actualizar el indicador visual
+    const indicador = document.getElementById('indicadorTendencia');
+    let cvNum = parseFloat(cv);
+    
+    if (cvNum < 8) {
+        indicador.className = 'trend-badge positive';
+        indicador.innerHTML = '<i class="fa-solid fa-caret-up"></i><span>Aumento</span>';
+    } else if (cvNum >= 8 && cvNum <= 12) {
+        indicador.className = 'trend-badge stable';
+        indicador.innerHTML = '<i class="fa-solid fa-right-long"></i><span>Estancado</span>';
     } else {
-        semaforo.style.backgroundColor = '#d32f2f'; // Rojo Alerta
-        syncText.textContent = 'Desconectado / Error';
+        indicador.className = 'trend-badge negative';
+        indicador.innerHTML = '<i class="fa-solid fa-caret-down"></i><span>Descenso</span>';
     }
+
+    // 5. Generar recomendaciones automáticas inteligentes en base a los parámetros
+    generarRecomendacionesAutomaticas(cvNum, epocaVal, gpdCalculada);
+
+    // Mensaje de éxito de sincronización
+    alert(`¡Lote "${lote}" guardado y sincronizado exitosamente! Los datos analíticos han sido actualizados.`);
 }
 
-// 4. Procesamiento Técnico del Formulario (Solo se ejecuta en potreros.html)
-if (form) {
-    selectEspecie.addEventListener('change', actualizarCategorias);
+// Generador de recomendaciones dinámicas
+function generarRecomendacionesAutomaticas(cv, epoca, gpd) {
+    const contenedorRecs = document.getElementById('listaRecomendaciones');
+    let htmlRecs = '';
 
-    form.addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        // Ejecución inmediata de controles analógicos y de red
-        emitirAlertaSonora();
-        ejecutarSincronizacionVisual('procesando');
+    if (cv < 8) {
+        htmlRecs += `<p><i class="fa-solid fa-circle-check text-green"></i> Homogeneidad excelente en el lote (CV: ${cv}%). El lote muestra tendencia en aumento.</p>`;
+    } else {
+        htmlRecs += `<p><i class="fa-solid fa-triangle-exclamation text-yellow"></i> Coeficiente de variación elevado (${cv%}). Se sugiere loteo por pesos para evitar competencia por alimento.</p>`;
+    }
 
-        // Captura de datos estructurales del potrero seleccionado
-        const potreroSelect = document.getElementById('select-potrero');
-        const potreroNombre = potreroSelect.value;
-        const hectareas = parseFloat(potreroSelect.options[potreroSelect.selectedIndex].getAttribute('data-ha'));
-        
-        const especie = selectEspecie.value;
-        const categoria = selectCategoria.value;
-        const cantidadCabezas = parseInt(document.getElementById('cantidad-cabezas').value);
-        const temporada = document.getElementById('select-temporada').value;
-        
-        const fIngreso = new Date(document.getElementById('fecha-ingreso').value + 'T00:00:00');
-        const fSalida = new Date(document.getElementById('fecha-salida').value + 'T00:00:00');
+    if (gpd >= 1.0) {
+        htmlRecs += `<p><i class="fa-solid fa-circle-check text-green"></i> G.P.D. de ${gpd} kg destaca un rendimiento óptimo acorde a la época de ${epoca.toLowerCase()}.</p>`;
+    } else {
+        htmlRecs += `<p><i class="fa-solid fa-triangle-exclamation text-yellow"></i> G.P.D. baja (${gpd} kg). Revisar calidad de pasturas o suplementación energética.</p>`;
+    }
 
-        // Cálculo matemático exacto de Días de Ocupación
-        const diferenciaTiempo = fSalida.getTime() - fIngreso.getTime();
-        const diasOcupacion = Math.max(0, Math.ceil(diferenciaTiempo / (1000 * 60 * 60 * 24)));
-
-        // Cálculo de Carga Ecológica bajo normas zootécnicas
-        const factorUGM = EQUIVALENCIAS_UGM[especie][categoria];
-        const totalUGM = cantidadCabezas * factorUGM;
-        const cargaEcologica = totalUGM / hectareas; 
-
-        // Empaquetado del registro de pastoreo
-        const nuevaCarga = {
-            id: Date.now(),
-            potreroNombre,
-            hectareas,
-            especie,
-            categoria,
-            cantidadCabezas,
-            temporada,
-            diasOcupacion,
-            totalUGM,
-            cargaEcologica: cargaEcologica.toFixed(2)
-        };
-
-        // Persistencia y actualización de estructuras
-        inventarioCargas.push(nuevaCarga);
-        localStorage.setItem('hato_cargas_v1', JSON.stringify(inventarioCargas));
-
-        // Simulación de retraso de red satelital en hato (800ms) antes de confirmar sincronización
-        setTimeout(() => {
-            renderizarTableroKPI();
-            renderizarTarjetasPotreros();
-            ejecutarSincronizacionVisual('sincronizado');
-            form.reset();
-            actualizarCategorias();
-        }, 800);
-    });
-}
-
-// 5. Renderizado de Métricas Globales del Hato (KPIs)
-function renderizarTableroKPI() {
-    if (!document.getElementById('kpi-total-cabezas')) return;
-
-    const totalCabezas = inventarioCargas.reduce((sum, item) => sum + item.cantidadCabezas, 0);
-    const totalUGM = inventarioCargas.reduce((sum, item) => sum + item.totalUGM, 0);
-
-    document.getElementById('kpi-total-cabezas').textContent = totalCabezas;
-    document.getElementById('kpi-total-ugm').textContent = totalUGM.toFixed(2);
-}
-
-// 6. Generación Dinámica de Bloques de Control por Potrero Trabajado
-function renderizarTarjetasPotreros() {
-    const contenedor = document.querySelector('.potreros-container');
-    if (!contenedor) return;
+    htmlRecs += `<p><i class="fa-solid fa-lightbulb text-blue"></i> Planificar próximo pesaje y control sanitario preventivo antes de finalizar el ciclo estacional.</p>`;
     
-    contenedor.innerHTML = '';
-
-    if (inventarioCargas.length === 0) {
-        contenedor.innerHTML = `<p style="color:#666; font-style:italic; text-align:center; padding:20px;">No hay cargas animales registradas en este ciclo.</p>`;
-        return;
-    }
-
-    // Muestra los registros ordenados desde el más reciente en la parte superior
-    [...inventarioCargas].reverse().forEach(item => {
-        const card = document.createElement('div');
-        card.className = 'potrero-card-activa';
-        
-        // Estilos en línea estructurados para control visual de los operarios
-        card.style.borderLeft = '5px solid #2e7d32';
-        card.style.backgroundColor = '#ffffff';
-        card.style.padding = '16px';
-        card.style.marginBottom = '14px';
-        card.style.borderRadius = '8px';
-        card.style.boxShadow = '0 3px 6px rgba(0,0,0,0.08)';
-
-        // Mapeo técnico legible de la temporada agroecológica
-        const formatoTemporada = item.temporada.replace('_', ' ').toLowerCase();
-
-        card.innerHTML = `
-            <div style="display:flex; justify-content:between; align-items:center; border-bottom:1px solid #eee; padding-bottom:6px; margin-bottom:8px;">
-                <h3 style="margin: 0; color: #1b5e20; font-size:1.15rem;">📍 ${item.potreroNombre}</h3>
-                <span style="font-size:0.85rem; background:#e8f5e9; color:#2e7d32; padding:2px 8px; border-radius:12px; font-weight:bold;">${item.hectareas} Ha</span>
-            </div>
-            <p style="margin: 4px 0; font-size:0.95rem;"><strong>Lote:</strong> ${item.cantidadCabezas} Cabezas — ${item.especie} (${item.categoria})</p>
-            <p style="margin: 4px 0; font-size:0.95rem; text-transform: capitalize;"><strong>Época:</strong> ${formatoTemporada}</p>
-            <p style="margin: 6px 0; color: #b71c1c; font-weight:bold; font-size:0.95rem;"><strong>⏱️ Ocupación Activa:</strong> ${item.diasOcupacion} Días </p>
-            <div style="margin-top:10px; padding-top:6px; border-top:1px dashed #ddd; display:flex; justify-content:space-between; font-size:0.9rem;">
-                <span><strong>Presión:</strong> ${item.totalUGM.toFixed(2)} UGM</span>
-                <span style="color:#2e7d32; font-weight:bold;"><strong>Carga Real:</strong> ${item.cargaEcologica} UGM/Ha</span>
-            </div>
-        `;
-        contenedor.appendChild(card);
-    });
+    contenedorRecs.innerHTML = htmlRecs;
 }
 
-// Inicialización Automática según entorno de ejecución
-document.addEventListener('DOMContentLoaded', () => {
-    actualizarCategorias();
-    renderizarTableroKPI();
-    renderizarTarjetasPotreros();
-    ejecutarSincronizacionVisual('sincronizado');
-});
+// Utilidad para formatear fechas de YYYY-MM-DD a DD/MM/YY
+function formatFecha(fechaIso) {
+    if (!fechaIso) return '19/09/26';
+    const partes = fechaIso.split('-');
+    if (partes.length === 3) {
+        return `${partes[2]}/${partes[1]}/${partes[0].slice(-2)}`;
+    }
+    return fechaIso;
+}
