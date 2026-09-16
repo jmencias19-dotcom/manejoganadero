@@ -2,72 +2,87 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Historial de Pastoreo - Hato Laguna Brava</title>
-    <link rel="stylesheet" href="variables.css?v=1.1">
-    <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="dashboard.css">
+    <!-- CONEXIÓN DE ESTILOS UNIFICADOS DEL PROYECTO -->
+    <link rel="stylesheet" href="potreros.css">
     <link rel="stylesheet" href="historial-pastoreo.css">
     <link rel="manifest" href="manifest.json">
 </head>
 <body>
+    
     <!-- Encabezado Principal de la Aplicación -->
     <header class="main-header">
         <div class="header-container">
-            <div class="flag-container" aria-label="Bandera de Venezuela">
-                <!-- SVG Oficial con el arco simétrico de 8 estrellas -->
-                <svg xmlns="http://w3.org" viewBox="0 0 900 600" class="flag-icon">
-                    <rect width="900" height="600" fill="#cf142b"/>
-                    <rect width="900" height="400" fill="#00247d"/>
-                    <rect width="900" height="200" fill="#fcdd09"/>
-                    <!-- Grupo de 8 estrellas blancas en arco sobre la franja azul -->
-                    <g fill="#ffffff" transform="translate(450, 335)">
-                        <circle cx="-135" cy="-20" r="12"/>
-                        <circle cx="-100" cy="-60" r="12"/>
-                        <circle cx="-55" cy="-90" r="12"/>
-                        <circle cx="-15" cy="-105" r="12"/>
-                        <circle cx="15" cy="-105" r="12"/>
-                        <circle cx="55" cy="-90" r="12"/>
-                        <circle cx="100" cy="-60" r="12"/>
-                        <circle cx="135" cy="-20" r="12"/>
-                    </g>
-                </svg>
+            <!-- MEJORA: Botón Modular de retorno al Panel Principal -->
+            <div class="header-nav">
+                <a href="index.html" class="btn-back">⬅️ Volver a Panel Principal</a>
             </div>
-            <div class="header-title-wrapper">
-                <h1>Gestión Ganadera Hato Laguna Brava<br>
-                <span>Grupo Imperatori</span></h1>
-                <p>Panel de Control Directo - Operaciones de Campo</p>
+            
+            <div class="header-brand">
+                <div class="flag-container" aria-label="Bandera de Venezuela">
+                    <!-- SVG Oficial Corregido con el arco simétrico de 8 estrellas -->
+                    <svg xmlns="http://w3.org" viewBox="0 0 900 600" class="flag-icon" style="width: 45px; height: auto; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">
+                        <rect width="900" height="600" fill="#cf142b"/>
+                        <rect width="900" height="400" fill="#00247d"/>
+                        <rect width="900" height="200" fill="#fcdd09"/>
+                        <g fill="#ffffff" transform="translate(450, 335)">
+                            <circle cx="-135" cy="-20" r="12"/>
+                            <circle cx="-100" cy="-60" r="12"/>
+                            <circle cx="-55" cy="-90" r="12"/>
+                            <circle cx="-15" cy="-105" r="12"/>
+                            <circle cx="15" cy="-105" r="12"/>
+                            <circle cx="55" cy="-90" r="12"/>
+                            <circle cx="100" cy="-60" r="12"/>
+                            <circle cx="135" cy="-20" r="12"/>
+                        </g>
+                    </svg>
+                </div>
+                <div class="header-title-wrapper">
+                    <h1>Gestión Ganadera Hato Laguna Brava</h1>
+                    <p>Matriz de Control y Seguimiento Histórico de Carga Animal</p>
+                </div>
+            </div>
+
+            <!-- MEJORA: Semáforo Visual de Sincronización Telemetría -->
+            <div class="sync-status-wrapper">
+                <div id="sync-semaphore" class="semaphore online" title="Estado de sincronización"></div>
+                <span id="sync-text" class="sync-text">Sincronizado</span>
             </div>
         </div>
     </header>
 
-    <!-- Área de Contenido Principal -->
-    <main class="dashboard-grid">
-        <!-- Tarjeta del Formulario de Registro de Rotaciones -->
-        <section class="card form-section">
-            <h2>Registrar Rotación de Pastoreo</h2>
+    <!-- Área de Contenido Principal (Ajustado con la Grid Flexible del Hato) -->
+    <main class="main-container">
+        
+        <!-- BLOQUE IZQUIERDO: Tarjeta del Formulario de Registro de Rotaciones -->
+        <section class="section-box form-section">
+            <h2 class="section-title">✏️ Registrar Rotación de Pastoreo</h2>
             <p class="card-subtitle">Complete los datos de la operación de campo actual.</p>
 
             <form id="paddockForm">
                 <!-- Bloque: Selección de Ubicación y Lote -->
                 <div class="form-group-row">
                     <div class="form-group">
-                        <label for="potrero">Potrero / Lote de Tierra:</label>
+                        <label for="potrero">Potrero / Lote de Tierra</label>
                         <select id="potrero" required>
-                            <option value="" disabled selected>Seleccione un potrero...</option>
-                            <option value="potrero-1">Potrero 1 - Bajo Grande</option>
-                            <option value="potrero-2">Potrero 2 - El Palmar</option>
-                            <option value="potrero-3">Potrero 3 - La Laguna</option>
+                            <option value="" disabled selected>-- Seleccione un potrero --</option>
+                            <option value="Macanillal">Macanillal (432 ha)</option>
+                            <option value="El Galpón">El Galpón (569 ha)</option>
+                            <option value="Mata del Muerto">Mata del Muerto (80 ha)</option>
+                            <option value="Manguito">Manguito (234 ha)</option>
+                            <option value="Mata de Piña">Mata de Piña (205 ha)</option>
+                            <option value="Las Rallas">Las Rallas (102 ha)</option>
                         </select>
                     </div>
 
                     <div class="form-group">
-                        <label for="lote">Lote de Ganado:</label>
+                        <label for="lote">Lote de Ganado</label>
                         <select id="lote" required>
-                            <option value="" disabled selected>Seleccione el lote...</option>
-                            <option value="lote-vacas-ordeno">Vacas en Ordeño</option>
-                            <option value="lote-novillas">Novillas de Reemplazo</option>
-                            <option value="lote-mn">Mautes / Toros</option>
+                            <option value="" disabled selected>-- Seleccione el lote --</option>
+                            <option value="Vacas en Ordeño">Vacas en Ordeño</option>
+                            <option value="Novillas de Reemplazo">Novillas de Reemplazo</option>
+                            <option value="Mautes / Toros">Mautes / Toros</option>
                         </select>
                     </div>
                 </div>
@@ -75,12 +90,12 @@
                 <!-- Bloque: Fechas y Cálculos de Tiempo -->
                 <div class="form-group-row">
                     <div class="form-group">
-                        <label for="f-ingreso">Fecha de Ingreso:</label>
+                        <label for="f-ingreso">Fecha de Ingreso</label>
                         <input type="date" id="f-ingreso" required>
                     </div>
 
                     <div class="form-group">
-                        <label for="f-salida">Fecha de Salida:</label>
+                        <label for="f-salida">Fecha de Salida</label>
                         <input type="date" id="f-salida" required>
                     </div>
                 </div>
@@ -88,12 +103,12 @@
                 <!-- Bloque: Datos del Ganado -->
                 <div class="form-group-row">
                     <div class="form-group">
-                        <label for="cabezas">Número de Cabezas:</label>
+                        <label for="cabezas">Número de Cabezas</label>
                         <input type="number" id="cabezas" min="1" placeholder="Ej. 50" required>
                     </div>
 
                     <div class="form-group">
-                        <label for="peso">Peso Promedio Animal (kg):</label>
+                        <label for="peso">Peso Promedio Animal (kg)</label>
                         <input type="number" id="peso" step="0.1" min="1" placeholder="Ej. 420" required>
                     </div>
                 </div>
@@ -101,51 +116,62 @@
                 <!-- Bloque: Datos de la Pastura (Procesados por JS) -->
                 <div class="form-group-row">
                     <div class="form-group">
-                        <label for="alt-ingreso">Alt. Pasto Ingreso (cm):</label>
+                        <label for="alt-ingreso">Alt. Pasto Ingreso (cm)</label>
                         <input type="number" id="alt-ingreso" step="0.1" placeholder="Ej. 35.5">
                     </div>
 
                     <div class="form-group">
-                        <label for="alt-salida">Alt. Pasto Salida (cm):</label>
+                        <label for="alt-salida">Alt. Pasto Salida (cm)</label>
                         <input type="number" id="alt-salida" step="0.1" placeholder="Ej. 10.0">
                     </div>
                 </div>
 
                 <div class="form-group-row">
                     <div class="form-group">
-                        <label for="especie">Especie Forrajera:</label>
+                        <label for="especie">Especie Forrajera</label>
                         <input type="text" id="especie" placeholder="Ej. Brachiaria decumbens, Carimagua">
                     </div>
                 </div>
 
                 <!-- Cuadro de Observaciones -->
                 <div class="form-group">
-                    <label for="observaciones-paddock">Observaciones de Campo:</label>
+                    <label for="observaciones-paddock">Observaciones de Campo</label>
                     <textarea id="observaciones-paddock" rows="3" placeholder="Estado sanitario del lote, condiciones climáticas, disponibilidad de agua..."></textarea>
                 </div>
 
                 <!-- Bloque Informativo Visual (Métricas calculadas dinámicamente por JS) -->
                 <div class="metrics-summary">
                     <div class="metric-box">
-                        <span class="metric-label">Días de Ocupación:</span>
-                        <span id="dias-ocupacion-val" class="metric-value">0</span> días
+                        <span class="metric-label">Días de Ocupación</span>
+                        <div><span id="dias-ocupacion-val" class="metric-value">0</span> <span style="font-size:0.85rem; font-weight:700;">días</span></div>
                     </div>
                     <div class="metric-box">
-                        <span class="metric-label">Carga Animal Estimada:</span>
-                        <span id="ua-val" class="metric-value">0.00</span> UA
+                        <span class="metric-label">Carga Estimada</span>
+                        <div><span id="ua-val" class="metric-value">0.00</span> <span style="font-size:0.85rem; font-weight:700;">UA</span></div>
                     </div>
                 </div>
 
-                <!-- Botones de Acción -->
+                <!-- Botones de Acción Modificados -->
                 <div class="form-actions">
-                    <button type="submit" class="btn-primary">Guardar Registro en la Nube</button>
-                    <a href="index.html" class="card-action btn-back">Volver al Inicio</a>
+                    <button type="submit" class="btn-primary">💾 Registrar Carga Animal y Sincronizar</button>
                 </div>
             </form>
         </section>
+
+        <!-- BLOQUE DERECHO: Bitácora de Rotaciones Activas y Línea de Tiempo -->
+        <section class="section-box">
+            <h2 class="section-title">📜 Registro Histórico del Hato</h2>
+            <div class="timeline-container" id="timeline-wrapper">
+                <!-- Aquí el archivo JavaScript (historial-pastoreo.js) dibujará las tarjetas dinámicas -->
+            </div>
+        </section>
+
     </main>
+
+    <!-- Elemento de sonido público para evitar errores de carga 404 en Vercel -->
+    <audio id="alert-sound" src="https://mixkit.co" preload="auto"></audio>
 
     <!-- Carga del Script Lógico como Módulo -->
     <script type="module" src="historial-pastoreo.js"></script>
-  </body>
+</body>
 </html>
