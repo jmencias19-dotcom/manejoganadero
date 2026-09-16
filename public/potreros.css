@@ -1,6 +1,6 @@
 /* ==========================================================================
    SISTEMA GANADERO - HATO LAGUNA BRAVA
-   Diseño de Contenedores e Identidad Corporativa Unificada (Versión Blindada)
+   Estética Unificada, Verde Corporativa y Estilo Tecnológico/Futurista
    ========================================================================== */
 
 :root {
@@ -14,6 +14,10 @@
     --text-muted: #6c757d;        /* Gris Industrial (Textos Secundarios) */
     --border-color: #d8dad8;      /* Gris de Contorno Estructural */
     --divider-color: #e2e8e0;     /* Línea Divisoria de Módulos */
+    
+    /* Variables Futuristas / Tecnológicas */
+    --header-gradient: linear-gradient(135deg, #0d2319 0%, #1b4332 50%, #2d6a4f 100%);
+    --neon-glow: 0 0 15px rgba(82, 183, 136, 0.3);
 }
 
 /* Configuración de Lectura y Accesibilidad Universal */
@@ -29,19 +33,30 @@ body {
     color: var(--text-main);
     overflow-x: hidden;
     padding-bottom: 40px;
-    -webkit-font-smoothing: antialiased; /* Mejora la nitidez en pantallas móviles */
+    -webkit-font-smoothing: antialiased;
 }
 
 /* ==========================================================================
-   ESTRUCTURACIÓN Y ENCABEZADO MAESTRO (INCLUIDO PARA EVITAR CONFLICTOS)
+   ENCABEZADO MAESTRO UNIFICADO (ESTILO FUTURISTA / VERDE INSTITUCIONAL)
    ========================================================================== */
 .main-header {
-    background: linear-gradient(135deg, #001f3f 0%, #00247d 50%, #001226 100%);
+    background: var(--header-gradient);
     color: #ffffff;
-    padding: 16px 20px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
-    border-bottom: 3px solid #fcdd09;
+    padding: 18px 24px;
+    box-shadow: 0 4px 20px rgba(27, 67, 50, 0.25);
+    border-bottom: 3px solid var(--accent-color);
     width: 100%;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Sutil efecto de brillo tecnológico de fondo en el header */
+.main-header::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: radial-gradient(circle at 80% 20%, rgba(82, 183, 136, 0.15) 0%, transparent 60%);
+    pointer-events: none;
 }
 
 .header-container {
@@ -52,8 +67,11 @@ body {
     justify-content: space-between;
     gap: 15px;
     box-sizing: border-box;
+    position: relative;
+    z-index: 2;
 }
 
+/* Contenedores de banderas alineados y simétricos */
 .flag-container {
     flex-shrink: 0;
     display: flex;
@@ -63,10 +81,18 @@ body {
 .flag-icon {
     width: 42px;
     height: auto;
-    border-radius: 4px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    border-radius: 6px;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
+.flag-icon:hover {
+    transform: scale(1.08);
+    box-shadow: var(--neon-glow);
+}
+
+/* Contenedor central unificado para títulos de cualquier módulo */
 .header-title-wrapper {
     flex-grow: 1;
     text-align: center;
@@ -78,7 +104,15 @@ body {
     margin: 4px 0;
     line-height: 1.2;
     color: #ffffff;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    text-shadow: 0 2px 4px rgba(0,0,0,0.4);
+    letter-spacing: 0.5px;
+}
+
+.header-title-wrapper p, .header-subtitle {
+    font-size: 0.88rem;
+    color: #a3b899; /* Tono verdoso claro secundario muy elegante */
+    font-weight: 500;
+    margin: 2px 0;
 }
 
 /* ==========================================================================
@@ -95,7 +129,7 @@ body {
 /* Rejilla de Tarjetas Centrada y Responsiva Nivel PWA */
 .menu-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* Ajustado ligeramente para evitar desbordes en teléfonos pequeños */
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 28px;
     width: 100%;
     justify-content: center;
@@ -115,14 +149,14 @@ body {
     display: flex;
     flex-direction: column;
     gap: 14px;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
     box-sizing: border-box;
-    height: 100%; /* Asegura que todas las tarjetas mantengan un alto armónico en la grilla */
+    height: 100%;
 }
 
 .card:hover {
     transform: translateY(-4px);
-    box-shadow: 0 8px 20px rgba(27, 67, 50, 0.12);
+    box-shadow: 0 8px 22px rgba(27, 67, 50, 0.15);
     border-top-color: var(--accent-color);
 }
 
@@ -171,12 +205,13 @@ body {
     font-size: 0.95rem;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    transition: background-color 0.2s ease, transform 0.1s ease;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
+    box-shadow: 0 2px 6px rgba(45, 106, 79, 0.2);
 }
 
 .card-action:hover {
     background-color: var(--primary-color);
+    box-shadow: 0 4px 12px rgba(27, 67, 50, 0.3);
 }
 
 .card-action:active {
@@ -205,7 +240,7 @@ body {
 
 .section-box {
     background: var(--card-bg);
-    border: 1px solid var(--border-color);
+    border: 1px solid var(--berat-color, var(--border-color));
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.04);
     padding: 20px;
@@ -222,22 +257,22 @@ body {
 }
 
 /* ==========================================================================
-   AJUSTES RESPONSIVOS MÓVILES EXTREMOS (SABANA Y CAMPO)
+   AJUSTES RESPONSIVOS MÓVILES EXTREMOS
    ========================================================================== */
 @media (max-width: 576px) {
     .main-container {
-        padding: 20px 12px; /* Reduce márgenes laterales para ganar espacio útil en teléfonos */
+        padding: 20px 12px;
     }
     
     .header-container {
-        padding: 0 4px;
+        padding: 0 2px;
     }
 
     .header-title-wrapper h1 {
-        font-size: 1.1rem; /* Evita que el título se rompa de mala manera en pantallas angostas */
+        font-size: 1.05rem;
     }
 
     .flag-icon {
-        width: 34px;
+        width: 32px;
     }
 }
