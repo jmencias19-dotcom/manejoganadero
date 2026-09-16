@@ -1,25 +1,43 @@
-{
-  "name": "Sistema de Gestión Ganadera - Hato Laguna Brava",
-  "short_name": "Gestión Ganadera",
-  "description": "Matriz Técnica de Carga Animal, Control de Levante y Labores de Campo",
-  "start_url": "index.html",
-  "display": "standalone",
-  "orientation": "portrait-primary",
-  "background_color": "#f4f6f4",
-  "theme_color": "#1b4332",
-  "icons": [
-    {
-      "src": "https://icons8.com",
-      "type": "image/png",
-      "sizes": "192x192",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "https://icons8.com",
-      "type": "image/png",
-      "sizes": "512x512",
-      "purpose": "any maskable"
-    }
-  ],
-  "categories": ["business", "productivity"]
-}
+const CACHE_NAME = 'laguna-brava-v1.2';
+const assetsToCache = [
+  './index.html',
+  './potreros.css?v=1.2',
+  './manifest.json'
+];
+
+// Instalación
+self.addEventListener('install', event => {
+  event.waitUntil(
+    caches.open(CACHE_NAME).then(cache => {
+      return cache.addAll(assetsToCache);
+    })
+  );
+  self.skipWaiting();
+});
+
+// Activación
+self.addEventListener('activate', event => {
+  event.waitUntil(
+    caches.keys().then(keys => {
+      return Promise.all(
+        keys.map(key => {
+          if (key !== CACHE_NAME) {
+            return caches.delete(key);
+          }
+        })
+      );
+    })
+  );
+  self.clients.claim();
+});
+
+// Interceptación de peticiones (Modo Offline)
+self.addEventListener('fetch', event => {
+  event.respondWith(
+    caches.match(event.request).then(response => {
+      return response || fetch(event.request);
+    }).catch(() => {
+      // Opcional: Podrías retornar una página offline genérica aquí si falla la red
+    })
+  );
+});
