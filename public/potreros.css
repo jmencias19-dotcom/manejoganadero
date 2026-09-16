@@ -1,3 +1,6 @@
+/* ==========================================================================
+   VARIABLES Y CONFIGURACIÓN GLOBAL
+   ========================================================================== */
 :root {
     --primary-color: #1b4332;
     --secondary-color: #2d6a4f;
@@ -27,6 +30,9 @@ body {
     padding-bottom: 20px;
 }
 
+/* ==========================================================================
+   ESTRUCTURA DE ENCABEZADO Y COMPONENTES DE CONTROL
+   ========================================================================== */
 .main-header {
     background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
     color: white;
@@ -49,6 +55,26 @@ body {
         flex-direction: row;
         justify-content: space-between;
     }
+}
+
+/* Botón Técnico Volver a Panel Principal */
+.btn-back {
+    display: inline-flex;
+    align-items: center;
+    background-color: rgba(255, 255, 255, 0.15);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background-color 0.2s, transform 0.1s;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+.btn-back:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+    transform: translateY(-1px);
 }
 
 .header-title-wrapper {
@@ -77,6 +103,48 @@ body {
     margin-top: 2px;
 }
 
+/* Semáforo Visual de Sincronización Telemetría */
+.sync-status-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background-color: rgba(0, 0, 0, 0.2);
+    padding: 6px 12px;
+    border-radius: 20px;
+    min-width: 140px;
+    justify-content: center;
+}
+
+.semaphore {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: var(--danger); /* Estado crítico por defecto */
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
+    transition: background-color 0.4s ease, box-shadow 0.4s ease;
+}
+
+.semaphore.online {
+    background-color: var(--success);
+    box-shadow: 0 0 10px rgba(42, 157, 143, 0.6);
+}
+
+.semaphore.offline {
+    background-color: var(--danger);
+    box-shadow: 0 0 10px rgba(230, 57, 70, 0.6);
+}
+
+.sync-text {
+    font-size: 0.8rem;
+    font-weight: bold;
+    color: white;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* ==========================================================================
+   CONTENEDORES PRINCIPALES Y FORMULARIOS
+   ========================================================================== */
 .main-container {
     max-width: 1200px;
     margin: 20px auto;
@@ -122,10 +190,18 @@ body {
     gap: 1rem;
 }
 
+/* Contenedor en fila para fechas de entrada/salida */
+.input-row {
+    display: flex;
+    gap: 12px;
+    width: 100%;
+}
+
 .input-group {
     display: flex;
     flex-direction: column;
     gap: 6px;
+    width: 100%;
 }
 
 .input-group label {
@@ -170,8 +246,16 @@ body {
     width: 100%;
     background-color: var(--secondary-color);
     color: white;
+    transition: background-color 0.2s;
 }
 
+.btn-action:hover {
+    background-color: var(--primary-color);
+}
+
+/* ==========================================================================
+   CUADRO DE MANDOS DE METRICAS (KPIS) Y TARJETAS DEL MENU PRINCIPAL
+   ========================================================================== */
 .kpi-container {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -201,6 +285,77 @@ body {
     margin-top: 4px;
 }
 
+/* Estructura Modular de Tarjetas para el index.html */
+.menu-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+    width: 100%;
+}
+
+.card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.card-icon {
+    color: var(--secondary-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.card-title {
+    font-size: 1.25rem;
+    color: var(--primary-color);
+    font-weight: 700;
+}
+
+.card-description {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+    flex-grow: 1;
+}
+
+.card-action {
+    display: block;
+    text-align: center;
+    background-color: var(--secondary-color);
+    color: white;
+    padding: 10px 16px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: background-color 0.2s;
+}
+
+.card-action:hover {
+    background-color: var(--primary-color);
+}
+
+/* ==========================================================================
+   CONTENEDOR DE TARJETAS DE POTREROS ACTIVOS
+   ========================================================================== */
 .potreros-container {
     display: flex;
     flex-direction: column;
@@ -210,6 +365,7 @@ body {
     padding: 4px;
 }
 
+/* Corregida la llave rota que tenías aquí en tu archivo original */
 .potreros-ugm-card {
     background-color: var(--card-bg);
     border-left: 5px solid var(--primary-color);
