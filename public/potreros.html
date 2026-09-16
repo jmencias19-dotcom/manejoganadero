@@ -1,1 +1,269 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Gestión de Potreros - Hato Laguna Brava</title>
+    <link rel="manifest" href="manifest.json">
+    <!-- CONEXIÓN MODULAR AL DISEÑO -->
+    <link rel="stylesheet" href="potreros.css">
+</head>
+<body>
+
+    <!-- Encabezado -->
+    <header class="main-header">
+        <div class="header-container">
+            <!-- Botón de retorno al index.html -->
+            <div class="header-nav">
+                <a href="index.html" class="btn-back" style="text-decoration: none; font-weight: bold;">⬅️ Volver a Panel Principal</a>
+            </div>
+            <div class="header-title-wrapper">
+                <h1>Hato Laguna Brava - <span>Gestión de Potreros</span></h1>
+                <p>Matriz Técnica Oficial de Carga Animal y Control de UGM</p>
+            </div>
+            <!-- Semáforo de Sincronización de Datos -->
+            <div class="sync-status-wrapper">
+                <div id="sync-semaphore" class="semaphore offline" title="Estado de sincronización"></div>
+                <span id="sync-text" class="sync-text">Desconectado</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Contenedor Principal (Rejilla Responsiva) -->
+    <main class="main-container">
+        
+        <!-- Bloque Izquierdo: Formulario de Registro Dinámico -->
+        <section class="section-box">
+            <h2 class="section-title">Asignar Ganado a Potrero</h2>
+            <form id="form-mod1">
+                
+                <!-- Selección de Potrero Oficial (20 potreros del Hato) -->
+                <div class="input-group">
+                    <label for="select-potrero">Seleccionar Potrero</label>
+                    <select id="select-potrero" class="form-control" required>
+                        <option value="" disabled selected>-- Elija un Potrero --</option>
+                        <option value="Macanillal" data-ha="432">Macanillal (432 ha)</option>
+                        <option value="El Galpón" data-ha="569">El Galpón (569 ha)</option>
+                        <option value="Mata del Muerto" data-ha="80">Mata del Muerto (80 ha)</option>
+                        <option value="Manguito" data-ha="234">Manguito (234 ha)</option>
+                        <option value="Mata de Piña" data-ha="205">Mata de Piña (205 ha)</option>
+                        <option value="Las Rallas" data-ha="102">Las Rallas (102 ha)</option>
+                        <option value="Potrero del Medio" data-ha="703">Potrero del Medio (703 ha)</option>
+                        <option value="Cuatro Esquinas" data-ha="77">Cuatro Esquinas (77 ha)</option>
+                        <option value="Paulero" data-ha="418">Paulero (418 ha)</option>
+                        <option value="Jobo Gacho" data-ha="422">Jobo Gacho (422 ha)</option>
+                        <option value="Curva del Peligro" data-ha="40">Curva del Peligro (40 ha)</option>
+                        <option value="Módulo A" data-ha="36">Módulo A (36 ha)</option>
+                        <option value="Módulo B" data-ha="36">Módulo B (36 ha)</option>
+                        <option value="Módulo C" data-ha="36">Módulo C (36 ha)</option>
+                        <option value="Módulo D" data-ha="36">Módulo D (36 ha)</option>
+                        <option value="Módulo F" data-ha="143">Módulo F (143 ha)</option>
+                        <option value="Saladillal" data-ha="125">Saladillal (125 ha)</option>
+                        <option value="Carretera" data-ha="142">Carretera (142 ha)</option>
+                        <option value="María del Carmen" data-ha="32">María del Carmen (32 ha)</option>
+                        <option value="Casa" data-ha="26">Casa (26 ha)</option>
+                    </select>
+                </div>
+
+                <!-- Selección de Tipo de Especie -->
+                <div class="input-group" style="margin-top: 12px;">
+                    <label for="select-especie">Especie Ganadera</label>
+                    <select id="select-especie" class="form-control" required>
+                        <option value="BOVINOS">Bovinos (Vacunos)</option>
+                        <option value="BUFALINOS">Bufalinos (Búfalos)</option>
+                    </select>
+                </div>
+                
+                <!-- Categorías Zootécnicas Dinámicas -->
+                <div class="input-group" style="margin-top: 12px;">
+                    <label for="select-categoria">Categoría Zootécnica</label>
+                    <select id="select-categoria" class="form-control" required>
+                        <!-- El script potreros.js inyectará dinámicamente las opciones aquí -->
+                    </select>
+                </div>
+              
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('Módulo de Control de Levante Ganadero cargado correctamente.');
+
+    // 1. Cargar base de datos local existente o iniciar arreglo vacío
+    let registrosLevante = JSON.parse(localStorage.getItem('hato_levante_v1')) || [];
+
+    // 2. Capturar elementos específicos de la interfaz (levante.html)
+    const form = document.getElementById('form-mod1');
+    const contenedorLevante = document.getElementById('levante-wrapper');
+    const selectEspecie = document.getElementById('select-especie');
+    const alertSound = document.getElementById('alert-sound');
+    
+    // Elementos dinámicos del formulario para cálculos en tiempo real
+    const fechaAnteriorInput = document.getElementById('fecha-anterior');
+    const fechaActualInput = document.getElementById('fecha-actual');
+    const pesoAnteriorInput = document.getElementById('peso-anterior');
+    const pesoActualInput = document.getElementById('peso-actual');
+    
+    // Espacios de feedback técnico instantáneo
+    const diasDiferenciaDisplay = document.getElementById('dias-diferencia-val');
+    const gmdDisplay = document.getElementById('gmd-val');
+    const semaforo = document.getElementById('sync-semaphore');
+    const syncText = document.getElementById('sync-text');
+
+    // 3. Alarma Sonora para confirmación visual y acústica en corrales
+    function emitirAlertaSonora() {
+        if (alertSound) {
+            alertSound.currentTime = 0;
+            // Se fuerza el enlace público de Mixkit de respaldo directo si falla la raíz principal
+            if(alertSound.src.endsWith('.co') || alertSound.src.endsWith('.co/')) {
+                alertSound.src = "https://mixkit.co";
+            }
+            alertSound.play().catch(err => console.log("Audio retenido hasta interacción analógica del vaquero.", err));
+        }
+    }
+
+    // 4. Control de Estados de Red mediante el Semáforo Técnico
+    function ejecutarSincronizacionVisual(estado) {
+        if (!semaforo || !syncText) return;
+
+        if (estado === 'sincronizado') {
+            semaforo.style.backgroundColor = '#2e7d32'; // Verde Sabana
+            semaforo.className = 'semaphore online';
+            syncText.textContent = 'Sincronizado';
+            syncText.style.color = '#2e7d32';
+        } else if (estado === 'procesando') {
+            semaforo.style.backgroundColor = '#f57c00'; // Naranja Satelital
+            semaforo.className = 'semaphore processing';
+            syncText.textContent = 'Sincronizando...';
+            syncText.style.color = '#f57c00';
+        } else {
+            semaforo.style.backgroundColor = '#d32f2f'; // Rojo Alerta
+            semaforo.className = 'semaphore offline';
+            syncText.textContent = 'Desconectado';
+            syncText.style.color = '#d32f2f';
+        }
+    }
+
+    // 5. Lógica de Cálculos Zootécnicos en Tiempo Real (GMD)
+    function calcularMetricasLevante() {
+        let diasDiferencia = 0;
+        let gmd = 0;
+
+        // Cálculo exacto del tiempo transcurrido (forzando tiempo estricto local)
+        if (fechaAnteriorInput.value && fechaActualInput.value) {
+            const fAnt = new Date(fechaAnteriorInput.value + 'T00:00:00');
+            const fAct = new Date(fechaActualInput.value + 'T00:00:00');
+            const diferenciaMs = fAct.getTime() - fAnt.getTime();
+            
+            if (diferenciaMs >= 0) {
+                diasDiferencia = Math.ceil(diferenciaMs / (1000 * 60 * 60 * 24));
+            }
+        }
+
+        // Cálculo de Ganancia Media Diaria: ((Peso Actual - Peso Anterior) / Días) * 1000 gramos
+        if (pesoAnteriorInput.value && pesoActualInput.value && diasDiferencia > 0) {
+            const pAnt = parseFloat(pesoAnteriorInput.value);
+            const pAct = parseFloat(pesoActualInput.value);
+            gmd = ((pAct - pAnt) / diasDiferencia) * 1000;
+        }
+
+        // Renderizar los resultados directos en las casillas informativas del formulario
+        if (diasDiferenciaDisplay) diasDiferenciaDisplay.textContent = diasDiferencia;
+        if (gmdDisplay) {
+            gmdDisplay.textContent = gmd.toFixed(0);
+            // Alerta visual de color según la tendencia de ganancia o pérdida de peso
+            if (gmd >= 400) {
+                gmdDisplay.style.color = '#2e7d32'; // Verde: Óptimo levante llanero
+            } else if (gmd > 0 && gmd < 400) {
+                gmdDisplay.style.color = '#f4a261'; // Naranja: Estancamiento o baja suplementación
+            } else {
+                gmdDisplay.style.color = '#d32f2f'; // Rojo: Pérdida crítica de masa muscular
+            }
+        }
+
+        return { diasDiferencia, gmd };
+    }
+
+    // Escuchadores automatizados para computar cambios mientras el operario escribe
+    [fechaAnteriorInput, fechaActualInput, pesoAnteriorInput, pesoActualInput].forEach(input => {
+        if (input) input.addEventListener('input', calcularMetricasLevante);
+    });
+
+    // 6. Función para renderizar el Tablero Global de Indicadores (KPIs)
+    function renderizarTableroKPILevante() {
+        const kpiCabezas = document.getElementById('kpi-total-cabezas');
+        const kpiGmdGlobal = document.getElementById('kpi-total-gmd-global');
+        
+        if (!kpiCabezas || !kpiGmdGlobal) return;
+
+        if (registrosLevante.length === 0) {
+            kpiCabezas.textContent = '0';
+            kpiGmdGlobal.textContent = '0.00';
+            return;
+        }
+
+        const totalCabezas = registrosLevante.reduce((sum, item) => sum + item.cantidadCabezas, 0);
+        const sumaGMD = registrosLevante.reduce((sum, item) => sum + item.gmd, 0);
+        const gmdPromedioHato = sumaGMD / registrosLevante.length;
+
+        kpiCabezas.textContent = totalCabezas;
+        kpiGmdGlobal.textContent = `${gmdPromedioHato.toFixed(0)} g/día`;
+    }
+
+    // 7. Función para dibujar las Tarjetas Dinámicas de Evolución Ponderal
+    function renderizarTarjetasLevante() {
+        if (!contenedorLevante) return;
+
+        if (registrosLevante.length === 0) {
+            contenedorLevante.innerHTML = `
+                <div style="text-align:center; padding:30px; color:var(--text-muted);">
+                    <p> No hay lotes bajo control de levante registrados en este ciclo.</p>
+                    <p style="font-size:0.85rem; margin-top:4px;">Utilice el formulario técnico de la izquierda.</p>
+                </div>`;
+            return;
+        }
+
+        // Renderizado en orden inverso (lo más reciente arriba en la manga de pesaje)
+        contenedorLevante.innerHTML = [...registrosLevante].reverse().map((item, reverseIndex) => {
+            const indexOriginal = registrosLevante.length - 1 - reverseIndex;
+            
+            // Determinar estilo dinámico de borde según su GMD
+            let colorBorde = '#2e7d32'; // Verde exitoso
+            let tendenciaTexto = '📈 Ganancia Óptima';
+            if (item.gmd < 400 && item.gmd > 0) {
+                colorBorde = '#f4a261'; // Crecimiento lento
+                tendenciaTexto = '⚠️ Crecimiento Lento';
+            } else if (item.gmd <= 0) {
+                colorBorde = '#d32f2f'; // Alerta de pérdida de peso
+                tendenciaTexto = '🚨 Pérdida de Peso';
+            }
+
+            return `
+                <div class="potreros-ugm-card" style="margin-bottom: 12px; border-left: 5px solid ${colorBorde}; background-color:#ffffff; padding:16px; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.04);">
+                    <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--divider-color); padding-bottom:6px; margin-bottom:8px;">
+                        <span style="font-weight:700; color:var(--primary-color); font-size:1.05rem;">📋 ${item.loteNombre}</span>
+                        <span style="font-size:0.75rem; font-weight:700; background-color:#f4f6f4; padding:2px 8px; border-radius:12px; color:var(--secondary-color); text-transform:uppercase;">${item.especie}</span>
+                    </div>
+                    <div style="font-size:0.9rem; color:var(--text-main); line-height:1.5;">
+                        <p><strong>Tamaño del Lote:</strong> ${item.cantidadCabezas} Cabezas evaluadas</p>
+                        <p><strong>Evolución de Masa:</strong> de ${item.pesoAnterior} kg ➡️ a ${item.pesoActual} kg en ${item.diasControl} días</p>
+                        <p style="margin-top:6px; font-weight:800; color:${colorBorde};">⏱️ Rendimiento: ${item.gmd.toFixed(0)} g/animal/día (${tendenciaTexto})</p>
+                        ${item.observaciones ? `<p style="margin-top:6px; font-size:0.82rem; color:var(--text-muted); background-color:#fafbfc; padding:6px; border-radius:6px; border-left:3px solid var(--accent-color); font-style:italic;">"${item.observaciones}"</p>` : ''}
+                    </div>
+                    <button onclick="eliminarRegistroLevante(${indexOriginal})" style="background:none; border:none; color:var(--danger); font-size:0.8rem; cursor:pointer; margin-top:12px; font-weight:bold; padding:0;">
+                        ❌ Eliminar Control de Pesaje
+                    </button>
+                </div>
+            `;
+        }).join('');
+    }
+
+    // 8. Registro y Persistencia de los Datos del Formulario
+    if (form) {
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const loteSelect = document.getElementById('select-lote-levante');
+            const cantidadInput = document.getElementById('cantidad-cabezas');
+            const obsTextarea = document.getElementById('observaciones-levante');
+
+            if (!loteSelect.value || !cantidadInput.value || !fechaAnteriorInput.value || !fechaActualInput.value || !pesoAnteriorInput.value || !pesoActualInput.value) {
+                alert('Por favor, asiente todos los datos obligatorios de la pesada.');
+                return;
 
