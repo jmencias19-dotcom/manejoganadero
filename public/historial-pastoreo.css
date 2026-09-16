@@ -4,7 +4,30 @@
    ========================================================================== */
 
 /* ==========================================================================
-   1. Estilos del Formulario de Registro (Nuevas Reglas Añadidas)
+   Ajuste del Contenedor Principal (Rejilla Responsiva del Hato)
+   ========================================================================== */
+.main-container {
+  max-width: 1200px;
+  margin: 20px auto;
+  padding: 0 15px;
+  display: flex;          
+  flex-direction: column; 
+  gap: 24px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* En pantallas de computadoras o tabletas horizontales, se divide en 2 columnas perfectas */
+@media (min-width: 992px) {
+  .main-container {
+    display: grid;       
+    grid-template-columns: 1fr 1.2fr; /* Columna izquierda para formulario, derecha para el historial */
+    align-items: start;
+  }
+}
+
+/* ==========================================================================
+   1. Estilos del Formulario de Registro
    ========================================================================== */
 .form-section {
   max-width: 100%;
@@ -13,7 +36,7 @@
 
 .card-subtitle {
   font-size: 0.85rem;
-  color: var(--text-muted);
+  color: var(--text-muted, #6c757d);
   margin-top: -8px;
   margin-bottom: 20px;
 }
@@ -37,36 +60,39 @@
   flex-direction: column;
   gap: 6px;
   margin-bottom: 14px;
+  width: 100%;
 }
 
 .form-group label {
   font-size: 0.8rem;
-  font-weight: 600;
-  color: var(--text-light);
+  font-weight: 700;
+  color: var(--primary-color, #1b4332);
   text-transform: uppercase;
   letter-spacing: 0.3px;
 }
 
-/* Entradas, Selectores y Áreas de Texto */
+/* Entradas, Selectores y Áreas de Texto Adaptadas al Entorno Claro */
 .form-group input,
 .form-group select,
 .form-group textarea {
-  background-color: #263238;
-  color: var(--text-light);
-  border: 1px solid #37474f;
-  border-radius: var(--border-radius, 6px);
+  background-color: #fafbfc;
+  color: var(--text-main, #2b2b2b);
+  border: 1.5px solid var(--border-color, #d8dad8);
+  border-radius: var(--border-radius, 8px);
   padding: 12px;
   font-size: 0.95rem;
   font-family: inherit;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  width: 100%;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
 }
 
 .form-group input:focus,
 .form-group select:focus,
 .form-group textarea:focus {
   outline: none;
-  border-color: var(--accent);
-  box-shadow: 0 0 0 2px rgba(0, 230, 118, 0.2); /* Sombra suave con el color acento */
+  border-color: var(--accent-color, #52b788);
+  background-color: #ffffff;
 }
 
 /* Caja de Métricas Calculadas en Tiempo Real por JS */
@@ -74,9 +100,9 @@
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 12px;
-  background-color: #12181b;
-  border: 1px dashed #37474f;
-  border-radius: var(--border-radius, 6px);
+  background: linear-gradient(135deg, #f4f6f4, #e2e8e0);
+  border: 1px dashed var(--border-color, #d8dad8);
+  border-radius: var(--border-radius, 8px);
   padding: 14px;
   margin: 20px 0;
 }
@@ -84,12 +110,14 @@
 .metric-box {
   text-align: center;
   font-size: 0.85rem;
-  color: var(--text-muted);
+  color: var(--text-muted, #6c757d);
 }
 
 .metric-label {
   display: block;
-  font-size: 0.75rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--secondary-color, #2d6a4f);
   text-transform: uppercase;
   margin-bottom: 4px;
   letter-spacing: 0.3px;
@@ -97,9 +125,9 @@
 
 .metric-value {
   display: inline-block;
-  font-size: 1.3rem;
-  font-weight: 700;
-  color: var(--accent);
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--primary-color, #1b4332);
   margin-right: 2px;
 }
 
@@ -109,6 +137,8 @@
   flex-direction: column;
   gap: 12px;
   margin-top: 20px;
+  border-top: 1px solid var(--divider-color, #e2e8e0);
+  padding-top: 1.2rem;
 }
 
 @media (min-width: 480px) {
@@ -120,54 +150,45 @@
 }
 
 .btn-primary {
-  background-color: var(--accent);
-  color: #000000; /* Alto contraste para legibilidad en campo */
+  background-color: var(--secondary-color, #2d6a4f);
+  color: white; 
   font-weight: 700;
   border: none;
-  border-radius: var(--border-radius, 6px);
+  border-radius: var(--border-radius, 8px);
   padding: 14px 24px;
   font-size: 0.95rem;
   cursor: pointer;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  width: 100%;
   transition: background-color 0.2s ease, transform 0.1s ease;
 }
 
+@media (min-width: 480px) {
+  .btn-primary { width: auto; }
+}
+
 .btn-primary:hover {
-  filter: brightness(1.1);
+  background-color: var(--primary-color, #1b4332);
 }
 
 .btn-primary:active {
   transform: scale(0.98);
 }
 
-.btn-back {
-  text-align: center;
-  color: var(--text-muted);
-  text-decoration: none;
-  font-size: 0.9rem;
-  padding: 10px;
-  transition: color 0.2s ease;
-}
-
-.btn-back:hover {
-  color: var(--text-light);
-}
-
-
 /* ==========================================================================
-   2. Estilos Originales: Tarjetas de Historial y Línea de Tiempo
+   2. Estilos de Tarjetas de Historial y Línea de Timeline
    ========================================================================== */
 
 /* Tarjeta Principal del Historial */
 .historial-pastoreo-card {
-  background-color: var(--card-bg);
-  border-radius: var(--border-radius);
-  padding: 16px;
+  background-color: var(--card-bg, #ffffff);
+  border-radius: var(--border-radius, 12px);
+  padding: 20px;
   margin-bottom: 14px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-  border: 1px solid #263238;
-  transition: transform 0.15s ease, border-color 0.15s ease;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+  border: 1px solid var(--border-color, #d8dad8);
+  transition: transform 0.15s ease;
 }
 
 .historial-pastoreo-card:active {
@@ -179,15 +200,15 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid #37474f;
+  border-bottom: 1px solid var(--divider-color, #e2e8e0);
   padding-bottom: 10px;
   margin-bottom: 12px;
 }
 
 .historial-pastoreo-title {
-  font-size: 1.05rem;
+  font-size: 1.1rem;
   font-weight: 700;
-  color: var(--text-light);
+  color: var(--primary-color, #1b4332);
   display: flex;
   align-items: center;
   gap: 8px;
@@ -203,21 +224,18 @@
   letter-spacing: 0.5px;
 }
 
-/* En Ocupación Actual */
 .badge-ocupado {
-  background-color: #c62828;
+  background-color: var(--danger, #e63946);
   color: #ffffff;
 }
 
-/* En Período de Descanso / Recuperación */
 .badge-descanso {
-  background-color: var(--accent);
+  background-color: var(--success, #2a9d8f);
   color: #ffffff;
 }
 
-/* Alerta de Sobreocupación / Alerta de Pastoreo */
 .badge-alerta {
-  background-color: var(--warning);
+  background-color: var(--warning, #f4a261);
   color: #000000;
 }
 
@@ -225,49 +243,55 @@
 .pastoreo-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 10px;
+  gap: 12px;
   margin-bottom: 12px;
 }
 
 .historial-pastoreo-item {
-  background-color: #263238;
+  background-color: #fafbfc;
   padding: 10px;
   border-radius: 6px;
-  border-left: 3px solid var(--accent);
+  border-left: 4px solid var(--accent-color, #52b788);
+  border-top: 1px solid var(--border-color, #d8dad8);
+  border-right: 1px solid var(--border-color, #d8dad8);
+  border-bottom: 1px solid var(--border-color, #d8dad8);
 }
 
 .historial-pastoreo-label {
-  font-size: 0.75rem;
-  color: var(--text-muted);
+  font-size: 0.72rem;
+  color: var(--text-muted, #6c757d);
   display: block;
   margin-bottom: 2px;
   text-transform: uppercase;
   letter-spacing: 0.3px;
+  font-weight: 700;
 }
 
 .historial-pastoreo-value {
   font-size: 0.95rem;
   font-weight: 600;
-  color: var(--text-light);
+  color: var(--text-main, #2b2b2b);
   word-break: break-word;
 }
 
 /* Caja de Observaciones de Forraje / Carga */
 .historial-pastoreo-obs {
-  background-color: #12181b;
+  background-color: #fafbfc;
   border-radius: 6px;
   padding: 10px;
-  font-size: 0.82rem;
-  color: var(--text-muted);
+  font-size: 0.85rem;
+  color: var(--text-main, #2b2b2b);
   line-height: 1.4;
-  border: 1px dashed #37474f;
+  border: 1px dashed var(--border-color, #d8dad8);
+  font-style: italic;
 }
 
 .historial-pastoreo-obs strong {
-  color: var(--text-light);
+  color: var(--primary-color, #1b4332);
+  font-style: normal;
 }
 
-/* Estilos para Línea de Tiempo de Rotación */
+/* Estilos para Línea de Tiempo de Rotación (Historial) */
 .timeline-container {
   display: flex;
   flex-direction: column;
@@ -286,7 +310,7 @@
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  background-color: var(--accent);
+  background-color: var(--accent-color, #52b788);
   margin-top: 4px;
   flex-shrink: 0;
 }
@@ -297,18 +321,20 @@
 
 .timeline-details {
   flex-grow: 1;
-  background-color: #263238;
-  padding: 8px 12px;
+  background-color: #fafbfc;
+  padding: 10px 14px;
   border-radius: 6px;
+  border: 1px solid var(--border-color, #d8dad8);
 }
 
 .timeline-date {
   font-size: 0.72rem;
-  color: var(--text-muted);
-  font-weight: 600;
+  color: var(--text-muted, #6c757d);
+  font-weight: 700;
 }
 
 .timeline-text {
-  font-size: 0.85rem;
-  color: var(--text-light);
+  font-size: 0.88rem;
+  color: var(--text-main, #2b2b2b);
+  margin-top: 2px;
 }
