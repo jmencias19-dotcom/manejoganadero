@@ -1,1 +1,376 @@
+/* ==========================================================================
+   SISTEMA OPERATIVO GANADERO - HATO LAGUNA BRAVA
+   Hoja de Estilos Maestra Unificada (Potreros, Levante, Historial y Tareas)
+   ========================================================================== */
+
+:root {
+    /* Paleta de Colores Corporativa (Entorno Ecológico y Alta Visibilidad) */
+    --primary-color: #1b4332;     /* Verde Sabana Profundo (Títulos y Rangos) */
+    --secondary-color: #2d6a4f;   /* Verde Vegetación (Botones y Subtítulos) */
+    --accent-color: #52b788;      /* Verde Claro (Enfoques y Acentos Técnicos) */
+    --bg-color: #f4f6f4;          /* Gris Claro Sabanero (Fondo de Pantalla) */
+    --card-bg: #ffffff;           /* Blanco Puro (Tarjetas y Secciones) */
+    --text-main: #2b2b2b;         /* Negro Ceniza (Textos Principales) */
+    --text-muted: #6c757d;        /* Gris Industrial (Textos Muted) */
+    
+    /* Semáforo de Control Zootécnico y Sincronización */
+    --danger: #e63946;            /* Rojo Alerta (Pérdida de Peso / Desconectado) */
+    --warning: #f4a261;           /* Naranja Estancamiento (Desarrollo Lento) */
+    --success: #2a9d8f;           /* Verde Éxito (Óptimo Rendimiento / Sincronizado) */
+    
+    --border-color: #d8dad8;      /* Gris de Contorno Estructural */
+    --divider-color: #e2e8e0;     /* Línea Divisoria de Módulos */
+}
+
+/* ==========================================================================
+   1. REGLAS GENERALES Y DE ACCESIBILIDAD PARA EL CAMPO
+   ========================================================================== */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-main);
+    overflow-x: hidden;
+    padding-bottom: 30px;
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* ==========================================================================
+   2. ENCABEZADO CORPORATIVO DE APLICACIÓN (HEADER)
+   ========================================================================== */
+.main-header {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    padding: 1.2rem 1rem;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    border-bottom: 4px solid var(--accent-color);
+}
+
+.header-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    width: 100%;
+}
+
+@media (min-width: 768px) {
+    .header-container {
+        flex-direction: row;
+        justify-content: space-between;
+    }
+}
+
+/* Botón Técnico de Navegación "Volver" */
+.btn-back {
+    display: inline-flex;
+    align-items: center;
+    background-color: rgba(255, 255, 255, 0.15);
+    color: white;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: background-color 0.2s, transform 0.1s;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+.btn-back:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+    transform: translateY(-1px);
+}
+
+.header-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.header-title-wrapper {
+    text-align: center;
+}
+
+@media (min-width: 768px) {
+    .header-title-wrapper { text-align: left; }
+}
+
+.header-title-wrapper h1 {
+    font-size: 1.3rem;
+    line-height: 1.2;
+}
+
+.header-title-wrapper h1 span {
+    font-size: 0.95rem;
+    font-weight: 400;
+    opacity: 0.9;
+}
+
+.header-title-wrapper p {
+    font-size: 0.8rem;
+    opacity: 0.75;
+    margin-top: 2px;
+}
+
+/* Semáforo Visual de Red Satelital */
+.sync-status-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background-color: rgba(0, 0, 0, 0.2);
+    padding: 6px 14px;
+    border-radius: 20px;
+    min-width: 140px;
+    justify-content: center;
+}
+
+.semaphore {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: var(--danger);
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
+    transition: background-color 0.4s ease, box-shadow 0.4s ease;
+}
+
+.semaphore.online { background-color: var(--success); box-shadow: 0 0 10px rgba(42, 157, 143, 0.6); }
+.semaphore.processing { background-color: var(--warning); box-shadow: 0 0 10px rgba(244, 162, 97, 0.6); }
+.semaphore.offline { background-color: var(--danger); box-shadow: 0 0 10px rgba(230, 57, 70, 0.6); }
+
+.sync-text {
+    font-size: 0.8rem;
+    font-weight: bold;
+    color: white;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* ==========================================================================
+   3. REJILLA FLEXBOX PURA (CONTENEDOR DE PANTALLA)
+   ========================================================================== */
+.main-container {
+    display: flex;
+    flex-direction: column; 
+    gap: 24px;
+    width: 100%;
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 0 15px;
+    box-sizing: border-box;
+}
+
+@media (min-width: 992px) {
+    .main-container {
+        flex-direction: row;
+        align-items: flex-start;
+    }
+
+    /* Formulario Técnico (Izquierda - 45% de espacio en PC) */
+    .main-container > section:first-of-type {
+        flex: 1 1 45%;
+        min-width: 340px;
+    }
+
+    /* Tablero e Historial (Derecha - 55% de espacio en PC) */
+    .main-container > section:last-of-type {
+        flex: 1 1 55%;
+        min-width: 380px;
+    }
+}
+
+.section-box {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+    padding: 20px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.section-title {
+    margin-top: 0;
+    margin-bottom: 1.2rem;
+    font-size: 1.2rem;
+    color: var(--primary-color);
+    border-bottom: 2px solid var(--divider-color);
+    padding-bottom: 0.5rem;
+}
+
+/* ==========================================================================
+   4. COMPONENTES DE FORMULARIO DINÁMICO
+   ========================================================================== */
+.input-row {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    width: 100%;
+}
+
+@media (min-width: 768px) {
+    .input-row {
+        flex-direction: row;
+        justify-content: space-between;
+    }
+    .input-row .input-group {
+        flex: 1; /* Distribuye las columnas de manera equitativa */
+    }
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.input-group label {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.form-control {
+    width: 100%;
+    padding: 12px;
+    border: 1.5px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 1rem;
+    box-sizing: border-box;
+    background-color: #fafbfc;
+    color: var(--text-main);
+    transition: border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-control:focus {
+    border-color: var(--accent-color);
+    outline: none;
+    background-color: #ffffff;
+    box-shadow: 0 0 0 3px rgba(82, 183, 136, 0.15);
+}
+
+textarea.form-control {
+    min-height: 75px;
+    resize: vertical;
+}
+
+.btn-group {
+    display: flex;
+    gap: 10px;
+    margin-top: 0.5rem;
+    border-top: 1px solid var(--divider-color);
+    padding-top: 1.2rem;
+    width: 100%;
+}
+
+.btn-action {
+    padding: 14px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    width: 100%;
+    background-color: var(--secondary-color);
+    color: white;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: background-color 0.2s, transform 0.1s;
+}
+
+.btn-action:hover { background-color: var(--primary-color); }
+.btn-action:active { transform: scale(0.98); }
+
+/* ==========================================================================
+   5. RESUMEN DE MÉTRICAS EN TIEMPO REAL (DASHBOARD INTERNAL)
+   ========================================================================== */
+.metrics-summary {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    gap: 12px;
+    background: linear-gradient(135deg, #f4f6f4, #e2e8e0);
+    border: 1.5px dashed var(--secondary-color);
+    border-radius: 8px;
+    padding: 14px;
+}
+
+.metric-box {
+    flex: 1;
+    text-align: center;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.metric-label {
+    display: block;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--secondary-color);
+    text-transform: uppercase;
+    margin-bottom: 4px;
+    letter-spacing: 0.3px;
+}
+
+.metric-value {
+    display: inline-block;
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: var(--primary-color);
+    margin-right: 2px;
+    transition: color 0.2s;
+}
+
+/* ==========================================================================
+   6. CUADROS DE MANDO DE INDICADORES (KPIS)
+   ========================================================================== */
+.kpi-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 15px;
+}
+
+.kpi-card {
+    background: linear-gradient(135deg, #f4f6f4, #e2e8e0);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 12px;
+    text-align: center;
+}
+
+.kpi-title {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--secondary-color);
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.kpi-value {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: var(--primary-color);
+    margin-top: 4px;
+}
+
+/* ==========================================================================
+   7. CONTENEDOR DE TARJETAS GENERADAS (INVENTARIOS DINÁMICOS)
+   ========================================================================== */
+.potreros-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-height: 550px;
+    overflow-y: auto;
 
