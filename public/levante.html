@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel de Control de Pesaje - Ganadería</title>
+    <title>Panel de Control de Levante - Ganadería</title>
     <link rel="stylesheet" href="potreros.css">
     <!-- FontAwesome para iconos -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -17,7 +17,7 @@
         <header class="app-header">
             <div class="header-left">
                 <i class="fa-solid fa-bars menu-icon"></i>
-                <h1>Panel de Control de Pesaje</h1>
+                <h1>Panel de Control de Levante</h1>
             </div>
             <div class="header-right">
                 <button class="nav-btn"><i class="fa-solid fa-bell"></i> Alarma</button>
@@ -34,11 +34,11 @@
             
             <!-- COLUMNA IZQUIERDA: Entrada de Datos -->
             <section class="card form-section">
-                <h2>Entrada de Nuevo Pesaje de Lote</h2>
+                <h2>Entrada de Nuevo Registro de Levante</h2>
                 
                 <div class="search-row">
                     <div class="input-group">
-                        <label>Lote</label>
+                        <label>Lote / Potrero</label>
                         <input type="text" id="inputLote" value="Lote 1">
                     </div>
                 </div>
@@ -68,7 +68,7 @@
                 <!-- Selector de Época Estacional Detallada -->
                 <div class="form-grid-2">
                     <div class="input-group">
-                        <label>Época de Pesaje</label>
+                        <label>Época Climática</label>
                         <select id="selectEpoca" onchange="actualizarSubetapa()">
                             <option value="Invierno" selected>Invierno</option>
                             <option value="Verano">Verano</option>
@@ -77,16 +77,16 @@
                     <div class="input-group">
                         <label>Ciclo Estacional</label>
                         <select id="selectSubetapa">
-                            <option value="Entrante (Inicio)">Inicio (Entrante)</option>
-                            <option value="Mediados">Mediados</option>
-                            <option value="Finales">Finales</option>
+                            <option value="Invierno - Entrante">Inicio (Entrante)</option>
+                            <option value="Invierno - Mediados">Mediados</option>
+                            <option value="Invierno - Finales">Finales</option>
                         </select>
                     </div>
                 </div>
 
                 <div class="form-grid-2">
                     <div class="input-group">
-                        <label>Fecha Próximo Pesaje</label>
+                        <label>Fecha Próximo Control</label>
                         <input type="date" id="inputFechaProx" value="2026-09-19">
                     </div>
                     <div class="input-group highlight-box">
@@ -123,7 +123,7 @@
                 </div>
 
                 <button class="btn-primary" onclick="guardarYProcesar()">
-                    <i class="fa-solid fa-floppy-disk"></i> GUARDAR & SINCRONIZAR
+                    <i class="fa-solid fa-floppy-disk"></i> GUARDAR & SINCRONIZAR LEVANTE
                 </button>
             </section>
 
@@ -145,7 +145,7 @@
                 <!-- Panel de Resumen del Lote -->
                 <div class="summary-card">
                     <div class="summary-header">
-                        <h3>Resumen y Análisis del Lote</h3>
+                        <h3>Resumen y Análisis de Levante</h3>
                         <span class="subtext">Lote 1 (Bovino - Búfalino)</span>
                     </div>
 
@@ -182,7 +182,7 @@
 
                 <!-- Gráfico de Tendencia Reciente -->
                 <div class="chart-box">
-                    <h4>Historial de Pesajes Recientes</h4>
+                    <h4>Historial de Levante Reciente</h4>
                     <div class="fake-chart">
                         <div class="chart-line"></div>
                         <div class="chart-points">
@@ -200,7 +200,7 @@
                     <div id="listaRecomendaciones" class="rec-content">
                         <p><i class="fa-solid fa-circle-check text-green"></i> G.P.D. óptima para la época de invierno entrante.</p>
                         <p><i class="fa-solid fa-triangle-exclamation text-yellow"></i> Coeficiente de variación estable (6.5%). Mantener lote agrupado.</p>
-                        <p><i class="fa-solid fa-lightbulb text-blue"></i> Próximo pesaje programado en 60 días. Revisar suplementación mineral.</p>
+                        <p><i class="fa-solid fa-lightbulb text-blue"></i> Próximo control programado en 60 días. Revisar suplementación mineral.</p>
                     </div>
                 </div>
 
@@ -219,4 +219,3 @@
     <script src="potreros.js"></script>
 </body>
 </html>
-
