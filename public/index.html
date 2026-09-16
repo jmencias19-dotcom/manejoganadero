@@ -2,14 +2,11 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Sistema de Gestión Ganadera - Hato Laguna Brava</title>
     
-    <!-- Archivos de CSS externos -->
-    <link rel="stylesheet" href="variables.css?v=1.1">
-    <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="dashboard.css">
-    <link rel="stylesheet" href="planificacion.css">
+    <!-- CONEXIÓN EXCLUSIVA AL DISEÑO MAESTRO UNIFICADO -->
+    <link rel="stylesheet" href="potreros.css">
     <link rel="manifest" href="manifest.json">
 </head>
 <body>
@@ -19,7 +16,7 @@
         <div class="header-container">
             <!-- Bandera de Venezuela (SVG) -->
             <div class="flag-container" aria-label="Bandera de Venezuela">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600" class="flag-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600" class="flag-icon" style="width: 45px; height: auto; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">
                     <rect width="900" height="600" fill="#cf142b"/>
                     <rect width="900" height="400" fill="#00247d"/>
                     <rect width="900" height="200" fill="#fcdd09"/>
@@ -31,31 +28,31 @@
      
             <!-- Título Central con Siluetas de Ganado y Crédito Técnico -->
             <div class="header-title-wrapper">
-                <div class="animal-silhouettes-top" aria-hidden="true">
+                <div class="animal-silhouettes-top" aria-hidden="true" style="display: flex; justify-content: center; gap: 8px; margin-bottom: 4px; color: var(--accent-color);">
                     <!-- Silueta Vaca Cebú/Brahman -->
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="animal-icon" fill="currentColor">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="animal-icon" fill="currentColor" style="width: 24px; height: 24px;">
                         <path d="M4 8h2V6h2v2h8V6h2v2h2v4h-1v6h-2v-2H7v2H5v-6H4V8zm3 2v2h10v-2H7z"/>
                     </svg>
                     <!-- Silueta Búfalo de Agua -->
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="animal-icon" fill="currentColor">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="animal-icon" fill="currentColor" style="width: 24px; height: 24px;">
                         <path d="M2 10c0-2 2-4 5-4h1V5h2v1h6V5h2v1h1c3 0 5 2 5 4v3h-2v4h-2v-2H6v2H4v-4H2v-3zm5-2c-1.1 0-2 .9-2 2v1h2V8h-2zm10 0v3h2V9c0-1.1-.9-2-2-2z"/>
                     </svg>
                 </div>
                 
                 <h1>Gestión Ganadera Hato Laguna Brava
-                    <br><span style="font-size: 0.75em; font-weight: 600;">Grupo Imperatori</span>
+                    <br><span style="font-size: 0.75em; font-weight: 600; opacity: 0.95;">Grupo Imperatori</span>
                 </h1>
-                <p>Panel de Control Directo - Operaciones de Campo</p>
+                <p style="font-size: 0.85rem; opacity: 0.8; margin-top: 2px;">Panel de Control Directo - Operaciones de Campo</p>
                 
                 <!-- Firma de autoría técnica integrada -->
-                <p class="header-author" style="margin-top: 6px; font-size: 0.85rem; color: var(--accent, #00e676); font-weight: 600; letter-spacing: 0.5px;">
+                <p class="header-author" style="margin-top: 6px; font-size: 0.85rem; color: #fff; background: rgba(0,0,0,0.2); padding: 2px 10px; border-radius: 12px; display: inline-block; font-weight: 600; letter-spacing: 0.5px;">
                     📋 Creador y Diseñador: M.V. Juan Mencias
                 </p>
             </div>
 
             <!-- Bandera de Italia (SVG) -->
             <div class="flag-container" aria-label="Bandera de Italia">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600" class="flag-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600" class="flag-icon" style="width: 45px; height: auto; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">
                     <rect width="900" height="600" fill="#cd212a"/>
                     <rect width="600" height="600" fill="#ffffff"/>
                     <rect width="300" height="600" fill="#009246"/>
@@ -64,9 +61,9 @@
         </div>
     </header>    
 
-    <!-- Rejilla Principal de Trabajo Unificada -->
-    <main class="main-container" style="display: flex; justify-content: center; padding: 40px 20px;">
-        <div class="menu-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; width: 100%; max-width: 1200px;">
+    <!-- Contenedor Principal (Hereda la Grid Limpia del Hato de forma automatizada) -->
+    <main class="main-container">
+        <div class="menu-grid">
             
             <!-- Módulo: Planificación de Tareas -->
             <article class="card card-tareas">
@@ -86,23 +83,22 @@
             </article>
 
             <!-- Módulo: Historial de Pastoreo (Optimizado para Hato Laguna Brava) -->
-<article class="card">
-    <div class="card-header">
-        <!-- El atributo aria-hidden oculta correctamente solo el icono decorativo -->
-        <div class="card-icon" id="historial-pastoreo-icon" aria-hidden="true">
-            <!-- Namespace XML validado oficialmente bajo especificaciones W3C -->
-            <svg xmlns="http://w3.org" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/>
-                <path d="M6 6h12"/>
-                <path d="M6 10h12"/>
-            </svg>
-        </div>
-        <h2 class="card-title">Historial de Pastoreo</h2>
-    </div>
-    <p class="card-description">Registro y seguimiento en tiempo real de rotación de potreros y carga animal en la nube.</p>
-    <!-- Enlace verificado para evitar errores 404 en el despliegue de Vercel -->
-    <a href="historial-pastoreo.html" class="card-action">Acceder a Historial</a>
-</article>
+            <article class="card">
+                <div class="card-header">
+                    <div class="card-icon" id="historial-pastoreo-icon" aria-hidden="true">
+                        <!-- SE CORRIGIÓ: Namespace XML validado bajo estándares W3C oficiales -->
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/>
+                            <path d="M6 6h12"/>
+                            <path d="M6 10h12"/>
+                        </svg>
+                    </div>
+                    <h2 class="card-title">Historial de Pastoreo</h2>
+                </div>
+                <p class="card-description">Registro y seguimiento en tiempo real de rotación de potreros y carga animal en la nube.</p>
+                <a href="historial-pastoreo.html" class="card-action">Acceder a Historial</a>
+            </article>
+
             <!-- Módulo: Gestión de Potreros -->
             <article class="card">
                 <div class="card-header">
@@ -135,7 +131,7 @@
                 <a href="levante.html" class="card-action">Acceder a Control</a>
             </article>
 
-            <!-- Módulo: Inventario Sanitario -->
+                     <!-- Módulo: Inventario Sanitario -->
             <article class="card">
                 <div class="card-header">
                     <div class="card-icon" id="inventario-sanitario-icon" aria-hidden="true">
@@ -197,16 +193,22 @@
                     </div>
                     <h2 class="card-title">Indicadores de Gestión</h2>
                 </div>
-                <div class="card-content">
-                    <p class="card-description">Panel de control con métricas estratégicas, estadísticas del hato y resolución operativa.</p>
-                </div>
+                <p class="card-description">Panel de control con métricas estratégicas, estadísticas del hato y resolución operativa.</p>
                 <a href="indicadores-gestion.html" class="card-action">Acceder a Indicadores</a>
             </article>
 
         </div>
     </main>
 
-    <!-- Script lógico del módulo -->
-    <script type="module" src="indicadores-gestion.js"></script>
+    <!-- Script de Inicialización de la PWA y Sincronización en Segundo Plano -->
+    <script type="module">
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(reg => console.log('Protocolo offline activo en la sabana:', reg.scope))
+                    .catch(err => console.error('Fallo en el Service Worker:', err));
+            });
+        }
+    </script>
 </body>
 </html>
