@@ -2,156 +2,220 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Gestión de Potreros - Hato Laguna Brava</title>
-    <link rel="manifest" href="manifest.json">
-    <!-- CONEXIÓN MODULAR AL DISEÑO -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Control de Pesaje - Ganadería</title>
     <link rel="stylesheet" href="potreros.css">
+    <!-- FontAwesome para iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
 
-    <!-- Encabezado -->
-    <header class="main-header">
-        <div class="header-container">
-            <!-- Botón de retorno al index.html -->
-            <div class="header-nav">
-                <a href="index.html" class="btn-back" style="text-decoration: none; font-weight: bold;">⬅️ Volver a Panel Principal</a>
-            </div>
-            <div class="header-title-wrapper">
-                <h1>Hato Laguna Brava - <span>Gestión de Potreros</span></h1>
-                <p>Matriz Técnica Oficial de Carga Animal y Control de UGM</p>
-            </div>
-            <!-- Semáforo de Sincronización de Datos -->
-            <div class="sync-status-wrapper">
-                <div id="sync-semaphore" class="semaphore offline" title="Estado de sincronización"></div>
-                <span id="sync-text" class="sync-text">Desconectado</span>
-            </div>
-        </div>
-    </header>
-
-    <!-- Contenedor Principal (Rejilla Responsiva) -->
-    <main class="main-container">
+    <!-- Contenedor Principal Estilo Tablet -->
+    <div class="tablet-container">
         
-        <!-- Bloque Izquierdo: Formulario de Registro Dinámico -->
-        <section class="section-box">
-            <h2 class="section-title">Asignar Ganado a Potrero</h2>
-            <form id="form-mod1">
-                
-                <!-- Selección de Potrero Oficial (20 potreros del Hato) -->
-                <div class="input-group">
-                    <label for="select-potrero">Seleccionar Potrero</label>
-                    <select id="select-potrero" class="form-control" required>
-                        <option value="" disabled selected>-- Elija un Potrero --</option>
-                        <option value="Macanillal" data-ha="432">Macanillal (432 ha)</option>
-                        <option value="El Galpón" data-ha="569">El Galpón (569 ha)</option>
-                        <option value="Mata del Muerto" data-ha="80">Mata del Muerto (80 ha)</option>
-                        <option value="Manguito" data-ha="234">Manguito (234 ha)</option>
-                        <option value="Mata de Piña" data-ha="205">Mata de Piña (205 ha)</option>
-                        <option value="Las Rallas" data-ha="102">Las Rallas (102 ha)</option>
-                        <option value="Potrero del Medio" data-ha="703">Potrero del Medio (703 ha)</option>
-                        <option value="Cuatro Esquinas" data-ha="77">Cuatro Esquinas (77 ha)</option>
-                        <option value="Paulero" data-ha="418">Paulero (418 ha)</option>
-                        <option value="Jobo Gacho" data-ha="422">Jobo Gacho (422 ha)</option>
-                        <option value="Curva del Peligro" data-ha="40">Curva del Peligro (40 ha)</option>
-                        <option value="Módulo A" data-ha="36">Módulo A (36 ha)</option>
-                        <option value="Módulo B" data-ha="36">Módulo B (36 ha)</option>
-                        <option value="Módulo C" data-ha="36">Módulo C (36 ha)</option>
-                        <option value="Módulo D" data-ha="36">Módulo D (36 ha)</option>
-                        <option value="Módulo F" data-ha="143">Módulo F (143 ha)</option>
-                        <option value="Saladillal" data-ha="125">Saladillal (125 ha)</option>
-                        <option value="Carretera" data-ha="142">Carretera (142 ha)</option>
-                        <option value="María del Carmen" data-ha="32">María del Carmen (32 ha)</option>
-                        <option value="Casa" data-ha="26">Casa (26 ha)</option>
-                    </select>
+        <!-- Barra Superior (Header) -->
+        <header class="app-header">
+            <div class="header-left">
+                <i class="fa-solid fa-bars menu-icon"></i>
+                <h1>Panel de Control de Pesaje</h1>
+            </div>
+            <div class="header-right">
+                <button class="nav-btn"><i class="fa-solid fa-bell"></i> Alarma</button>
+                <button class="nav-btn"><i class="fa-solid fa-comment-dots"></i> Notificación</button>
+                <button class="nav-btn"><i class="fa-solid fa-rotate"></i> Sincronización</button>
+                <div class="user-avatar">
+                    <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100" alt="Avatar Usuario">
                 </div>
+            </div>
+        </header>
 
-                <!-- Selección de Tipo de Especie -->
-                <div class="input-group" style="margin-top: 12px;">
-                    <label for="select-especie">Especie Ganadera</label>
-                    <select id="select-especie" class="form-control" required>
-                        <option value="BOVINOS">Bovinos (Vacunos)</option>
-                        <option value="BUFALINOS">Bufalinos (Búfalos)</option>
-                    </select>
-                </div>
-                
-                <!-- Categorías Zootécnicas Dinámicas -->
-                <div class="input-group" style="margin-top: 12px;">
-                    <label for="select-categoria">Categoría Zootécnica</label>
-                    <select id="select-categoria" class="form-control" required>
-                        <!-- El script potreros.js inyectará dinámicamente las opciones aquí -->
-                    </select>
-                </div>
-
-                <!-- Temporada Agroecológica -->
-                <div class="input-group" style="margin-top: 12px;">
-                    <label for="select-temporada">Temporada Agroecológica</label>
-                    <select id="select-temporada" class="form-control" required>
-                        <option value="" disabled selected>-- Seleccione Época --</option>
-                        <optgroup label="Invierno (Lluvias)">
-                            <option value="INVIERNO_ENTRADA">Invierno - Entrada (Mayo/Junio)</option>
-                            <option value="INVIERNO_MEDIADOS">Invierno - Mediados (Julio/Agosto)</option>
-                            <option value="INVIERNO_SALIDA">Invierno - Salida (Septiembre/Octubre)</option>
-                        </optgroup>
-                        <optgroup label="Verano (Sequía)">
-                            <option value="VERANO_ENTRADA">Verano - Entrada (Noviembre/Diciembre)</option>
-                            <option value="VERANO_MEDIADOS">Verano - Mediados (Enero/Febrero)</option>
-                            <option value="VERANO_SALIDA">Verano - Salida (Marzo/Abril)</option>
-                        </optgroup>
-                    </select>
-                </div>
-
-                <!-- Fechas de Control de Pastoreo -->
-                <div class="input-row" style="display: flex; gap: 10px; margin-top: 12px;">
-                    <div class="input-group" style="flex: 1;">
-                        <label for="fecha-ingreso">Fecha de Ingreso</label>
-                        <input type="date" id="fecha-ingreso" class="form-control" required>
-                    </div>
-                    <div class="input-group" style="flex: 1;">
-                        <label for="fecha-salida">Fecha de Salida</label>
-                        <input type="date" id="fecha-salida" class="form-control" required>
-                    </div>
-                </div>
-
-                <!-- Cantidad de Animales -->
-                <div class="input-group" style="margin-top: 12px;">
-                    <label for="cantidad-cabezas">Cantidad de Cabezas (Animales)</label>
-                    <input type="number" id="cantidad-cabezas" class="form-control" placeholder="Ej: 80" min="1" required>
-                </div>
-
-                <div class="btn-group" style="margin-top: 16px;">
-                    <button type="submit" class="btn-action">💾 Registrar Carga Animal y Sincronizar</button>
-                </div>
-            </form>
-        </section>
-
-        <!-- Bloque Derecho: Inventario y Tarjetas KPI -->
-        <section class="section-box">
-            <h2 class="section-title">Estado de Carga Ecológica del Hato</h2>
+        <!-- Cuerpo de la Interfaz (Grid de 2 Columnas) -->
+        <div class="app-body">
             
-            <!-- Tablero de Indicadores Rápidos -->
-            <div class="kpi-container">
-                <div class="kpi-card">
-                    <div class="kpi-title">Total Animales</div>
-                    <div id="kpi-total-cabezas" class="kpi-value">0</div>
+            <!-- COLUMNA IZQUIERDA: Entrada de Datos -->
+            <section class="card form-section">
+                <h2>Entrada de Nuevo Pesaje de Lote</h2>
+                
+                <div class="search-row">
+                    <div class="input-group">
+                        <label>Lote</label>
+                        <input type="text" id="inputLote" value="Lote 1">
+                    </div>
                 </div>
-                <div class="kpi-card">
-                    <div class="kpi-title">Total UGM Global</div>
-                    <div id="kpi-total-ugm" class="kpi-value">0.00</div>
+
+                <div class="form-grid-2">
+                    <div class="input-group">
+                        <label>Peso Inicial Lote (kg)</label>
+                        <input type="number" id="inputPesoInicial" value="269">
+                    </div>
+                    <div class="input-group">
+                        <label>Peso Máximo (kg)</label>
+                        <input type="number" id="inputPesoMax" value="30">
+                    </div>
                 </div>
-            </div>
 
-            <!-- Contenedor Dinámico de Potreros Activos -->
-            <div class="potreros-container">
-                <!-- Aquí el archivo JavaScript dibujará las tarjetas calculando los días de ocupación -->
-            </div>
-        </section>
+                <div class="form-grid-2">
+                    <div class="input-group">
+                        <label>Nº Animales / Lote</label>
+                        <input type="number" id="inputNumAnimales" value="9">
+                    </div>
+                    <div class="input-group">
+                        <label>Peso Mínimo (kg)</label>
+                        <input type="number" id="inputPesoMin" value="21">
+                    </div>
+                </div>
 
-    </main>
+                <!-- Selector de Época Estacional Detallada -->
+                <div class="form-grid-2">
+                    <div class="input-group">
+                        <label>Época de Pesaje</label>
+                        <select id="selectEpoca" onchange="actualizarSubetapa()">
+                            <option value="Invierno" selected>Invierno</option>
+                            <option value="Verano">Verano</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>Ciclo Estacional</label>
+                        <select id="selectSubetapa">
+                            <option value="Entrante (Inicio)">Inicio (Entrante)</option>
+                            <option value="Mediados">Mediados</option>
+                            <option value="Finales">Finales</option>
+                        </select>
+                    </div>
+                </div>
 
-<!-- Elemento de audio con URL en la nube para evitar el error 404 de Vercel -->
-<audio id="alert-sound" src="https://mixkit.co" preload="auto"></audio>
+                <div class="form-grid-2">
+                    <div class="input-group">
+                        <label>Fecha Próximo Pesaje</label>
+                        <input type="date" id="inputFechaProx" value="2026-09-19">
+                    </div>
+                    <div class="input-group highlight-box">
+                        <label>Días Restantes</label>
+                        <div id="displayDiasRestantes" class="static-value">60 Días</div>
+                    </div>
+                </div>
 
-    <!-- CONEXIÓN MODULAR A LA LÓGICA -->
+                <div class="form-grid-2">
+                    <div class="input-group">
+                        <label>Edad Promedio Lote (meses)</label>
+                        <input type="number" id="inputEdad" value="2.5">
+                    </div>
+                    <div class="input-group">
+                        <label>Peso Esperado Salida (kg)</label>
+                        <input type="number" id="inputPesoEsperado" value="180">
+                    </div>
+                </div>
+
+                <div class="form-grid-2">
+                    <div class="input-group">
+                        <label>Tiempo de Salida (meses)</label>
+                        <input type="number" id="inputTiempoSalida" value="2.5">
+                    </div>
+                    <div class="input-group">
+                        <label>Coeficiente de Variación (%)</label>
+                        <input type="number" id="inputCV" value="6.5">
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label>Observación General</label>
+                    <textarea id="inputObservacion" rows="2">Lote 1's average in best column.</textarea>
+                </div>
+
+                <button class="btn-primary" onclick="guardarYProcesar()">
+                    <i class="fa-solid fa-floppy-disk"></i> GUARDAR & SINCRONIZAR
+                </button>
+            </section>
+
+            <!-- COLUMNA DERECHA: Resumen, Analítica e Indicadores -->
+            <section class="card analysis-section">
+                
+                <div class="top-search-bar">
+                    <div class="search-box">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" placeholder="Buscar Lote...">
+                    </div>
+                    <!-- Indicador Visual de Tendencia -->
+                    <div id="indicadorTendencia" class="trend-badge positive">
+                        <i class="fa-solid fa-caret-up"></i>
+                        <span>Aumento</span>
+                    </div>
+                </div>
+
+                <!-- Panel de Resumen del Lote -->
+                <div class="summary-card">
+                    <div class="summary-header">
+                        <h3>Resumen y Análisis del Lote</h3>
+                        <span class="subtext">Lote 1 (Bovino - Búfalino)</span>
+                    </div>
+
+                    <!-- Métricas Circulares / KPI Cards -->
+                    <div class="kpi-container">
+                        <div class="kpi-circle">
+                            <span class="kpi-val" id="kpiGPD">1.0 kg</span>
+                            <span class="kpi-label">G.P.D. <small>(Ganancia Prom. Diaria)</small></span>
+                        </div>
+                        <div class="kpi-circle">
+                            <span class="kpi-val" id="kpiGPA">2.5 kg</span>
+                            <span class="kpi-label">G.P.A. <small>(Ganancia Prom. Animal)</small></span>
+                        </div>
+                        <div class="kpi-circle">
+                            <span class="kpi-val">X kg/kg</span>
+                            <span class="kpi-label">Conversión Alimenticia (CA)</span>
+                        </div>
+                    </div>
+
+                    <!-- Lista Detallada de Parámetros -->
+                    <ul class="stats-list">
+                        <li><span><i class="fa-solid fa-users"></i> Nº Animales</span> <strong id="resNumAnimales">9</strong></li>
+                        <li><span><i class="fa-solid fa-weight-scale"></i> Peso Promedio Lote</span> <strong id="resPesoProm">25.5 kg/animal</strong></li>
+                        <li><span><i class="fa-solid fa-arrow-up"></i> Peso Maximo</span> <strong id="resPesoMax">30 kg</strong></li>
+                        <li><span><i class="fa-solid fa-arrow-down"></i> Peso Minimo</span> <strong id="resPesoMin">21 kg</strong></li>
+                        <li><span><i class="fa-solid fa-chart-line"></i> Coeficiente de Variación</span> <strong id="resCV">6.5%</strong></li>
+                        <li><span><i class="fa-solid fa-cloud-sun"></i> Epoca de Pesaje</span> <strong id="resEpoca">Invierno - Entrante</strong></li>
+                        <li><span><i class="fa-solid fa-calendar-days"></i> Fecha Proximo Pesaje</span> <strong id="resFechaProx">19/09/26</strong></li>
+                        <li><span><i class="fa-solid fa-clock"></i> Edad Promedio</span> <strong id="resEdad">2.5 meses</strong></li>
+                        <li><span><i class="fa-solid fa-hourglass-half"></i> Tiempo de Salida</span> <strong id="resTiempoSalida">2.5 meses</strong></li>
+                        <li><span><i class="fa-solid fa-stopwatch"></i> Dias Restantes</span> <strong id="resDiasRest">60 Días</strong></li>
+                    </ul>
+                </div>
+
+                <!-- Gráfico de Tendencia Reciente -->
+                <div class="chart-box">
+                    <h4>Historial de Pesajes Recientes</h4>
+                    <div class="fake-chart">
+                        <div class="chart-line"></div>
+                        <div class="chart-points">
+                            <span style="left: 10%; top: 60%;"></span>
+                            <span style="left: 35%; top: 20%;"></span>
+                            <span style="left: 65%; top: 50%;"></span>
+                            <span style="left: 90%; top: 35%;"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bloque Automatizado: Recomendaciones y Análisis de Datos (I.D.) -->
+                <div class="recommendations-box">
+                    <h4><i class="fa-solid fa-robot"></i> Recomendaciones y Análisis de Datos (Automatizado)</h4>
+                    <div id="listaRecomendaciones" class="rec-content">
+                        <p><i class="fa-solid fa-circle-check text-green"></i> G.P.D. óptima para la época de invierno entrante.</p>
+                        <p><i class="fa-solid fa-triangle-exclamation text-yellow"></i> Coeficiente de variación estable (6.5%). Mantener lote agrupado.</p>
+                        <p><i class="fa-solid fa-lightbulb text-blue"></i> Próximo pesaje programado en 60 días. Revisar suplementación mineral.</p>
+                    </div>
+                </div>
+
+                <!-- Botones de Acción Secundaria -->
+                <div class="action-buttons-row">
+                    <button class="btn-danger"><i class="fa-solid fa-trash"></i> BORRAR REGISTRO</button>
+                    <button class="btn-warning"><i class="fa-solid fa-rotate-left"></i> REHACER REGISTRO</button>
+                    <button class="btn-info"><i class="fa-solid fa-file-pdf"></i> GENERAR INFORME PDF</button>
+                </div>
+
+            </section>
+
+        </div>
+    </div>
+
     <script src="potreros.js"></script>
 </body>
 </html>
