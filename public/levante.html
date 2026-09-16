@@ -14,19 +14,20 @@
            --text-main: #333333;
            --text-muted: #666666;
            --border-color: #d0d7d0;
+           --warn-color: #e65100;
         }
 
         * {
-           box-sizing: border-box;
-           margin: 0;
-           padding: 0;
-           font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
 
         body {
-           background-color: var(--bg-color);
-           color: var(--text-main);
-           padding: 20px;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            padding: 20px;
         }
 
        .tablet-container {
@@ -35,11 +36,11 @@
            background-color: var(--card-bg);
             border: 8px solid #333333;
            border-radius: 16px;
-           box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
             overflow: hidden;
             display: grid;
            grid-template-columns: 1fr 1fr;
-           grid-template-rows: auto auto 1fr;
+           grid-template-rows: auto auto auto 1fr;
         }
 
         .app-header {
@@ -55,30 +56,29 @@
         .app-title {
             font-size: 1.1rem;
            font-weight: bold;
-           letter-spacing: 0.5px;
+            letter-spacing: 0.5px;
         }
 
-        .app-icons {
-            display: flex;
-            gap: 15px;
-            font-size: 1rem;
+        .btn-volver {
+            background-color: var(--secondary-color);
+            color: white;
+            border: 1px solid var(--accent-color);
+            padding: 6px 12px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: bold;
+            transition: background 0.2s;
         }
 
-        .app-icons span {
-            cursor: pointer;
-            padding: 2px 6px;
-           border-radius: 4px;
-           transition: background 0.2s;
-        }
-
-        .app-icons span:hover {
-           background-color: var(--secondary-color);
+        .btn-volver:hover {
+            background-color: #1b5e20;
         }
 
         .panel-section {
             padding: 12px 15px;
-           border-bottom: 1px solid var(--border-color);
-           border-right: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color);
+            border-right: 1px solid var(--border-color);
         }
 
         .panel-section.full-width {
@@ -87,14 +87,14 @@
         }
 
         .section-title {
-           background-color: #e8f5e9;
+            background-color: #e8f5e9;
             color: var(--primary-color);
             padding: 6px 10px;
             font-size: 0.85rem;
            font-weight: bold;
-           text-transform: uppercase;
-           border-left: 4px solid var(--secondary-color);
-           margin-bottom: 8px;
+            text-transform: uppercase;
+            border-left: 4px solid var(--secondary-color);
+            margin-bottom: 8px;
             display: flex;
            justify-content: space-between;
             align-items: center;
@@ -108,7 +108,7 @@
         }
 
         .data-item {
-           margin-bottom: 4px;
+            margin-bottom: 4px;
         }
 
         .data-label {
@@ -126,6 +126,34 @@
             color: var(--secondary-color);
         }
 
+        /* Semáforo de Sincronización */
+        .sync-container {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+
+        .sync-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: #ff9800; /* Amarillo por defecto */
+            display: inline-block;
+            box-shadow: 0 0 4px rgba(0,0,0,0.3);
+        }
+
+        .sync-dot.online { background-color: #4caf50; }
+        .sync-dot.syncing { background-color: #2196f3; animation: pulse 1s infinite; }
+        .sync-dot.offline { background-color: #f44336; }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.4; }
+            100% { opacity: 1; }
+        }
+
        .tab-buttons-container {
            grid-column: 1 / -1;
             display: grid;
@@ -133,7 +161,7 @@
             gap: 10px;
             padding: 15px;
            background-color: #f9fbf9;
-           border-top: 1px solid var(--border-color);
+            border-top: 1px solid var(--border-color);
         }
 
         .tab-btn {
@@ -147,10 +175,10 @@
             cursor: pointer;
             display: flex;
            flex-direction: column;
-           align-items: center;
+            align-items: center;
             gap: 6px;
             transition: background-color 0.2s, transform 0.1s;
-           text-align: center;
+            text-align: center;
         }
 
         .tab-btn:hover {
@@ -184,11 +212,11 @@
         }
 
        .interactive-box {
-           background: #ffffff;
+            background: #ffffff;
             border: 1px solid var(--border-color);
             padding: 10px;
            border-radius: 6px;
-           margin-top: 8px;
+            margin-top: 8px;
         }
 
        .interactive-input {
@@ -196,7 +224,7 @@
             width: 100%;
             border: 1px solid var(--border-color);
            border-radius: 4px;
-           margin-top: 4px;
+            margin-top: 4px;
             font-size: 0.9rem;
         }
 
@@ -208,7 +236,7 @@
             border-radius: 4px;
             cursor: pointer;
            font-weight: bold;
-           margin-top: 6px;
+            margin-top: 6px;
         }
 
        .action-btn:hover {
@@ -216,20 +244,21 @@
         }
 
        .save-container {
-           margin-top: 10px;
+            margin-top: 10px;
             display: flex;
            justify-content: flex-end;
+            gap: 10px;
         }
 
         @media (max-width: 900px) {
            .tablet-container {
-               grid-template-columns: 1fr;
+                grid-template-columns: 1fr;
             }
            .panel-section {
-               border-right: none;
+                border-right: none;
             }
            .tab-buttons-container {
-               grid-template-columns: 1fr;
+                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -237,28 +266,57 @@
 <body>
 
     <div class="tablet-container">
-        <!-- Barra Superior -->
+        <!-- Barra Superior con Botón de Retorno y Semáforo -->
         <div class="app-header">
-            <div class="app-title">☰ PANEL DE CONTROL ZOOTÉCNICO - HATO LAGUNA BRAVA</div>
-            <div class="app-icons">
-                <span title="Menú">⋮</span>
+            <div class="app-title">⚡ PANEL ZOOTÉCNICO - HATO LAGUNA BRAVA</div>
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <div class="sync-container">
+                    <span id="dot-sync" class="sync-dot online"></span>
+                    <span id="estado-sinc">Sistema En Línea</span>
+                </div>
+                <a href="index.html" class="btn-volver">← Volver al Panel Principal</a>
             </div>
         </div>
 
-        <!-- Sección 1: Identificación del Lote y Fechas Operativas -->
+        <!-- MÓDULO NUEVO: Búsqueda Inteligente de Lotes y Asistencia IA -->
+        <div class="panel-section full-width" style="background-color: #f1f8f1;">
+            <div class="section-title">
+                🔍 Consulta Rápida y Auditoría IA de Lotes en Sabana
+            </div>
+            <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                <div style="flex: 1; min-width: 250px;">
+                    <label class="data-label">Seleccionar o Buscar Lote:</label>
+                    <select id="select-busqueda-lotes" class="interactive-input" onchange="cargarDatosLoteSeleccionado()">
+                        <option value="">-- Seleccione un Lote del Hato --</option>
+                        <option value="levante_modulos">Lote Levante y Ceba - Módulos</option>
+                        <option value="brahman_estero">Lote Cría Brahman - Banco e Estero</option>
+                        <option value="mastas_levante">Lote Masteño Levante - Módulos Bajos</option>
+                    </select>
+                </div>
+                <div>
+                    <button class="action-btn" style="margin-top: 20px;" onclick="ejecutarAuditoriaIA()">🤖 Ejecutar Auditoría Asistida IA</button>
+                </div>
+            </div>
+            <!-- Contenedor de Sugerencias de IA -->
+            <div id="ia-sugerencias-box" class="interactive-box" style="margin-top: 10px; display: none; background: #e8f5e9; border-left: 4px solid var(--secondary-color);">
+                <div class="data-label" style="color: var(--primary-color); font-weight: bold;">Sugerencias Estratégicas RancherAI:</div>
+                <p id="texto-sugerencia-ia" style="font-size: 0.85rem; margin-top: 4px;"></p>
+            </div>
+        </div>
+
+        <!-- Sección 1: Identificación del Lote, Grupo y Fechas Operativas -->
         <div class="panel-section">
             <div class="section-title">
-               Identificación del Lote y Fechas Clave
-               <span style="font-size: 0.75rem; font-weight: normal; color: var(--secondary-color);" id="estado-sinc">Sincronizado</span>
+               Identificación del Lote, Grupo y Fechas Clave
             </div>
             <div class="grid-2">
                <div class="interactive-box" style="margin-top: 0;">
-                    <div class="data-label">Nombre del Lote / Grupo</div>
-                   <input type="text" id="input-nombre-lote" class="interactive-input" value="Lote Levante y Ceba - Módulos">
+                    <div class="data-label">Nombre del Lote</div>
+                    <input type="text" id="input-nombre-lote" class="interactive-input" value="Lote Levante y Ceba">
                 </div>
                 <div class="interactive-box" style="margin-top: 0;">
-                    <div class="data-label">Potrero / Ubicación</div>
-                    <input type="text" id="input-grupo-lote" class="interactive-input" value="Potrero Banco e Estero (Apure)">
+                    <div class="data-label">Grupo Ganadero</div>
+                    <input type="text" id="input-grupo-lote" class="interactive-input" value="Mestizos Brahman - Módulos">
                 </div>
                 <div class="interactive-box">
                     <div class="data-label">Fecha de Pesaje</div>
@@ -266,8 +324,13 @@
                 </div>
                 <div class="interactive-box">
                     <div class="data-label">Fecha Próximo Pesaje</div>
-                    <input type="date" id="input-prox-pesaje" class="interactive-input" value="2026-11-15">
+                    <input type="date" id="input-prox-pesaje" class="interactive-input" value="2026-11-15" onchange="calcularDiasRestantes()">
                 </div>
+            </div>
+            <!-- Indicador dinámico de días para el próximo pesaje -->
+            <div class="interactive-box" style="background: #fffde7; border-color: #ffd54f;">
+                <div class="data-label" style="font-weight: bold; color: #f57f17;">⏱️ Control de Ciclo de Pesaje:</div>
+                <div id="val-dias-proximo" class="data-value" style="font-size: 0.95rem; margin-top: 2px;">Calculando días restantes...</div>
             </div>
         </div>
         
@@ -276,7 +339,11 @@
             <div class="section-title">Métricas y Proyecciones Zootécnicas</div>
             <div class="grid-2">
                <div class="data-item">
-                   <div class="data-label">Peso Actual</div>
+                   <div class="data-label">Peso de Entrada</div>
+                   <input type="text" id="input-peso-entrada" class="interactive-input" value="296.5 kg" style="margin-top:2px; font-weight:bold;">
+               </div>
+               <div class="data-item">
+                   <div class="data-label">Peso Actual (Manga)</div>
                    <div class="data-value highlight-value" id="val-peso">438.5 kg</div>
                </div>
                <div class="data-item">
@@ -295,7 +362,7 @@
                     <div class="data-label">Tiempo de Salida Estimado</div>
                     <div class="data-value" id="val-tiempo-salida">2.5 meses</div>
                 </div>
-                <div class="data-item">
+                <div class="data-item" style="grid-column: 1 / -1;">
                     <div class="data-label">Época del Año</div>
                     <select id="select-epoca" class="interactive-input" style="margin-top:2px;">
                         <option value="invierno">Invierno (Lluvias / Estero)</option>
@@ -308,7 +375,7 @@
             <div class="interactive-box">
                <div class="data-label">Simular Nuevo Pesaje en Manga:</div>
                <input type="number" id="input-nuevo-peso" class="interactive-input" placeholder="Ej. 445.0" step="0.5">
-                <button class="action-btn" onclick="actualizarMetrica()">Recalcular Métrica</button>
+               <button class="action-btn" onclick="actualizarMetrica()">Recalcular Métrica</button>
             </div>
         </div>
 
@@ -329,11 +396,13 @@
                 </div>
             </div>
             <div class="data-item" style="font-size: 0.9rem; padding: 4px 0;" id="texto-proyeccion">
-                <strong>Resumen Táctico:</strong> Lote bajo óptimas condiciones en los Módulos de Mantecal. Planificar logística de potreros para prevenir fluctuaciones de peso ante cambios climáticos estacionales.
+                <strong>Resumen Táctico:</strong> Lote bajo óptimas condiciones en los Módulos de Mantecal. Planificar rotación para prevenir fluctuaciones de peso ante cambios estacionales.
             </div>
             
+            <!-- Botones de Guardado y Sincronización Avanzada -->
             <div class="save-container">
-               <button class="action-btn" style="background-color: var(--primary-color); padding: 8px 16px;" onclick="guardarDatosFinca()">💾 Guardar Registro en Base de Datos</button>
+               <button class="action-btn" style="background-color: var(--warn-color);" onclick="probarAlertaSonora()">🔊 Probar Alerta Sonora</button>
+               <button class="action-btn" style="background-color: var(--primary-color); padding: 8px 16px;" onclick="guardarY અથવાSincronizarFinca()">💾 Guardar Registro y Sincronizar Base de Datos</button>
             </div>
         </div>
 
@@ -345,7 +414,7 @@
             </button>
             <button class="tab-btn" id="btn-laboratorio" onclick="toggleSection('sec-laboratorio', this)">
                <span class="tab-icon">🔬</span>
-               Resultados de Laboratorio
+                Resultados de Laboratorio
             </button>
             <button class="tab-btn" id="btn-historial" onclick="toggleSection('sec-historial', this)">
                <span class="tab-icon">📋</span>
@@ -382,7 +451,7 @@
         <!-- Contenido Oculto 3 -->
         <div id="sec-historial" class="collapsible-content">
             <div class="section-title">Historial de Intervenciones y Seguimiento Histórico</div>
-            <p style="font-size: 0.85rem; color: var(--text-muted);">
+            <p id="historial-lote-texto" style="font-size: 0.85rem; color: var(--text-muted);">
                 • 10/09/2026: Fullplus Plus (10 ml)<br>
                • 25/08/2026: Vigortone Mineral (100 g/día)<br>
                 • 01/10/2026: Hemato-B12 (15 ml)<br>
@@ -392,7 +461,57 @@
 
     </div>
 
+    <!-- Generador de Alerta Sonora por Síntesis Web Audio API -->
     <script>
+        function reproducirAlertaSonora() {
+            try {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = audioCtx.createOscillator();
+                const gainNode = audioCtx.createGain();
+                
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(880, audioCtx.currentTime); // Tono La (880Hz)
+                osc.frequency.exponentialRampToValueAtTime(440, audioCtx.currentTime + 0.3);
+                
+                gainNode.gain.setValueAtTime(0.2, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+                
+                osc.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+                
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.3);
+            } catch(e) {
+                console.log("Audio no soportado o bloqueado por el navegador.");
+            }
+        }
+
+        function probarAlertaSonora() {
+            reproducirAlertaSonora();
+            alert("🔊 Alerta sonora emitida con éxito.");
+        }
+
+        function calcularDiasRestantes() {
+            const fechaProx = new Date(document.getElementById('input-prox-pesaje').value);
+            const hoy = new Date();
+            const diferenciaTiempo = fechaProx - hoy;
+            const diasRestantes = Math.ceil(diferenciaTiempo / (1000 * 60 * 60 * 24));
+            
+            const contenedorDias = document.getElementById('val-dias-proximo');
+            if (diasRestantes >= 0) {
+                contenedorDias.innerText = `${diasRestantes} días restantes para el próximo pesaje oficial`;
+                contenedorDias.style.color = diasRestantes <= 15 ? 'var(--warn-color)' : 'var(--secondary-color)';
+            } else {
+                contenedorDias.innerText = `⚠️ La fecha programada de pesaje está vencida por ${Math.abs(diasRestantes)} días.`;
+                contenedorDias.style.color = '#d32f2f';
+            }
+        }
+
+        // Ejecutar al cargar la página
+        window.onload = function() {
+            calcularDiasRestantes();
+        };
+
         function toggleSection(sectionId, btnElement) {
             const section = document.getElementById(sectionId);
             const allSections = document.querySelectorAll('.collapsible-content');
@@ -423,51 +542,84 @@
             const nuevaGPA = 142 + diferencia;
             document.getElementById('val-gpa').innerText = nuevaGPA.toFixed(1) + " kg";
 
+            reproducirAlertaSonora();
             alert("Métrica recalculada exitosamente en manga. Ganancia acumulada ajustada a: " + nuevaGPA.toFixed(1) + " kg.");
         }
 
-        function buscarAnimalPrompt() {
-            const idBusqueda = prompt("Ingrese el ID Visual o Número de Areta a consultar en el Hato Laguna Brava:");
-            if (idBusqueda) {
-                document.getElementById('input-id-chip').value = idBusqueda + " | 9820004" + Math.floor(10000000 + Math.random() * 90000000);
-                document.getElementById('estado-sinc').innerText = "Animal cargado: " + idBusqueda;
+        // Simulación de Auditoría IA según el lote seleccionado
+        function cargarDatosLoteSeleccionado() {
+            const selectLote = document.getElementById('select-busqueda-lotes').value;
+            if (!selectLote) return;
+
+            if (selectLote === 'levante_modulos') {
+                document.getElementById('input-nombre-lote').value = "Lote Levante y Ceba";
+                document.getElementById('input-grupo-lote').value = "Mestizos Brahman - Módulos";
+                document.getElementById('val-peso').innerText = "438.5 kg";
+                document.getElementById('input-peso-entrada').value = "296.5 kg";
+                document.getElementById('val-gpa').innerText = "142 kg";
+                document.getElementById('historial-lote-texto').innerHTML = "• 10/09/2026: Fullplus Plus (10 ml)<br>• 25/08/2026: Vigortone Mineral<br>• 15/07/2026: Ralgro (1 implante)";
+            } else if (selectLote === 'brahman_estero') {
+                document.getElementById('input-nombre-lote').value = "Lote Cría Brahman Puro";
+                document.getElementById('input-grupo-lote').value = "Banco e Estero (Apure)";
+                document.getElementById('val-peso').innerText = "385.0 kg";
+                document.getElementById('input-peso-entrada').value = "260.0 kg";
+                document.getElementById('val-gpa').innerText = "125 kg";
+                document.getElementById('historial-lote-texto').innerHTML = "• 01/09/2026: Control de Parásitos HPG<br>• 10/08/2026: Suplementación Mineral Sabana";
+            } else if (selectLote === 'mastas_levante') {
+                document.getElementById('input-nombre-lote').value = "Lote Masteño Levante";
+                document.getElementById('input-grupo-lote').value = "Módulos Bajos Apure";
+                document.getElementById('val-peso').innerText = "312.0 kg";
+                document.getElementById('input-peso-entrada').value = "210.0 kg";
+                document.getElementById('val-gpa').innerText = "102 kg";
+                document.getElementById('historial-lote-texto').innerHTML = "• 05/09/2026: Baño Garrapata y Hemato-B12";
             }
+            calcularDiasRestantes();
         }
 
-        function leerChipRFID() {
-            const listaChips = [
-               "385 | 982000487654321",
-               "390 | 982000499887766",
-               "412 | 982000411223344",
-               "384 | 982000412345678"
-            ];
-            const chipAleatorio = listaChips[Math.floor(Math.random() * listaChips.length)];
-            const pesoAleatorio = (420 + Math.random() * 40).toFixed(1);
-
-            document.getElementById('input-id-chip').value = chipAleatorio;
-            document.getElementById('val-peso').innerText = pesoAleatorio + " kg";
-            document.getElementById('estado-sinc').innerText = "Lectura RFID Exitosa 📡";
+        function ejecutarAuditoriaIA() {
+            const loteVal = document.getElementById('select-busqueda-lotes').value;
+            const cajaIA = document.getElementById('ia-sugerencias-box');
+            const textoIA = document.getElementById('texto-sugerencia-ia');
             
-            setTimeout(() => {
-                document.getElementById('estado-sinc').innerText = "Sincronizado";
-            }, 3000);
+            cajaIA.style.display = 'block';
+            
+            if (loteVal === 'levante_modulos') {
+                textoIA.innerHTML = "💡 <b>Análisis Zootécnico:</b> Excelente comportamiento en ganancia diaria (+850 g/día). Se sugiere mantener suplementación en banco y programar rotación de potreros antes de la crecida estacional.";
+            } else if (loteVal === 'brahman_estero') {
+                textoIA.innerHTML = "💡 <b>Análisis Zootécnico:</b> Lote estable. Monitorear carga parasitaria por humedad en estero. Ajustar consumo mineral a 120g/animal/día.";
+            } else {
+                textoIA.innerHTML = "💡 <b>Análisis Zootécnico:</b> Crecimiento uniforme (CV < 7%). Mantener pautas de levante actuales y registrar pesaje de control dentro de 30 días.";
+            }
+            reproducirAlertaSonora();
         }
 
-        function guardarDatosFinca() {
+        function guardarYSincronizarFinca() {
+            const dot = document.getElementById('dot-sync');
+            const statusText = document.getElementById('estado-sinc');
+            
+            dot.className = "sync-dot syncing";
+            statusText.innerText = "Sincronizando con base de datos...";
+
             const registroZootecnico = {
-                id: document.getElementById('input-id-chip').value,
-                lote: document.getElementById('input-grupo-lote').value,
+                lote: document.getElementById('input-nombre-lote').value,
+                grupo: document.getElementById('input-grupo-lote').value,
                 fechaPesaje: document.getElementById('input-fecha-pesaje').value,
                 proxPesaje: document.getElementById('input-prox-pesaje').value,
                 pesoActual: document.getElementById('val-peso').innerText,
+                pesoEntrada: document.getElementById('input-peso-entrada').value,
                 pesoSalida: document.getElementById('input-peso-salida').value,
                 epoca: document.getElementById('select-epoca').value,
                 cv: document.getElementById('input-cv').value,
                 timestamp: new Date().toISOString()
             };
 
-            console.log("Datos guardados:", registroZootecnico);
-            alert("¡Registro guardado con éxito para el animal " + registroZootecnico.id.split('|')[0].trim() + "! Datos almacenados en el sistema del Hato Laguna Brava.");
+            setTimeout(() => {
+                dot.className = "sync-dot online";
+                statusText.innerText = "Sincronizado Exitosamente";
+                reproducirAlertaSonora();
+                console.log("Datos respaldados:", registroZootecnico);
+                alert("¡Registro guardado y sincronizado con éxito para el lote " + registroZootecnico.lote + "! Los datos tácticos del hato se han actualizado correctamente.");
+            }, 2000);
         }
     </script>
 </body>
