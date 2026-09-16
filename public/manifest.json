@@ -9,13 +9,13 @@
   "theme_color": "#1b4332",
   "icons": [
     {
-      "src": "https://flaticon.com",
+      "src": "https://icons8.com",
       "type": "image/png",
       "sizes": "192x192",
       "purpose": "any maskable"
     },
     {
-      "src": "https://flaticon.com",
+      "src": "https://icons8.com",
       "type": "image/png",
       "sizes": "512x512",
       "purpose": "any maskable"
