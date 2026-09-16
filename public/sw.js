@@ -1,29 +1,43 @@
-// sw.js - Service Worker Optimizado para Hato Laguna Brava
-const CACHE_NAME = 'hato-v1';
+const CACHE_NAME = 'laguna-brava-v1.2';
+const assetsToCache = [
+  './index.html',
+  './potreros.css?v=1.2',
+  './manifest.json'
+];
 
-self.addEventListener('install', (e) => {
-    self.skipWaiting();
+// Instalación
+self.addEventListener('install', event => {
+  event.waitUntil(
+    caches.open(CACHE_NAME).then(cache => {
+      return cache.addAll(assetsToCache);
+    })
+  );
+  self.skipWaiting();
 });
 
-self.addEventListener('activate', (e) => {
-    e.waitUntil(self.clients.claim());
-});
-
-self.addEventListener('fetch', (e) => {
-    // Intercepta las solicitudes y previene el error de conversión a Response
-    e.respondWith(
-        fetch(e.request).catch(() => {
-            return caches.match(e.request).then((response) => {
-                if (response) {
-                    return response;
-                }
-                // Si el caché no tiene el archivo y no hay red, devuelve una respuesta vacía válida
-                return new Response('Sin conexión a internet en la sabana.', {
-                    status: 503,
-                    statusText: 'Service Unavailable',
-                    headers: new Headers({ 'Content-Type': 'text/plain; charset=utf-8' })
-                });
-            });
+// Activación
+self.addEventListener('activate', event => {
+  event.waitUntil(
+    caches.keys().then(keys => {
+      return Promise.all(
+        keys.map(key => {
+          if (key !== CACHE_NAME) {
+            return caches.delete(key);
+          }
         })
-    );
+      );
+    })
+  );
+  self.clients.claim();
+});
+
+// Interceptación de peticiones (Modo Offline)
+self.addEventListener('fetch', event => {
+  event.respondWith(
+    caches.match(event.request).then(response => {
+      return response || fetch(event.request);
+    }).catch(() => {
+      // Opcional: Podrías retornar una página offline genérica aquí si falla la red
+    })
+  );
 });
