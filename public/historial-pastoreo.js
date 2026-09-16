@@ -4,7 +4,7 @@ import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.g
 
 // 1. Configuración e Inicialización de Firebase
 const firebaseConfig = {
-  apiKey: "AIzaSyADbn4gV6ROrppvanBM835IRyX3U8wdAnk", // Recuerda restringir esta API Key en Google Cloud Console
+  apiKey: "AIzaSyADbn4gV6ROrppvanBM835IRyX3U8wdAnk", 
   authDomain: "hato-laguna-brava.firebaseapp.com",
   projectId: "hato-laguna-brava",
   storageBucket: "hato-laguna-brava.firebasestorage.app",
@@ -13,12 +13,9 @@ const firebaseConfig = {
   measurementId: "G-2E517DTZFS"
 };
 
-// Inicializar Firebase
+// Inicializar Firebase de forma única
 const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-
-// SOLUCIÓN AL ERROR: Inicializar Firestore y definir la variable 'db'
-const db = getFirestore(app); 
+const db = getFirestore(app); // SE CORRIGIÓ: Declaración única de la variable 'db'
 
 // Referencias a los elementos del DOM (Formulario)
 const paddockForm = document.getElementById('paddockForm');
@@ -27,16 +24,42 @@ const fSalida = document.getElementById('f-salida');
 const cabezas = document.getElementById('cabezas');
 const pesoPromedio = document.getElementById('peso');
 
-// Contenedores opcionales para desplegar resultados automáticos en interfaz
+// Elementos de Feedback para el Operario (Semáforo, Sonido e Interfaz)
+const alertSound = document.getElementById('alert-sound');
+const semaforo = document.getElementById('sync-semaphore') || document.getElementById('sync-semaphore-main');
+const syncText = document.getElementById('sync-text') || document.getElementById('sync-text-main');
 const diasOcupacionDisplay = document.getElementById('dias-ocupacion-val');
 const uaDisplay = document.getElementById('ua-val');
 
-// 2. Lógica de Cálculos Automáticos
+// Funciones de control de Entorno del Hato
+function emitirAlertaSonora() {
+    if (alertSound) {
+        alertSound.currentTime = 0;
+        alertSound.play().catch(err => console.log("Audio en espera de interacción.", err));
+    }
+}
+
+function ejecutarSincronizacionVisual(estado) {
+    if (!semaforo || !syncText) return;
+    if (estado === 'sincronizado') {
+        semaforo.style.backgroundColor = '#2e7d32'; // Verde Sabana
+        syncText.textContent = 'Sincronizado';
+    } else if (estado === 'procesando') {
+        semaforo.style.backgroundColor = '#f57c00'; // Naranja Satelital
+        syncText.textContent = 'Guardando en la nube...';
+    } else {
+        semaforo.style.backgroundColor = '#d32f2f'; // Rojo Alerta
+        syncText.textContent = 'Error de Red';
+    }
+}
+
+// 2. Lógica de Cálculos Automáticos con ajuste de huso horario local
 function calcularMetricas() {
     let diasOcupacion = 0;
     if (fIngreso && fIngreso.value && fSalida && fSalida.value) {
-        const fechaInicio = new Date(fIngreso.value);
-        const fechaFin = new Date(fSalida.value);
+        // Se añade 'T00:00:00' para evitar saltos de día por huso horario del navegador
+        const fechaInicio = new Date(fIngreso.value + 'T00:00:00');
+        const fechaFin = new Date(fSalida.value + 'T00:00:00');
         const diferenciaMs = fechaFin - fechaInicio;
         
         if (diferenciaMs >= 0) {
@@ -70,9 +93,12 @@ if (paddockForm) {
     paddockForm.addEventListener('submit', async (e) => {
         e.preventDefault();
 
+        // Alertas acústicas y cambio de estado en semáforo instantáneo
+        emitirAlertaSonora();
+        ejecutarSincronizacionVisual('procesando');
+
         const { diasOcupacion, unidadesAnimales } = calcularMetricas();
 
-        // Mapeo seguro capturando los campos del formulario
         const registroPastoreo = {
             potrero_id: document.getElementById('potrero')?.value || 'Sin especificar',
             lote_ganado: document.getElementById('lote')?.value || 'Sin especificar',
@@ -90,14 +116,20 @@ if (paddockForm) {
         };
 
         try {
-            // Ahora 'db' existe y Firestore procesará la inserción
             const docRef = await addDoc(collection(db, "historial_potreros"), registroPastoreo);
+            ejecutarSincronizacionVisual('sincronizado');
             alert(`Registro de pastoreo guardado exitosamente con ID: ${docRef.id}`);
             paddockForm.reset();
             calcularMetricas();
         } catch (error) {
             console.error("Error al guardar en Firestore: ", error);
-            alert("Ocurrió un error al guardar el registro. Verifica los permisos de Firestore.");
+            ejecutarSincronizacionVisual('error');
+            alert("Ocurrió un error al guardar el registro. Verifica la conexión satelital.");
         }
     });
 }
+
+// Inicializar el semáforo al cargar la página
+document.addEventListener('DOMContentLoaded', () => {
+    ejecutarSincronizacionVisual('sincronizado');
+});
