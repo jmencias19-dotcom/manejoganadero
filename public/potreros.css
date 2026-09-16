@@ -1,26 +1,23 @@
 /* ==========================================================================
    SISTEMA GANADERO - HATO LAGUNA BRAVA
-   Estética Unificada, Verde Corporativa y Estilo Tecnológico/Futurista
+   ESTILOS MAESTROS UNIFICADOS (MODELO PANEL TÉCNICO DE 2 COLUMNAS)
    ========================================================================== */
 
 :root {
-    /* Paleta de Colores Oficiales del Proyecto */
-    --primary-color: #1b4332;     /* Verde Sabana Profundo (Títulos y Rangos) */
-    --secondary-color: #2d6a4f;   /* Verde Vegetación (Botones y Acciones) */
-    --accent-color: #52b788;      /* Verde Claro Vegetal (Acentos Técnicos) */
-    --bg-color: #f4f6f4;          /* Gris Claro Sabanero (Fondo del Sistema) */
-    --card-bg: #ffffff;           /* Blanco Puro (Fondo de Tarjetas) */
-    --text-main: #2b2b2b;         /* Negro Ceniza (Textos Principales) */
-    --text-muted: #6c757d;        /* Gris Industrial (Textos Secundarios) */
-    --border-color: #d8dad8;      /* Gris de Contorno Estructural */
-    --divider-color: #e2e8e0;     /* Línea Divisoria de Módulos */
+    --primary-color: #1b4332;     /* Verde Sabana Profundo */
+    --secondary-color: #2d6a4f;   /* Verde Vegetación (Botones) */
+    --accent-color: #52b788;      /* Verde Claro Vegetal (Acentos) */
+    --bg-color: #f4f6f4;          /* Gris Claro Sabanero */
+    --card-bg: #ffffff;           /* Blanco Puro */
+    --text-main: #2b2b2b;         /* Negro Ceniza */
+    --text-muted: #6c757d;        /* Gris Industrial */
+    --border-color: #d8dad8;      /* Gris de Contorno */
+    --divider-color: #e2e8e0;     /* Línea Divisoria */
     
-    /* Variables Futuristas / Tecnológicas */
     --header-gradient: linear-gradient(135deg, #0d2319 0%, #1b4332 50%, #2d6a4f 100%);
     --neon-glow: 0 0 15px rgba(82, 183, 136, 0.3);
 }
 
-/* Configuración de Lectura y Accesibilidad Universal */
 * {
     box-sizing: border-box;
     margin: 0;
@@ -37,12 +34,12 @@ body {
 }
 
 /* ==========================================================================
-   ENCABEZADO MAESTRO UNIFICADO (ESTILO FUTURISTA / VERDE INSTITUCIONAL)
+   1. ENCABEZADO MAESTRO
    ========================================================================== */
 .main-header {
     background: var(--header-gradient);
     color: #ffffff;
-    padding: 18px 24px;
+    padding: 16px 24px;
     box-shadow: 0 4px 20px rgba(27, 67, 50, 0.25);
     border-bottom: 3px solid var(--accent-color);
     width: 100%;
@@ -50,28 +47,15 @@ body {
     overflow: hidden;
 }
 
-/* Sutil efecto de brillo tecnológico de fondo en el header */
-.main-header::after {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: radial-gradient(circle at 80% 20%, rgba(82, 183, 136, 0.15) 0%, transparent 60%);
-    pointer-events: none;
-}
-
 .header-container {
-    max-width: 1240px;
+    max-width: 1280px;
     margin: 0 auto;
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 15px;
-    box-sizing: border-box;
-    position: relative;
-    z-index: 2;
 }
 
-/* Contenedores de banderas alineados y simétricos */
 .flag-container {
     flex-shrink: 0;
     display: flex;
@@ -79,225 +63,168 @@ body {
 }
 
 .flag-icon {
-    width: 42px;
+    width: 40px;
     height: auto;
     border-radius: 6px;
     box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
     border: 1px solid rgba(255, 255, 255, 0.2);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.flag-icon:hover {
-    transform: scale(1.08);
-    box-shadow: var(--neon-glow);
-}
-
-/* Contenedor central unificado para títulos de cualquier módulo */
 .header-title-wrapper {
     flex-grow: 1;
     text-align: center;
 }
 
 .header-title-wrapper h1 {
-    font-size: 1.35rem;
+    font-size: 1.3rem;
     font-weight: 700;
-    margin: 4px 0;
-    line-height: 1.2;
+    margin: 2px 0;
     color: #ffffff;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.4);
     letter-spacing: 0.5px;
 }
 
-.header-title-wrapper p, .header-subtitle {
-    font-size: 0.88rem;
-    color: #a3b899; /* Tono verdoso claro secundario muy elegante */
+.header-title-wrapper p {
+    font-size: 0.85rem;
+    color: #a3b899;
     font-weight: 500;
-    margin: 2px 0;
 }
 
 /* ==========================================================================
-   ESTRUCTURACIÓN Y CENTRADO DEL CONTENEDOR PRINCIPAL
+   2. CONTENEDOR PRINCIPAL: MODELO DE 2 COLUMNAS (ESTILO DE LA IMAGEN)
    ========================================================================== */
 .main-container {
     width: 100%;
-    max-width: 1240px;
+    max-width: 1280px;
     margin: 0 auto;
-    padding: 40px 20px;
+    padding: 30px 20px;
     box-sizing: border-box;
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Dos columnas simétricas idénticas a la referencia */
+    gap: 24px;
+    align-items: start;
 }
 
-/* Rejilla de Tarjetas Centrada y Responsiva Nivel PWA */
-.menu-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 28px;
-    width: 100%;
-    justify-content: center;
-    box-sizing: border-box;
+/* En pantallas móviles o tablets verticales, pasa a 1 sola columna */
+@media (max-width: 992px) {
+    .main-container {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Si una página usa la clase .panel-principal o diseño libre de una sola columna */
+.main-container.single-column {
+    grid-template-columns: 1fr;
 }
 
 /* ==========================================================================
-   DISEÑO Y COLORES DE LOS CONTENEDORES (TARJETAS)
+   3. CAJAS, TARJETAS Y FORMULARIOS INTERNOS
    ========================================================================== */
-.card {
+.section-box, .card {
     background-color: var(--card-bg);
     border: 1px solid var(--border-color);
-    border-top: 5px solid var(--primary-color);
+    border-top: 4px solid var(--primary-color);
     border-radius: 12px;
-    padding: 26px;
-    box-shadow: 0 4px 14px rgba(27, 67, 50, 0.06);
+    padding: 22px;
+    box-shadow: 0 4px 14px rgba(27, 67, 50, 0.05);
     display: flex;
     flex-direction: column;
     gap: 14px;
-    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
-    box-sizing: border-box;
-    height: 100%;
 }
 
-.card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 22px rgba(27, 67, 50, 0.15);
-    border-top-color: var(--accent-color);
-}
-
-.card-header {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    border-bottom: 1px solid var(--divider-color);
-    padding-bottom: 10px;
-}
-
-.card-icon {
-    color: var(--secondary-color);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: #e8f5e9;
-    padding: 8px;
-    border-radius: 8px;
-    flex-shrink: 0;
-}
-
-.card-title {
-    font-size: 1.2rem;
+.section-title, h2 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    font-size: 1.15rem;
     color: var(--primary-color);
+    border-bottom: 2px solid var(--divider-color);
+    padding-bottom: 0.4rem;
     font-weight: 700;
 }
 
-.card-description {
-    font-size: 0.92rem;
-    color: var(--text-muted);
-    line-height: 1.5;
-    flex-grow: 1;
+/* Formularios estructurados */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
 }
 
-/* Botones de Acción Estilizados con la Identidad del Hato */
-.card-action {
+label {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    margin-bottom: -6px;
+}
+
+input[type="text"],
+input[type="number"],
+input[type="date"],
+select,
+textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background-color: #fafbfc;
+    color: var(--text-main);
+    font-size: 0.92rem;
+}
+
+input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 3px rgba(82, 183, 136, 0.15);
+    background-color: #ffffff;
+}
+
+/* Botones de acción unificados (Estilo "Guardar y Sincronizar") */
+button, .btn, .card-action {
     display: block;
+    width: 100%;
     text-align: center;
     background-color: var(--secondary-color);
     color: #ffffff;
     padding: 12px 16px;
+    border: none;
     border-radius: 8px;
     text-decoration: none;
     font-weight: 700;
-    font-size: 0.95rem;
+    font-size: 0.92rem;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
+    cursor: pointer;
     box-shadow: 0 2px 6px rgba(45, 106, 79, 0.2);
+    transition: background-color 0.2s ease;
 }
 
-.card-action:hover {
+button:hover, .btn:hover, .card-action:hover {
     background-color: var(--primary-color);
-    box-shadow: 0 4px 12px rgba(27, 67, 50, 0.3);
-}
-
-.card-action:active {
-    transform: scale(0.98);
 }
 
 /* ==========================================================================
-   DISEÑO ADAPTATIVO PARA FORMULARIOS TÉCNICOS (OTRAS PÁGINAS)
+   4. SECCIÓN DE INDICADORES / MÉTRICAS (Columna Derecha de la Imagen)
    ========================================================================== */
-@media (min-width: 992px) {
-    .main-container:not(.panel-principal) {
-        display: flex;
-        flex-direction: row;
-        align-items: flex-start;
-        gap: 24px;
-    }
-    .main-container:not(.panel-principal) > section:first-of-type {
-        flex: 1 1 45%;
-        min-width: 340px;
-    }
-    .main-container:not(.panel-principal) > section:last-of-type {
-        flex: 1 1 55%;
-        min-width: 380px;
-    }
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 10px;
 }
 
-.section-box {
-    background: var(--card-bg);
-    border: 1px solid var(--berat-color, var(--border-color));
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.04);
-    padding: 20px;
-    width: 100%;
+.metric-card {
+    background: #f8f9f8;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 10px;
+    text-align: center;
 }
 
-.section-title {
-    margin-top: 0;
-    margin-bottom: 1.2rem;
-    font-size: 1.2rem;
+.metric-value {
+    font-size: 1.1rem;
+    font-weight: 700;
     color: var(--primary-color);
-    border-bottom: 2px solid var(--divider-color);
-    padding-bottom: 0.5rem;
 }
 
-/* ==========================================================================
-   AJUSTES RESPONSIVOS MÓVILES EXTREMOS
-   ========================================================================== */
-@media (max-width: 576px) {
-    .main-container {
-        padding: 20px 12px;
-    }
-    
-    .header-container {
-        padding: 0 2px;
-    }
-
-    .header-title-wrapper h1 {
-        font-size: 1.05rem;
-    }
-
-    .flag-icon {
-        width: 32px;
-    }
-}
-
-/* ==========================================================================
-   FORZAR UNIFICACIÓN AUTOMÁTICA EN TODOS LOS ENCABEZADOS DE MÓDULOS
-   ========================================================================== */
-header, .main-header {
-    background: var(--header-gradient) !important;
-    color: #ffffff !important;
-    padding: 18px 24px !important;
-    box-shadow: 0 4px 20px rgba(27, 67, 50, 0.25) !important;
-    border-bottom: 3px solid var(--accent-color) !important;
-    width: 100% !important;
-    box-sizing: border-box !important;
-}
-
-/* Asegurar que los títulos dentro de cualquier header se vean blancos y limpios */
-header h1, .main-header h1 {
-    font-size: 1.35rem !important;
-    font-weight: 700 !important;
-    color: #ffffff !important;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.4) !important;
-}
-
-header p, .main-header p {
-    color: #a3b899 !important;
+.metric-label {
+    font-size: 0.75rem;
+    color: var(--text-muted);
 }
