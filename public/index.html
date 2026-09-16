@@ -102,25 +102,53 @@
     <a href="historial-pastoreo.html" class="card-action">Acceder a Historial</a>
 </article>
 
-<!-- Módulo: Gestión de Potreros en tu Menú Principal -->
-<article class="card">
-    <div class="card-header">
-        <div class="card-icon" id="potreros-icon" aria-hidden="true">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <rect width="18" height="18" x="3" y="3" rx="2"/>
-                <path d="M9 3v18"/>
-                <path d="M15 3v18"/>
-            </svg>
+<!-- Encabezado General -->
+    <header class="main-header">
+        <div class="header-container">
+            <div class="header-title-wrapper">
+                <h1>Hato Laguna Brava</h1>
+                <p>Sistema Operativo de Control Ganadero y Gestión de Sabanas</p>
+            </div>
+            <!-- Semáforo de Sincronización General -->
+            <div class="sync-status-wrapper">
+                <div id="sync-semaphore-main" class="semaphore online" title="Estado del Servidor"></div>
+                <span id="sync-text-main" class="sync-text">Sistema En Línea</span>
+            </div>
         </div>
-        <h2 class="card-title">Gestión de Potreros</h2>
-    </div>
-    <p class="card-description">Aquí podrás visualizar y administrar el estado, capacidad y rotación de los potreros.</p>
-    <!-- El enlace apunta directo a potreros.html -->
-    <a href="potreros.html" class="card-action">Acceder a Potreros</a>
-</article>
+    </header>
 
+    <!-- Contenedor de Módulos (Menú Principal) -->
+    <main class="main-container" style="display: flex; justify-content: center; padding: 40px 20px;">
+        <div class="menu-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; width: 100%; max-width: 1200px;">
+            
+            <!-- TU MÓDULO OFICIAL DE POTREROS INTEGRADO -->
+            <article class="card">
+                <div class="card-header">
+                    <div class="card-icon" id="potreros-icon" aria-hidden="true">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect width="18" height="18" x="3" y="3" rx="2"/>
+                            <path d="M9 3v18"/>
+                            <path d="M15 3v18"/>
+                        </svg>
+                    </div>
+                    <h2 class="card-title">Gestión de Potreros</h2>
+                </div>
+                <p class="card-description">Aquí podrás visualizar y administrar el estado, capacidad y rotación de los potreros.</p>
+                <!-- El enlace apunta directo a potreros.html -->
+                <a href="potreros.html" class="card-action">Acceder a Potreros</a>
+            </article>
 
-    <!-- Módulo: Control de Levante -->
+            <!-- Marcador para futuros módulos (Ejemplo: Sanidad) -->
+            <article class="card" style="opacity: 0.6; pointer-events: none;">
+                <div class="card-header">
+                    <div class="card-icon" style="color: #c62828;">💉</div>
+                    <h2 class="card-title">Control Sanitario</h2>
+                </div>
+                <p class="card-description">Historial de vacunaciones, pesajes clínicos y control de lotes sanitarios en sabana.</p>
+                <a href="#" class="card-action">Próximamente</a>
+            </article>
+    
+        <!-- Módulo: Control de Levante -->
 <article class="card">
     <div class="card-header">
         <div class="card-icon" id="levante-icon" aria-hidden="true">
