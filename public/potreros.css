@@ -276,3 +276,28 @@ body {
         width: 32px;
     }
 }
+
+/* ==========================================================================
+   FORZAR UNIFICACIÓN AUTOMÁTICA EN TODOS LOS ENCABEZADOS DE MÓDULOS
+   ========================================================================== */
+header, .main-header {
+    background: var(--header-gradient) !important;
+    color: #ffffff !important;
+    padding: 18px 24px !important;
+    box-shadow: 0 4px 20px rgba(27, 67, 50, 0.25) !important;
+    border-bottom: 3px solid var(--accent-color) !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+/* Asegurar que los títulos dentro de cualquier header se vean blancos y limpios */
+header h1, .main-header h1 {
+    font-size: 1.35rem !important;
+    font-weight: 700 !important;
+    color: #ffffff !important;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.4) !important;
+}
+
+header p, .main-header p {
+    color: #a3b899 !important;
+}
