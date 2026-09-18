@@ -1,5 +1,6 @@
-// Cambia de v1.8 a v1.9 para limpiar el almacenamiento viejo
-const CACHE_NAME = 'laguna-brava-v1.9'; 
+// Cambia la versión (por ejemplo, de v3.0 a v3.1)
+const CACHE_NAME = 'laguna-brava-v3.1'; 
+
 
 const ASSETS_TO_CACHE = [
     './',
