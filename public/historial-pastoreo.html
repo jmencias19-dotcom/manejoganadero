@@ -2,140 +2,72 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Historial de Pastoreo - Hato Laguna Brava</title>
-    <!-- CONEXIÓN DE ESTILOS UNIFICADOS DEL PROYECTO -->
-    <link rel="stylesheet" href="/potreros.css?v=3.0">
-    <link rel="stylesheet" href="historial-pastoreo.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Historial de Eventos - Hato Laguna Brava</title>
+    <!-- Mantenemos la ruta relativa consistente con el resto de tus archivos -->
+    <link rel="stylesheet" href="./potreros.css?v=3.0">
     <link rel="manifest" href="manifest.json">
 </head>
 <body>
-    
-    <!-- Contenedor dinámico donde header.js inyectará automáticamente el encabezado unificado -->
+    <!-- Contenedor donde se inyectará automáticamente el encabezado unificado (header.js) -->
     <div id="app-header"></div>
 
-    <!-- Área de Contenido Principal (Ajustado con la Grid Flexible del Hato) -->
     <main class="main-container">
-        
-        <!-- BLOQUE IZQUIERDO: Tarjeta del Formulario de Registro de Rotaciones -->
-        <section class="section-box form-section">
-            <h2 class="section-title">✏️ Registrar Rotación de Pastoreo</h2>
-            <p class="card-subtitle">Complete los datos de la operación de campo actual.</p>
-
-            <form id="paddockForm">
-                <!-- Bloque: Selección de Ubicación y Lote -->
-                <div class="form-group-row">
-                    <div class="form-group">
-                        <label for="potrero">Potrero / Lote de Tierra</label>
-                        <select id="potrero" required>
-                            <option value="" disabled selected>-- Seleccione un potrero --</option>
-                            <option value="Macanillal">Macanillal (432 ha)</option>
-                            <option value="El Galpón">El Galpón (569 ha)</option>
-                            <option value="Mata del Muerto">Mata del Muerto (80 ha)</option>
-                            <option value="Manguito">Manguito (234 ha)</option>
-                            <option value="Mata de Piña">Mata de Piña (205 ha)</option>
-                            <option value="Las Rallas">Las Rallas (102 ha)</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="lote">Lote de Ganado</label>
-                        <select id="lote" required>
-                            <option value="" disabled selected>-- Seleccione el lote --</option>
-                            <option value="Vacas en Ordeño">Vacas en Ordeño</option>
-                            <option value="Novillas de Reemplazo">Novillas de Reemplazo</option>
-                            <option value="Mautes / Toros">Mautes / Toros</option>
-                        </select>
-                    </div>
+        <!-- Rejilla maestra que fuerza la estandarización tridimensional -->
+        <div class="menu-grid">
+            
+            <!-- COLUMNA 1 Y 2: Historial Sanitario (Mayor espacio horizontal para datos de control) -->
+            <section class="section-box" style="grid-column: span 2; height: auto;">
+                <div class="card-header">
+                    <div class="card-icon">💉</div>
+                    <h2 class="card-title">Historial de Tratamientos Registrados</h2>
                 </div>
-
-                <!-- Bloque: Fechas y Cálculos de Tiempo -->
-                <div class="form-group-row">
-                    <div class="form-group">
-                        <label for="f-ingreso">Fecha de Ingreso</label>
-                        <input type="date" id="f-ingreso" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="f-salida">Fecha de Salida</label>
-                        <input type="date" id="f-salida" required>
-                    </div>
+                <p class="card-description">A continuación se visualizan los registros de controles sanitarios, vacunaciones y tratamientos aplicados en el rebaño.</p>
+                
+                <!-- Contenedor responsive adaptado a pantallas táctiles y móviles -->
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Arete</th>
+                                <th>Tratamiento</th>
+                                <th>Producto</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabla-eventos-body">
+                            <!-- Los datos se cargarán dinámicamente desde eventos.js -->
+                            <tr>
+                                <td colspan="4" style="text-align: center; color: var(--text-muted); padding: 20px;">
+                                    Cargando registros sanitarios locales...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
+            </section>
 
-                <!-- Bloque: Datos del Ganado -->
-                <div class="form-group-row">
-                    <div class="form-group">
-                        <label for="cabezas">Número de Cabezas</label>
-                        <input type="number" id="cabezas" min="1" placeholder="Ej. 50" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="peso">Peso Promedio Animal (kg)</label>
-                        <input type="number" id="peso" step="0.1" min="1" placeholder="Ej. 420" required>
-                    </div>
+            <!-- COLUMNA 3: Acciones de Navegación Operativa -->
+            <section class="section-box" style="height: auto;">
+                <div class="card-header">
+                    <div class="card-icon">🩺</div>
+                    <h2 class="card-title">Acciones Sanitarias</h2>
                 </div>
-
-                <!-- Bloque: Datos de la Pastura (Procesados por JS) -->
-                <div class="form-group-row">
-                    <div class="form-group">
-                        <label for="alt-ingreso">Alt. Pasto Ingreso (cm)</label>
-                        <input type="number" id="alt-ingreso" step="0.1" placeholder="Ej. 35.5">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="alt-salida">Alt. Pasto Salida (cm)</label>
-                        <input type="number" id="alt-salida" step="0.1" placeholder="Ej. 10.0">
-                    </div>
+                <p class="card-description">Gestione los flujos de salud animal y control biológico del ganado.</p>
+                
+                <!-- Botones unificados con la clase .card-action de tus estilos maestros -->
+                <div style="display: flex; flex-direction: column; gap: 12px; margin-top: auto;">
+                    <a href="./inventario-sanitario.html" class="card-action" style="text-decoration: none;">➕ Registrar Nuevo Tratamiento</a>
+                    <a href="./index.html" class="card-action" style="background-color: var(--text-muted); text-decoration: none;">⬅ Volver al Inicio</a>
                 </div>
+            </section>
 
-                <div class="form-group-row">
-                    <div class="form-group">
-                        <label for="especie">Especie Forrajera</label>
-                        <input type="text" id="especie" placeholder="Ej. Brachiaria decumbens, Carimagua">
-                    </div>
-                </div>
-
-                <!-- Cuadro de Observaciones -->
-                <div class="form-group">
-                    <label for="observaciones-paddock">Observaciones de Campo</label>
-                    <textarea id="observaciones-paddock" rows="3" placeholder="Estado sanitario del lote, condiciones climáticas, disponibilidad de agua..."></textarea>
-                </div>
-
-                <!-- Bloque Informativo Visual (Métricas calculadas dinámicamente por JS) -->
-                <div class="metrics-summary">
-                    <div class="metric-box">
-                        <span class="metric-label">Días de Ocupación</span>
-                        <div><span id="dias-ocupacion-val" class="metric-value">0</span> <span style="font-size:0.85rem; font-weight:700;">días</span></div>
-                    </div>
-                    <div class="metric-box">
-                        <span class="metric-label">Carga Estimada</span>
-                        <div><span id="ua-val" class="metric-value">0.00</span> <span style="font-size:0.85rem; font-weight:700;">UA</span></div>
-                    </div>
-                </div>
-
-                <!-- Botones de Acción Modificados -->
-                <div class="form-actions">
-                    <button type="submit" class="btn-primary">💾 Registrar Carga Animal y Sincronizar</button>
-                </div>
-            </form>
-        </section>
-
-        <!-- BLOQUE DERECHO: Bitácora de Rotaciones Activas y Línea de Tiempo -->
-        <section class="section-box">
-            <h2 class="section-title">📜 Registro Histórico del Hato</h2>
-            <div class="timeline-container" id="timeline-wrapper">
-                <!-- Aquí el archivo JavaScript (historial-pastoreo.js) dibujará las tarjetas dinámicas -->
-            </div>
-        </section>
-
+        </div>
     </main>
 
-    <!-- Elemento de sonido público para evitar errores de carga 404 en Vercel -->
-    <audio id="alert-sound" src="https://mixkit.co" preload="auto"></audio>
-
-    <!-- Scripts del Sistema y Módulos -->
-    <script src="/js/header.js"></script>
-    <script src="/js/syncManager.js"></script>
-    <script type="module" src="historial-pastoreo.js"></script>
+    <!-- Scripts del Sistema y Módulo -->
+    <script src="./js/header.js"></script>
+    <script src="./js/syncManager.js"></script>
+    <script src="./eventos.js"></script>
 </body>
 </html>
