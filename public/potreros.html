@@ -4,154 +4,156 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Gestión de Potreros - Hato Laguna Brava</title>
+    <!-- Conexión modular única al diseño maestro -->
+    <link rel="stylesheet" href="./potreros.css?v=3.0">
+    <!-- Iconos unificados FontAwesome para el entorno del hato -->
+    <link rel="stylesheet" href="https://cloudflare.com">
     <link rel="manifest" href="manifest.json">
-    <!-- CONEXIÓN MODULAR AL DISEÑO MAESTRO UNIFICADO -->
-    <link rel="stylesheet" href="/potreros.css?v=3.0">
 </head>
 <body>
 
-    <!-- Encabezado General -->
+    <!-- Contenedor dinámico donde header.js inyectará el encabezado unificado -->
+    <div id="app-header"></div>
+
+    <!-- ENCABEZADO MAESTRO NATIVO (Respaldo robusto offline para el campo) -->
     <header class="main-header">
         <div class="header-container">
-            <!-- Botón de retorno al panel principal -->
-            <div class="header-nav">
-                <a href="index.html" class="btn-back" style="text-decoration: none; font-weight: bold;">⬅️ Volver a Panel Principal</a>
-            </div>
+            <nav class="header-nav">
+                <a href="./index.html" class="btn-back" style="text-decoration: none;">
+                    <i class="fa-solid fa-arrow-left"></i> Volver al Panel
+                </a>
+            </nav>
             <div class="header-title-wrapper">
                 <h1>Hato Laguna Brava - <span>Gestión de Potreros</span></h1>
                 <p>Matriz Técnica Oficial de Carga Animal y Control de UGM</p>
             </div>
-            <!-- Semáforo de Sincronización de Datos -->
+            <!-- Semáforo de Sincronización Estándar -->
             <div class="sync-status-wrapper">
-                <div id="sync-semaphore" class="semaphore offline" title="Estado de sincronización"></div>
-                <span id="sync-text" class="sync-text">Desconectado</span>
+                <div id="light" class="semaphore online"></div>
+                <span id="statusText" class="sync-text">Sincronizado Local</span>
             </div>
         </div>
     </header>
 
-    <!-- Contenedor Principal (Flexbox Pure: Distribuye Izquierda y Derecha) -->
+    <!-- CONTENEDOR PRINCIPAL Y REJILLA (Modelo de 3 Columnas de Trabajo Uniformes) -->
     <main class="main-container">
-        
-        <!-- BLOQUE IZQUIERDO: Formulario Compacto de Registro (45% Ancho en PC) -->
-        <section class="section-box">
-            <h2 class="section-title">Asignar Ganado a Potrero</h2>
-            <form id="form-mod1">
-                
-                <!-- Selección de Potrero Oficial (20 potreros del Hato) -->
-                <div class="input-group">
-                    <label for="select-potrero">Seleccionar Potrero</label>
-                    <select id="select-potrero" class="form-control" required>
-                        <option value="" disabled selected>-- Elija un Potrero --</option>
-                        <option value="Macanillal" data-ha="432">Macanillal (432 ha)</option>
-                        <option value="El Galpón" data-ha="569">El Galpón (569 ha)</option>
-                        <option value="Mata del Muerto" data-ha="80">Mata del Muerto (80 ha)</option>
-                        <option value="Manguito" data-ha="234">Manguito (234 ha)</option>
-                        <option value="Mata de Piña" data-ha="205">Mata de Piña (205 ha)</option>
-                        <option value="Las Rallas" data-ha="102">Las Rallas (102 ha)</option>
-                        <option value="Potrero del Medio" data-ha="703">Potrero del Medio (703 ha)</option>
-                        <option value="Cuatro Esquinas" data-ha="77">Cuatro Esquinas (77 ha)</option>
-                        <option value="Paulero" data-ha="418">Paulero (418 ha)</option>
-                        <option value="Jobo Gacho" data-ha="422">Jobo Gacho (422 ha)</option>
-                        <option value="Curva del Peligro" data-ha="40">Curva del Peligro (40 ha)</option>
-                        <option value="Módulo A" data-ha="36">Módulo A (36 ha)</option>
-                        <option value="Módulo B" data-ha="36">Módulo B (36 ha)</option>
-                        <option value="Módulo C" data-ha="36">Módulo C (36 ha)</option>
-                        <option value="Módulo D" data-ha="36">Módulo D (36 ha)</option>
-                        <option value="Módulo F" data-ha="143">Módulo F (143 ha)</option>
-                        <option value="Saladillal" data-ha="125">Saladillal (125 ha)</option>
-                        <option value="Carretera" data-ha="142">Carretera (142 ha)</option>
-                        <option value="María del Carmen" data-ha="32">María del Carmen (32 ha)</option>
-                        <option value="Casa" data-ha="26">Casa (26 ha)</option>
-                    </select>
-                </div>
-
-                <!-- Selección de Tipo de Especie -->
-                <div class="input-group" style="margin-top: 12px;">
-                    <label for="select-especie">Especie Ganadera</label>
-                    <select id="select-especie" class="form-control" required>
-                        <option value="BOVINOS">Bovinos (Vacunos)</option>
-                        <option value="BUFALINOS">Bufalinos (Búfalos)</option>
-                    </select>
-                </div>
-                
-                <!-- Categorías Zootécnicas Dinámicas -->
-                <div class="input-group" style="margin-top: 12px;">
-                    <label for="select-categoria">Categoría Zootécnica</label>
-                    <select id="select-categoria" class="form-control" required>
-                        <!-- El script potreros.js inyectará dinámicamente las opciones aquí -->
-                    </select>
-                </div>
-
-                <!-- Temporada Agroecológica -->
-                <div class="input-group" style="margin-top: 12px;">
-                    <label for="select-temporada">Temporada Agroecológica</label>
-                    <select id="select-temporada" class="form-control" required>
-                        <option value="" disabled selected>-- Seleccione Época --</option>
-                        <optgroup label="Invierno (Lluvias)">
-                            <option value="INVIERNO_ENTRADA">Invierno - Entrada (Mayo/Junio)</option>
-                            <option value="INVIERNO_MEDIADOS">Invierno - Mediados (Julio/Agosto)</option>
-                            <option value="INVIERNO_SALIDA">Invierno - Salida (Septiembre/Octubre)</option>
-                        </optgroup>
-                        <optgroup label="Verano (Sequía)">
-                            <option value="VERANO_ENTRADA">Verano - Entrada (Noviembre/Diciembre)</option>
-                            <option value="VERANO_MEDIADOS">Verano - Mediados (Enero/Febrero)</option>
-                            <option value="VERANO_SALIDA">Verano - Salida (Marzo/Abril)</option>
-                        </optgroup>
-                    </select>
-                </div>
-
-                <!-- Fechas de Control de Pastoreo (Fila Flexible Organizada) -->
-                <div class="input-row" style="margin-top: 12px; display: flex; gap: 10px;">
-                    <div class="input-group" style="flex: 1;">
-                        <label for="fecha-ingreso">Fecha de Ingreso</label>
-                        <input type="date" id="fecha-ingreso" class="form-control" required>
-                    </div>
-                    <div class="input-group" style="flex: 1;">
-                        <label for="fecha-salida">Fecha de Salida</label>
-                        <input type="date" id="fecha-salida" class="form-control" required>
-                    </div>
-                </div>
-
-                <!-- Cantidad de Animales -->
-                <div class="input-group" style="margin-top: 12px;">
-                    <label for="cantidad-cabezas">Cantidad de Cabezas (Animales)</label>
-                    <input type="number" id="cantidad-cabezas" class="form-control" placeholder="Ej: 80" min="1" required>
-                </div>
-
-                <div class="btn-group" style="margin-top: 16px;">
-                    <button type="submit" class="btn-action">💾 Registrar Carga Animal y Sincronizar</button>
-                </div>
-            </form>
-        </section>
-
-        <!-- BLOQUE DERECHO: Tablero de Control y Tarjetas de Carga (55% Ancho en PC) -->
-        <section class="section-box">
-            <h2 class="section-title">Estado de Carga Ecológica del Hato</h2>
+        <div class="menu-grid">
             
-            <!-- Tablero Interno de Indicadores Rápidos (KPIs) -->
-            <div class="kpi-container">
-                <div class="kpi-card">
-                    <div class="kpi-title">Total Animales</div>
-                    <div id="kpi-total-cabezas" class="kpi-value">0</div>
+            <!-- ==========================================
+                 COLUMNA 1: FORMULARIO DE ASIGNACIÓN
+                 ========================================== -->
+            <section class="section-box" style="height: auto;">
+                <div class="card-header">
+                    <div class="card-icon">🌱</div>
+                    <h2 class="card-title">Asignar Ganado a Potrero</h2>
                 </div>
-                <div class="kpi-card">
-                    <div class="kpi-title">Total UGM Global</div>
-                    <div id="kpi-total-ugm" class="kpi-value">0.00</div>
+                <p class="card-description">Configure la entrada de lotes animales controlando el balance forrajero.</p>
+                
+                <form id="form-mod1" onsubmit="event.preventDefault();">
+                    
+                    <div class="input-group">
+                        <label for="select-potrero">Seleccionar Potrero</label>
+                        <select id="select-potrero" required>
+                            <option value="" disabled selected>-- Elija un Potrero --</option>
+                            <option value="Macanillal" data-ha="432">Macanillal (432 ha)</option>
+                            <option value="El Galpón" data-ha="569">El Galpón (569 ha)</option>
+                            <option value="Mata del Muerto" data-ha="80">Mata del Muerto (80 ha)</option>
+                            <option value="Manguito" data-ha="234">Manguito (234 ha)</option>
+                            <option value="Mata de Piña" data-ha="205">Mata de Piña (205 ha)</option>
+                            <option value="Las Rallas" data-ha="102">Las Rallas (102 ha)</option>
+                            <option value="Potrero del Medio" data-ha="703">Potrero del Medio (703 ha)</option>
+                            <option value="Cuatro Esquinas" data-ha="77">Cuatro Esquinas (77 ha)</option>
+                            <option value="Paulero" data-ha="418">Paulero (418 ha)</option>
+                            <option value="Jobo Gacho" data-ha="422">Jobo Gacho (422 ha)</option>
+                            <option value="Curva del Peligro" data-ha="40">Curva del Peligro (40 ha)</option>
+                            <option value="Módulo A" data-ha="36">Módulo A (36 ha)</option>
+                            <option value="Módulo B" data-ha="36">Módulo B (36 ha)</option>
+                            <option value="Módulo C" data-ha="36">Módulo C (36 ha)</option>
+                            <option value="Módulo D" data-ha="36">Módulo D (36 ha)</option>
+                            <option value="Módulo F" data-ha="143">Módulo F (143 ha)</option>
+                            <option value="Saladillal" data-ha="125">Saladillal (125 ha)</option>
+                            <option value="Carretera" data-ha="142">Carretera (142 ha)</option>
+                            <option value="María del Carmen" data-ha="32">María del Carmen (32 ha)</option>
+                            <option value="Casa" data-ha="26">Casa (26 ha)</option>
+                        </select>
+                    </div>
+
+                    <div class="kpi-container" style="margin-top: 0; gap: 10px;">
+                        <div class="input-group">
+                            <label for="select-especie">Especie Ganadera</label>
+                            <select id="select-especie" required>
+                                <option value="BOVINOS">Bovinos (Vacunos)</option>
+                                <option value="BUFALINOS">Bufalinos (Búfalos)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="input-group">
+                            <label for="select-categoria">Categoría Zootécnica</label>
+                            <select id="select-categoria" required>
+                                <option value="" disabled selected>-- Seleccione --</option>
+                                <option value="VACAS_PARIDAS">Vacas Paridas (1.0 UGM)</option>
+                                <option value="ESCAMPADAS">Vacas Escampadas (0.8 UGM)</option>
+                                <option value="NOVILLAS">Novillas (0.7 UGM)</option>
+                                <option value="MAUTES">Mautes (0.5 UGM)</option>
+                                <option value="TOROS">Toros (1.2 UGM)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="select-temporada">Temporada Agroecológica</label>
+                        <select id="select-temporada" required>
+                            <option value="" disabled selected>-- Seleccione Época --</option>
+                            <optgroup label="Invierno (Lluvias)">
+                                <option value="INVIERNO_ENTRADA">Invierno - Entrada (Mayo/Junio)</option>
+                                <option value="INVIERNO_MEDIADOS">Invierno - Mediados (Julio/Agosto)</option>
+                                <option value="INVIERNO_SALIDA">Invierno - Salida (Septiembre/Octubre)</option>
+                            </optgroup>
+                            <optgroup label="Verano (Sequía)">
+                                <option value="VERANO_ENTRADA">Verano - Entrada (Noviembre/Diciembre)</option>
+                                <option value="VERANO_MEDIADOS">Verano - Mediados (Enero/Febrero)</option>
+                                <option value="VERANO_SALIDA">Verano - Salida (Marzo/Abril)</option>
+                            </optgroup>
+                        </select>
+                    </div>
+
+                    <div class="kpi-container" style="margin-top: 0; gap: 10px;">
+                        <div class="input-group">
+                            <label for="fecha-ingreso">Fecha de Ingreso</label>
+                            <input type="date" id="fecha-ingreso" required>
+                        </div>
+                        <div class="input-group">
+                            <label for="fecha-salida">Fecha de Salida</label>
+                            <input type="date" id="fecha-salida" required>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="cantidad-cabezas">Cantidad de Cabezas</label>
+                        <input type="number" id="cantidad-cabezas" placeholder="Ej: 80" min="1" required>
+                    </div>
+
+                    <button type="submit" class="btn" style="margin-top: 10px;">
+                        <i class="fa-solid fa-floppy-disk"></i> Registrar Carga Animal
+                    </button>
+                </form>
+            </section>
+
+            <!-- ==========================================
+                 COLUMNA 2: TABLERO DE CARGA ECOLÓGICA
+                 ========================================== -->
+            <section class="section-box" style="height: auto;">
+                <div class="card-header">
+                    <div class="card-icon">📊</div>
+                    <h2 class="card-title">Carga Ecológica</h2>
                 </div>
-            </div>
-
-            <!-- Contenedor de Tarjetas Generadas (Inventario del Hato) -->
-            <div class="potreros-container">
-                <!-- El archivo JavaScript potreros.js dibujará aquí las tarjetas compactas sin dispersarse -->
-            </div>
-        </section>
-
-    </main>
-
-    <!-- Elemento de audio seguro sin dependencias externas rotas -->
-    <audio id="alert-sound" preload="auto"></audio>
-
-    <!-- CONEXIÓN MODULAR A LA LÓGICA TÉCNICA -->
-    <script src="potreros.js"></script>
-</body>
-</html>
+                <p class="card-description">Indicadores agregados en tiempo real de Unidades de Gran Ganado (UGM) globales.</p>
+                
+                <!-- Corregido el quiebre de etiquetas del kpi-container -->
+                <div class="kpi-container" style="grid-template-columns: 1fr; gap: 10px;">
+                    <div class="kpi-card" style="display: flex; justify-content: space-between; align-items: center; padding: 15px;">
+                        <label style="margin: 0; font-weight: bold; color: var(--primary-color);">Total Animales</label>
+                        <div id="kpi-total-cabezas" class="kpi-value" style="margin: 0; font-size: 1.4rem;">0</div>
+                    </div>
+                    <div class="kpi-card" style="display: flex; justify-content: space-between; align-items: center; padding: 15px;">
+                        <label style="margin: 0; font-weight: bold; color: var(--primary-color);">Total UGM Global</label>
