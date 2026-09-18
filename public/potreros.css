@@ -305,14 +305,12 @@ input:focus, select:focus, textarea:focus {
 /* Configuración asimétrica de precisión para computadoras de escritorio (PC) */
 @media (min-width: 577px) {
     .kpi-container {
-        display: grid;
-        /* Relación técnica exacta solicitada: 46% izquierda y 54% derecha */
-        grid-template-columns: 46% 54%; 
+        display: grid !important;
+        grid-template-columns: 46% 54% !important; /* Relación de tamaño exacta */
         column-gap: 16px;
         row-gap: 12px;
         margin-bottom: 12px;
         width: 100%;
-        align-items: start;
     }
 }
 
