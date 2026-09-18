@@ -11,33 +11,23 @@
     <link rel="manifest" href="manifest.json">
 </head>
 <body>
-    <header class="main-header">
-        <div class="header-container">
-            <div class="flag-container" aria-label="Bandera de Venezuela">
-<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-  <path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"/>
-  <path d="m8.5 8.5 7 7"/>
-</svg>
-        <line x1="12" y1="5" x2="12" y2="19"></line>
-        <line x1="5" y1="12" x2="19" y2="12"></line>
-      </svg>
-            </div>
-            <div class="header-title-wrapper">
-                <h1>Gestión Ganadera Hato Laguna Brava<br>
-                <span>Grupo Imperatori</span></h1>
-                <p>Panel de Control Directo - Operaciones de Campo</p>
-            </div>
-        </div>
-    </header>
+    
+    <!-- Contenedor dinámico donde header.js inyectará el encabezado unificado -->
+    <div id="app-header"></div>
 
-    <main class="dashboard-grid">
-       <article class="card">
-            <h2>Inventario-Sanitario</h2>
-            <p>Aquí se registrarán y visualizarán las rotaciones de potreros y el seguimiento de la carga animal.</p>
-            <a href="index.html" class="card-action">Volver al Inicio</a>
-        </article>
+    <main class="main-container">
+        <section class="section-box">
+            <article class="card">
+                <h2>Inventario Sanitario</h2>
+                <p>Aquí se registrarán y visualizarán las rotaciones de potreros y el seguimiento de la carga animal.</p>
+                <a href="index.html" class="card-action">Volver al Inicio</a>
+            </article>
+        </section>
     </main>
 
-    <script src="inventario-sanitario"></script>
+    <!-- Scripts del Sistema y Módulos -->
+    <script src="/js/header.js"></script>
+    <script src="/js/syncManager.js"></script>
+    <script src="inventario-sanitario.js"></script>
 </body>
-</html> 
+</html>
