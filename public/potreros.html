@@ -101,12 +101,12 @@
                 </div>
 
                 <!-- Fechas de Control de Pastoreo (Fila Flexible Organizada) -->
-                <div class="input-row" style="margin-top: 12px;">
-                    <div class="input-group">
+                <div class="input-row" style="margin-top: 12px; display: flex; gap: 10px;">
+                    <div class="input-group" style="flex: 1;">
                         <label for="fecha-ingreso">Fecha de Ingreso</label>
                         <input type="date" id="fecha-ingreso" class="form-control" required>
                     </div>
-                    <div class="input-group">
+                    <div class="input-group" style="flex: 1;">
                         <label for="fecha-salida">Fecha de Salida</label>
                         <input type="date" id="fecha-salida" class="form-control" required>
                     </div>
@@ -148,8 +148,8 @@
 
     </main>
 
-    <!-- Alarma acústica en la nube para mitigar errores 404 de Vercel -->
-    <audio id="alert-sound" src="https://mixkit.co" preload="auto"></audio>
+    <!-- Elemento de audio seguro sin dependencias externas rotas -->
+    <audio id="alert-sound" preload="auto"></audio>
 
     <!-- CONEXIÓN MODULAR A LA LÓGICA TÉCNICA -->
     <script src="potreros.js"></script>
