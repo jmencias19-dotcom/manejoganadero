@@ -4,9 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Indicadores de Gestión - Hato Laguna Brava</title>
-    <link rel="stylesheet" href="variables.css?v=1.1">
-    <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="/potreros.css?v=3.0">
+    <!-- Eliminadas variables.css y styles.css para evitar conflictos visuales -->
+    <link rel="stylesheet" href="./potreros.css?v=3.0">
     <link rel="manifest" href="manifest.json">
 </head>
 <body>
@@ -16,31 +15,87 @@
 
     <!-- Contenedor principal de reportes -->
     <main class="main-container">
-        <section class="section-box">
-            <div class="grid-library">
+        <!-- Rejilla maestra que fuerza la estandarización tridimensional -->
+        <div class="menu-grid">
+            
+            <!-- COLUMNA 1: Estadísticas Principales del Rebaño -->
+            <article class="card">
+                <div class="card-header">
+                    <div class="card-icon" id="estadisticas-icon" aria-hidden="true"> 
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="18" y1="20" x2="18" y2="10"></line>
+                            <line x1="12" y1="20" x2="12" y2="4"></line>
+                            <line x1="6" y1="20" x2="6" y2="14"></line>
+                        </svg>
+                    </div>
+                    <h2 class="card-title">Estadísticas de Ganado</h2>
+                </div>
+                <p class="card-description">Visualización de datos clave sobre el rebaño, tasas de natalidad e inventario general por categorías.</p>
                 
-                <article class="card">
-                    <div class="card-header">
-                        <div class="card-icon" id="estadisticas-icon" aria-hidden="true"> 
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <line x1="18" y1="20" x2="18" y2="10"></line>
-                                <line x1="12" y1="20" x2="12" y2="4"></line>
-                                <line x1="6" y1="20" x2="6" y2="14"></line>
-                            </svg>
-                        </div>
-                        <h2 class="card-title">Estadísticas Principales</h2>
+                <!-- KPIs integrados dentro del contenedor estándar -->
+                <div class="kpi-container">
+                    <div class="kpi-card">
+                        <label>Total Cabezas</label>
+                        <div class="kpi-value" id="kpi-total-ganado">0</div>
                     </div>
-                    <div class="card-content">
-                        <p class="card-description">Visualización de datos clave sobre el rebaño, producción e inventario.</p>
+                    <div class="kpi-card">
+                        <label>Carga Animal</label>
+                        <div class="kpi-value" id="kpi-carga">0.0</div>
                     </div>
-                </article>
+                </div>
+                
+                <a href="./potreros.html" class="card-action" style="margin-top: auto; text-decoration: none;">Ver Potreros</a>
+            </article>
 
-            </div>
-        </section>
+            <!-- COLUMNA 2: Indicadores de Producción -->
+            <article class="card">
+                <div class="card-header">
+                    <div class="card-icon">🥛</div>
+                    <h2 class="card-title">Producción y Pesajes</h2>
+                </div>
+                <p class="card-description">Métricas de pesaje de leche, evolución de ganancia diaria de peso (GDP) y rendimiento lácteo.</p>
+                
+                <div class="kpi-container">
+                    <div class="kpi-card">
+                        <label>Prod. Diaria</label>
+                        <div class="kpi-value" id="kpi-produccion">0 Lts</div>
+                    </div>
+                    <div class="kpi-card">
+                        <label>Prom. GDP</label>
+                        <div class="kpi-value" id="kpi-gdp">0 g/día</div>
+                    </div>
+                </div>
+                
+                <a href="./levante.html" class="card-action" style="margin-top: auto; text-decoration: none;">Ver Levante</a>
+            </article>
+
+            <!-- COLUMNA 3: Eficiencia y Alertas Operativas -->
+            <article class="card">
+                <div class="card-header">
+                    <div class="card-icon">📈</div>
+                    <h2 class="card-title">Eficiencia de Insumos</h2>
+                </div>
+                <p class="card-description">Control de inventarios críticos, consumo de combustible por hectárea y aplicación de biológicos.</p>
+                
+                <div class="kpi-container">
+                    <div class="kpi-card">
+                        <label>Diesel Disp.</label>
+                        <div class="kpi-value" id="kpi-diesel">0 Lts</div>
+                    </div>
+                    <div class="kpi-card">
+                        <label>Sanitarios</label>
+                        <div class="kpi-value" id="kpi-alertas-sanitarias">0</div>
+                    </div>
+                </div>
+                
+                <a href="./index.html" class="card-action" style="background-color: var(--text-muted); margin-top: auto; text-decoration: none;">Panel Principal</a>
+            </article>
+
+        </div>
     </main>
 
     <!-- Scripts del Sistema y Módulos -->
-    <script src="/js/header.js"></script>
-    <script src="/js/syncManager.js"></script>
+    <script src="./js/header.js"></script>
+    <script src="./js/syncManager.js"></script>
 </body>
 </html>
