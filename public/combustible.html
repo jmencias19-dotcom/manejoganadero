@@ -4,44 +4,70 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Historial de Combustible - Hato Laguna Brava</title>
-    <link rel="stylesheet" href="/potreros.css?v=3.0">
-    <link rel="manifest" href="manifest.json">
+    <!-- Mantenemos la ruta relativa consistente con el resto de tus archivos -->
+    <link rel="stylesheet" href="./potreros.css?v=3.0">
+    <link rel="manifest" href="./manifest.json">
 </head>
 <body>
     <!-- Contenedor donde se inyectará automáticamente el encabezado unificado (header.js) -->
     <div id="app-header"></div>
 
     <main class="main-container">
-        <div class="section-box">
-            <div class="section-title">Historial de Consumo de Combustible</div>
-            <p>A continuación se visualizan los registros de despacho y consumo de combustible en maquinaria y vehículos.</p>
+        <!-- Rejilla maestra que fuerza la estandarización tridimensional -->
+        <div class="menu-grid">
             
-            <div class="table-responsive">
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>Fecha</th>
-                            <th>Maquinaria / Vehículo</th>
-                            <th>Litros</th>
-                            <th>Horómetro / Odómetro</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tabla-combustible-body">
-                        <!-- Los datos se cargarán dinámicamente desde el almacenamiento local -->
-                    </tbody>
-                </table>
-            </div>
-        </div>
+            <!-- COLUMNA 1 Y 2: Historial Principal (Ocupa más espacio en PC para legibilidad) -->
+            <section class="section-box" style="grid-column: span 2; height: auto;">
+                <div class="card-header">
+                    <div class="card-icon">⛽</div>
+                    <h2 class="card-title">Historial de Consumo de Combustible</h2>
+                </div>
+                <p class="card-description">Registros históricos de despacho y consumo de combustible en maquinaria pesada y vehículos del hato.</p>
+                
+                <!-- Contenedor responsive adaptado a pantallas táctiles -->
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Maquinaria / Vehículo</th>
+                                <th>Litros</th>
+                                <th>Horómetro / Odómetro</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabla-combustible-body">
+                            <!-- Los datos se cargarán dinámicamente desde combustible.js -->
+                            <tr>
+                                <td colspan="4" style="text-align: center; color: var(--text-muted); padding: 20px;">
+                                    Cargando registros locales...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
 
-        <div class="navigation-actions">
-            <a href="./registro-combustible.html" class="btn-secondary">Registrar Nuevo Despacho</a>
-            <a href="./index.html" class="btn-secondary">Volver al Inicio</a>
+            <!-- COLUMNA 3: Acciones de Navegación Operativa -->
+            <section class="section-box" style="height: auto;">
+                <div class="card-header">
+                    <div class="card-icon">⚙️</div>
+                    <h2 class="card-title">Acciones Disponibles</h2>
+                </div>
+                <p class="card-description">Gestione los flujos de abastecimiento de diésel o gasolina en el campo.</p>
+                
+                <!-- Botones unificados con la clase .card-action de tus estilos maestros -->
+                <div style="display: flex; flex-direction: column; gap: 12px; margin-top: auto;">
+                    <a href="./registro-combustible.html" class="card-action" style="text-decoration: none;">📋 Registrar Despacho</a>
+                    <a href="./index.html" class="card-action" style="background-color: var(--text-muted); text-decoration: none;">⬅ Volver al Inicio</a>
+                </div>
+            </section>
+
         </div>
     </main>
 
     <!-- Scripts del Sistema y Módulo -->
-    <script src="/js/header.js"></script>
-    <script src="/js/syncManager.js"></script>
+    <script src="./js/header.js"></script>
+    <script src="./js/syncManager.js"></script>
     <script src="./combustible.js"></script>
 </body>
 </html>
