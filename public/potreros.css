@@ -124,16 +124,34 @@ body {
 }
 
 /* ==========================================================================
-   2. CONTENEDOR PRINCIPAL: MODELO DE 2 COLUMNAS
+   2. CONTENEDOR PRINCIPAL: MODELO DE 3 COLUMNAS
    ========================================================================== */
+.main-container {
+    width: 100%;
+    max-width: 1440px; /* Ampliado ligeramente para acomodar con holgura las 3 columnas */
+    margin: 0 auto;
+    padding: 30px 20px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* <--- Configurado a 3 columnas simétricas */
+    gap: 24px;
+    align-items: start;
+}
 
+/* En tablets o pantallas medianas, baja a 2 columnas para evitar compresión excesiva */
+@media (max-width: 1200px) {
+    .main-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
 
-@media (max-width: 992px) {
+/* En pantallas móviles o tablets verticales, pasa a 1 sola columna */
+@media (max-width: 768px) {
     .main-container {
         grid-template-columns: 1fr;
     }
 }
 
+/* Si una página específica requiere forzar una sola columna */
 .main-container.single-column {
     grid-template-columns: 1fr;
 }
