@@ -126,16 +126,7 @@ body {
 /* ==========================================================================
    2. CONTENEDOR PRINCIPAL: MODELO DE 2 COLUMNAS
    ========================================================================== */
-.main-container {
-    width: 100%;
-    max-width: 1280px;
-    margin: 0 auto;
-    padding: 30px 20px;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 24px;
-    align-items: start;
-}
+
 
 @media (max-width: 992px) {
     .main-container {
