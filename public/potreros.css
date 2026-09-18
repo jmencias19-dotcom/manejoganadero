@@ -301,11 +301,19 @@ input:focus, select:focus, textarea:focus {
 /* ==========================================================================
    5. SECCIÓN DE INDICADORES / MÉTRICAS Y CONTENEDORES
    ========================================================================== */
-.kpi-container {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
-    margin-bottom: 10px;
+
+/* Configuración asimétrica de precisión para computadoras de escritorio (PC) */
+@media (min-width: 577px) {
+    .kpi-container {
+        display: grid;
+        /* Relación técnica exacta solicitada: 46% izquierda y 54% derecha */
+        grid-template-columns: 46% 54%; 
+        column-gap: 16px;
+        row-gap: 12px;
+        margin-bottom: 12px;
+        width: 100%;
+        align-items: start;
+    }
 }
 
 .kpi-card {
@@ -353,49 +361,33 @@ input:focus, select:focus, textarea:focus {
     pointer-events: auto;
 }
 
-document.addEventListener("DOMContentLoaded", function() {
-    // Extrae el título limpio de la página actual para el subtítulo del cintillo
-    const tituloModulo = document.title ? document.title.split("-")[0].trim() : "Módulo del Sistema";
-
-    const headerHTML = `
-        <header class="main-header">
-            <div class="header-container">
-                
-                <!-- LADO IZQUIERDO: Botón de Regreso y Bandera -->
-                <div style="display: flex; align-items: center; gap: 10px;">
-                    <a href="./index.html" class="btn-back" style="text-decoration: none;" title="Volver al Panel Principal">
-                        <i class="fas fa-home"></i> <span class="btn-back-text">Panel</span>
-                    </a>
-                    <div class="flag-container" style="display: flex; align-items: center;">
-                        <img src="./img/venezuela.png" alt="Venezuela" style="width: 24px; height: auto; object-fit: contain;">
-                    </div>
-                </div>
-                
-                <!-- CENTRO: Títulos Oficiales del Hato -->
-                <div class="header-title-wrapper" style="flex-grow: 1; text-align: center;">
-                    <h1 style="margin: 0; font-size: 1.2rem; letter-spacing: 0.5px;">HATO LAGUNA BRAVA</h1>
-                    <p style="margin: 2px 0 0 0; font-size: 0.8rem; opacity: 0.85; font-weight: 500;">${tituloModulo}</p>
-                </div>
-                
-                <!-- LADO DERECHO: Bandera Italiana y Semáforo de Sincronización -->
-                <div style="display: flex; align-items: center; gap: 10px;">
-                    <div class="flag-container" style="display: flex; align-items: center;">
-                        <img src="./img/italia.png" alt="Italia" style="width: 24px; height: auto; object-fit: contain;">
-                    </div>
-                    
-                    <!-- Semáforo Maestro integrado operativamente -->
-                    <div class="sync-status-wrapper" id="btn-sync" style="cursor: pointer;" title="Estado de Sincronización">
-                        <div id="light" class="semaphore online"></div>
-                        <span id="statusText" class="sync-text" style="margin-left: 5px;">Sincronizado</span>
-                    </div>
-                </div>
-
-            </div>
-        </header>
-    `;
-
-    const headerContainer = document.getElementById("app-header");
-    if (headerContainer) {
-        headerContainer.innerHTML = headerHTML;
+/* ==========================================================================
+   Ajustes adaptativos específicos para DISPOSITIVOS MÓVILES (Celulares)
+   ========================================================================== */
+@media (max-width: 576px) {
+    .kpi-container {
+        display: grid;
+        grid-template-columns: 1fr; /* Rompe la asimetría en pantallas táctiles */
+        gap: 12px;
+        margin-bottom: 0;
     }
-});
+
+    .kpi-container .input-group {
+        margin-bottom: 12px;
+    }
+
+    /* Redimensionamiento táctil ergonómico para uso con guantes o en movimiento */
+    input[type="text"],
+    input[type="number"],
+    input[type="date"],
+    select,
+    textarea,
+    .card-action,
+    button,
+    .btn,
+    .btn-action {
+        padding: 14px 12px !important; /* Altura mínima de contacto recomendada */
+        font-size: 16px !important;     /* Evita el reescalado forzado en pantallas táctiles */
+    }
+}
+
