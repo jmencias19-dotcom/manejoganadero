@@ -4,260 +4,113 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Planificación de Tareas - Hato Laguna Brava</title>
+    <!-- Centralizado en tus Estilos Maestros Unificados para evitar colisiones cromáticas -->
+    <link rel="stylesheet" href="./potreros.css?v=3.0">
+    <!-- Iconos unificados FontAwesome para uso en campo -->
+    <link rel="stylesheet" href="https://cloudflare.com">
+    <link rel="manifest" href="manifest.json">
     <style>
-        :root {
-            --primary-color: #1b4332;
-            --secondary-color: #2d6a4f;
-            --accent-color: #52b788;
-            --bg-color: #f4f6f4;
-            --card-bg: #ffffff;
-            --text-main: #2b2b2b;
-            --text-muted: #6c757d;
-            --danger: #e63946;
-            --warning: #f4a261;
-            --success: #2a9d8f;
-            --border-color: #d8dad8;
-            --divider-color: #e2e8e0;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            overflow-x: hidden;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        .main-header {
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            color: white;
-            padding: 1.2rem 1rem;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            border-bottom: 4px solid var(--accent-color);
-        }
-
-        .header-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            flex-direction: column;
-            gap: 0.8rem;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        @media (min-width: 768px) {
-            .header-container { flex-direction: row; }
-        }
-
-        .header-brand {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-
-        .header-container h1 {
-            margin: 0;
-            font-size: 1.3rem;
-            text-align: center;
-        }
-
-        .btn-dashboard {
-            background-color: rgba(255, 255, 255, 0.2);
-            color: white;
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            padding: 8px 14px;
-            border-radius: 8px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            cursor: pointer;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            transition: background-color 0.2s;
-        }
-
-        .btn-dashboard:hover {
-            background-color: rgba(255, 255, 255, 0.35);
-        }
-
-        .sync-indicator {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            background: rgba(255, 255, 255, 0.15);
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .sync-light {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background-color: var(--success);
-            box-shadow: 0 0 8px var(--success);
-            transition: background-color 0.3s, box-shadow 0.3s;
-        }
-
-        .main-container {
-            max-width: 1200px;
-            margin: 1rem auto;
-            padding: 0 0.8rem;
-            display: flex;         
-            flex-direction: column; 
-            gap: 1.5rem;
-            width: 100%;
-        }
-
-        @media (min-width: 992px) {
-            .main-container {
-                display: grid;       
-                grid-template-columns: 1fr 1fr;
-                align-items: start;
-            }
-        }
-
-        .section-box {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.04);
-            padding: 1.2rem;
-            width: 100%;
-        }
-
-        .section-title {
-            margin-top: 0;
-            margin-bottom: 1.2rem;
-            font-size: 1.1rem;
-            color: var(--primary-color);
-            border-bottom: 2px solid var(--divider-color);
-            padding-bottom: 0.5rem;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        #taskForm {
-            display: flex;
-            flex-direction: column;
-            gap: 1.2rem;
-            width: 100%;
-        }
-
-        .input-group {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            width: 100%;
-        }
-
-        .input-group label {
-            font-size: 0.85rem;
-            font-weight: 700;
-            color: var(--primary-color);
-            text-transform: uppercase;
-            letter-spacing: 0.3px;
-        }
-
-        #taskForm input, #taskForm textarea, #taskForm select {
-            width: 100%;
-            padding: 12px;
-            border: 1.5px solid var(--border-color);
-            border-radius: 8px;
-            font-size: 1rem;
-            box-sizing: border-box;
-            background-color: #fafbfc;
-            color: var(--text-main);
-        }
-
-        #taskForm input:focus, #taskForm textarea:focus, #taskForm select:focus {
-            border-color: var(--accent-color);
-            outline: none;
-            background-color: #ffffff;
-        }
-
-        #taskForm textarea { min-height: 75px; resize: vertical; }
-
-        .form-actions {
-            display: flex;
-            gap: 10px;
-            flex-direction: column;
-            margin-top: 0.5rem;
-            border-top: 1px solid var(--divider-color);
-            padding-top: 1.2rem;
-            width: 100%;
-        }
-
-        button {
-            padding: 14px;
-            border: none;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 700;
-            cursor: pointer;
-            width: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: transform 0.1s;
-        }
-
-        button:active { transform: scale(0.98); }
-        button[type="submit"] { background-color: var(--secondary-color); color: white; gap: 8px; }
-        
-        .btn-undo { background-color: var(--warning); color: #000000; gap: 8px; }
-
-        .resumen-container {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            margin-top: 5px;
-            max-height: 600px;
-            overflow-y: auto;
-        }
-
+        /* Estilos específicos para el componente dinámico de tareas que complementan a potreros.css */
         .task-card-item {
-            background-color: #fafbfc;
+            background-color: var(--card-bg);
             border: 1px solid var(--border-color);
             border-radius: 8px;
-            padding: 12px;
+            padding: 14px;
             display: flex;
             flex-direction: column;
             gap: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            box-shadow: 0 2px 4px rgba(27, 67, 50, 0.02);
+            margin-bottom: 12px;
         }
 
-        .task-card-row { display: flex; justify-content: space-between; align-items: center; }
-        .task-card-date { font-size: 0.8rem; font-weight: 700; color: var(--secondary-color); background-color: #e2e8e0; padding: 2px 8px; border-radius: 4px; }
-        .task-card-labor { font-size: 1rem; font-weight: 600; color: var(--text-main); word-break: break-word; }
-        .task-card-meta { font-size: 0.85rem; color: var(--text-muted); }
-        .task-card-obs { font-size: 0.85rem; color: var(--text-main); background: #f0f2f0; padding: 6px 8px; border-radius: 6px; font-style: italic; border-left: 3px solid var(--accent-color); }
-        .task-card-actions { display: flex; gap: 10px; align-items: center; margin-top: 4px; border-top: 1px solid var(--divider-color); padding-top: 8px; }
+        .task-card-row { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+        }
 
-        .status-select { padding: 8px; border-radius: 6px; border: 1px solid #cccccc; font-weight: 700; font-size: 0.85rem; flex: 1; height: 38px; cursor: pointer; }
-        .status-cola { background-color: #fff3cd; color: #856404; }
-        .status-proceso { background-color: #cce5ff; color: #004085; }
-        .status-ejecutada { background-color: #d4edda; color: #155724; }
+        .task-card-date { 
+            font-size: 0.8rem; 
+            font-weight: 700; 
+            color: var(--primary-color); 
+            background-color: var(--divider-color); 
+            padding: 3px 8px; 
+            border-radius: 4px; 
+        }
 
-        .btn-delete { background-color: var(--danger); color: white; padding: 0 14px; font-size: 0.85rem; border-radius: 6px; border: none; height: 38px; display: flex; align-items: center; justify-content: center; font-weight: 600; width: auto; cursor: pointer;}
+        .task-card-meta { 
+            font-size: 0.85rem; 
+            color: var(--text-muted); 
+        }
 
+        .task-card-labor { 
+            font-size: 1rem; 
+            font-weight: 600; 
+            color: var(--text-main); 
+            word-break: break-word; 
+        }
+
+        .task-card-obs { 
+            font-size: 0.85rem; 
+            color: var(--text-main); 
+            background: #f0f4f1; 
+            padding: 8px; 
+            border-radius: 6px; 
+            font-style: italic; 
+            border-left: 3px solid var(--accent-color); 
+        }
+
+        .task-card-actions { 
+            display: flex; 
+            gap: 10px; 
+            align-items: center; 
+            margin-top: 4px; 
+            border-top: 1px solid var(--divider-color); 
+            padding-top: 8px; 
+        }
+
+        /* Selectores de Estado Estandarizados */
+        .status-select { 
+            padding: 6px 10px; 
+            border-radius: 6px; 
+            border: 1px solid var(--border-color); 
+            font-weight: 700; 
+            font-size: 0.85rem; 
+            flex: 1; 
+            height: 38px; 
+            cursor: pointer; 
+        }
+
+        .status-cola { background-color: #fff3cd !important; color: #856404 !important; }
+        .status-proceso { background-color: #cce5ff !important; color: #004085 !important; }
+        .status-ejecutada { background-color: #d4edda !important; color: #155724 !important; }
+
+        /* Botón de eliminación técnica */
+        .btn-delete { 
+            background-color: #c1121f; 
+            color: white; 
+            padding: 0 14px; 
+            font-size: 0.85rem; 
+            border-radius: 6px; 
+            border: none; 
+            height: 38px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-weight: 600; 
+            width: auto; 
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        
+        .btn-delete:hover { opacity: 0.9; }
+
+        /* Alertas Toast del Sistema */
         .toast-notification {
             position: fixed;
             bottom: 20px;
             left: 5%; right: 5%; width: 90%;
-            background: #333333; color: white;
+            background: #222222; color: white;
             padding: 12px 16px; border-radius: 10px;
             opacity: 0; pointer-events: none;
             transition: opacity 0.3s, transform 0.3s;
@@ -265,68 +118,97 @@
             display: flex; align-items: center; gap: 10px;
             border-left: 5px solid var(--accent-color);
         }
+        
+        @media (min-width: 768px) {
+            .toast-notification { width: 350px; left: 20px; right: auto; }
+        }
+        
         .toast-notification.show { opacity: 1; transform: translateY(0); }
     </style>
 </head>
 <body>
 
+    <!-- Contenedor dinámico donde header.js inyectará el encabezado unificado -->
+    <div id="app-header"></div>
+
+    <!-- ENCABEZADO MAESTRO NATIVO (Respaldo robusto offline para el hato) -->
     <header class="main-header">
         <div class="header-container">
-            <div class="header-brand">
-                <a href="index.html" class="btn-dashboard">
-                    <span>⬅</span> Volver al Panel
+            <nav class="header-nav">
+                <a href="./index.html" class="btn-back" style="text-decoration: none;">
+                    <i class="fa-solid fa-arrow-left"></i> Volver al Panel
                 </a>
-                <div>
-                    <h1>Planificación de Tareas</h1>
-                    <p style="margin: 2px 0 0 0; font-size: 0.8rem; opacity: 0.8;">Hato Laguna Brava - Sistema Operativo</p>
-                </div>
+            </nav>
+            <div class="header-title-wrapper">
+                <h1>Hato Laguna Brava - <span>Planificación</span></h1>
+                <p>Planificación de Tareas y Control Operativo</p>
             </div>
-            <div class="sync-indicator">
-                <div id="light" class="sync-light"></div>
-                <span id="statusText">Sincronizado Local</span>
+            <!-- Semáforo de Sincronización Estándar -->
+            <div class="sync-status-wrapper">
+                <div id="light" class="semaphore online"></div>
+                <span id="statusText" class="sync-text">Sincronizado Local</span>
             </div>
         </div>
     </header>
 
+    <!-- CONTENEDOR PRINCIPAL Y REJILLA (Modelo de 2 Columnas de Trabajo Uniformes) -->
     <main class="main-container">
-        <!-- Sección del Formulario -->
-        <section class="section-box">
-            <h2 class="section-title">📋 Registro de Nueva Labor Operativa</h2>
-            <form id="taskForm">
-                <div class="input-group">
-                    <label for="fecha">Fecha de Ejecución:</label>
-                    <input type="date" id="fecha" required>
+        <div class="menu-grid">
+            
+            <!-- COLUMNA 1: Formulario Técnico de Registro -->
+            <section class="section-box" style="height: auto;">
+                <div class="card-header">
+                    <div class="card-icon">📋</div>
+                    <h2 class="card-title">Registro de Nueva Labor</h2>
                 </div>
-                <div class="input-group">
-                    <label for="labor">Labor a Realizar:</label>
-                    <input type="text" id="labor" placeholder="Ej. Vacunación Brahman, mantenimiento de potrero..." required>
-                </div>
-                <div class="input-group">
-                    <label for="personal">Personal Asignado:</label>
-                    <input type="text" id="personal" placeholder="Nombre del responsable" required>
-                </div>
-                <div class="input-group">
-                    <label for="observaciones">Observaciones / Notas de Campo:</label>
-                    <textarea id="observaciones" placeholder="Detalles de potreros, insumos o instrucciones adicionales..."></textarea>
-                </div>
-                <div class="form-actions">
-                    <button type="submit">💾 Guardar y Sincronizar Tarea</button>
-                    <button type="button" id="btnRehacer" class="btn-undo">🔄 Rehacer / Limpiar Campos</button>
-                </div>
-            </form>
-        </section>
+                <p class="card-description">Asigne y configure los parámetros de las actividades ganaderas diarias.</p>
+                
+                <form id="taskForm">
+                    <div class="input-group">
+                        <label for="fecha">Fecha de Ejecución:</label>
+                        <input type="date" id="fecha" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="labor">Labor a Realizar:</label>
+                        <input type="text" id="labor" placeholder="Ej. Vacunación Brahman, mantenimiento de potrero..." required>
+                    </div>
+                    <div class="input-group">
+                        <label for="personal">Personal Asignado:</label>
+                        <input type="text" id="personal" placeholder="Nombre del responsable o vaquero" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="observaciones">Observaciones / Notas de Campo:</label>
+                        <textarea id="observaciones" placeholder="Detalles de potreros, insumos o instrucciones adicionales..." rows="3"></textarea>
+                    </div>
+                    
+                    <div style="display: flex; gap: 10px; margin-top: 10px; width: 100%;">
+                        <button type="submit" class="btn" style="flex: 1;">💾 Guardar Tarea</button>
+                        <button type="button" id="btnRehacer" class="btn" style="background-color: var(--text-muted); width: auto;"><i class="fa-solid fa-rotate"></i></button>
+                    </div>
+                </form>
+            </section>
 
-        <!-- Sección de Resumen y Organización -->
-        <section class="section-box">
-            <h2 class="section-title">🤠 Tareas Programadas</h2>
-            <div class="resumen-container" id="resumenContainer"></div>
-        </section>
+            <!-- COLUMNA 2: Tareas Programadas y Lista de Control -->
+            <section class="section-box" style="height: auto;">
+                <div class="card-header">
+                    <div class="card-icon">🤠</div>
+                    <h2 class="card-title">Tareas Programadas</h2>
+                </div>
+                <p class="card-description">Labores vigentes y estados de progreso asignados en la sabana.</p>
+                
+                <!-- Contenedor Dinámico de Tarjetas -->
+                <div class="resumen-container" id="resumenContainer" style="margin-top: 10px;"></div>
+            </section>
+
+        </div>
     </main>
 
+    <!-- Componente Toast Global -->
     <div id="toast" class="toast-notification">
         <span id="toastMsg">Notificación del Sistema</span>
     </div>
 
+    <!-- LÓGICA DE CONTROL DEL MÓDULO (Offline / LocalStorage) -->
     <script>
         function playBeep(type = 'success') {
             try {
@@ -356,192 +238,8 @@
         function updateSyncStatus(state, text) {
             const light = document.getElementById('light');
             const statusText = document.getElementById('statusText');
-            statusText.innerText = text;
+            if (statusText) statusText.innerText = text;
             
-            if (state === 'syncing') {
-                light.style.backgroundColor = 'var(--warning)';
-                light.style.boxShadow = '0 0 8px var(--warning)';
-            } else if (state === 'success') {
-                light.style.backgroundColor = 'var(--success)';
-                light.style.boxShadow = '0 0 8px var(--success)';
-            } else if (state === 'error') {
-                light.style.backgroundColor = 'var(--danger)';
-                light.style.boxShadow = '0 0 8px var(--danger)';
-            }
-        }
-
-        function showToast(message) {
-            const toast = document.getElementById('toast');
-            document.getElementById('toastMsg').innerText = message;
-            toast.classList.add('show');
-            setTimeout(() => {
-                toast.classList.remove('show');
-            }, 3000);
-        }
-
-        const STORAGE_KEY = 'laguna_brava_tareas';
-
-        function getTasks() {
-            try {
-                updateSyncStatus('syncing', 'Sincronizando...');
-                const data = localStorage.getItem(STORAGE_KEY);
-                const tasks = data ? JSON.parse(data) : [];
-                setTimeout(() => updateSyncStatus('success', 'Sincronizado Local'), 300);
-                return tasks;
-            } catch (e) {
-                console.error("Error al leer almacenamiento local:", e);
-                updateSyncStatus('error', 'Error de Sincronización');
-                return [];
-            }
-        }
-
-        function saveTasks(tasks) {
-            try {
-                updateSyncStatus('syncing', 'Guardando cambios...');
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
-                setTimeout(() => updateSyncStatus('success', 'Sincronizado Local'), 400);
-                return true;
-            } catch (e) {
-                console.error("Error al guardar en almacenamiento local:", e);
-                updateSyncStatus('error', 'Fallo al Guardar');
-                showToast("⚠️ Error: No se pudo guardar en el almacenamiento local.");
-                return false;
-            }
-        }
-
-        function checkAutoDelete(tasks) {
-            const now = new Date().getTime();
-            const THREE_DAYS_MS = 3 * 24 * 60 * 60 * 1000;
-            let modified = false;
-
-            const filtered = tasks.filter(task => {
-                if (task.status === 'ejecutada' && task.executionTimestamp) {
-                    if (now - task.executionTimestamp >= THREE_DAYS_MS) {
-                        modified = true;
-                        return false; 
-                    }
-                }
-                return true;
-            });
-
-            if (modified) {
-                saveTasks(filtered);
-                showToast("Se depuraron tareas ejecutadas con más de 3 días de antigüedad.");
-            }
-            return filtered;
-        }
-
-        function renderTasks() {
-            let tasks = getTasks();
-            tasks = checkAutoDelete(tasks);
-
-            tasks.sort((a, b) => new Date(a.fecha + 'T00:00:00') - new Date(b.fecha + 'T00:00:00'));
-
-            const container = document.getElementById('resumenContainer');
-            container.innerHTML = '';
-
-            if (tasks.length === 0) {
-                container.innerHTML = `<p style="text-align: center; color: var(--text-muted); padding: 20px;">No hay tareas programadas actualmente.</p>`;
-                return;
-            }
-
-            tasks.forEach((task, index) => {
-                let statusClass = 'status-cola';
-                if (task.status === 'proceso') statusClass = 'status-proceso';
-                if (task.status === 'ejecutada') statusClass = 'status-ejecutada';
-
-                const card = document.createElement('div');
-                card.className = 'task-card-item';
-                card.innerHTML = `
-                    <div class="task-card-row">
-                        <span class="task-card-date">📅 ${task.fecha}</span>
-                        <span class="task-card-meta">Resp: <strong>${task.personal}</strong></span>
-                    </div>
-                    <div class="task-card-labor">${task.labor}</div>
-                    ${task.observaciones ? `<div class="task-card-obs">📝 ${task.observaciones}</div>` : ''}
-                    <div class="task-card-actions">
-                        <select class="status-select ${statusClass}" onchange="updateStatus(${index}, this.value)">
-                            <option value="cola" ${task.status === 'cola' ? 'selected' : ''}>En Cola</option>
-                            <option value="proceso" ${task.status === 'proceso' ? 'selected' : ''}>En Proceso</option>
-                            <option value="ejecutada" ${task.status === 'ejecutada' ? 'selected' : ''}>Ejecutada</option>
-                        </select>
-                        <button class="btn-delete" onclick="deleteTask(${index})" title="Eliminar Tarea">🗑️ Borrar</button>
-                    </div>
-                `;
-                container.appendChild(card);
-            });
-        }
-
-        document.getElementById('taskForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const fecha = document.getElementById('fecha').value;
-            const labor = document.getElementById('labor').value;
-            const personal = document.getElementById('personal').value;
-            const observaciones = document.getElementById('observaciones').value.trim();
-
-            const newTask = {
-                fecha,
-                labor,
-                personal,
-                observaciones,
-                status: 'cola',
-                executionTimestamp: null
-            };
-
-            const tasks = getTasks();
-            tasks.push(newTask);
-            
-            if (saveTasks(tasks)) {
-                playBeep('success');
-                showToast("✅ Tarea guardada y sincronizada correctamente.");
-                this.reset();
-                document.getElementById('fecha').value = new Date().toISOString().split('T')[0];
-                renderTasks();
-            }
-        });
-
-        document.getElementById('btnRehacer').addEventListener('click', function() {
-            document.getElementById('taskForm').reset();
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('fecha').value = today;
-            playBeep('success');
-            showToast("🔄 Campos restablecidos.");
-        });
-
-        window.updateStatus = function(index, newStatus) {
-            const tasks = getTasks();
-            tasks[index].status = newStatus;
-
-            if (newStatus === 'ejecutada') {
-                tasks[index].executionTimestamp = new Date().getTime();
-                showToast("⚠️ Tarea ejecutada. Se autoeliminará en 3 días.");
-            } else {
-                tasks[index].executionTimestamp = null;
-            }
-
-            if (saveTasks(tasks)) {
-                playBeep('success');
-                renderTasks();
-            }
-        }
-
-        window.deleteTask = function(index) {
-            if (confirm("¿Estás seguro de eliminar esta tarea permanentemente?")) {
-                const tasks = getTasks();
-                tasks.splice(index, 1);
-                if (saveTasks(tasks)) {
-                    playBeep('delete');
-                    showToast("🗑️ Tarea eliminada.");
-                    renderTasks();
-                }
-            }
-        }
-
-        window.onload = function() {
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('fecha').value = today;
-            renderTasks();
-        };
-    </script>
-</body>
-</html>
+            if (light) {
+                if (state === 'syncing') {
+                    light.style.backgroundColor = '#f4a261';
