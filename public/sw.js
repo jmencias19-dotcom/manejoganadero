@@ -61,10 +61,20 @@ self.addEventListener('fetch', (event) => {
     }
 
     // Manejo de navegación HTML
-    if (event.request.mode === 'navigate' || event.request.headers.get('accept').includes('text/html')) {
+    if (event.request.mode === 'navigate' || (event.request.headers.get('accept') && event.request.headers.get('accept').includes('text/html'))) {
         event.respondWith(
-            fetch(event.request, { redirect: 'follow' })
+            // ELIMINADO: { redirect: 'follow' } de la solicitud para evitar el error de modo no permitido
+            fetch(event.request)
                 .then((networkResponse) => {
+                    // SOLUCIÓN: Si la respuesta fue redireccionada por Vercel, la recreamos limpia
+                    if (networkResponse.redirected) {
+                        return new Response(networkResponse.body, {
+                            status: networkResponse.status,
+                            statusText: networkResponse.statusText,
+                            headers: networkResponse.headers
+                        });
+                    }
+
                     if (networkResponse && networkResponse.status === 200) {
                         const responseClone = networkResponse.clone();
                         caches.open(CACHE_NAME).then((cache) => {
@@ -75,21 +85,23 @@ self.addEventListener('fetch', (event) => {
                 })
                 .catch(() => {
                     return caches.match(event.request).then((cached) => {
-                        return cached || caches.match('./index.html');
+                        // Intenta emparejar la ruta exacta, la ruta relativa o cae en index.html
+                        return cached || caches.match('./planificacion.html') || caches.match('./index.html');
                     });
                 })
         );
         return;
     }
 
-    // Recursos estáticos
+    // Recursos estáticos (CSS, JS, Manifest, etc.)
     event.respondWith(
         caches.match(event.request).then((cachedResponse) => {
             if (cachedResponse) {
                 return cachedResponse;
             }
-            return fetch(event.request, { redirect: 'follow' }).then((networkResponse) => {
-                if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
+            // ELIMINADO: { redirect: 'follow' } para mantener consistencia con las políticas de red
+            return fetch(event.request).then((networkResponse) => {
+                if (!networkResponse || networkResponse.status !== 200) {
                     return networkResponse;
                 }
                 const responseToCache = networkResponse.clone();
@@ -101,3 +113,5 @@ self.addEventListener('fetch', (event) => {
         })
     );
 });
+
+
