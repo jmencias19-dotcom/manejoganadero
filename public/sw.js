@@ -35,12 +35,12 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
     const url = new URL(event.request.url);
 
-    // FILTRO 1: Ignorar solicitudes a dominios externos (ej. gstatic.com, fuentes de Google, APIs externas)
+    // Ignorar dominios externos (ej. gstatic, APIs externas)
     if (url.origin !== location.origin) {
-        return; // Deja que el navegador maneje estos recursos de forma estándar
+        return;
     }
 
-    // FILTRO 2: Ignorar peticiones que no sean GET (como POST de Firebase o analíticas)
+    // Solo interceptar peticiones GET
     if (event.request.method !== 'GET') {
         return;
     }
@@ -51,14 +51,13 @@ self.addEventListener('fetch', (event) => {
                 return cachedResponse;
             }
 
-            return fetch(event.request)
+            // CORRECCIÓN CLAVE: Se añade { redirect: 'follow' } para soportar redirecciones de Vercel
+            return fetch(event.request, { redirect: 'follow' })
                 .then((networkResponse) => {
-                    // Validar si la respuesta es válida antes de cachear
                     if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
                         return networkResponse;
                     }
 
-                    // Clonar la respuesta para guardarla en caché y enviarla al navegador
                     const responseToCache = networkResponse.clone();
                     caches.open(CACHE_NAME).then((cache) => {
                         cache.put(event.request, responseToCache);
@@ -67,7 +66,7 @@ self.addEventListener('fetch', (event) => {
                     return networkResponse;
                 })
                 .catch(() => {
-                    // Respuesta de respaldo en caso de estar totalmente offline y no estar en caché
+                    // Fallback para páginas HTML en caso de pérdida total de señal
                     if (event.request.headers.get('accept').includes('text/html')) {
                         return caches.match('./index.html');
                     }
