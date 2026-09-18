@@ -7,27 +7,24 @@
     <link rel="stylesheet" href="/potreros.css?v=3.0">
 </head>
 <body>
-    <div class="library-container">
-        <!-- Encabezado de la Biblioteca -->
-        <header>
-            <div class="section-title">Biblioteca Digital del Hato</div>
-            <p>Acceso al repositorio documental (Manual Merck, guías), fichas de pastos y parámetros técnicos.</p>
-        </header>
+    <!-- Contenedor donde se inyectará automáticamente el encabezado unificado -->
+    <div id="app-header"></div>
 
-        <!-- Contenido principal y Secciones de Apoyo -->
-        <section>
+    <div class="library-container">
+        <!-- Contenido principal y Secciones de Apoyo con estructura estándar -->
+        <section class="section-box">
             <div class="section-title">Repositorio Documental</div>
             <div class="grid-library">
                 <div class="card">
                     <div class="card-title">Repositorio Documental</div>
-                    <div class="card-content">Manuales, libros y documentos de interés pecuario.</div>
+                    <div class="card-content">Manuales, libros y documentos de interés pecuario (Manual Merck, guías).</div>
                     <button class="upload-btn" onclick="triggerUpload('documento')">Ingresar a Biblioteca</button>
                     <ul id="lista-documentos"></ul>
                 </div>
             </div>
         </section>
 
-        <section>
+        <section class="section-box">
             <div class="section-title">Registros y Datos de Campo</div>
             <div class="grid-library">
                 <div class="card">
@@ -51,7 +48,9 @@
         </section>
     </div>
 
-    <!-- Enlace al archivo JavaScript -->
+    <!-- Scripts del Sistema y Módulo -->
+    <script src="/js/header.js"></script>
+    <script src="/js/syncManager.js"></script>
     <script src="biblioteca-hato.js"></script>
     <script src="cuestionario-biblioteca.js"></script>
 </body>
