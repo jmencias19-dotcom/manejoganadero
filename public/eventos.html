@@ -8,16 +8,12 @@
     <link rel="manifest" href="manifest.json">
 </head>
 <body>
-    <header class="main-header">
-        <div class="header-container">
-            <h1>Gestión Ganadera Hato Laguna Brava</h1>
-            <p>Módulo de Historial de Eventos Sanitarios</p>
-        </div>
-    </header>
+    <!-- Contenedor donde se inyectará automáticamente el encabezado unificado (header.js) -->
+    <div id="app-header"></div>
 
     <main class="main-container">
-        <div class="card">
-            <h2>Historial de Tratamientos Registrados</h2>
+        <div class="section-box">
+            <div class="section-title">Historial de Tratamientos Registrados</div>
             <p>A continuación se visualizan los registros sanitarios aplicados en el rebaño.</p>
             
             <div class="table-responsive">
@@ -43,6 +39,9 @@
         </div>
     </main>
 
+    <!-- Scripts del Sistema y Módulo -->
+    <script src="/js/header.js"></script>
+    <script src="/js/syncManager.js"></script>
     <script src="./eventos.js"></script>
 </body>
 </html>
