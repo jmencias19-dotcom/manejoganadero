@@ -56,18 +56,16 @@ body {
     gap: 15px;
 }
 
-.flag-container {
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
+.header-nav .btn-back {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 8px 12px;
+    border-radius: 6px;
+    transition: background 0.2s ease;
 }
 
-.flag-icon {
-    width: 40px;
-    height: auto;
-    border-radius: 6px;
-    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+.header-nav .btn-back:hover {
+    background: rgba(255, 255, 255, 0.2);
 }
 
 .header-title-wrapper {
@@ -83,35 +81,68 @@ body {
     letter-spacing: 0.5px;
 }
 
+.header-title-wrapper h1 span {
+    color: var(--accent-color);
+}
+
 .header-title-wrapper p {
     font-size: 0.85rem;
     color: #a3b899;
     font-weight: 500;
 }
 
+/* Semáforo de Sincronización */
+.sync-status-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 6px 12px;
+    border-radius: 20px;
+}
+
+.semaphore {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+.semaphore.offline {
+    background-color: #e76f51;
+    box-shadow: 0 0 8px rgba(231, 111, 81, 0.6);
+}
+
+.semaphore.online {
+    background-color: #2a9d8f;
+    box-shadow: 0 0 8px rgba(42, 157, 143, 0.6);
+}
+
+.sync-text {
+    font-size: 0.75rem;
+    color: #ffffff;
+    font-weight: 600;
+}
+
 /* ==========================================================================
-   2. CONTENEDOR PRINCIPAL: MODELO DE 2 COLUMNAS (ESTILO DE LA IMAGEN)
+   2. CONTENEDOR PRINCIPAL: MODELO DE 2 COLUMNAS
    ========================================================================== */
 .main-container {
     width: 100%;
     max-width: 1280px;
     margin: 0 auto;
     padding: 30px 20px;
-    box-sizing: border-box;
     display: grid;
-    grid-template-columns: 1fr 1fr; /* Dos columnas simétricas idénticas a la referencia */
+    grid-template-columns: 1fr 1fr;
     gap: 24px;
     align-items: start;
 }
 
-/* En pantallas móviles o tablets verticales, pasa a 1 sola columna */
 @media (max-width: 992px) {
     .main-container {
         grid-template-columns: 1fr;
     }
 }
 
-/* Si una página usa la clase .panel-principal o diseño libre de una sola columna */
 .main-container.single-column {
     grid-template-columns: 1fr;
 }
@@ -129,11 +160,12 @@ body {
     display: flex;
     flex-direction: column;
     gap: 14px;
+    min-width: 0; /* Previene desbordamiento en Grid */
 }
 
 .section-title, h2 {
     margin-top: 0;
-    margin-bottom: 1rem;
+    margin-bottom: 0.5rem;
     font-size: 1.15rem;
     color: var(--primary-color);
     border-bottom: 2px solid var(--divider-color);
@@ -141,18 +173,22 @@ body {
     font-weight: 700;
 }
 
-/* Formularios estructurados */
 form {
     display: flex;
     flex-direction: column;
-    gap: 14px;
+    gap: 12px;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
 }
 
 label {
     font-size: 0.88rem;
     font-weight: 600;
     color: var(--primary-color);
-    margin-bottom: -6px;
 }
 
 input[type="text"],
@@ -176,8 +212,7 @@ input:focus, select:focus, textarea:focus {
     background-color: #ffffff;
 }
 
-/* Botones de acción unificados (Estilo "Guardar y Sincronizar") */
-button, .btn, .card-action {
+button, .btn, .card-action, .btn-action {
     display: block;
     width: 100%;
     text-align: center;
@@ -196,35 +231,47 @@ button, .btn, .card-action {
     transition: background-color 0.2s ease;
 }
 
-button:hover, .btn:hover, .card-action:hover {
+button:hover, .btn:hover, .card-action:hover, .btn-action:hover {
     background-color: var(--primary-color);
 }
 
 /* ==========================================================================
-   4. SECCIÓN DE INDICADORES / MÉTRICAS (Columna Derecha de la Imagen)
+   4. SECCIÓN DE INDICADORES / MÉTRICAS Y TARJETAS DINÁMICAS
    ========================================================================== */
-.metrics-grid {
+.kpi-container {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
     gap: 12px;
     margin-bottom: 10px;
 }
 
-.metric-card {
+.kpi-card {
     background: #f8f9f8;
     border: 1px solid var(--border-color);
     border-radius: 8px;
-    padding: 10px;
+    padding: 12px;
     text-align: center;
 }
 
-.metric-value {
-    font-size: 1.1rem;
+.kpi-value {
+    font-size: 1.25rem;
     font-weight: 700;
     color: var(--primary-color);
+    margin-top: 4px;
 }
 
-.metric-label {
-    font-size: 0.75rem;
+.kpi-title {
+    font-size: 0.78rem;
     color: var(--text-muted);
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.potreros-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-height: 450px;
+    overflow-y: auto;
+    padding-right: 4px;
 }
