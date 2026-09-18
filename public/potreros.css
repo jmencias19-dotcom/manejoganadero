@@ -124,13 +124,16 @@ body {
 }
 
 /* ==========================================================================
-   2. CONTENEDOR PRINCIPAL: MODELO DE 3 COLUMNAS
+   2. CONTENEDOR PRINCIPAL Y REJILLA DE MENÚ (3 COLUMNAS)
    ========================================================================== */
 .main-container {
     width: 100%;
     max-width: 1440px;
     margin: 0 auto;
     padding: 30px 20px;
+}
+
+.menu-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr); /* <--- FUERZA LAS 3 COLUMNAS EN PC */
     gap: 24px;
@@ -139,19 +142,19 @@ body {
 
 /* En tablets o pantallas medianas (menos de 1200px), baja a 2 columnas */
 @media (max-width: 1200px) {
-    .main-container {
+    .menu-grid {
         grid-template-columns: repeat(2, 1fr);
     }
 }
 
 /* En celulares o pantallas pequeñas (menos de 768px), baja a 1 columna */
 @media (max-width: 768px) {
-    .main-container {
+    .menu-grid {
         grid-template-columns: 1fr;
     }
 }
 
-.main-container.single-column {
+.main-container.single-column .menu-grid {
     grid-template-columns: 1fr;
 }
 
