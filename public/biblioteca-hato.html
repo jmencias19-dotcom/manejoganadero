@@ -3,55 +3,127 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Biblioteca del Hato - Sistema de Gestión</title>
-    <link rel="stylesheet" href="/potreros.css?v=3.0">
+    <title>Planificación de Tareas - Hato Laguna Brava</title>
+    <link rel="stylesheet" href="./potreros.css">
+    <link rel="manifest" href="./manifest.json">
 </head>
 <body>
-    <!-- Contenedor donde se inyectará automáticamente el encabezado unificado -->
-    <div id="app-header"></div>
 
-    <div class="library-container">
-        <!-- Contenido principal y Secciones de Apoyo con estructura estándar -->
-        <section class="section-box">
-            <div class="section-title">Repositorio Documental</div>
-            <div class="grid-library">
-                <div class="card">
-                    <div class="card-title">Repositorio Documental</div>
-                    <div class="card-content">Manuales, libros y documentos de interés pecuario (Manual Merck, guías).</div>
-                    <button class="upload-btn" onclick="triggerUpload('documento')">Ingresar a Biblioteca</button>
-                    <ul id="lista-documentos"></ul>
-                </div>
+    <!-- 1. ENCABEZADO MAESTRO (Unificado con tu CSS) -->
+    <header class="main-header">
+        <div class="header-container">
+            <nav class="header-nav">
+                <a href="./index.html" class="btn-back" style="text-decoration: none;">⬅ Volver al Panel</a>
+            </nav>
+            <div class="header-title-wrapper">
+                <h1>Hato Laguna Brava - <span>Sistema Operativo</span></h1>
+                <p>Planificación y Control de Labores Operativas</p>
             </div>
-        </section>
-
-        <section class="section-box">
-            <div class="section-title">Registros y Datos de Campo</div>
-            <div class="grid-library">
-                <div class="card">
-                    <div class="card-title">Fichas de Pastos</div>
-                    <div class="card-content">Fotografías, identificación, ciclo de consumo y pisoteo.</div>
-                    <button class="upload-btn" onclick="triggerUpload('pasto')">Ficha de Pasto</button>
-                </div>
-                <div class="card">
-                    <div class="card-title">Estructura del Rebaño</div>
-                    <div class="card-content">Clasificación por edades, categorías productivas.</div>
-                </div>
-                <div class="card">
-                    <div class="card-title">Historial Clínico</div>
-                    <div class="card-content">Control sanitarios, tratamientos e insumos.</div>
-                </div>
-                <div class="card">
-                    <div class="card-title">Control de Minerales</div>
-                    <div class="card-content">Plan de suplementación y registros aplicados.</div>
-                </div>
+            <!-- Semáforo de Sincronización -->
+            <div class="sync-status-wrapper">
+                <div id="sync-semaphore" class="semaphore online"></div>
+                <span id="sync-text" class="sync-text">Sincronizado Local</span>
             </div>
-        </section>
-    </div>
+        </div>
+    </header>
 
-    <!-- Scripts del Sistema y Módulo -->
-    <script src="/js/header.js"></script>
-    <script src="/js/syncManager.js"></script>
-    <script src="biblioteca-hato.js"></script>
-    <script src="cuestionario-biblioteca.js"></script>
+    <!-- 2. CONTENEDOR PRINCIPAL Y REJILLA (Estructura de Columnas) -->
+    <main class="main-container">
+        <div class="menu-grid">
+            
+            <!-- COLUMNA 1: Formulario de Registro Estándar -->
+            <section class="section-box">
+                <div class="card-header">
+                    <div class="card-icon">📋</div>
+                    <h2 class="card-title">Registro de Nueva Labor</h2>
+                </div>
+                
+                <p class="card-description">Asigna y programa las actividades ganaderas del día para mantener el control del hato.</p>
+                
+                <form id="form-planificacion">
+                    <div class="input-group">
+                        <label for="fecha">Fecha de Ejecución:</label>
+                        <input type="date" id="fecha" required>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="labor">Labor a Realizar:</label>
+                        <select id="labor" required>
+                            <option value="" disabled selected>Seleccione una labor...</option>
+                            <option value="pastoreo">Rotación de Pastoreo</option>
+                            <option value="sanitario">Control Sanitario / Vacunación</option>
+                            <option value="mantenimiento">Mantenimiento de Cercas / Potreros</option>
+                            <option value="inventario">Conteo de Inventario / Combustible</option>
+                        </select>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="personal">Personal Asignado:</label>
+                        <input type="text" id="personal" placeholder="Nombre del operario o vaquero" required>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="observaciones">Observaciones / Notas de Campo:</label>
+                        <textarea id="observaciones" rows="4" placeholder="Detalles adicionales de la tarea..."></textarea>
+                    </div>
+
+                    <!-- Botones de Acción Internos -->
+                    <div style="display: flex; gap: 10px; margin-top: 10px;">
+                        <button type="submit" id="btn-guardar" class="btn">💾 Guardar Tarea</button>
+                        <button type="reset" id="btn-limpiar" class="btn" style="background-color: var(--text-muted);">🔄 Limpiar</button>
+                    </div>
+                </form>
+            </section>
+
+            <!-- COLUMNA 2: Tareas Programadas y Métricas Rápidas -->
+            <section class="section-box">
+                <div class="card-header">
+                    <div class="card-icon">🤠</div>
+                    <h2 class="card-title">Tareas Programadas</h2>
+                </div>
+                
+                <p class="card-description">Métricas de rendimiento operativo de las labores agendadas en el hato.</p>
+                
+                <!-- KPIs integrados dentro de la tarjeta contenedora estándar -->
+                <div class="kpi-container">
+                    <div class="kpi-card">
+                        <label>Pendientes</label>
+                        <div class="kpi-value" id="kpi-pendientes">0</div>
+                    </div>
+                    <div class="kpi-card">
+                        <label>Completadas</label>
+                        <div class="kpi-value" id="kpi-completadas">0</div>
+                    </div>
+                </div>
+
+                <!-- Contenedor dinámico para listar tareas -->
+                <div id="lista-tareas-programadas" style="margin-top: 15px; flex-grow: 1;">
+                    <div class="sync-status-wrapper" style="background: rgba(0,0,0,0.05); color: var(--text-main); justify-content: center; padding: 12px;">
+                        <span style="color: var(--text-muted); font-size: 0.88rem;">No hay tareas programadas para hoy.</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- COLUMNA 3: Notificaciones y Estado del Sistema -->
+            <section class="section-box">
+                <div class="card-header">
+                    <div class="card-icon">📢</div>
+                    <h2 class="card-title">Notificaciones</h2>
+                </div>
+                
+                <p class="card-description">Alertas automáticas sobre el estado de la sincronización offline y almacenamiento local.</p>
+                
+                <div id="notificaciones-sistema" style="flex-grow: 1;">
+                    <div class="kpi-card" style="text-align: left; background-color: #f0fdf4; border-color: var(--accent-color); padding: 15px;">
+                        <strong style="color: var(--primary-color); font-size: 0.9rem; display: block; margin-bottom: 4px;">Modo Local Activo</strong>
+                        <p style="font-size: 0.82rem; color: var(--text-main); margin: 0;">Los datos se guardarán de forma segura en el dispositivo móvil si te quedas sin cobertura en la sabana.</p>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <script src="./app.js"></script>
 </body>
 </html>
