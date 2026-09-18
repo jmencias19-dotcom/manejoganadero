@@ -1,6 +1,6 @@
 /* ==========================================================================
    SISTEMA GANADERO - HATO LAGUNA BRAVA
-   ESTILOS MAESTROS UNIFICADOS (MODELO PANEL TÉCNICO DE 2 COLUMNAS)
+   ESTILOS MAESTROS UNIFICADOS (MODELO PANEL TÉCNICO DE 3 COLUMNAS)
    ========================================================================== */
 
 :root {
@@ -124,7 +124,7 @@ body {
 }
 
 /* ==========================================================================
-   2. CONTENEDOR PRINCIPAL Y REJILLA DE MENÚ (3 COLUMNAS)
+   2. CONTENEDOR PRINCIPAL Y REJILLA DE MENÚ (3 COLUMNAS UNIFORMES)
    ========================================================================== */
 .main-container {
     width: 100%;
@@ -135,9 +135,9 @@ body {
 
 .menu-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr); /* <--- FUERZA LAS 3 COLUMNAS EN PC */
+    grid-template-columns: repeat(3, 1fr); /* 3 columnas en PC */
     gap: 24px;
-    align-items: start;
+    align-items: stretch;                 /* Fuerza uniformidad de altura en filas */
 }
 
 /* En tablets o pantallas medianas (menos de 1200px), baja a 2 columnas */
@@ -159,31 +159,106 @@ body {
 }
 
 /* ==========================================================================
-   3. CAJAS, TARJETAS Y FORMULARIOS INTERNOS
+   3. CAJAS, TARJETAS Y EFECTOS VISUALES MODERNOS
    ========================================================================== */
 .section-box, .card {
     background-color: var(--card-bg);
     border: 1px solid var(--border-color);
     border-top: 4px solid var(--primary-color);
     border-radius: 12px;
-    padding: 22px;
+    padding: 24px;
     box-shadow: 0 4px 14px rgba(27, 67, 50, 0.05);
     display: flex;
     flex-direction: column;
-    gap: 14px;
-    min-width: 0; /* Previene desbordamiento en Grid */
+    justify-content: space-between; /* Distribuye elementos internos para alinear bases */
+    height: 100%;                   /* Ocupa toda la celda grid de forma uniforme */
+    min-width: 0;                   /* Previene desbordamiento */
+    
+    /* EFECTOS Y TRANSICIONES SUAVES */
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
 }
 
-.section-title, h2 {
+/* EFECTO HOVER: Elevación interactiva */
+.card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 25px rgba(27, 67, 50, 0.12);
+    border-color: var(--accent-color);
+}
+
+/* Cabecera interna de tarjetas */
+.card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.card-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    background-color: #f0f4f1;
+    color: var(--primary-color);
+    border-radius: 10px;
+    flex-shrink: 0;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.card:hover .card-icon {
+    background-color: var(--primary-color);
+    color: #ffffff;
+}
+
+.card-title, .section-title, h2 {
     margin-top: 0;
     margin-bottom: 0.5rem;
     font-size: 1.15rem;
     color: var(--primary-color);
-    border-bottom: 2px solid var(--divider-color);
-    padding-bottom: 0.4rem;
     font-weight: 700;
 }
 
+.card-title {
+    margin-bottom: 0;
+}
+
+.card-description {
+    font-size: 0.88rem;
+    color: var(--text-muted);
+    line-height: 1.4;
+    margin-bottom: 20px;
+    flex-grow: 1; /* Distribuye espacio equitativamente */
+}
+
+/* Botones de acción dentro de tarjetas y generales */
+.card-action, button, .btn, .btn-action {
+    display: block;
+    width: 100%;
+    text-align: center;
+    background-color: var(--secondary-color);
+    color: #ffffff;
+    padding: 12px 16px;
+    border: none;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 0.92rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(45, 106, 79, 0.2);
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.card-action:hover, button:hover, .btn:hover, .btn-action:hover {
+    background-color: var(--primary-color);
+    transform: scale(1.01);
+}
+
+/* ==========================================================================
+   4. FORMULARIOS Y COMPONENTES INTERNOS
+   ========================================================================== */
 form {
     display: flex;
     flex-direction: column;
@@ -223,31 +298,8 @@ input:focus, select:focus, textarea:focus {
     background-color: #ffffff;
 }
 
-button, .btn, .card-action, .btn-action {
-    display: block;
-    width: 100%;
-    text-align: center;
-    background-color: var(--secondary-color);
-    color: #ffffff;
-    padding: 12px 16px;
-    border: none;
-    border-radius: 8px;
-    text-decoration: none;
-    font-weight: 700;
-    font-size: 0.92rem;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    cursor: pointer;
-    box-shadow: 0 2px 6px rgba(45, 106, 79, 0.2);
-    transition: background-color 0.2s ease;
-}
-
-button:hover, .btn:hover, .card-action:hover, .btn-action:hover {
-    background-color: var(--primary-color);
-}
-
 /* ==========================================================================
-   4. SECCIÓN DE INDICADORES / MÉTRICAS Y TARJETAS DINÁMICAS
+   5. SECCIÓN DE INDICADORES / MÉTRICAS Y CONTENEDORES
    ========================================================================== */
 .kpi-container {
     display: grid;
