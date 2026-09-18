@@ -11,46 +11,8 @@
 </head>
 <body>
     
-    <!-- Encabezado Principal de la Aplicación -->
-    <header class="main-header">
-        <div class="header-container">
-            <!-- MEJORA: Botón Modular de retorno al Panel Principal -->
-            <div class="header-nav">
-                <a href="index.html" class="btn-back">⬅️ Volver a Panel Principal</a>
-            </div>
-            
-            <div class="header-brand">
-                <div class="flag-container" aria-label="Bandera de Venezuela">
-                    <!-- SVG Oficial Corregido con el arco simétrico de 8 estrellas -->
-                    <svg xmlns="http://w3.org" viewBox="0 0 900 600" class="flag-icon" style="width: 45px; height: auto; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">
-                        <rect width="900" height="600" fill="#cf142b"/>
-                        <rect width="900" height="400" fill="#00247d"/>
-                        <rect width="900" height="200" fill="#fcdd09"/>
-                        <g fill="#ffffff" transform="translate(450, 335)">
-                            <circle cx="-135" cy="-20" r="12"/>
-                            <circle cx="-100" cy="-60" r="12"/>
-                            <circle cx="-55" cy="-90" r="12"/>
-                            <circle cx="-15" cy="-105" r="12"/>
-                            <circle cx="15" cy="-105" r="12"/>
-                            <circle cx="55" cy="-90" r="12"/>
-                            <circle cx="100" cy="-60" r="12"/>
-                            <circle cx="135" cy="-20" r="12"/>
-                        </g>
-                    </svg>
-                </div>
-                <div class="header-title-wrapper">
-                    <h1>Gestión Ganadera Hato Laguna Brava</h1>
-                    <p>Matriz de Control y Seguimiento Histórico de Carga Animal</p>
-                </div>
-            </div>
-
-            <!-- MEJORA: Semáforo Visual de Sincronización Telemetría -->
-            <div class="sync-status-wrapper">
-                <div id="sync-semaphore" class="semaphore online" title="Estado de sincronización"></div>
-                <span id="sync-text" class="sync-text">Sincronizado</span>
-            </div>
-        </div>
-    </header>
+    <!-- Contenedor dinámico donde header.js inyectará automáticamente el encabezado unificado -->
+    <div id="app-header"></div>
 
     <!-- Área de Contenido Principal (Ajustado con la Grid Flexible del Hato) -->
     <main class="main-container">
@@ -171,7 +133,9 @@
     <!-- Elemento de sonido público para evitar errores de carga 404 en Vercel -->
     <audio id="alert-sound" src="https://mixkit.co" preload="auto"></audio>
 
-    <!-- Carga del Script Lógico como Módulo -->
+    <!-- Scripts del Sistema y Módulos -->
+    <script src="/js/header.js"></script>
+    <script src="/js/syncManager.js"></script>
     <script type="module" src="historial-pastoreo.js"></script>
 </body>
 </html>
