@@ -338,3 +338,17 @@ input:focus, select:focus, textarea:focus {
     overflow-y: auto;
     padding-right: 4px;
 }
+
+/* ==========================================================================
+   CORRECCIÓN DE INTERACTIVIDAD PARA BOTONES DE TARJETAS
+   ========================================================================== */
+.card {
+    position: relative; /* Fija el contexto de posicionamiento */
+}
+
+.card .card-action {
+    position: relative;
+    z-index: 10;        /* Eleva el botón por encima de cualquier capa invisible */
+    cursor: pointer;
+    pointer-events: auto;
+}
