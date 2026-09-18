@@ -1,4 +1,4 @@
-const CACHE_NAME = 'laguna-brava-v1.3';
+const CACHE_NAME = 'laguna-brava-v1.5';
 
 // 1. Fase de Instalación: Cachear recursos críticos locales
 self.addEventListener('install', (event) => {
@@ -8,7 +8,6 @@ self.addEventListener('install', (event) => {
                 './index.html',
                 './potreros.css',
                 './manifest.json'
-                // Añade aquí otros archivos locales esenciales
             ]);
         })
     );
@@ -31,17 +30,12 @@ self.addEventListener('activate', (event) => {
     self.clients.claim();
 });
 
-// 3. Interceptación de Red (Fetch) con filtrado anti-CORS y anti-redirección
+// 3. Interceptación de Red (Fetch) con manejo estricto de redirección para Vercel
 self.addEventListener('fetch', (event) => {
     const url = new URL(event.request.url);
 
-    // Ignorar dominios externos (ej. gstatic, APIs externas)
-    if (url.origin !== location.origin) {
-        return;
-    }
-
-    // Solo interceptar peticiones GET
-    if (event.request.method !== 'GET') {
+    // Ignorar solicitudes a dominios externos o que no sean GET
+    if (url.origin !== location.origin || event.request.method !== 'GET') {
         return;
     }
 
@@ -51,9 +45,10 @@ self.addEventListener('fetch', (event) => {
                 return cachedResponse;
             }
 
-            // CORRECCIÓN CLAVE: Se añade { redirect: 'follow' } para soportar redirecciones de Vercel
+            // CORRECCIÓN CLAVE: redirect: 'follow' evita que las redirecciones de Vercel fallen
             return fetch(event.request, { redirect: 'follow' })
                 .then((networkResponse) => {
+                    // Validar si la respuesta es apta para caché
                     if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
                         return networkResponse;
                     }
@@ -66,7 +61,7 @@ self.addEventListener('fetch', (event) => {
                     return networkResponse;
                 })
                 .catch(() => {
-                    // Fallback para páginas HTML en caso de pérdida total de señal
+                    // Fallback en caso de pérdida de red total
                     if (event.request.headers.get('accept').includes('text/html')) {
                         return caches.match('./index.html');
                     }
