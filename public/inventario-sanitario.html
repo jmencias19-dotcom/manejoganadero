@@ -4,10 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Historial de Pastoreo - Hato Laguna Brava</title>
-    <link rel="stylesheet" href="variables.css?v=1.1">
-    <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="dashboard.css">
-    <link rel="stylesheet" href="/potreros.css?v=3.0">
+    <!-- Eliminados estilos secundarios en conflicto; centralizado en tus Estilos Maestros -->
+    <link rel="stylesheet" href="./potreros.css?v=3.0">
     <link rel="manifest" href="manifest.json">
 </head>
 <body>
@@ -16,18 +14,75 @@
     <div id="app-header"></div>
 
     <main class="main-container">
-        <section class="section-box">
-            <article class="card">
-                <h2>Inventario Sanitario</h2>
-                <p>Aquí se registrarán y visualizarán las rotaciones de potreros y el seguimiento de la carga animal.</p>
-                <a href="index.html" class="card-action">Volver al Inicio</a>
-            </article>
-        </section>
+        <!-- Rejilla maestra que fuerza la estandarización tridimensional -->
+        <div class="menu-grid">
+            
+            <!-- COLUMNA 1 Y 2: Tabla de Rotación de Potreros (Mayor espacio para lectura técnica) -->
+            <section class="section-box" style="grid-column: span 2; height: auto;">
+                <div class="card-header">
+                    <div class="card-icon">🌱</div>
+                    <h2 class="card-title">Rotación de Potreros y Carga Animal</h2>
+                </div>
+                <p class="card-description">Seguimiento cronológico de la entrada y salida de lotes de ganado para garantizar el descanso óptimo de las pasturas.</p>
+                
+                <!-- Tabla adaptativa integrada con tus estilos de datos -->
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Fecha Entrada</th>
+                                <th>Potrero</th>
+                                <th>Lote / Rebaño</th>
+                                <th>Cabezas</th>
+                                <th>Fecha Salida</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabla-pastoreo-body">
+                            <!-- Los datos se cargarán dinámicamente desde pastoreo.js -->
+                            <tr>
+                                <td colspan="5" style="text-align: center; color: var(--text-muted); padding: 20px;">
+                                    Cargando historial de rotaciones locales...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- COLUMNA 3: Resumen y Acciones Operativas -->
+            <section class="section-box" style="height: auto;">
+                <div class="card-header">
+                    <div class="card-icon">🤠</div>
+                    <h2 class="card-title">Control de Ocupación</h2>
+                </div>
+                <p class="card-description">Métricas de uso actual del suelo y disponibilidad de forraje en la sabana.</p>
+                
+                <!-- Indicadores rápidos integrados -->
+                <div class="kpi-container">
+                    <div class="kpi-card">
+                        <label>Potreros Activos</label>
+                        <div class="kpi-value" id="kpi-potreros-ocupados">0</div>
+                    </div>
+                    <div class="kpi-card">
+                        <label>Días Prom. Uso</label>
+                        <div class="kpi-value" id="kpi-dias-pastoreo">0</div>
+                    </div>
+                </div>
+
+                <!-- Botonera unificada con la clase .card-action de tus estilos maestros -->
+                <div style="display: flex; flex-direction: column; gap: 12px; margin-top: auto; width: 100%;">
+                    <a href="./potreros.html" class="card-action" style="text-decoration: none;">📋 Ver Estado de Potreros</a>
+                    <a href="./index.html" class="card-action" style="background-color: var(--text-muted); text-decoration: none;">⬅ Volver al Inicio</a>
+                </div>
+            </section>
+
+        </div>
     </main>
 
     <!-- Scripts del Sistema y Módulos -->
-    <script src="/js/header.js"></script>
-    <script src="/js/syncManager.js"></script>
-    <script src="inventario-sanitario.js"></script>
+    <script src="./js/header.js"></script>
+    <script src="./js/syncManager.js"></script>
+    <!-- Corregido: Apunta al script correspondiente de pastoreo -->
+    <script src="./pastoreo.js"></script>
 </body>
 </html>
