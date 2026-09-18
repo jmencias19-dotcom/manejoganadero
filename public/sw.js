@@ -1,20 +1,30 @@
-const CACHE_NAME = 'laguna-brava-v1.5';
+const CACHE_NAME = 'laguna-brava-v1.6';
 
-// 1. Fase de Instalación: Cachear recursos críticos locales
+const ASSETS_TO_CACHE = [
+    './',
+    './index.html',
+    './potreros.css',
+    './manifest.json',
+    './planificacion.html',
+    './historial-pastoreo.html',
+    './potreros.html',
+    './levante.html',
+    './inventario-sanitario.html',
+    './combustible.html',
+    './indicadores-gestion.html'
+];
+
+// 1. Instalación: Cachear recursos críticos
 self.addEventListener('install', (event) => {
     event.waitUntil(
         caches.open(CACHE_NAME).then((cache) => {
-            return cache.addAll([
-                './index.html',
-                './potreros.css',
-                './manifest.json'
-            ]);
+            return cache.addAll(ASSETS_TO_CACHE);
         })
     );
     self.skipWaiting();
 });
 
-// 2. Fase de Activación: Limpieza de cachés antiguas
+// 2. Activación: Limpieza de cachés antiguas
 self.addEventListener('activate', (event) => {
     event.waitUntil(
         caches.keys().then((cacheNames) => {
@@ -30,12 +40,21 @@ self.addEventListener('activate', (event) => {
     self.clients.claim();
 });
 
-// 3. Interceptación de Red (Fetch) con manejo estricto de redirección para Vercel
+// 3. Interceptación de Red (Fetch) blindada contra redirecciones de Vercel
 self.addEventListener('fetch', (event) => {
     const url = new URL(event.request.url);
 
-    // Ignorar solicitudes a dominios externos o que no sean GET
+    // Ignorar dominios externos y métodos distintos a GET
     if (url.origin !== location.origin || event.request.method !== 'GET') {
+        return;
+    }
+
+    // Manejo especial para navegación HTML (evita errores de redirección de Vercel)
+    if (event.request.mode === 'navigate') {
+        event.respondWith(
+            fetch(event.request, { redirect: 'follow' })
+                .catch(() => caches.match('./index.html'))
+        );
         return;
     }
 
@@ -45,10 +64,9 @@ self.addEventListener('fetch', (event) => {
                 return cachedResponse;
             }
 
-            // CORRECCIÓN CLAVE: redirect: 'follow' evita que las redirecciones de Vercel fallen
+            // Petición de red con soporte obligatorio para redirecciones
             return fetch(event.request, { redirect: 'follow' })
                 .then((networkResponse) => {
-                    // Validar si la respuesta es apta para caché
                     if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
                         return networkResponse;
                     }
@@ -61,10 +79,8 @@ self.addEventListener('fetch', (event) => {
                     return networkResponse;
                 })
                 .catch(() => {
-                    // Fallback en caso de pérdida de red total
-                    if (event.request.headers.get('accept').includes('text/html')) {
-                        return caches.match('./index.html');
-                    }
+                    // Fallback general
+                    return caches.match('./index.html');
                 });
         })
     );
