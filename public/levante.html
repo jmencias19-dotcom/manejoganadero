@@ -4,222 +4,171 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Panel de Control de Levante - Hato Laguna Brava</title>
-    <link rel="stylesheet" href="variables.css?v=1.1">
-    <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="/potreros.css?v=3.0">
-    <!-- FontAwesome para iconos -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Centralizado únicamente en tus Estilos Maestros para evitar conflictos visuales -->
+    <link rel="stylesheet" href="./potreros.css?v=3.0">
+    <!-- Iconos unificados FontAwesome para uso en campo -->
+    <link rel="stylesheet" href="https://cloudflare.com">
     <link rel="manifest" href="manifest.json">
 </head>
 <body>
 
-    <!-- Contenedor Principal Estilo Tablet -->
-    <div class="tablet-container">
-        
-        <!-- Barra Superior (Header) -->
-        <header class="app-header">
-            <div class="header-left">
-                <i class="fa-solid fa-bars menu-icon"></i>
-                <h1>Panel de Control de Levante - Hato Laguna Brava</h1>
+    <!-- Contenedor dinámico donde header.js inyectará el encabezado unificado -->
+    <div id="app-header"></div>
+
+    <!-- ENCABEZADO MAESTRO NATIVO (Respaldo offline para la sabana) -->
+    <header class="main-header">
+        <div class="header-container">
+            <nav class="header-nav">
+                <a href="./index.html" class="btn-back" style="text-decoration: none;">
+                    <i class="fa-solid fa-arrow-left"></i> Volver al Panel
+                </a>
+            </nav>
+            <div class="header-title-wrapper">
+                <h1>Hato Laguna Brava - <span>Control de Levante</span></h1>
+                <p>Evolución de Peso, Ganancia Diaria y Carga Estacional</p>
             </div>
-            <div class="header-right">
-                <button class="nav-btn"><i class="fa-solid fa-bell"></i> Alarma</button>
-                <button class="nav-btn"><i class="fa-solid fa-comment-dots"></i> Notificación</button>
-                <button class="nav-btn"><i class="fa-solid fa-rotate"></i> Sincronización</button>
-                <div class="user-avatar">
-                    <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100" alt="Avatar Usuario">
-                </div>
+            <!-- Semáforo de Sincronización -->
+            <div class="sync-status-wrapper">
+                <div id="sync-semaphore" class="semaphore online"></div>
+                <span id="sync-text" class="sync-text">Sincronizado Local</span>
             </div>
-        </header>
-
-        <!-- Cuerpo de la Interfaz (Grid de 2 Columnas) -->
-        <div class="app-body">
-            
-            <!-- COLUMNA IZQUIERDA: Entrada de Datos -->
-            <section class="card form-section">
-                <h2>Entrada de Nuevo Registro de Levante</h2>
-                
-                <div class="search-row">
-                    <div class="input-group">
-                        <label>Lote / Potrero</label>
-                        <input type="text" id="inputLote" value="Lote 1">
-                    </div>
-                </div>
-
-                <div class="form-grid-2">
-                    <div class="input-group">
-                        <label>Peso Inicial Lote (kg)</label>
-                        <input type="number" id="inputPesoInicial" value="269">
-                    </div>
-                    <div class="input-group">
-                        <label>Peso Máximo (kg)</label>
-                        <input type="number" id="inputPesoMax" value="300">
-                    </div>
-                </div>
-
-                <div class="form-grid-2">
-                    <div class="input-group">
-                        <label>Nº Animales / Lote</label>
-                        <input type="number" id="inputNumAnimales" value="9">
-                    </div>
-                    <div class="input-group">
-                        <label>Peso Mínimo (kg)</label>
-                        <input type="number" id="inputPesoMin" value="240">
-                    </div>
-                </div>
-
-                <!-- Selector de Época Estacional Detallada -->
-                <div class="form-grid-2">
-                    <div class="input-group">
-                        <label>Época Climática</label>
-                        <select id="selectEpoca" onchange="actualizarSubetapa()">
-                            <option value="Invierno" selected>Invierno</option>
-                            <option value="Verano">Verano</option>
-                        </select>
-                    </div>
-                    <div class="input-group">
-                        <label>Ciclo Estacional</label>
-                        <select id="selectSubetapa">
-                            <option value="Invierno - Entrante">Inicio (Entrante)</option>
-                            <option value="Invierno - Mediados">Mediados</option>
-                            <option value="Invierno - Finales">Finales</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="form-grid-2">
-                    <div class="input-group">
-                        <label>Fecha Próximo Control</label>
-                        <input type="date" id="inputFechaProx" value="2026-11-18">
-                    </div>
-                    <div class="input-group highlight-box">
-                        <label>Días Restantes</label>
-                        <div id="displayDiasRestantes" class="static-value">60 Días</div>
-                    </div>
-                </div>
-
-                <div class="form-grid-2">
-                    <div class="input-group">
-                        <label>Edad Promedio Lote (meses)</label>
-                        <input type="number" id="inputEdad" value="8.5">
-                    </div>
-                    <div class="input-group">
-                        <label>Peso Esperado Salida (kg)</label>
-                        <input type="number" id="inputPesoEsperado" value="350">
-                    </div>
-                </div>
-
-                <div class="form-grid-2">
-                    <div class="input-group">
-                        <label>Tiempo de Salida (meses)</label>
-                        <input type="number" id="inputTiempoSalida" value="3.0">
-                    </div>
-                    <div class="input-group">
-                        <label>Coeficiente de Variación (%)</label>
-                        <input type="number" id="inputCV" value="6.5">
-                    </div>
-                </div>
-
-                <div class="input-group">
-                    <label>Observación General</label>
-                    <textarea id="inputObservacion" rows="2">Evaluación periódica de lote en sabana.</textarea>
-                </div>
-
-                <button class="btn-primary" onclick="guardarYProcesar()">
-                    <i class="fa-solid fa-floppy-disk"></i> GUARDAR & SINCRONIZAR LEVANTE
-                </button>
-            </section>
-
-            <!-- COLUMNA DERECHA: Resumen, Analítica e Indicadores -->
-            <section class="card analysis-section">
-                
-                <div class="top-search-bar">
-                    <div class="search-box">
-                        <i class="fa-solid fa-magnifying-glass"></i>
-                        <input type="text" placeholder="Buscar Lote...">
-                    </div>
-                    <!-- Indicador Visual de Tendencia -->
-                    <div id="indicadorTendencia" class="trend-badge positive">
-                        <i class="fa-solid fa-caret-up"></i>
-                        <span>Aumento</span>
-                    </div>
-                </div>
-
-                <!-- Panel de Resumen del Lote -->
-                <div class="summary-card">
-                    <div class="summary-header">
-                        <h3>Resumen y Análisis de Levante</h3>
-                        <span class="subtext">Lote 1 (Mestizos Brahman)</span>
-                    </div>
-
-                    <!-- Métricas Circulares / KPI Cards -->
-                    <div class="kpi-container">
-                        <div class="kpi-circle">
-                            <span class="kpi-val" id="kpiGPD">0.750 kg</span>
-                            <span class="kpi-label">G.P.D. <small>(Ganancia Prom. Diaria)</small></span>
-                        </div>
-                        <div class="kpi-circle">
-                            <span class="kpi-val" id="kpiGPA">45.0 kg</span>
-                            <span class="kpi-label">G.P.A. <small>(Ganancia Prom. Animal)</small></span>
-                        </div>
-                        <div class="kpi-circle">
-                            <span class="kpi-val">6.2 kg/kg</span>
-                            <span class="kpi-label">Conversión Alimenticia (CA)</span>
-                        </div>
-                    </div>
-
-                    <!-- Lista Detallada de Parámetros -->
-                    <ul class="stats-list">
-                        <li><span><i class="fa-solid fa-users"></i> Nº Animales</span> <strong id="resNumAnimales">9</strong></li>
-                        <li><span><i class="fa-solid fa-weight-scale"></i> Peso Promedio Lote</span> <strong id="resPesoProm">269 kg/animal</strong></li>
-                        <li><span><i class="fa-solid fa-arrow-up"></i> Peso Maximo</span> <strong id="resPesoMax">300 kg</strong></li>
-                        <li><span><i class="fa-solid fa-arrow-down"></i> Peso Minimo</span> <strong id="resPesoMin">240 kg</strong></li>
-                        <li><span><i class="fa-solid fa-chart-line"></i> Coeficiente de Variación</span> <strong id="resCV">6.5%</strong></li>
-                        <li><span><i class="fa-solid fa-cloud-sun"></i> Epoca de Pesaje</span> <strong id="resEpoca">Invierno - Entrante</strong></li>
-                        <li><span><i class="fa-solid fa-calendar-days"></i> Fecha Proximo Pesaje</span> <strong id="resFechaProx">18/11/2026</strong></li>
-                        <li><span><i class="fa-solid fa-clock"></i> Edad Promedio</span> <strong id="resEdad">8.5 meses</strong></li>
-                        <li><span><i class="fa-solid fa-hourglass-half"></i> Tiempo de Salida</span> <strong id="resTiempoSalida">3.0 meses</strong></li>
-                        <li><span><i class="fa-solid fa-stopwatch"></i> Dias Restantes</span> <strong id="resDiasRest">60 Días</strong></li>
-                    </ul>
-                </div>
-
-                <!-- Gráfico de Tendencia Reciente -->
-                <div class="chart-box">
-                    <h4>Historial de Levante Reciente</h4>
-                    <div class="fake-chart">
-                        <div class="chart-line"></div>
-                        <div class="chart-points">
-                            <span style="left: 10%; top: 60%;"></span>
-                            <span style="left: 35%; top: 20%;"></span>
-                            <span style="left: 65%; top: 50%;"></span>
-                            <span style="left: 90%; top: 35%;"></span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Bloque Automatizado: Recomendaciones y Análisis de Datos (I.D.) -->
-                <div class="recommendations-box">
-                    <h4><i class="fa-solid fa-robot"></i> Recomendaciones y Análisis de Datos (Automatizado)</h4>
-                    <div id="listaRecomendaciones" class="rec-content">
-                        <p><i class="fa-solid fa-circle-check text-green"></i> G.P.D. óptima para la época de invierno entrante en pasturas tropicales.</p>
-                        <p><i class="fa-solid fa-triangle-exclamation text-yellow"></i> Coeficiente de variación estable (6.5%). Mantener lote agrupado.</p>
-                        <p><i class="fa-solid fa-lightbulb text-blue"></i> Próximo control programado en 60 días. Revisar suplementación mineral y bloques multinutricionales.</p>
-                    </div>
-                </div>
-
-                <!-- Botones de Acción Secundaria -->
-                <div class="action-buttons-row">
-                    <button class="btn-danger"><i class="fa-solid fa-trash"></i> BORRAR REGISTRO</button>
-                    <button class="btn-warning"><i class="fa-solid fa-rotate-left"></i> REHACER REGISTRO</button>
-                    <button class="btn-info"><i class="fa-solid fa-file-pdf"></i> GENERAR INFORME PDF</button>
-                </div>
-
-            </section>
-
         </div>
-    </div>
+    </header>
 
-    <script src="potreros.js"></script>
-    <script src="/js/syncManager.js"></script>
-</body>
-</html>
+    <!-- CONTENEDOR PRINCIPAL Y REJILLA (Estructura de 3 Columnas Maestras) -->
+    <main class="main-container">
+        <div class="menu-grid">
+            
+            <!-- ==========================================
+                 COLUMNA 1: FORMULARIO DE ENTRADA DE DATOS
+                 ========================================== -->
+            <section class="section-box" style="height: auto;">
+                <div class="card-header">
+                    <div class="card-icon">📋</div>
+                    <h2 class="card-title">Nuevo Registro de Levante</h2>
+                </div>
+                <p class="card-description">Ingrese los datos del pesaje y control periódico evaluado en la sabana.</p>
+                
+                <form id="form-levante" onsubmit="event.preventDefault();">
+                    <div class="input-group">
+                        <label for="inputLote">Lote / Potrero</label>
+                        <input type="text" id="inputLote" value="Lote 1" required>
+                    </div>
+
+                    <div class="kpi-container">
+                        <div class="input-group">
+                            <label for="inputPesoInicial">Peso Inicial Lote (kg)</label>
+                            <input type="number" id="inputPesoInicial" value="269" required>
+                        </div>
+                        <div class="input-group">
+                            <label for="inputPesoMax">Peso Máximo (kg)</label>
+                            <input type="number" id="inputPesoMax" value="300" required>
+                        </div>
+                    </div>
+
+                    <div class="kpi-container">
+                        <div class="input-group">
+                            <label for="inputNumAnimales">Nº Animales / Lote</label>
+                            <input type="number" id="inputNumAnimales" value="9" required>
+                        </div>
+                        <div class="input-group">
+                            <label for="inputPesoMin">Peso Mínimo (kg)</label>
+                            <input type="number" id="inputPesoMin" value="240" required>
+                        </div>
+                    </div>
+
+                    <div class="kpi-container">
+                        <div class="input-group">
+                            <label for="selectEpoca">Época Climática</label>
+                            <select id="selectEpoca" onchange="typeof actualizarSubetapa === 'function' && actualizarSubetapa()" required>
+                                <option value="Invierno" selected>Invierno</option>
+                                <option value="Verano">Verano</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label for="selectSubetapa">Ciclo Estacional</label>
+                            <select id="selectSubetapa" required>
+                                <option value="Invierno - Entrante">Inicio (Entrante)</option>
+                                <option value="Invierno - Mediados">Mediados</option>
+                                <option value="Invierno - Finales">Finales</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="kpi-container">
+                        <div class="input-group">
+                            <label for="inputFechaProx">Próximo Control</label>
+                            <input type="date" id="inputFechaProx" value="2026-11-18" required>
+                        </div>
+                        <div class="input-group">
+                            <label>Días Restantes</label>
+                            <div id="displayDiasRestantes" class="kpi-value" style="font-size: 1.1rem; margin-top: 8px; text-align: left;">60 Días</div>
+                        </div>
+                    </div>
+
+                    <div class="kpi-container">
+                        <div class="input-group">
+                            <label for="inputEdad">Edad Promedio (meses)</label>
+                            <input type="number" step="0.1" id="inputEdad" value="8.5" required>
+                        </div>
+                        <div class="input-group">
+                            <label for="inputPesoEsperado">Peso Esperado Salida</label>
+                            <input type="number" id="inputPesoEsperado" value="350" required>
+                        </div>
+                    </div>
+
+                    <div class="kpi-container">
+                        <div class="input-group">
+                            <label for="inputTiempoSalida">Tiempo Salida (meses)</label>
+                            <input type="number" step="0.1" id="inputTiempoSalida" value="3.0" required>
+                        </div>
+                        <div class="input-group">
+                            <label for="inputCV">Coef. Variación (%)</label>
+                            <input type="number" step="0.1" id="inputCV" value="6.5" required>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="inputObservacion">Observación General</label>
+                        <textarea id="inputObservacion" rows="2" required>Evaluación periódica de lote en sabana.</textarea>
+                    </div>
+
+                    <button type="button" class="btn" onclick="typeof guardarYProcesar === 'function' && guardarYProcesar()" style="margin-top: 10px;">
+                        <i class="fa-solid fa-floppy-disk"></i> Guardar y Sincronizar
+                    </button>
+                </form>
+            </section>
+
+            <!-- ==========================================
+                 COLUMNA 2: RESUMEN, ANÁLISIS Y PARÁMETROS
+                 ========================================== -->
+            <section class="section-box" style="height: auto;">
+                <div class="card-header">
+                    <div class="card-icon">📊</div>
+                    <h2 class="card-title">Análisis de Levante</h2>
+                </div>
+                
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; background: #f8f9f8; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border-color);">
+                    <span style="font-size: 0.85rem; font-weight: 600; color: var(--text-main);">Lote 1 (Brahman)</span>
+                    <span style="background-color: #f0fdf4; color: var(--secondary-color); padding: 4px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: 700;">
+                        <i class="fa-solid fa-caret-up"></i> Aumento
+                    </span>
+                </div>
+
+                <!-- Bloque de KPIs rápidos adaptados -->
+                <div class="kpi-container" style="grid-template-columns: 1fr; gap: 8px; margin-bottom: 15px;">
+                    <div class="kpi-card" style="display: flex; justify-content: space-between; align-items: center; padding: 10px 15px;">
+                        <label style="margin: 0;">G.P.D. <small>(Ganancia Prom. Diaria)</small></label>
+                        <div class="kpi-value" id="kpiGPD" style="margin: 0; font-size: 1.15rem;">0.750 kg</div>
+                    </div>
+                    <div class="kpi-card" style="display: flex; justify-content: space-between; align-items: center; padding: 10px 15px;">
+                        <label style="margin: 0;">G.P.A. <small>(Ganancia Prom. Animal)</small></label>
+                        <div class="kpi-value" id="kpiGPA" style="margin: 0; font-size: 1.15rem;">45.0 kg</div>
+                    </div>
+                    <div class="kpi-card" style="display: flex; justify-content: space-between; align-items: center; padding: 10px 15px;">
+                        <label style="margin: 0;">Conversión Alimenticia</label>
+                        <div class="kpi-value" style="margin: 0; font-size: 1.15rem;">6.2 kg/kg</div>
+                    </div>
+                </div>
+
+                <!-- Lista Detallada de Parámetros Técnicos Estandarizada -->
