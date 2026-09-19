@@ -573,3 +573,35 @@ input:focus, select:focus, textarea:focus {
         margin: 0;
     }
 }
+
+/* ==========================================================================
+   CORRECCIÓN DE LAYOUT: CONTENEDOR IZQUIERDO FIJO Y DERECHO DESPLAZABLE (ESCRITORIO)
+   Aplicado exclusivamente a módulos internos de 2 columnas (Evita afectar la portada principal)
+   ========================================================================== */
+
+@media (min-width: 1025px) {
+    /* 1. Aseguramos que el grid de los módulos internos maneje bien el espacio y alineación superior */
+    .main-container:not(.panel-principal) .menu-grid {
+        display: grid;
+        grid-template-columns: 420px 1fr !important; /* Columna izquierda fija de óptimo ancho, derecha fluida */
+        align-items: start;
+        gap: 24px;
+    }
+
+    /* 2. Fijamos estrictamente la primera sección (Columna Izquierda: Formulario / Panel de Control) */
+    .main-container:not(.panel-principal) .menu-grid > section:nth-child(1),
+    .main-container:not(.panel-principal) .menu-grid > .section-box:nth-child(1) {
+        position: sticky;
+        top: 24px; /* Margen superior respecto al viewport al hacer scroll */
+        z-index: 10;
+        max-height: calc(100vh - 48px); /* Evita desbordes verticales en pantallas de PC medianas */
+        overflow-y: auto; /* Permite scroll interno si el formulario es muy extenso */
+    }
+
+    /* 3. Permitimos que la segunda sección (Columna Derecha: Listados / Tareas) fluya de forma natural */
+    .main-container:not(.panel-principal) .menu-grid > section:nth-child(2),
+    .main-container:not(.panel-principal) .menu-grid > .section-box:nth-child(2) {
+        position: relative;
+        overflow: visible;
+    }
+}
