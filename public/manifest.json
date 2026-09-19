@@ -1,8 +1,24 @@
 {
   "name": "Gestión Ganadera Hato Laguna Brava",
   "short_name": "Laguna Brava",
+  "description": "Sistema Técnico Oficial de Carga Animal, Planificación Operativa y Control del Hato Laguna Brava.",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#00247d"
+  "orientation": "portrait-primary",
+  "background_color": "#f4f6f4",
+  "theme_color": "#1b4332",
+  "icons": [
+    {
+      "src": "./img/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./img/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
 }
