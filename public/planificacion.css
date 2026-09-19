@@ -153,11 +153,11 @@ body {
 /* Semáforo de Sincronización Local / PWA */
 
 .sync-indicator {
-    justiffy-content:center;
+    justiffy-content: center;
    
     display: flex;
 
-    min-width:0;
+    min-width: 0;
    
     align-items: center;
 
@@ -188,7 +188,7 @@ body {
 
 .task-list {
     width: 100%;
-    overflow-x: auto; /* Desbordamiento horizontal automático para la tabla */
+    overflow-y: auto; /* Desbordamiento horizontal automático para la tabla */
     -webkit-overflow-scrolling: touch; /* Desbordamiento fluido en dispositivos táctiles */
     margin-top: 1rem;
     border-radius: 8px;
