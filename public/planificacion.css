@@ -1,6 +1,6 @@
 /* ==========================================================================
    Módulo: Planificación y Asignación de Tareas
-   Distribución: Contenedor Izquierdo Fijo / Contenedor Derecho Móvil
+   Distribución: Contenedor Izquierdo Fijo / Contenedor Derecho Móvil (Solo Escritorio)
    Hato Laguna Brava
    ========================================================================== */
 
@@ -110,7 +110,7 @@ body {
     100% { opacity: 1; }
 }
 
-/* 3. Contenedor Principal (Grid con Panel Izquierdo Fijo y Derecho Móvil) */
+/* 3. Contenedor Principal (Flujo por defecto en Móviles / Grid Dinámico solo en PC) */
 .main-container {
     max-width: 1200px;
     margin: 2rem auto;
@@ -124,17 +124,17 @@ body {
 @media (min-width: 992px) {
     .main-container {
         display: grid;
-        /* Columna izquierda fija de tamaño base, columna derecha fluida */
+        /* Columna izquierda fija de 400px, columna derecha fluida y desplazable */
         grid-template-columns: 400px 1fr;
         align-items: start;
         gap: 2rem;
     }
 
-    /* Contenedor Izquierdo Fijo al hacer scroll */
+    /* Contenedor Izquierdo Fijo ÚNICAMENTE EN ESCRITORIO */
     .container-left, 
-    .section-box.form-pane { /* Aplica si tu caja de formulario usa esta clase, o se comporta según el orden */
+    .section-box.form-pane {
         position: sticky;
-        top: 2rem; /* Distancia superior al hacer scroll */
+        top: 2rem; /* Distancia superior al hacer scroll en PC */
         z-index: 10;
     }
 }
@@ -303,7 +303,7 @@ tr:hover {
 .status-select {
     padding: 6px 10px;
     border-radius: 6px;
-    border: 1px실 solid #cccccc;
+    border: 1px solid #cccccc;
     font-weight: 600;
     font-size: 0.85rem;
     cursor: pointer;
