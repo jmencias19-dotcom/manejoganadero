@@ -97,3 +97,20 @@ export async function sincronizarConServidor(onEstadoChange) {
         if (onEstadoChange) onEstadoChange(false, "Pendiente de red");
     }
 }
+
+// Obtener todos los registros guardados localmente para la interfaz
+export async function obtenerDatosLocales() {
+    try {
+        const db = await abrirBaseDatos();
+        return new Promise((resolve, reject) => {
+            const tx = db.transaction(STORE_NAME, "readonly");
+            const store = tx.objectStore(STORE_NAME);
+            const req = store.getAll();
+            req.onsuccess = () => resolve(req.result);
+            req.onerror = () => reject(req.error);
+        });
+    } catch (error) {
+        console.error("Error al leer datos locales:", error);
+        return [];
+    }
+}
