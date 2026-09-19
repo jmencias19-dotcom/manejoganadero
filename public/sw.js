@@ -1,5 +1,5 @@
 /* ==========================================================================
-   SERVICE WORKER OFICIAL (v4.0) - HATO LAGUNA BRAVA
+   SERVICE WORKER OFICIAL (v5.0) - HATO LAGUNA BRAVA
    Soporte Offline Robusto y Control de Caché Antivolcado de Vercel
    ========================================================================== */
 
@@ -17,17 +17,15 @@ const ASSETS_TO_CACHE = [
     './combustible.html',
     './indicadores-gestion.html',
     './potreros.css?v=4.0',
-    './icon-192.png',  /* Corregido: directo en la raíz */
-    './icon-512.png',  /* Corregido: directo en la raíz */
+    './icon-192.png',  /* Directo en la raíz */
+    './icon-512.png',  /* Directo en la raíz */
     './manifest.json'
 ];
-
 
 // 1. Instalación robusta a prueba de redirecciones de Vercel
 self.addEventListener('install', (event) => {
     event.waitUntil(
         caches.open(CACHE_NAME).then((cache) => {
-            // Usamos Promise.allSettled para evitar que una sola caída de asset rompa la instalación
             return Promise.allSettled(
                 ASSETS_TO_CACHE.map((url) => 
                     fetch(url, { redirect: 'follow' }).then((response) => {
@@ -50,8 +48,9 @@ self.addEventListener('activate', (event) => {
         caches.keys().then((cacheNames) => {
             return Promise.all(
                 cacheNames.map((cache) => {
-                    // Si el caché almacenado no coincide con v4.0, se elimina de inmediato
+                    // Si el caché almacenado no coincide con la versión actual, se elimina de inmediato
                     if (cache !== CACHE_NAME) {
+                        console.log(`[Service Worker] Purgando caché obsoleto: ${cache}`);
                         return caches.delete(cache);
                     }
                 })
@@ -102,10 +101,9 @@ self.addEventListener('fetch', (event) => {
         return;
     }
 
-    // B) MANEJO DE RECURSOS ESTÁTICOS (CSS con versión, JS, Manifest, etc.)
+    // B) MANEJO DE RECURSOS ESTÁTICOS (CSS, JS, Manifest, etc.)
     event.respondWith(
         caches.match(event.request).then((cachedResponse) => {
-            // Si el CSS v4.0 ya está guardado localmente, se sirve de inmediato sin tocar internet
             if (cachedResponse) {
                 return cachedResponse;
             }
