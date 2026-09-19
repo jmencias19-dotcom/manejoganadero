@@ -7,8 +7,8 @@
     <!-- Centralizado en tus Estilos Maestros Unificados (v4.0) -->
     <link rel="stylesheet" href="./potreros.css?v=4.0">
     
-    <!-- CORREGIDO: Eliminada la URL de Cloudflare que causaba el bloqueo CORB e inyectada la CDN oficial de iconos -->
-    <link rel="stylesheet" href="https://cloudflare.com">
+    <!-- CDN oficial de iconos FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <link rel="manifest" href="manifest.json">
     <style>
@@ -75,7 +75,7 @@
             <!-- COLUMNA 1: Formulario Técnico de Registro -->
             <section class="section-box" style="height: auto;">
                 <div class="card-header">
-                    <div class="card-icon">📋</div>
+                    <div class="card-icon"><i class="fa-solid fa-clipboard-list"></i></div>
                     <h2 class="card-title">Registro de Nueva Labor</h2>
                 </div>
                 <p class="card-description">Asigne y configure los parámetros de las actividades ganaderas diarias.</p>
@@ -90,7 +90,6 @@
                         <input type="text" id="labor" placeholder="Ej. Vacunación Brahman, mantenimiento de potrero..." required>
                     </div>
 
-                    <!-- Relación Asimétrica: 46% / 54% -->
                     <div class="kpi-container">
                         <div class="input-group">
                             <label for="prioridad-labor">Prioridad:</label>
@@ -127,7 +126,7 @@
                     </div>
                     
                     <div style="display: flex; gap: 10px; margin-top: 10px; width: 100%;">
-                        <button type="submit" class="btn" style="flex: 1;">💾 Guardar e Sincronizar</button>
+                        <button type="submit" class="btn" style="flex: 1;"><i class="fa-solid fa-floppy-disk"></i> Guardar y Sincronizar</button>
                         <button type="button" id="btnRehacer" class="btn" style="background-color: var(--text-muted); width: auto;"><i class="fa-solid fa-rotate"></i></button>
                     </div>
                 </form>
@@ -138,7 +137,6 @@
                         <i class="fa-solid fa-brain"></i> Asistente de Operaciones Ganaderas (I.D.)
                     </div>
                     <div id="ai-sugerencias-content" class="ai-content">
-                        <!-- Las sugerencias auto-aprendidas se inyectan aquí -->
                         <p style="margin: 0; font-style: italic;">Analizando patrones de trabajo para generar recomendaciones...</p>
                     </div>
                 </div>
@@ -147,7 +145,7 @@
             <!-- COLUMNA 2: Tareas Programadas y Lista de Control -->
             <section class="section-box" style="height: auto;">
                 <div class="card-header">
-                    <div class="card-icon">🤠</div>
+                    <div class="card-icon"><i class="fa-solid fa-hat-cowboy"></i></div>
                     <h2 class="card-title">Tareas Programadas</h2>
                 </div>
                 <p class="card-description">Seguimiento mensual y control del estado de avance operativo.</p>
@@ -163,3 +161,27 @@
                         <div id="kpi-proceso" class="kpi-value" style="font-size:1.1rem; color:#004085;">0</div>
                     </div>
                     <div class="kpi-card" style="padding: 8px 4px; background-color: #d4edda; border-color: #c3e6cb;">
+                        <div class="kpi-title" style="font-size:0.65rem; color:#155724;">Ejecutadas</div>
+                        <div id="kpi-ejecutadas" class="kpi-value" style="font-size:1.1rem; color:#155724;">0</div>
+                    </div>
+                </div>
+
+                <!-- Contenedor dinámico donde se listarán las tarjetas de tareas -->
+                <div id="tasks-container">
+                    <p style="text-align: center; color: var(--text-muted); font-size: 0.9rem; padding: 20px;">No hay tareas registradas actualmente.</p>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- Notificación Toast Dinámica -->
+    <div id="toast" class="toast-notification">
+        <i class="fa-solid fa-circle-check" style="color: var(--accent-color);"></i>
+        <span id="toast-message">Operación realizada con éxito</span>
+    </div>
+
+    <!-- Script del módulo (Asegúrate de que apunte al archivo JS correspondiente de tareas) -->
+    <script type="module" src="./tareas.js"></script>
+</body>
+</html>
