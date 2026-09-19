@@ -116,6 +116,7 @@ function ejecutarDepuracionPrimerDiaMes() {
     }
 }
 
+   // 3. Manejo e Interceptación de Eventos del Formulario (CORREGIDO)
 function inicializarEventosFormulario() {
     const form = document.getElementById('taskForm');
     const btnRehacer = document.getElementById('btnRehacer');
@@ -139,8 +140,9 @@ function inicializarEventosFormulario() {
             tasks.push(newTask);
             
             if (saveTasks(tasks)) {
-                playBeep('success'); // Alarma sonora física
-                showToast("💾 Tarea registrada y sincronizada.");
+                // SOLUCIÓN: Cambiado 'playBeep' por 'emitirAlarmaOperativa' para evitar que se congele el script
+                emitirAlarmaOperativa('success'); 
+                showToast("✅ Tarea registrada y sincronizada.");
                 form.reset();
                 establecerFechaHoy();
                 renderTasks();
@@ -152,7 +154,7 @@ function inicializarEventosFormulario() {
         btnRehacer.addEventListener('click', () => {
             if (form) form.reset();
             establecerFechaHoy();
-            playBeep('success');
+            emitirAlarmaOperativa('success'); // SOLUCIÓN: Alineado con la función operativa de audio
             showToast("🔄 Campos restablecidos.");
         });
     }
