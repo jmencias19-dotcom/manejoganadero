@@ -90,3 +90,40 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 });
+
+// ==========================================
+// RENDERIZADO DE TAREAS PROGRAMADAS
+// ==========================================
+
+import { obtenerDatosLocales } from './syncManager.js'; // Asegúrate de importar tu función de lectura
+
+async function cargarTareasEnPantalla() {
+    // 1. Buscamos el contenedor donde deben listarse las tarjetas (asegúrate de darle un ID a ese contenedor en tu HTML si no lo tiene)
+    // O si las inyectas en una sección específica, aquí las leemos de IndexedDB:
+    const tareas = await obtenerDatosLocales(); // O la función específica que uses para leer tus registros locales
+    
+    if (!tareas || tareas.length === 0) return;
+
+    // Filtramos solo las que sean de tipo 'tarea'
+    const listaTareas = tareas.filter(t => t.tipo === 'tarea');
+
+    // Contadores para los KPIs
+    let countCola = 0;
+    let countProceso = 0;
+    let countEjecutada = 0;
+
+    listaTareas.forEach(t => {
+        if (t.status === 'cola') countCola++;
+        if (t.status === 'proceso') countProceso++;
+        if (t.status === 'ejecutada') countEjecutada++;
+    });
+
+    // Actualizamos los números en las tarjetas KPI superiores si existen
+    const elCola = document.getElementById("kpi-cola");
+    const elProceso = document.getElementById("kpi-proceso");
+    if (elCola) elCola.textContent = countCola;
+    if (elProceso) elProceso.textContent = countProceso;
+}
+
+// Y llamamos a esta función al iniciar la página dentro del DOMContentLoaded:
+// cargarTareasEnPantalla();
