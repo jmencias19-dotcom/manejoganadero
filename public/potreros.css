@@ -416,11 +416,52 @@ input:focus, select:focus, textarea:focus {
 }
 
 /* ==========================================================================
-   MANTENER EL COMPORTAMIENTO RESPONSIVO PARA MÓVILES
+   11. CORRECCIÓN DE ANCHO MÁXIMO Y SIMETRÍA DE COLUMNAS
    ========================================================================== */
+
+/* Ajuste general del contenedor principal */
+.main-container {
+    width: 100%;
+    max-width: 1280px; 
+    margin: 0 auto;
+    padding: 24px 20px;
+}
+
+/* 1. PORTADA PRINCIPAL (index.html): Forzada estrictamente a 3 columnas en PC */
+.main-container.panel-principal .menu-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 24px;
+    width: 100%;
+}
+
+/* 2. MÓDULOS INTERNOS DE 2 BLOQUES (Ej. Planificación, etc.) */
+.main-container:not(.panel-principal) .menu-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 24px;
+    width: 100%;
+}
+
+/* Forzar que las tarjetas internas se adapten al ancho estirado */
+.main-container .menu-grid .section-box {
+    width: 100% !important;
+    min-width: 0; 
+}
+
+/* ==========================================================================
+   MANTENER EL COMPORTAMIENTO RESPONSIVO PARA MÓVILES Y TABLETS
+   ========================================================================== */
+@media (max-width: 1200px) {
+    /* En tablets, la portada baja a 2 columnas */
+    .main-container.panel-principal .menu-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+}
+
 @media (max-width: 992px) {
+    /* En celulares, tanto la portada como los módulos se apilan a 1 sola columna */
     .main-container .menu-grid {
-        /* En celulares y tablets se rompe el 50/50 y se apila al 100% hacia abajo */
         grid-template-columns: 1fr !important;
         gap: 16px;
     }
