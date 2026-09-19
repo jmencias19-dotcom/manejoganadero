@@ -3,10 +3,9 @@
    Soporte Offline Robusto y Control de Caché Antivolcado de Vercel
    ========================================================================== */
 
-// SOLUCIÓN: Incrementada la versión central del caché maestro
-const CACHE_NAME = 'laguna-brava-v4.0';
+// Elevamos la versión para obligar a los teléfonos y PC a vaciar el almacenamiento roto
+const CACHE_NAME = 'laguna-brava-v5.0';
 
-// Lista de recursos con sufijos de versión idénticos a tus llamadas HTML
 const ASSETS_TO_CACHE = [
     './',
     './index.html',
@@ -17,9 +16,12 @@ const ASSETS_TO_CACHE = [
     './inventario-sanitario.html',
     './combustible.html',
     './indicadores-gestion.html',
-    './potreros.css?v=4.0', // SOLUCIÓN: Emparejado exactamente con el HTML para soporte offline
+    './potreros.css?v=4.0',
+    './icon-192.png',  /* Corregido: directo en la raíz */
+    './icon-512.png',  /* Corregido: directo en la raíz */
     './manifest.json'
 ];
+
 
 // 1. Instalación robusta a prueba de redirecciones de Vercel
 self.addEventListener('install', (event) => {
