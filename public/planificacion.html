@@ -7,13 +7,153 @@
     <!-- Centralizado en tus Estilos Maestros Unificados -->
     <link rel="stylesheet" href="./potreros.css?v=4.0">
     
-    <!-- SOLUCIÓN AL ERROR CORB: Reemplazada la URL rota de cloudflare por el CDN correcto de iconos -->
+    <!-- SOLUCIÓN AL ERROR CORB: CDN oficial de FontAwesome en lugar de URL rota -->
     <link rel="stylesheet" href="https://cloudflare.com">
     
     <link rel="manifest" href="manifest.json">
-</head>
+    <style>
+        /* Estilos específicos para el componente dinámico de tareas que complementan a potreros.css */
+        .task-card-item {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            box-shadow: 0 2px 4px rgba(27, 67, 50, 0.02);
+            margin-bottom: 12px;
+        }
 
-    <!-- CONTENEDOR PRINCIPAL Y REJILLA (Modelo de 2 Columnas de Trabajo Uniformes) -->
+        .task-card-row { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+        }
+
+        .task-card-date { 
+            font-size: 0.8rem; 
+            font-weight: 700; 
+            color: var(--primary-color); 
+            background-color: var(--divider-color); 
+            padding: 3px 8px; 
+            border-radius: 4px; 
+        }
+
+        .task-card-meta { 
+            font-size: 0.85rem; 
+            color: var(--text-muted); 
+        }
+
+        .task-card-labor { 
+            font-size: 1rem; 
+            font-weight: 600; 
+            color: var(--text-main); 
+            word-break: break-word; 
+        }
+
+        .task-card-obs { 
+            font-size: 0.85rem; 
+            color: var(--text-main); 
+            background: #f0f4f1; 
+            padding: 8px; 
+            border-radius: 6px; 
+            font-style: italic; 
+            border-left: 3px solid var(--accent-color); 
+        }
+
+        .task-card-actions { 
+            display: flex; 
+            gap: 10px; 
+            align-items: center; 
+            margin-top: 4px; 
+            border-top: 1px solid var(--divider-color); 
+            padding-top: 8px; 
+        }
+
+        /* Selectores de Estado Estandarizados */
+        .status-select { 
+            padding: 6px 10px; 
+            border-radius: 6px; 
+            border: 1px solid var(--border-color); 
+            font-weight: 700; 
+            font-size: 0.85rem; 
+            flex: 1; 
+            height: 38px; 
+            cursor: pointer; 
+        }
+
+        .status-cola { background-color: #fff3cd !important; color: #856404 !important; }
+        .status-proceso { background-color: #cce5ff !important; color: #004085 !important; }
+        .status-ejecutada { background-color: #d4edda !important; color: #155724 !important; }
+
+        /* Botón de eliminación técnica */
+        .btn-delete { 
+            background-color: #c1121f; 
+            color: white; 
+            padding: 0 14px; 
+            font-size: 0.85rem; 
+            border-radius: 6px; 
+            border: none; 
+            height: 38px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-weight: 600; 
+            width: auto; 
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        
+        .btn-delete:hover { opacity: 0.9; }
+
+        /* Alertas Toast del Sistema */
+        .toast-notification {
+            position: fixed;
+            bottom: 20px;
+            left: 5%; right: 5%; width: 90%;
+            background: #222222; color: white;
+            padding: 12px 16px; border-radius: 10px;
+            opacity: 0; pointer-events: none;
+            transition: opacity 0.3s, transform 0.3s;
+            transform: translateY(20px); z-index: 1000; font-size: 0.9rem;
+            display: flex; align-items: center; gap: 10px;
+            border-left: 5px solid var(--accent-color);
+        }
+        
+        @media (min-width: 768px) {
+            .toast-notification { width: 350px; left: 20px; right: auto; }
+        }
+        
+        .toast-notification.show { opacity: 1; transform: translateY(0); }
+    </style>
+</head>
+<body>
+
+    <!-- RECUPERADO: Contenedor dinámico para inyección de header.js -->
+    <div id="app-header"></div>
+
+    <!-- RECUPERADO: Cintillo Maestro Nativo de Respaldo Offline -->
+    <header class="main-header">
+        <div class="header-container">
+            <nav class="header-nav">
+                <a href="./index.html" class="btn-back" style="text-decoration: none;">
+                    <i class="fa-solid fa-arrow-left"></i> <span class="btn-back-text">Volver al Panel</span>
+                </a>
+            </nav>
+            <div class="header-title-wrapper">
+                <h1>Hato Laguna Brava - <span>Planificación</span></h1>
+                <p>Planificación de Tareas y Control Operativo</p>
+            </div>
+            <!-- Semáforo de Sincronización Estándar -->
+            <div class="sync-status-wrapper">
+                <div id="light" class="semaphore online"></div>
+                <span id="statusText" class="sync-text">Sincronizado Local</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- CONTENEDOR PRINCIPAL Y REJILLA (Modelo de 2 Columnas de Trabajo) -->
     <main class="main-container">
         <div class="menu-grid">
             
@@ -87,7 +227,9 @@
                 </div>
                 <p class="card-description">Labores vigentes y estados de progreso asignados en la sabana.</p>
                 
-                <!-- Indicadores Rápidos KPI para el módulo de tareas -->
+                <!-- Indicadores Rápidos KPI -->
                 <div class="kpi-container" style="margin-bottom: 15px;">
                     <div class="kpi-card">
                         <div class="kpi-title">Pendientes</div>
+                        <div id="kpi-pendientes" class="kpi-value">0</div>
+                    </div>
