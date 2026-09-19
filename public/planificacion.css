@@ -355,3 +355,65 @@ tr:hover {
 .toast-icon {
     font-size: 1.2rem;
 }
+/* ==========================================================================
+   CORRECCIÓN DE ENCABEZADO Y BOTÓN DE REGRESO EN MÓVILES
+   ========================================================================== */
+
+.header-container {
+    display: flex;
+    flex-direction: column; /* Por defecto en móviles: apilado vertical limpio */
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    text-align: center;
+}
+
+.header-brand {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    width: 100%;
+}
+
+/* Botón de Regreso Dinámico Optimizado */
+.btn-dashboard {
+    background-color: rgba(255, 255, 255, 0.15);
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    padding: 10px 14px; /* Un poco más cómodo al tacto */
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: background-color 0.2s, transform 0.1s;
+    white-space: nowrap; /* Evita que el texto del botón se rompa en dos líneas */
+}
+
+.btn-dashboard:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+}
+
+.btn-dashboard:active {
+    transform: scale(0.97);
+}
+
+/* Pantallas Medianas y Escritorio (PC) */
+@media (min-width: 768px) {
+    .header-container {
+        flex-direction: row; /* En PC se alinea horizontalmente (elementos a los lados y centro) */
+        justify-content: space-between;
+        text-align: left;
+    }
+    
+    .btn-dashboard {
+        padding: 8px 16px;
+        font-size: 0.9rem;
+    }
+}
