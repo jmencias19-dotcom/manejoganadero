@@ -1,30 +1,31 @@
 // ==========================================
-// APP.JS - NÚCLEO Y GESTIÓN DE CONECTIVIDAD
+// APP.JS - NÚCLEO, RED Y MÓDULO DE PLANIFICACIÓN
+// Hato Laguna Brava
 // ==========================================
 
-import { sincronizarConServidor } from './syncManager.js';
+import { guardarLocalmente, sincronizarConServidor } from './syncManager.js';
 
-// Función global para actualizar la interfaz del estado de sincronización
+// 1. Función global para actualizar el semáforo y texto de sincronización en tu header
 export function actualizarUIEstadoSync(esSincronizado, mensaje) {
-    const btnSync = document.getElementById("btn-sync");
-    const textoSync = document.getElementById("sync-status-text");
+    const light = document.getElementById("light");
+    const statusText = document.getElementById("statusText");
     
-    if (!btnSync || !textoSync) return;
+    if (!light || !statusText) return;
 
     if (esSincronizado) {
-        btnSync.className = "sync-ok";
-        textoSync.textContent = mensaje || "Sincronizado";
+        light.className = "semaphore online";
+        statusText.textContent = mensaje || "Sincronizado Local";
     } else {
-        btnSync.className = "sync-pending";
-        textoSync.textContent = mensaje;
+        light.className = "semaphore offline";
+        statusText.textContent = mensaje || "Modo Offline";
     }
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-    // 1. Sincronización automática inicial al abrir la app si hay internet
+    // 2. Sincronización automática inicial al abrir la app si hay internet
     sincronizarConServidor(actualizarUIEstadoSync);
 
-    // 2. Escuchas automáticas de cambios en la red del dispositivo
+    // 3. Escuchas automáticas de cambios en la red del dispositivo
     window.addEventListener('online', () => {
         console.log("Conexión restablecida. Sincronizando pendientes...");
         sincronizarConServidor(actualizarUIEstadoSync);
@@ -34,52 +35,58 @@ document.addEventListener("DOMContentLoaded", () => {
         actualizarUIEstadoSync(false, "Modo Offline");
     });
 
-    // 3. Botón manual de sincronización en la cabecera
+    // 4. Botón manual de sincronización en la cabecera (si existe)
     const btnSync = document.getElementById("btn-sync");
     if (btnSync) {
         btnSync.addEventListener("click", () => {
             sincronizarConServidor(actualizarUIEstadoSync);
         });
     }
-});
 
-// ==========================================
-// MÓDULO DE FORMULARIO - TAREAS Y LABORES
-// ==========================================
-
-import { guardarLocalmente, sincronizarConServidor } from './syncManager.js';
-import { actualizarUIEstadoSync } from './app.js';
-
-document.addEventListener("DOMContentLoaded", () => {
-    const formTarea = document.getElementById("form-tarea");
+    // ==========================================
+    // CAPTURA DEL FORMULARIO DE PLANIFICACIÓN (#taskForm)
+    // ==========================================
+    const taskForm = document.getElementById("taskForm");
     
-    if (formTarea) {
-        formTarea.addEventListener("submit", async (e) => {
-            e.preventDefault(); // Evita recarga de página
+    if (taskForm) {
+        taskForm.addEventListener("submit", async (e) => {
+            e.preventDefault(); // Evita la recarga de página
 
-            // Construcción del registro local con ID único
-            const nuevaTarea = {
+            // Construcción del registro local mapeando exactamente con tu HTML
+            const nuevaLabor = {
                 tipo: 'tarea', // Vital para que el servidor en Vercel lo encrute bien
                 id: crypto.randomUUID(),
-                fecha: document.getElementById("input-fecha").value,
-                labor: document.getElementById("input-labor").value,
-                potrero: document.getElementById("input-potrero").value,
-                status: 'pendiente'
+                fecha: document.getElementById("fecha").value,
+                labor: document.getElementById("labor").value,
+                prioridad: document.getElementById("prioridad-labor").value,
+                responsable: document.getElementById("personal").value,
+                horario: document.getElementById("horario-labor").value,
+                potrero: document.getElementById("potrero-afectado").value,
+                observaciones: document.getElementById("observaciones").value,
+                status: 'cola' // Alineado con tu indicador inicial "En Cola"
             };
 
             // Guardar localmente en IndexedDB
-            const exito = await guardarLocalmente(nuevaTarea);
+            const exito = await guardarLocalmente(nuevaLabor);
 
             if (exito) {
                 actualizarUIEstadoSync(false, "Guardado offline");
-                alert("¡Tarea registrada localmente con éxito!");
-                formTarea.reset(); // Limpia los campos del formulario
+                alert("¡Labor registrada localmente con éxito!");
+                taskForm.reset(); // Limpia los campos del formulario de forma limpia
                 
                 // Intenta enviar al servidor de inmediato si hay red
                 sincronizarConServidor(actualizarUIEstadoSync);
             } else {
-                alert("Error al guardar la tarea en el dispositivo.");
+                alert("Error al guardar la labor en el dispositivo.");
             }
+        });
+    }
+
+    // 5. Botón de rehacer / limpiar formulario
+    const btnRehacer = document.getElementById("btnRehacer");
+    if (btnRehacer && taskForm) {
+        btnRehacer.addEventListener("click", () => {
+            taskForm.reset();
         });
     }
 });
