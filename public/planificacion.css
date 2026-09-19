@@ -1,6 +1,7 @@
 /* ==========================================================================
    Módulo: Planificación y Asignación de Tareas
-   Optimizado para Mini-Apps y Entornos de Campo Móviles - Hato Laguna Brava
+   Distribución: Contenedor Izquierdo Fijo / Contenedor Derecho Móvil
+   Hato Laguna Brava
    ========================================================================== */
 
 /* 1. Reseteo General e Identidad Visual Basada en Tokens */
@@ -109,22 +110,32 @@ body {
     100% { opacity: 1; }
 }
 
-/* 3. Contenedor Principal */
+/* 3. Contenedor Principal (Grid con Panel Izquierdo Fijo y Derecho Móvil) */
 .main-container {
     max-width: 1200px;
     margin: 2rem auto;
     padding: 0 1rem;
     display: flex;
     flex-direction: column;
-    gap: 2.5rem;
+    gap: 2rem;
     width: 100%;
 }
 
 @media (min-width: 992px) {
     .main-container {
         display: grid;
-        grid-template-columns: 1fr 1fr;
+        /* Columna izquierda fija de tamaño base, columna derecha fluida */
+        grid-template-columns: 400px 1fr;
         align-items: start;
+        gap: 2rem;
+    }
+
+    /* Contenedor Izquierdo Fijo al hacer scroll */
+    .container-left, 
+    .section-box.form-pane { /* Aplica si tu caja de formulario usa esta clase, o se comporta según el orden */
+        position: sticky;
+        top: 2rem; /* Distancia superior al hacer scroll */
+        z-index: 10;
     }
 }
 
@@ -155,16 +166,6 @@ body {
     display: grid;
     grid-template-columns: 1fr;
     gap: 1.2rem;
-}
-
-@media (min-width: 768px) {
-    #taskForm {
-        grid-template-columns: repeat(2, 1fr);
-    }
-    #taskForm textarea, 
-    #taskForm .form-actions {
-        grid-column: span 2;
-    }
 }
 
 .input-group {
@@ -263,7 +264,7 @@ body {
     transform: none;
 }
 
-/* 5. Tabla de Registro Cronológico Adaptable */
+/* 5. Tabla de Registro Cronológico Adaptable (Contenedor Derecho Desplazable) */
 .task-list {
     width: 100%;
     overflow-x: auto;
@@ -302,7 +303,7 @@ tr:hover {
 .status-select {
     padding: 6px 10px;
     border-radius: 6px;
-    border: 1px solid #cccccc;
+    border: 1px실 solid #cccccc;
     font-weight: 600;
     font-size: 0.85rem;
     cursor: pointer;
