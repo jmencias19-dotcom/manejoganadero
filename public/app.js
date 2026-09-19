@@ -1,11 +1,11 @@
 // ==========================================
-// APP.JS - NÚCLEO, RED Y PLANIFICACIÓN
+// APP.JS - NÚCLEO, RED Y MÓDULO DE PLANIFICACIÓN
 // Hato Laguna Brava
 // ==========================================
 
 import { guardarLocalmente, sincronizarConServidor, obtenerDatosLocales } from './syncManager.js';
 
-// 1. Actualiza el semáforo y texto de sincronización en tu header
+// 1. Función global para actualizar el semáforo y texto de sincronización en tu header
 export function actualizarUIEstadoSync(esSincronizado, mensaje) {
     const light = document.getElementById("light");
     const statusText = document.getElementById("statusText");
@@ -79,8 +79,9 @@ document.addEventListener("DOMContentLoaded", () => {
     sincronizarConServidor(actualizarUIEstadoSync);
     refrescarVistaTareas();
 
-    // Escuchas de red
+    // Escuchas automáticas de red
     window.addEventListener('online', () => {
+        console.log("Conexión restablecida. Sincronizando pendientes...");
         sincronizarConServidor(actualizarUIEstadoSync);
         refrescarVistaTareas();
     });
@@ -89,7 +90,7 @@ document.addEventListener("DOMContentLoaded", () => {
         actualizarUIEstadoSync(false, "Modo Offline");
     });
 
-    // Botón manual de red
+    // Botón manual de sincronización en la cabecera (si existe)
     const btnSync = document.getElementById("btn-sync");
     if (btnSync) {
         btnSync.addEventListener("click", () => {
@@ -97,14 +98,16 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // Captura del formulario de tareas
+    // Captura del formulario de planificación (#taskForm)
     const taskForm = document.getElementById("taskForm");
+    
     if (taskForm) {
         taskForm.addEventListener("submit", async (e) => {
-            e.preventDefault();
+            e.preventDefault(); // Evita la recarga de página
 
+            // Construcción del registro local mapeando exactamente con tu HTML
             const nuevaLabor = {
-                tipo: 'tarea',
+                tipo: 'tarea', // Vital para que el servidor en Vercel lo encrute bien
                 id: crypto.randomUUID(),
                 fecha: document.getElementById("fecha").value,
                 labor: document.getElementById("labor").value,
@@ -113,23 +116,28 @@ document.addEventListener("DOMContentLoaded", () => {
                 horario: document.getElementById("horario-labor").value,
                 potrero: document.getElementById("potrero-afectado").value,
                 observaciones: document.getElementById("observaciones").value,
-                status: 'cola'
+                status: 'cola' // Alineado con tu indicador inicial "En Cola"
             };
 
+            // Guardar localmente en IndexedDB
             const exito = await guardarLocalmente(nuevaLabor);
 
             if (exito) {
-                actualizarUIEstadoSync(false, "Guardado local");
-                taskForm.reset();
-                await refrescarVistaTareas(); // Refresca las tarjetas y KPIs inmediatamente
+                actualizarUIEstadoSync(false, "Guardado offline");
+                alert("¡Labor registrada localmente con éxito!");
+                taskForm.reset(); // Limpia los campos del formulario
+                
+                await refrescarVistaTareas(); // Pinta la tarjeta y actualiza KPIs de inmediato
+                
+                // Intenta enviar al servidor de inmediato si hay red
                 sincronizarConServidor(actualizarUIEstadoSync);
             } else {
-                alert("Error al registrar la labor en el dispositivo.");
+                alert("Error al guardar la labor en el dispositivo.");
             }
         });
     }
 
-    // Botón de limpiar formulario
+    // Botón de rehacer / limpiar formulario
     const btnRehacer = document.getElementById("btnRehacer");
     if (btnRehacer && taskForm) {
         btnRehacer.addEventListener("click", () => {
