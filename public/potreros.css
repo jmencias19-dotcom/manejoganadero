@@ -388,4 +388,41 @@ input:focus, select:focus, textarea:focus {
         font-size: 16px !important;     /* Evita el reescalado forzado en pantallas táctiles */
     }
 }
+/* ==========================================================================
+   11. CORRECCIÓN DE ANCHO MÁXIMO Y SIMETRÍA BI-COLUMNA EN PC
+   ========================================================================== */
+
+/* Ajuste general para evitar que el contenedor flote con espacios vacíos */
+.main-container {
+    width: 100%;
+    max-width: 1280px; /* Centra y compacta el espacio visual en monitores grandes */
+    margin: 0 auto;
+    padding: 24px 20px;
+}
+
+/* Modificación de la Rejilla para módulos que usan solo 2 bloques (Planificación) */
+.main-container .menu-grid {
+    display: grid;
+    /* En PC, divide el espacio en 2 columnas perfectas (50% y 50%) en lugar de 3 */
+    grid-template-columns: repeat(2, 1fr) !important; 
+    gap: 24px;
+    width: 100%;
+}
+
+/* Forzar que las tarjetas internas se adapten al nuevo ancho estirado */
+.main-container .menu-grid .section-box {
+    width: 100% !important;
+    min-width: 0; /* Evita que inputs internos empujen y desborden la tarjeta */
+}
+
+/* ==========================================================================
+   MANTENER EL COMPORTAMIENTO RESPONSIVO PARA MÓVILES
+   ========================================================================== */
+@media (max-width: 992px) {
+    .main-container .menu-grid {
+        /* En celulares y tablets se rompe el 50/50 y se apila al 100% hacia abajo */
+        grid-template-columns: 1fr !important;
+        gap: 16px;
+    }
+}
 
