@@ -1,6 +1,6 @@
 /* ==========================================================================
    SISTEMA GANADERO - HATO LAGUNA BRAVA
-   MOTOR DE INTELIGENCIA Y PERSISTENCIA OFFLINE PARA PLANIFICACIÓN DE LABORES
+   MOTOR OFICIAL DE PLANIFICACIÓN DE LABORES - CORREGIDO
    ========================================================================== */
 
 const STORAGE_KEY = 'laguna_brava_tareas';
@@ -18,7 +18,6 @@ function establecerFechaHoy() {
     if (fechaInput) fechaInput.value = today;
 }
 
-// ALARMA SONORA: Notifica al equipo con una frecuencia limpia de asignación
 function emitirAlarmaOperativa(type = 'success') {
     try {
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -27,14 +26,14 @@ function emitirAlarmaOperativa(type = 'success') {
 
         if (type === 'success') {
             oscillator.type = 'sine';
-            oscillator.frequency.setValueAtTime(440, audioCtx.currentTime); // Nota La
+            oscillator.frequency.setValueAtTime(440, audioCtx.currentTime);
             oscillator.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.15);
         } else if (type === 'delete') {
             oscillator.type = 'sawtooth';
-            oscillator.frequency.setValueAtTime(293.66, audioCtx.currentTime); // Nota Re
+            oscillator.frequency.setValueAtTime(293.66, audioCtx.currentTime);
         } else if (type === 'ai') {
             oscillator.type = 'triangle';
-            oscillator.frequency.setValueAtTime(659.25, audioCtx.currentTime); // Nota Mi
+            oscillator.frequency.setValueAtTime(659.25, audioCtx.currentTime);
         }
 
         gainNode.gain.setValueAtTime(0.15, audioCtx.currentTime);
@@ -46,7 +45,7 @@ function emitirAlarmaOperativa(type = 'success') {
         oscillator.start();
         oscillator.stop(audioCtx.currentTime + 0.4);
     } catch (e) {
-        console.log("Salida de audio restringida por políticas del navegador.");
+        console.log("Audio restringido por políticas del navegador.");
     }
 }
 
@@ -88,35 +87,28 @@ function saveTasks(tasks) {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
         return true;
     } catch (e) {
-        showToast("⚠️ Error: Memoria del dispositivo saturada.");
+        showToast("⚠️ Error: Memoria llena.");
         return false;
     }
 }
 
-// DEPURACIÓN AUTOMÁTICA DE PRIMEROS DE MES
 function ejecutarDepuracionPrimerDiaMes() {
     const hoy = new Date();
     const diaDelMes = hoy.getDate();
-    
-    // Verificamos si estamos en el primer día del mes corriente
     if (diaDelMes === 1) {
         let tasks = getTasks();
         const inicialCount = tasks.length;
-        
-        // Filtramos eliminando de forma definitiva todas las ya ejecutadas
         const pendientesParaRetomar = tasks.filter(t => t.status !== 'ejecutada');
-        
         if (pendientesParaRetomar.length < inicialCount) {
             saveTasks(pendientesParaRetomar);
             setTimeout(() => {
                 emitirAlarmaOperativa('ai');
-                showToast("📅 ¡Primero de mes! Se eliminaron las tareas ejecutadas y se consolidó lo pendiente.");
+                showToast("📅 ¡Primero de mes! Se limpió el registro de tareas ejecutadas.");
             }, 1000);
         }
     }
 }
 
-   // 3. Manejo e Interceptación de Eventos del Formulario (CORREGIDO)
 function inicializarEventosFormulario() {
     const form = document.getElementById('taskForm');
     const btnRehacer = document.getElementById('btnRehacer');
@@ -140,9 +132,8 @@ function inicializarEventosFormulario() {
             tasks.push(newTask);
             
             if (saveTasks(tasks)) {
-                // SOLUCIÓN: Cambiado 'playBeep' por 'emitirAlarmaOperativa' para evitar que se congele el script
-                emitirAlarmaOperativa('success'); 
-                showToast("✅ Tarea registrada y sincronizada.");
+                emitirAlarmaOperativa('success');
+                showToast("💾 Tarea registrada con éxito.");
                 form.reset();
                 establecerFechaHoy();
                 renderTasks();
@@ -154,25 +145,22 @@ function inicializarEventosFormulario() {
         btnRehacer.addEventListener('click', () => {
             if (form) form.reset();
             establecerFechaHoy();
-            emitirAlarmaOperativa('success'); // SOLUCIÓN: Alineado con la función operativa de audio
+            emitirAlarmaOperativa('success');
             showToast("🔄 Campos restablecidos.");
         });
     }
 }
 
-// MOTOR DE APRENDIZAJE E INTELIGENCIA INTUITIVA (I.D.)
 function procesarInteligenciaIntuitiva(tasks) {
     const aiContainer = document.getElementById('ai-sugerencias-content');
     if (!aiContainer) return;
 
     if (tasks.length === 0) {
-        aiContainer.innerHTML = `<p style="margin:0; font-style:italic;">No hay registros suficientes para modelar el comportamiento del hato.</p>`;
+        aiContainer.innerHTML = `<p style="margin:0; font-style:italic;">No hay registros suficientes para modelar el comportamiento.</p>`;
         return;
     }
 
     let sugerencias = [];
-    
-    // Contar labores recurrentes para aprender prioridades
     const conteoLabores = {};
     let tareasEnProcesoCritico = 0;
 
@@ -181,42 +169,35 @@ function procesarInteligenciaIntuitiva(tasks) {
         if (t.status === 'proceso' && t.prioridad === 'alta') tareasEnProcesoCritico++;
     });
 
-    // Regla de aprendizaje 1: Sobrecarga crítica
     if (tareasEnProcesoCritico >= 2) {
-        sugerencias.push(`🚨 <strong>Alerta de Gestión:</strong> Tienes ${tareasEnProcesoCritico} labores ALTA en proceso. Se sugiere delegar personal para evitar retrasos.`);
+        sugerencias.push(`🚨 <strong>Alerta:</strong> Tienes ${tareasEnProcesoCritico} labores ALTA en proceso. Monitoree retrasos.`);
     }
 
-    // Regla de aprendizaje 2: Detección de patrones recurrentes
     Object.keys(conteoLabores).forEach(l => {
-        if (conteoLabores[l] >= 2 && l.includes('vacunación' || 'sanitario' || 'control')) {
-            sugerencias.push(`💉 <strong>Sugerencia Sanitaria:</strong> Se detecta recurrencia en labores de salud. Recuerde verificar el stock en el Inventario Sanitario.`);
+        if (conteoLabores[l] >= 2 && (l.includes('vacuna') || l.includes('sanit'))) {
+            sugerencias.push(`💉 <strong>Sugerencia Sanitaria:</strong> Labores recurrentes de salud. Verifique stock en inventario.`);
         }
-        if (conteoLabores[l] >= 2 && l.includes('cerca' || 'potrero' || 'mantenimiento')) {
-            sugerencias.push(`🌱 <strong>Recordatorio de Suelos:</strong> Labores de cercado activas. Monitoree el tiempo de descanso en la matriz de Pastoreo.`);
+        if (conteoLabores[l] >= 2 && (l.includes('cerca') || l.includes('potrero'))) {
+            sugerencias.push(`🌱 <strong>Sugerencia de Suelos:</strong> Labores de cercado activas. Verifique tiempos de descanso.`);
         }
     });
 
-    // Caso base por defecto si no hay alertas críticas
     if (sugerencias.length === 0) {
-        sugerencias.push(`💡 <strong>Mecanismo de Trabajo Estable:</strong> Flujo operativo balanceado. Buen ritmo de asignación en los potreros.`);
+        sugerencias.push(`💡 <strong>Mecanismo Estable:</strong> Flujo operativo balanceado en los potreros.`);
     }
 
-    // Inyección limpia en el bloque visual
     aiContainer.innerHTML = sugerencias.map(s => `<div style="margin-bottom:6px;">${s}</div>`).join('');
 }
 
-// RENDERIZADO Y CONTROL DE CONTADORES CON ORDENACIÓN CRONOLÓGICA
 function renderTasks() {
     const tasks = getTasks();
 
-    // ORGANIZAR POR FECHAS (Cronología estricta de la más vieja a la más futura)
     tasks.sort((a, b) => new Date(a.fecha + 'T00:00:00') - new Date(b.fecha + 'T00:00:00'));
 
     const container = document.getElementById('resumenContainer');
     if (!container) return;
     container.innerHTML = '';
 
-    // Variables de conteo mensual para las tres categorías requeridas
     let cCola = 0;
     let cProceso = 0;
     let cEjecutadas = 0;
@@ -242,6 +223,8 @@ function renderTasks() {
 
         const card = document.createElement('div');
         card.className = 'task-card-item';
+        
+        // SOLUCIÓN: Se eliminó la barra invertida errónea en task.observaciones para evitar roturas del DOM
         card.innerHTML = `
             <div class="task-card-row">
                 <span class="task-card-date">📅 ${task.fecha}</span>
@@ -250,3 +233,17 @@ function renderTasks() {
             <div class="task-card-labor" style="margin-top:6px;">
                 <strong>${task.labor}</strong>
             </div>
+            <div style="font-size:0.8rem; color:var(--text-muted); margin-top:2px; display:flex; gap:10px;">
+                <span>Prioridad: ${task.prioridad === 'alta' ? '🔴 Alta' : (task.prioridad === 'media' ? '🟡 Media' : '🟢 Baja')}</span>
+                <span>Horario: ${task.horario === 'manana' ? '🌅 Mañana' : (task.horario === 'tarde' ? '☀️ Tarde' : '📅 Todo el día')}</span>
+            </div>
+            <div style="font-size:0.82rem; color:var(--primary-color); margin-top:4px; background:#f0f4f1; padding:3px 8px; border-radius:4px; display:inline-block;">
+                <i class="fa-solid fa-location-dot"></i> Potrero: <strong>${task.potrero}</strong>
+            </div>
+            ${task.observaciones ? `<div class="task-card-obs" style="margin-top:8px;">📝 ${task.observaciones}</div>` : ''}
+            <div class="task-card-actions">
+                <select class="status-select ${statusClass}" onchange="updateStatus(${index}, this.value)">
+                    <option value="cola" ${task.status === 'cola' ? 'selected' : ''}>En Cola</option>
+                    <option value="proceso" ${task.status === 'proceso' ? 'selected' : ''}>En Proceso</option>
+                    <option value="ejecutada" ${task.status === 'ejecutada' ? 'selected' : ''}>Ejecutada</option>
+                </select>
