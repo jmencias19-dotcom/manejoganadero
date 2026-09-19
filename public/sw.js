@@ -1,7 +1,12 @@
-// Cambia la versión (por ejemplo, de v3.0 a v3.1)
-const CACHE_NAME = 'laguna-brava-v3.1'; 
+/* ==========================================================================
+   SERVICE WORKER OFICIAL (v4.0) - HATO LAGUNA BRAVA
+   Soporte Offline Robusto y Control de Caché Antivolcado de Vercel
+   ========================================================================== */
 
+// SOLUCIÓN: Incrementada la versión central del caché maestro
+const CACHE_NAME = 'laguna-brava-v4.0';
 
+// Lista de recursos con sufijos de versión idénticos a tus llamadas HTML
 const ASSETS_TO_CACHE = [
     './',
     './index.html',
@@ -12,7 +17,7 @@ const ASSETS_TO_CACHE = [
     './inventario-sanitario.html',
     './combustible.html',
     './indicadores-gestion.html',
-    './potreros.css',
+    './potreros.css?v=4.0', // SOLUCIÓN: Emparejado exactamente con el HTML para soporte offline
     './manifest.json'
 ];
 
@@ -20,16 +25,15 @@ const ASSETS_TO_CACHE = [
 self.addEventListener('install', (event) => {
     event.waitUntil(
         caches.open(CACHE_NAME).then((cache) => {
-            // Usamos Promise.allSettled en lugar de cache.addAll para evitar 
-            // que una redirección de Vercel detenga o corrompa el almacenamiento en caché.
+            // Usamos Promise.allSettled para evitar que una sola caída de asset rompa la instalación
             return Promise.allSettled(
                 ASSETS_TO_CACHE.map((url) => 
                     fetch(url, { redirect: 'follow' }).then((response) => {
                         if (response && response.status === 200) {
                             return cache.put(url, response);
                         }
-                    }).catch(() => {
-                        // Ignora errores individuales de red en assets secundarios al instalar
+                    }).catch((err) => {
+                        console.warn(`No se pudo cachear en pre-fetch: ${url}`, err);
                     })
                 )
             );
@@ -38,12 +42,13 @@ self.addEventListener('install', (event) => {
     self.skipWaiting();
 });
 
-// 2. Activación
+// 2. Activación y Limpieza Autónoma de Cachés Obsoletas
 self.addEventListener('activate', (event) => {
     event.waitUntil(
         caches.keys().then((cacheNames) => {
             return Promise.all(
                 cacheNames.map((cache) => {
+                    // Si el caché almacenado no coincide con v4.0, se elimina de inmediato
                     if (cache !== CACHE_NAME) {
                         return caches.delete(cache);
                     }
@@ -58,17 +63,17 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
     const url = new URL(event.request.url);
 
+    // Filtrar peticiones ajenas o métodos de escritura (POST, PUT, DELETE)
     if (url.origin !== location.origin || event.request.method !== 'GET') {
         return;
     }
 
-    // Manejo de navegación HTML
+    // A) MANEJO DE NAVEGACIÓN HTML
     if (event.request.mode === 'navigate' || (event.request.headers.get('accept') && event.request.headers.get('accept').includes('text/html'))) {
         event.respondWith(
-            // ELIMINADO: { redirect: 'follow' } de la solicitud para evitar el error de modo no permitido
             fetch(event.request)
                 .then((networkResponse) => {
-                    // SOLUCIÓN: Si la respuesta fue redireccionada por Vercel, la recreamos limpia
+                    // Si Vercel redirigió el HTML (ej. trailing slashes), limpiamos el objeto respuesta
                     if (networkResponse.redirected) {
                         return new Response(networkResponse.body, {
                             status: networkResponse.status,
@@ -86,8 +91,8 @@ self.addEventListener('fetch', (event) => {
                     return networkResponse;
                 })
                 .catch(() => {
+                    // Respaldo de navegación offline para el hato
                     return caches.match(event.request).then((cached) => {
-                        // Intenta emparejar la ruta exacta, la ruta relativa o cae en index.html
                         return cached || caches.match('./planificacion.html') || caches.match('./index.html');
                     });
                 })
@@ -95,17 +100,19 @@ self.addEventListener('fetch', (event) => {
         return;
     }
 
-    // Recursos estáticos (CSS, JS, Manifest, etc.)
+    // B) MANEJO DE RECURSOS ESTÁTICOS (CSS con versión, JS, Manifest, etc.)
     event.respondWith(
         caches.match(event.request).then((cachedResponse) => {
+            // Si el CSS v4.0 ya está guardado localmente, se sirve de inmediato sin tocar internet
             if (cachedResponse) {
                 return cachedResponse;
             }
-            // ELIMINADO: { redirect: 'follow' } para mantener consistencia con las políticas de red
+            
             return fetch(event.request).then((networkResponse) => {
                 if (!networkResponse || networkResponse.status !== 200) {
                     return networkResponse;
                 }
+                
                 const responseToCache = networkResponse.clone();
                 caches.open(CACHE_NAME).then((cache) => {
                     cache.put(event.request, responseToCache);
@@ -115,5 +122,3 @@ self.addEventListener('fetch', (event) => {
         })
     );
 });
-
-
