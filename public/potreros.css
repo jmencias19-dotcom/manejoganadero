@@ -450,20 +450,62 @@ input:focus, select:focus, textarea:focus {
 }
 
 /* ==========================================================================
-   MANTENER EL COMPORTAMIENTO RESPONSIVO PARA MÓVILES Y TABLETS
+   11. CORRECCIÓN DE ANCHO MÁXIMO Y SIMETRÍA DE COLUMNAS (OPTIMIZADO)
    ========================================================================== */
-@media (max-width: 1200px) {
-    /* En tablets, la portada baja a 2 columnas */
+
+/* Ajuste general del contenedor principal */
+.main-container {
+    width: 100%;
+    max-width: 1280px; 
+    margin: 0 auto;
+    padding: 24px 20px;
+}
+
+/* Configuración base para PC (Escritorio) */
+.main-container.panel-principal .menu-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    width: 100%;
+}
+
+.main-container:not(.panel-principal) .menu-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+    width: 100%;
+}
+
+/* Forzar que las tarjetas internas se adapten al ancho estirado */
+.main-container .menu-grid .section-box {
+    width: 100%;
+    min-width: 0; 
+}
+
+/* ==========================================================================
+   ADAPTABILIDAD MÓVIL Y TABLET (RESPONSIVE DESIGN CORREGIDO)
+   ========================================================================== */
+
+/* Tablets (pantallas menores o iguales a 1024px) */
+@media (max-width: 1024px) {
     .main-container.panel-principal .menu-grid {
-        grid-template-columns: repeat(2, 1fr) !important;
+        grid-template-columns: repeat(2, 1fr);
     }
 }
 
-@media (max-width: 992px) {
-    /* En celulares, tanto la portada como los módulos se apilan a 1 sola columna */
-    .main-container .menu-grid {
-        grid-template-columns: 1fr !important;
+/* Dispositivos Móviles / Celulares (pantallas menores o iguales a 768px) 
+   Forzamos estrictamente UNA SOLA COLUMNA para evitar vista de PC */
+@media (max-width: 768px) {
+    .main-container,
+    .main-container.panel-principal,
+    .main-container:not(.panel-principal) {
+        padding: 16px 12px;
+    }
+
+    .main-container .menu-grid,
+    .main-container.panel-principal .menu-grid,
+    .main-container:not(.panel-principal) .menu-grid {
+        grid-template-columns: 1fr !important; /* Columna única absoluta */
         gap: 16px;
     }
 }
-
