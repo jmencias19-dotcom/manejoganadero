@@ -1,6 +1,6 @@
 /* ==========================================================================
    SISTEMA GANADERO - HATO LAGUNA BRAVA
-   MOTOR OFICIAL DE PLANIFICACIÓN DE LABORES - CORREGIDO
+   MOTOR DE INTELIGENCIA Y PERSISTENCIA OFFLINE - CORREGIDO Y BLINDADO
    ========================================================================== */
 
 const STORAGE_KEY = 'laguna_brava_tareas';
@@ -13,6 +13,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 function establecerFechaHoy() {
+    // SOLUCIÓN: Agregado [0] para extraer la cadena de texto limpia YYYY-MM-DD
     const today = new Date().toISOString().split('T')[0];
     const fechaInput = document.getElementById('fecha');
     if (fechaInput) fechaInput.value = today;
@@ -45,7 +46,7 @@ function emitirAlarmaOperativa(type = 'success') {
         oscillator.start();
         oscillator.stop(audioCtx.currentTime + 0.4);
     } catch (e) {
-        console.log("Audio restringido por políticas del navegador.");
+        console.log("Audio restingido por el navegador.");
     }
 }
 
@@ -87,7 +88,7 @@ function saveTasks(tasks) {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
         return true;
     } catch (e) {
-        showToast("⚠️ Error: Memoria llena.");
+        showToast("⚠️ Error: Almacenamiento lleno.");
         return false;
     }
 }
@@ -103,7 +104,7 @@ function ejecutarDepuracionPrimerDiaMes() {
             saveTasks(pendientesParaRetomar);
             setTimeout(() => {
                 emitirAlarmaOperativa('ai');
-                showToast("📅 ¡Primero de mes! Se limpió el registro de tareas ejecutadas.");
+                showToast("📅 ¡Primero de mes! Se depuraron las labores ejecutadas.");
             }, 1000);
         }
     }
@@ -135,7 +136,7 @@ function inicializarEventosFormulario() {
                 emitirAlarmaOperativa('success');
                 showToast("💾 Tarea registrada con éxito.");
                 form.reset();
-                establecerFechaHoy();
+                establecerFechaHoy(); // SOLUCIÓN: Llama a la fijación de fecha segura
                 renderTasks();
             }
         });
@@ -165,7 +166,8 @@ function procesarInteligenciaIntuitiva(tasks) {
     let tareasEnProcesoCritico = 0;
 
     tasks.forEach(t => {
-        conteoLabores[t.labor.toLowerCase()] = (conteoLabores[t.labor.toLowerCase()] || 0) + 1;
+        const laborNombre = t.labor ? t.labor.toLowerCase() : '';
+        conteoLabores[laborNombre] = (conteoLabores[laborNombre] || 0) + 1;
         if (t.status === 'proceso' && t.prioridad === 'alta') tareasEnProcesoCritico++;
     });
 
@@ -210,6 +212,12 @@ function renderTasks() {
     }
 
     tasks.forEach((task, index) => {
+        // BLINDAJE CONTRA TAREAS VIEJAS: Si falta algún campo por cambios anteriores, se le da un valor por defecto seguro
+        const prioridad = task.prioridad || 'media';
+        const horario = task.horario || 'manana';
+        const potrero = task.potrero || 'General';
+        const observaciones = task.observaciones || '';
+        
         let statusClass = 'status-cola';
         if (task.status === 'cola') cCola++;
         if (task.status === 'proceso') {
@@ -223,8 +231,6 @@ function renderTasks() {
 
         const card = document.createElement('div');
         card.className = 'task-card-item';
-        
-        // SOLUCIÓN: Se eliminó la barra invertida errónea en task.observaciones para evitar roturas del DOM
         card.innerHTML = `
             <div class="task-card-row">
                 <span class="task-card-date">📅 ${task.fecha}</span>
@@ -234,16 +240,12 @@ function renderTasks() {
                 <strong>${task.labor}</strong>
             </div>
             <div style="font-size:0.8rem; color:var(--text-muted); margin-top:2px; display:flex; gap:10px;">
-                <span>Prioridad: ${task.prioridad === 'alta' ? '🔴 Alta' : (task.prioridad === 'media' ? '🟡 Media' : '🟢 Baja')}</span>
-                <span>Horario: ${task.horario === 'manana' ? '🌅 Mañana' : (task.horario === 'tarde' ? '☀️ Tarde' : '📅 Todo el día')}</span>
+                <span>Prioridad: ${prioridad === 'alta' ? '🔴 Alta' : (prioridad === 'media' ? '🟡 Media' : '🟢 Baja')}</span>
+                <span>Horario: ${horario === 'manana' ? '🌅 Mañana' : (horario === 'tarde' ? '☀️ Tarde' : '📅 Todo el día')}</span>
             </div>
             <div style="font-size:0.82rem; color:var(--primary-color); margin-top:4px; background:#f0f4f1; padding:3px 8px; border-radius:4px; display:inline-block;">
-                <i class="fa-solid fa-location-dot"></i> Potrero: <strong>${task.potrero}</strong>
+                <i class="fa-solid fa-location-dot"></i> Potrero: <strong>${potrero}</strong>
             </div>
-            ${task.observaciones ? `<div class="task-card-obs" style="margin-top:8px;">📝 ${task.observaciones}</div>` : ''}
+            ${observaciones ? `<div class="task-card-obs" style="margin-top:8px;">📝 ${observaciones}</div>` : ''}
             <div class="task-card-actions">
                 <select class="status-select ${statusClass}" onchange="updateStatus(${index}, this.value)">
-                    <option value="cola" ${task.status === 'cola' ? 'selected' : ''}>En Cola</option>
-                    <option value="proceso" ${task.status === 'proceso' ? 'selected' : ''}>En Proceso</option>
-                    <option value="ejecutada" ${task.status === 'ejecutada' ? 'selected' : ''}>Ejecutada</option>
-                </select>
