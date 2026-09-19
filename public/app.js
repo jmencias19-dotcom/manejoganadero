@@ -1,11 +1,11 @@
 // ==========================================
-// APP.JS - NÚCLEO, RED Y MÓDULO DE PLANIFICACIÓN
+// APP.JS - NÚCLEO, RED Y PLANIFICACIÓN
 // Hato Laguna Brava
 // ==========================================
 
-import { guardarLocalmente, sincronizarConServidor } from './syncManager.js';
+import { guardarLocalmente, sincronizarConServidor, obtenerDatosLocales } from './syncManager.js';
 
-// 1. Función global para actualizar el semáforo y texto de sincronización en tu header
+// 1. Actualiza el semáforo y texto de sincronización en tu header
 export function actualizarUIEstadoSync(esSincronizado, mensaje) {
     const light = document.getElementById("light");
     const statusText = document.getElementById("statusText");
@@ -21,21 +21,75 @@ export function actualizarUIEstadoSync(esSincronizado, mensaje) {
     }
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-    // 2. Sincronización automática inicial al abrir la app si hay internet
-    sincronizarConServidor(actualizarUIEstadoSync);
+// 2. Función para renderizar las tareas en pantalla y actualizar KPIs
+async function refrescarVistaTareas() {
+    const registros = await obtenerDatosLocales();
+    if (!registros) return;
 
-    // 3. Escuchas automáticas de cambios en la red del dispositivo
+    // Filtramos únicamente los registros que sean de tipo 'tarea'
+    const tareas = registros.filter(r => r.tipo === 'tarea');
+
+    const contenedor = document.getElementById("lista-tareas");
+    if (!contenedor) return;
+    
+    contenedor.innerHTML = ""; // Limpia la lista antes de redibujar
+
+    let cCola = 0, cProceso = 0, cEjecutada = 0;
+
+    tareas.forEach(t => {
+        // Conteo para las tarjetas KPI superiores
+        if (t.status === 'cola') cCola++;
+        else if (t.status === 'proceso') cProceso++;
+        else if (t.status === 'ejecutada') cEjecutada++;
+
+        // Construcción de la tarjeta visual
+        const tarjeta = document.createElement("div");
+        tarjeta.className = "task-card-item";
+        tarjeta.innerHTML = `
+            <div class="task-card-row">
+                <span class="task-card-date">📅 ${t.fecha}</span>
+                <span class="task-card-meta">👤 ${t.responsable || 'Sin asignar'}</span>
+            </div>
+            <div class="task-card-labor">${t.labor}</div>
+            <div class="task-card-meta"><strong>Potrero:</strong> ${t.potrero} | <strong>Horario:</strong> ${t.horario}</div>
+            ${t.observaciones ? `<div class="task-card-obs">"${t.observaciones}"</div>` : ''}
+            <div class="task-card-actions">
+                <select class="status-select status-${t.status}" data-id="${t.id}">
+                    <option value="cola" ${t.status === 'cola' ? 'selected' : ''}>🟡 En Cola</option>
+                    <option value="proceso" ${t.status === 'proceso' ? 'selected' : ''}>🔵 En Proceso</option>
+                    <option value="ejecutada" ${t.status === 'ejecutada' ? 'selected' : ''}>🟢 Ejecutada</option>
+                </select>
+            </div>
+        `;
+        contenedor.appendChild(tarjeta);
+    });
+
+    // Actualiza los números en los contadores KPI si existen en el HTML
+    const elCola = document.getElementById("kpi-cola");
+    const elProceso = document.getElementById("kpi-proceso");
+    const elEjecutada = document.getElementById("kpi-ejecutada");
+
+    if (elCola) elCola.textContent = cCola;
+    if (elProceso) elProceso.textContent = cProceso;
+    if (elEjecutada) elEjecutada.textContent = cEjecutada;
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    // Sincronización inicial y carga visual al abrir la vista
+    sincronizarConServidor(actualizarUIEstadoSync);
+    refrescarVistaTareas();
+
+    // Escuchas de red
     window.addEventListener('online', () => {
-        console.log("Conexión restablecida. Sincronizando pendientes...");
         sincronizarConServidor(actualizarUIEstadoSync);
+        refrescarVistaTareas();
     });
 
     window.addEventListener('offline', () => {
         actualizarUIEstadoSync(false, "Modo Offline");
     });
 
-    // 4. Botón manual de sincronización en la cabecera (si existe)
+    // Botón manual de red
     const btnSync = document.getElementById("btn-sync");
     if (btnSync) {
         btnSync.addEventListener("click", () => {
@@ -43,18 +97,14 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // ==========================================
-    // CAPTURA DEL FORMULARIO DE PLANIFICACIÓN (#taskForm)
-    // ==========================================
+    // Captura del formulario de tareas
     const taskForm = document.getElementById("taskForm");
-    
     if (taskForm) {
         taskForm.addEventListener("submit", async (e) => {
-            e.preventDefault(); // Evita la recarga de página
+            e.preventDefault();
 
-            // Construcción del registro local mapeando exactamente con tu HTML
             const nuevaLabor = {
-                tipo: 'tarea', // Vital para que el servidor en Vercel lo encrute bien
+                tipo: 'tarea',
                 id: crypto.randomUUID(),
                 fecha: document.getElementById("fecha").value,
                 labor: document.getElementById("labor").value,
@@ -63,26 +113,23 @@ document.addEventListener("DOMContentLoaded", () => {
                 horario: document.getElementById("horario-labor").value,
                 potrero: document.getElementById("potrero-afectado").value,
                 observaciones: document.getElementById("observaciones").value,
-                status: 'cola' // Alineado con tu indicador inicial "En Cola"
+                status: 'cola'
             };
 
-            // Guardar localmente en IndexedDB
             const exito = await guardarLocalmente(nuevaLabor);
 
             if (exito) {
-                actualizarUIEstadoSync(false, "Guardado offline");
-                alert("¡Labor registrada localmente con éxito!");
-                taskForm.reset(); // Limpia los campos del formulario de forma limpia
-                
-                // Intenta enviar al servidor de inmediato si hay red
+                actualizarUIEstadoSync(false, "Guardado local");
+                taskForm.reset();
+                await refrescarVistaTareas(); // Refresca las tarjetas y KPIs inmediatamente
                 sincronizarConServidor(actualizarUIEstadoSync);
             } else {
-                alert("Error al guardar la labor en el dispositivo.");
+                alert("Error al registrar la labor en el dispositivo.");
             }
         });
     }
 
-    // 5. Botón de rehacer / limpiar formulario
+    // Botón de limpiar formulario
     const btnRehacer = document.getElementById("btnRehacer");
     if (btnRehacer && taskForm) {
         btnRehacer.addEventListener("click", () => {
@@ -90,40 +137,3 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 });
-
-// ==========================================
-// RENDERIZADO DE TAREAS PROGRAMADAS
-// ==========================================
-
-import { obtenerDatosLocales } from './syncManager.js'; // Asegúrate de importar tu función de lectura
-
-async function cargarTareasEnPantalla() {
-    // 1. Buscamos el contenedor donde deben listarse las tarjetas (asegúrate de darle un ID a ese contenedor en tu HTML si no lo tiene)
-    // O si las inyectas en una sección específica, aquí las leemos de IndexedDB:
-    const tareas = await obtenerDatosLocales(); // O la función específica que uses para leer tus registros locales
-    
-    if (!tareas || tareas.length === 0) return;
-
-    // Filtramos solo las que sean de tipo 'tarea'
-    const listaTareas = tareas.filter(t => t.tipo === 'tarea');
-
-    // Contadores para los KPIs
-    let countCola = 0;
-    let countProceso = 0;
-    let countEjecutada = 0;
-
-    listaTareas.forEach(t => {
-        if (t.status === 'cola') countCola++;
-        if (t.status === 'proceso') countProceso++;
-        if (t.status === 'ejecutada') countEjecutada++;
-    });
-
-    // Actualizamos los números en las tarjetas KPI superiores si existen
-    const elCola = document.getElementById("kpi-cola");
-    const elProceso = document.getElementById("kpi-proceso");
-    if (elCola) elCola.textContent = countCola;
-    if (elProceso) elProceso.textContent = countProceso;
-}
-
-// Y llamamos a esta función al iniciar la página dentro del DOMContentLoaded:
-// cargarTareasEnPantalla();
