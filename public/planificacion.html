@@ -4,13 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Planificación de Tareas - Hato Laguna Brava</title>
+    
     <!-- Centralizado en tus Estilos Maestros Unificados (v4.1) -->
     <link rel="stylesheet" href="./potreros.css?v=4.1">
     
     <!-- CDN oficial de iconos FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
+    <!-- Manifiesto PWA -->
     <link rel="manifest" href="manifest.json">
+    
     <style>
         .task-card-item {
             background-color: var(--card-bg);
@@ -41,7 +44,7 @@
         @media (min-width: 768px) { .toast-notification { width: 350px; left: 20px; right: auto; } }
         .toast-notification.show { opacity: 1; transform: translateY(0); }
 
-        /* Área de Inteligencia Intuitiva */
+        /* Área de Inteligencia Intuitiva / Asistente */
         .ai-recommendations-box { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 14px; margin-top: 15px; }
         .ai-title { font-size: 0.88rem; color: #1e40af; font-weight: 700; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
         .ai-content { font-size: 0.82rem; color: #1e3a8a; line-height: 1.4; display: flex; flex-direction: column; gap: 6px; }
@@ -126,8 +129,8 @@
                     </div>
                     
                     <div style="margin-top: 10px; width: 100%;">
-    <button type="submit" class="btn" style="width: 100%;"><i class="fa-solid fa-floppy-disk"></i> Guardar y Sincronizar</button>
-</div>
+                        <button type="submit" class="btn" style="width: 100%;"><i class="fa-solid fa-floppy-disk"></i> Guardar y Sincronizar</button>
+                    </div>
                 </form>
 
                 <!-- ÁREA DE APRENDIZAJE E INTELIGENCIA INTUITIVA (I.D.) -->
@@ -180,7 +183,7 @@
         <span id="toast-message">Operación realizada con éxito</span>
     </div>
 
-    <!-- Script del módulo (Asegúrate de que apunte al archivo JS correspondiente de tareas) -->
-    <script type="module" src="/tareas.js"></script>
-    </body>
+    <!-- Script del módulo corregido a ruta relativa para evitar errores 404 en PWA -->
+    <script type="module" src="./tareas.js"></script>
+</body>
 </html>
