@@ -4,15 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Planificación de Tareas - Hato Laguna Brava</title>
-    <!-- Centralizado en tus Estilos Maestros Unificados -->
     <link rel="stylesheet" href="./potreros.css?v=4.0">
-    
-    <!-- SOLUCIÓN AL ERROR CORB: CDN oficial de FontAwesome en lugar de URL rota -->
     <link rel="stylesheet" href="https://cloudflare.com">
-    
     <link rel="manifest" href="manifest.json">
     <style>
-        /* Estilos específicos para el componente dinámico de tareas que complementan a potreros.css */
         .task-card-item {
             background-color: var(--card-bg);
             border: 1px solid var(--border-color);
@@ -24,116 +19,34 @@
             box-shadow: 0 2px 4px rgba(27, 67, 50, 0.02);
             margin-bottom: 12px;
         }
-
-        .task-card-row { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-        }
-
-        .task-card-date { 
-            font-size: 0.8rem; 
-            font-weight: 700; 
-            color: var(--primary-color); 
-            background-color: var(--divider-color); 
-            padding: 3px 8px; 
-            border-radius: 4px; 
-        }
-
-        .task-card-meta { 
-            font-size: 0.85rem; 
-            color: var(--text-muted); 
-        }
-
-        .task-card-labor { 
-            font-size: 1rem; 
-            font-weight: 600; 
-            color: var(--text-main); 
-            word-break: break-word; 
-        }
-
-        .task-card-obs { 
-            font-size: 0.85rem; 
-            color: var(--text-main); 
-            background: #f0f4f1; 
-            padding: 8px; 
-            border-radius: 6px; 
-            font-style: italic; 
-            border-left: 3px solid var(--accent-color); 
-        }
-
-        .task-card-actions { 
-            display: flex; 
-            gap: 10px; 
-            align-items: center; 
-            margin-top: 4px; 
-            border-top: 1px solid var(--divider-color); 
-            padding-top: 8px; 
-        }
-
-        /* Selectores de Estado Estandarizados */
-        .status-select { 
-            padding: 6px 10px; 
-            border-radius: 6px; 
-            border: 1px solid var(--border-color); 
-            font-weight: 700; 
-            font-size: 0.85rem; 
-            flex: 1; 
-            height: 38px; 
-            cursor: pointer; 
-        }
-
+        .task-card-row { display: flex; justify-content: space-between; align-items: center; }
+        .task-card-date { font-size: 0.8rem; font-weight: 700; color: var(--primary-color); background-color: var(--divider-color); padding: 3px 8px; border-radius: 4px; }
+        .task-card-meta { font-size: 0.85rem; color: var(--text-muted); }
+        .task-card-labor { font-size: 1rem; font-weight: 600; color: var(--text-main); word-break: break-word; }
+        .task-card-obs { font-size: 0.85rem; color: var(--text-main); background: #f0f4f1; padding: 8px; border-radius: 6px; font-style: italic; border-left: 3px solid var(--accent-color); }
+        .task-card-actions { display: flex; gap: 10px; align-items: center; margin-top: 4px; border-top: 1px solid var(--divider-color); padding-top: 8px; }
+        
+        .status-select { padding: 6px 10px; border-radius: 6px; border: 1px solid var(--border-color); font-weight: 700; font-size: 0.85rem; flex: 1; height: 38px; cursor: pointer; }
         .status-cola { background-color: #fff3cd !important; color: #856404 !important; }
         .status-proceso { background-color: #cce5ff !important; color: #004085 !important; }
         .status-ejecutada { background-color: #d4edda !important; color: #155724 !important; }
 
-        /* Botón de eliminación técnica */
-        .btn-delete { 
-            background-color: #c1121f; 
-            color: white; 
-            padding: 0 14px; 
-            font-size: 0.85rem; 
-            border-radius: 6px; 
-            border: none; 
-            height: 38px; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            font-weight: 600; 
-            width: auto; 
-            cursor: pointer;
-            transition: opacity 0.2s;
-        }
+        .btn-delete { background-color: #c1121f; color: white; padding: 0 14px; font-size: 0.85rem; border-radius: 6px; border: none; height: 38px; display: flex; align-items: center; justify-content: center; font-weight: 600; width: auto; cursor: pointer; }
         
-        .btn-delete:hover { opacity: 0.9; }
-
-        /* Alertas Toast del Sistema */
-        .toast-notification {
-            position: fixed;
-            bottom: 20px;
-            left: 5%; right: 5%; width: 90%;
-            background: #222222; color: white;
-            padding: 12px 16px; border-radius: 10px;
-            opacity: 0; pointer-events: none;
-            transition: opacity 0.3s, transform 0.3s;
-            transform: translateY(20px); z-index: 1000; font-size: 0.9rem;
-            display: flex; align-items: center; gap: 10px;
-            border-left: 5px solid var(--accent-color);
-        }
-        
-        @media (min-width: 768px) {
-            .toast-notification { width: 350px; left: 20px; right: auto; }
-        }
-        
+        .toast-notification { position: fixed; bottom: 20px; left: 5%; right: 5%; width: 90%; background: #222222; color: white; padding: 12px 16px; border-radius: 10px; opacity: 0; pointer-events: none; transition: opacity 0.3s, transform 0.3s; transform: translateY(20px); z-index: 1000; font-size: 0.9rem; display: flex; align-items: center; gap: 10px; border-left: 5px solid var(--accent-color); }
+        @media (min-width: 768px) { .toast-notification { width: 350px; left: 20px; right: auto; } }
         .toast-notification.show { opacity: 1; transform: translateY(0); }
+
+        /* Área de Inteligencia Intuitiva */
+        .ai-recommendations-box { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 14px; margin-top: 15px; }
+        .ai-title { font-size: 0.88rem; color: #1e40af; font-weight: 700; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+        .ai-content { font-size: 0.82rem; color: #1e3a8a; line-height: 1.4; display: flex; flex-direction: column; gap: 6px; }
     </style>
 </head>
 <body>
 
-    <!-- RECUPERADO: Contenedor dinámico para inyección de header.js -->
     <div id="app-header"></div>
 
-    <!-- RECUPERADO: Cintillo Maestro Nativo de Respaldo Offline -->
     <header class="main-header">
         <div class="header-container">
             <nav class="header-nav">
@@ -145,7 +58,6 @@
                 <h1>Hato Laguna Brava - <span>Planificación</span></h1>
                 <p>Planificación de Tareas y Control Operativo</p>
             </div>
-            <!-- Semáforo de Sincronización Estándar -->
             <div class="sync-status-wrapper">
                 <div id="light" class="semaphore online"></div>
                 <span id="statusText" class="sync-text">Sincronizado Local</span>
@@ -153,7 +65,6 @@
         </div>
     </header>
 
-    <!-- CONTENEDOR PRINCIPAL Y REJILLA (Modelo de 2 Columnas de Trabajo) -->
     <main class="main-container">
         <div class="menu-grid">
             
@@ -175,23 +86,22 @@
                         <input type="text" id="labor" placeholder="Ej. Vacunación Brahman, mantenimiento de potrero..." required>
                     </div>
 
-                    <!-- PRIMER ANEXO ASIMÉTRICO: Relación 46% Izquierda / 54% Derecha -->
+                    <!-- Relación Asimétrica: 46% / 54% -->
                     <div class="kpi-container">
                         <div class="input-group">
                             <label for="prioridad-labor">Prioridad:</label>
                             <select id="prioridad-labor" required>
                                 <option value="alta">🔴 Alta</option>
-                                <option value="media" selected>Mandatorio / Media</option>
+                                <option value="media" selected>🟡 Media</option>
                                 <option value="baja">🟢 Baja</option>
                             </select>
                         </div>
                         <div class="input-group">
-                            <label for="personal">Personal / Vaquero Responsable:</label>
-                            <input type="text" id="personal" placeholder="Nombre del operario" required>
+                            <label for="personal">Responsable:</label>
+                            <input type="text" id="personal" placeholder="Nombre del vaquero u operario" required>
                         </div>
                     </div>
 
-                    <!-- SEGUNDO ANEXO ASIMÉTRICO: Relación 46% Izquierda / 54% Derecha -->
                     <div class="kpi-container">
                         <div class="input-group">
                             <label for="horario-labor">Horario:</label>
@@ -202,21 +112,32 @@
                             </select>
                         </div>
                         <div class="input-group">
-                            <label for="potrero-afectado">Potrero de Destino:</label>
-                            <input type="text" id="potrero-afectado" placeholder="Ej. Macanillal, Las Rallas..." required>
+                            <label for="potrero-afectado">Potrero / Lote:</label>
+                            <input type="text" id="potrero-afectado" placeholder="Ej. Macanillal, El Galpón..." required>
                         </div>
                     </div>
 
                     <div class="input-group">
                         <label for="observaciones">Observaciones / Notas de Campo:</label>
-                        <textarea id="observaciones" placeholder="Detalles de potreros, insumos o instrucciones adicionales..." rows="3"></textarea>
+                        <textarea id="observaciones" placeholder="Detalles de insumos, dosis médicas o cercados..." rows="3"></textarea>
                     </div>
                     
                     <div style="display: flex; gap: 10px; margin-top: 10px; width: 100%;">
-                        <button type="submit" class="btn" style="flex: 1;">💾 Guardar Tarea</button>
+                        <button type="submit" class="btn" style="flex: 1;">💾 Guardar e Sincronizar</button>
                         <button type="button" id="btnRehacer" class="btn" style="background-color: var(--text-muted); width: auto;"><i class="fa-solid fa-rotate"></i></button>
                     </div>
                 </form>
+
+                <!-- ÁREA DE APRENDIZAJE E INTELIGENCIA INTUITIVA (I.D.) -->
+                <div class="ai-recommendations-box">
+                    <div class="ai-title">
+                        <i class="fa-solid fa-brain"></i> Asistente de Operaciones Ganaderas (I.D.)
+                    </div>
+                    <div id="ai-sugerencias-content" class="ai-content">
+                        <!-- Las sugerencias auto-aprendidas se inyectan aquí -->
+                        <p style="margin: 0; font-style: italic;">Analizando patrones de trabajo para generar recomendaciones...</p>
+                    </div>
+                </div>
             </section>
 
             <!-- COLUMNA 2: Tareas Programadas y Lista de Control -->
@@ -225,11 +146,16 @@
                     <div class="card-icon">🤠</div>
                     <h2 class="card-title">Tareas Programadas</h2>
                 </div>
-                <p class="card-description">Labores vigentes y estados de progreso asignados en la sabana.</p>
+                <p class="card-description">Seguimiento mensual y control del estado de avance operativo.</p>
                 
-                <!-- Indicadores Rápidos KPI -->
-                <div class="kpi-container" style="margin-bottom: 15px;">
-                    <div class="kpi-card">
-                        <div class="kpi-title">Pendientes</div>
-                        <div id="kpi-pendientes" class="kpi-value">0</div>
+                <!-- Recuadro para Contabilizar las Tres Categorías Clave -->
+                <div class="kpi-container" style="grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 15px;">
+                    <div class="kpi-card" style="padding: 8px 4px; background-color: #fff3cd; border-color: #ffeeba;">
+                        <div class="kpi-title" style="font-size:0.65rem; color:#856404;">En Cola</div>
+                        <div id="kpi-cola" class="kpi-value" style="font-size:1.1rem; color:#856404;">0</div>
                     </div>
+                    <div class="kpi-card" style="padding: 8px 4px; background-color: #cce5ff; border-color: #b8daff;">
+                        <div class="kpi-title" style="font-size:0.65rem; color:#004085;">En Proceso</div>
+                        <div id="kpi-proceso" class="kpi-value" style="font-size:1.1rem; color:#004085;">0</div>
+                    </div>
+                    <div class="kpi-card" style="padding: 8px 4px; background-color: #d4edda; border-color: #c3e6cb;">
