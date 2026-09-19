@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const kpiProceso = document.getElementById('kpi-proceso');
     const kpiEjecutadas = document.getElementById('kpi-ejecutadas');
 
-    // Cargar tareas desde localStorage al iniciar (clave unificada)
+    // Cargar tareas desde localStorage al iniciar
     let tareas = JSON.parse(localStorage.getItem('hatoLbTareas')) || [];
 
     function renderTasks() {
@@ -29,7 +29,6 @@ document.addEventListener('DOMContentLoaded', () => {
         let cuentaEjecutadas = 0;
 
         tareas.forEach((tarea, index) => {
-            // Conteo según el estado actual
             if (tarea.estado === 'cola') cuentaCola++;
             else if (tarea.estado === 'proceso') cuentaProceso++;
             else if (tarea.estado === 'ejecutada') cuentaEjecutadas++;
@@ -75,7 +74,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function vincularEventosDinamicos() {
-        // Cambiar estado de la tarea desde el selector
         document.querySelectorAll('.status-select').forEach(select => {
             select.addEventListener('change', (e) => {
                 const index = e.target.dataset.index;
@@ -84,7 +82,6 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
 
-        // Eliminar tarea con botón de papelera
         document.querySelectorAll('.btn-delete').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 const index = e.currentTarget.dataset.index;
@@ -99,48 +96,25 @@ document.addEventListener('DOMContentLoaded', () => {
         renderTasks();
     }
 
-    // Evento de Envío del Formulario
     if (taskForm) {
         taskForm.addEventListener('submit', (e) => {
             e.preventDefault();
             
-            const fechaInput = document.getElementById('fecha').value;
-            const laborInput = document.getElementById('labor').value.trim();
-            const prioridadInput = document.getElementById('prioridad-labor').value;
-            const personalInput = document.getElementById('personal').value.trim();
-            const horarioInput = document.getElementById('horario-labor').value;
-            const potreroInput = document.getElementById('potrero-afectado').value.trim();
-            const observacionesInput = document.getElementById('observaciones').value.trim();
+            const nuevaTarea = {
+                fecha: document.getElementById('fecha').value,
+                labor: document.getElementById('labor').value.trim(),
+                prioridad: document.getElementById('prioridad-labor').value,
+                personal: document.getElementById('personal').value.trim(),
+                horario: document.getElementById('horario-labor').value,
+                potrero: document.getElementById('potrero-afectado').value.trim(),
+                observaciones: document.getElementById('observaciones').value.trim(),
+                estado: 'cola'
+            };
 
-            if (laborInput !== '') {
-                const nuevaTarea = {
-                    fecha: fechaInput,
-                    labor: laborInput,
-                    prioridad: prioridadInput,
-                    personal: personalInput,
-                    horario: horarioInput,
-                    potrero: potreroInput,
-                    observaciones: observacionesInput,
-                    estado: 'cola'
-                };
-
-                tareas.unshift(nuevaTarea); // Agrega al inicio de la lista
-                taskForm.reset();
-                
-                // Restaurar la fecha de hoy por defecto tras el reset
-                const today = new Date().toISOString().split('T')[0];
-                const inputFecha = document.getElementById('fecha');
-                if (inputFecha) inputFecha.value = today;
-
-                saveAndRender();
-            }
-        });
-    }
             if (nuevaTarea.labor !== '') {
-                tareas.unshift(nuvaTareaSafe = nuevaTarea); // Agrega al inicio de la lista
+                tareas.unshift(nuevaTarea);
                 taskForm.reset();
                 
-                // Poner la fecha de hoy por defecto tras resetear
                 const today = new Date().toISOString().split('T')[0];
                 const inputFecha = document.getElementById('fecha');
                 if (inputFecha) inputFecha.value = today;
@@ -150,7 +124,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Inicializar fecha de hoy en el input al cargar la página
     const inputFecha = document.getElementById('fecha');
     if (inputFecha && !inputFecha.value) {
         inputFecha.value = new Date().toISOString().split('T')[0];
