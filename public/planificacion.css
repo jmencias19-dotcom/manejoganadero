@@ -417,3 +417,66 @@ tr:hover {
         font-size: 0.9rem;
     }
 }
+/* ==========================================================================
+   CORRECCIÓN DEFINITIVA DE ENCABEZADO Y BOTÓN DE REGRESO EN MÓVILES
+   ========================================================================== */
+
+.header-container {
+    display: flex;
+    flex-direction: column; /* Apila los elementos de forma vertical en celulares */
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    text-align: center;
+    padding: 5px 0;
+}
+
+.header-nav {
+    width: 100%;
+    display: flex;
+    justify-content: flex-start;
+}
+
+.header-nav .btn-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    white-space: nowrap;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 6px;
+    color: #ffffff;
+}
+
+.header-title-wrapper {
+    width: 100%;
+    text-align: center;
+}
+
+.sync-status-wrapper {
+    margin: 0 auto;
+}
+
+/* En pantallas de PC / Escritorio vuelve al diseño horizontal original */
+@media (min-width: 768px) {
+    .header-container {
+        flex-direction: row;
+        justify-content: space-between;
+        text-align: left;
+    }
+    
+    .header-nav {
+        width: auto;
+    }
+
+    .header-title-wrapper {
+        text-align: center;
+        flex-grow: 1;
+    }
+
+    .sync-status-wrapper {
+        margin: 0;
+    }
+}
