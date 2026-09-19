@@ -46,7 +46,7 @@ function emitirAlarmaOperativa(type = 'success') {
         oscillator.start();
         oscillator.stop(audioCtx.currentTime + 0.4);
     } catch (e) {
-        console.log("Audio restingido por el navegador.");
+        console.log("Audio restringido por el navegador.");
     }
 }
 
@@ -136,7 +136,7 @@ function inicializarEventosFormulario() {
                 emitirAlarmaOperativa('success');
                 showToast("💾 Tarea registrada con éxito.");
                 form.reset();
-                establecerFechaHoy(); // SOLUCIÓN: Llama a la fijación de fecha segura
+                establecerFechaHoy();
                 renderTasks();
             }
         });
@@ -191,6 +191,27 @@ function procesarInteligenciaIntuitiva(tasks) {
     aiContainer.innerHTML = sugerencias.map(s => `<div style="margin-bottom:6px;">${s}</div>`).join('');
 }
 
+function actualizarContadoresCategorias(c, p, e) {
+    const elCola = document.getElementById('kpi-cola');
+    const elProceso = document.getElementById('kpi-proceso');
+    const elEjecutada = document.getElementById('kpi-ejecutada');
+    if (elCola) elCola.innerText = c;
+    if (elProceso) elProceso.innerText = p;
+    if (elEjecutada) elEjecutada.innerText = e;
+}
+
+window.updateStatus = function(index, newStatus) {
+    let tasks = getTasks();
+    if (tasks[index]) {
+        tasks[index].status = newStatus;
+        if (saveTasks(tasks)) {
+            emitirAlarmaOperativa('success');
+            showToast("🔄 Estado de labor actualizado.");
+            renderTasks();
+        }
+    }
+};
+
 function renderTasks() {
     const tasks = getTasks();
 
@@ -212,7 +233,6 @@ function renderTasks() {
     }
 
     tasks.forEach((task, index) => {
-        // BLINDAJE CONTRA TAREAS VIEJAS: Si falta algún campo por cambios anteriores, se le da un valor por defecto seguro
         const prioridad = task.prioridad || 'media';
         const horario = task.horario || 'manana';
         const potrero = task.potrero || 'General';
@@ -247,5 +267,17 @@ function renderTasks() {
                 <i class="fa-solid fa-location-dot"></i> Potrero: <strong>${potrero}</strong>
             </div>
             ${observaciones ? `<div class="task-card-obs" style="margin-top:8px;">📝 ${observaciones}</div>` : ''}
-            <div class="task-card-actions">
+            <div class="task-card-actions" style="margin-top:10px;">
                 <select class="status-select ${statusClass}" onchange="updateStatus(${index}, this.value)">
+                    <option value="cola" ${task.status === 'cola' ? 'selected' : ''}>🟡 En Cola</option>
+                    <option value="proceso" ${task.status === 'proceso' ? 'selected' : ''}>🔵 En Proceso</option>
+                    <option value="ejecutada" ${task.status === 'ejecutada' ? 'selected' : ''}>🟢 Ejecutada</option>
+                </select>
+            </div>
+        `;
+        container.appendChild(card);
+    });
+
+    actualizarContadoresCategorias(cCola, cProceso, cEjecutadas);
+    procesarInteligenciaIntuitiva(tasks);
+}
