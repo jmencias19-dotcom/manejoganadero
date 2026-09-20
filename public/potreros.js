@@ -224,15 +224,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 // Generación del desglose con botón de Salida individual por sub-lote
                 const resumenCategorias = grupo.registros.map(r => `
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; border-bottom: 1px dashed #dee2e6; padding-bottom: 4px;">
-                        <span>• <b>${r.cabezas} cab.</b> de ${r.nombreCategoria || r.categoria} (${r.especie || 'BOVINOS'}) [Ing: ${r.fechaIngreso}]</span>
-                        <div>
-                            <button class="btn-retirar-lote" data-id="${r.id}" title="Retirar este lote específico del potrero" style="background: #e63946; color: white; border: none; padding: 2px 6px; border-radius: 4px; font-size: 0.75rem; cursor: pointer; margin-right: 4px;">
-                                <i class="fa-solid fa-right-from-bracket"></i> Salida
-                            </button>
-                        </div>
-                    </div>
-                `).join('');
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; border-bottom: 1px dashed #dee2e6; padding-bottom: 4px;">
+        <span>• <b>${r.cabezas} cab.</b> de ${r.nombreCategoria || r.categoria} (${r.especie || 'BOVINOS'}) [Ing: ${r.fechaIngreso}]</span>
+        <div>
+            <button class="btn-retirar-lote" 
+                data-id="${r.id}" 
+                data-cabezas="${r.cabezas}" 
+                data-categoria="${r.nombreCategoria || r.categoria}" 
+                data-potrero="${nombrePotrero}" 
+                data-factor="${r.factorUgm || 1.0}"
+                title="Retirar animales de este lote" 
+                style="background: #e63946; color: white; border: none; padding: 2px 6px; border-radius: 4px; font-size: 0.75rem; cursor: pointer; margin-right: 4px;">
+                <i class="fa-solid fa-right-from-bracket"></i> Salida
+            </button>
+        </div>
+    </div>
+`).join('');
 
                 const div = document.createElement('div');
                 div.className = 'potrero-card-item';
