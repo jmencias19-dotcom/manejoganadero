@@ -123,55 +123,135 @@ document.addEventListener('DOMContentLoaded', () => {
         actualizarCategorias(); // Carga inicial por defecto (Bovinos)
     }
 
-    // Lógica del Asistente de Carga Animal en Tiempo Real
-    function actualizarAnalisisInteligente() {
-        if (!aiContent) return;
+    // Sincronización en Tiempo Real y Consolidación por Potrero (Múltiples fechas / Lotes acumulados)
+    function iniciarSincronizacionPotreros() {
+        if (!potrerosContainer) return;
 
-        const potreroOpt = selectPotrero && selectPotrero.selectedOptions[0];
-        const categoriaOpt = selectCategoria && selectCategoria.selectedOptions[0];
-        const temporadaVal = selectTemporada ? selectTemporada.value : '';
-        const cabezas = parseFloat(inputCabezas ? inputCabezas.value : 0) || 0;
+        const q = query(collection(db, COLLECTION_NAME), orderBy("timestamp", "desc"));
+        
+        onSnapshot(q, (snapshot) => {
+            potrerosContainer.innerHTML = '';
+            
+            if (snapshot.empty) {
+                potrerosContainer.innerHTML = '<p style="text-align: center; color: var(--text-muted); font-size: 0.9rem; padding: 20px;">No hay lotes activos registrados en los potreros.</p>';
+                actualizarKPIsGlobales(0, 0, 0);
+                return;
+            }
 
-        if (!potreroOpt || !potreroOpt.value || !categoriaOpt || !categoriaOpt.value) {
-            aiContent.innerHTML = '<p style="margin: 0; font-style: italic;">Seleccione un potrero y categoría zootécnica para estimar el impacto forrajero...</p>';
-            return;
-        }
+            // Diccionario para agrupar registros por Nombre de Potrero
+            const potrerosAgrupados = {};
 
-        const areaHa = parseFloat(potreroOpt.dataset.ha) || 1;
-        const factor = parseFloat(categoriaOpt.dataset.factor) || 1.0;
-        const totalUgm = cabezas * factor;
-        const cargaHa = totalUgm / areaHa;
+            snapshot.forEach((docSnap) => {
+                const item = docSnap.data();
+                const id = docSnap.id;
+                const nombrePotrero = item.potrero || 'Sin nombre';
 
-        const esInvierno = temporadaVal.includes('INVIERNO');
-        const umbralActual = esInvierno ? UMBRAL_INVIERNO : UMBRAL_VERANO;
-        const nombreTemporada = esInvierno ? 'Invierno (Lluvias)' : 'Verano (Sequía)';
+                if (!potrerosAgrupados[nombrePotrero]) {
+                    potrerosAgrupados[nombrePotrero] = {
+                        areaHa: parseFloat(item.areaHa) || 1,
+                        registros: [],
+                        totalCabezas: 0,
+                        totalUgm: 0,
+                        fechasIngreso: new Set(),
+                        responsables: new Set()
+                    };
+                }
 
-        let estadoClase = 'status-estable';
-        let mensajeAlerta = 'Carga óptima dentro de los límites ecológicos de la sabana.';
+                const cabezas = parseFloat(item.cabezas) || 0;
+                const ugm = parseFloat(item.ugm) || 0;
 
-        if (cargaHa > umbralActual) {
-            estadoClase = 'status-critico';
-            mensajeAlerta = `⚠️ Alerta: La carga (${cargaHa.toFixed(2)} UGM/ha) supera el umbral ecológico de ${nombreTemporada} (${umbralActual} UGM/ha). Riesgo de sobrepastoreo.`;
-        } else if (cargaHa > (umbralActual * 0.85)) {
-            estadoClase = 'status-moderado';
-            mensajeAlerta = `⚡ Precaución: Carga cercana al límite máximo sostenible para ${nombreTemporada}.`;
-        } else {
-            mensajeAlerta = `✅ Sostenible: Carga adecuada bajo el régimen de ${nombreTemporada}.`;
-        }
+                potrerosAgrupados[nombrePotrero].totalCabezas += cabezas;
+                potrerosAgrupados[nombrePotrero].totalUgm += ugm;
+                if (item.fechaIngreso) potrerosAgrupados[nombrePotrero].fechasIngreso.add(item.fechaIngreso);
+                if (item.responsable) potrerosAgrupados[nombrePotrero].responsables.add(item.responsable);
 
-        aiContent.innerHTML = `
-            <div><b>Potrero:</b> ${potreroOpt.value} (${areaHa} ha)</div>
-            <div><b>Carga Estimada:</b> ${totalUgm.toFixed(2)} UGM (${cargaHa.toFixed(2)} UGM/ha)</div>
-            <div style="font-weight: 600; padding: 4px 8px; border-radius: 4px; display: inline-block;" class="${estadoClase}">
-                ${mensajeAlerta}
-            </div>
-        `;
+                potrerosAgrupados[nombrePotrero].registros.push({ id, ...item });
+            });
+
+            let acumuladoCabezasGlobal = 0;
+            let acumuladoUgmGlobal = 0;
+            let sumaCargaPromedioGlobal = 0;
+            let totalPotrerosActivos = 0;
+
+            // Renderizar cada potrero consolidado
+            Object.keys(potrerosAgrupados).forEach(nombrePotrero => {
+                const grupo = potrerosAgrupados[nombrePotrero];
+                const cargaHa = grupo.totalUgm / grupo.areaHa;
+                const tieneFechasMultiples = grupo.fechasIngreso.size > 1;
+
+                acumuladoCabezasGlobal += grupo.totalCabezas;
+                acumuladoUgmGlobal += grupo.totalUgm;
+                sumaCargaPromedioGlobal += cargaHa;
+                totalPotrerosActivos++;
+
+                // Construir resumen de categorías y especies
+                const resumenCategorias = grupo.registros.map(r => 
+                    `• ${r.cabezas} cab. de ${r.nombreCategoria || r.categoria} (${r.especie || 'BOVINOS'}) [Ingreso: ${r.fechaIngreso}]`
+                ).join('<br>');
+
+                const div = document.createElement('div');
+                div.className = 'potrero-card-item';
+                div.innerHTML = `
+                    <div class="potrero-card-row">
+                        <span class="potrero-card-title-item">
+                            <i class="fa-solid fa-map-pin" style="color: var(--primary-color);"></i> ${nombrePotrero} (${grupo.areaHa} ha)
+                        </span>
+                        ${tieneFechasMultiples ? '<span class="potrero-card-tag" style="background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb;"><i class="fa-solid fa-triangle-exclamation"></i> Fechas Múltiples / Ingresos Desfasados</span>' : '<span class="potrero-card-tag">Lote Consolidado</span>'}
+                    </div>
+                    
+                    <div class="potrero-card-meta" style="margin-top: 6px;">
+                        <b>Inventario Actual:</b> ${grupo.totalCabezas} Cabezas | <b>Total UGM:</b> ${grupo.totalUgm.toFixed(2)} | <b>Carga:</b> <span style="font-weight:750;">${cargaHa.toFixed(2)} UGM/ha</span>
+                    </div>
+
+                    <div class="potrero-card-meta" style="background: #f8f9fa; padding: 6px 8px; border-radius: 4px; margin-top: 4px; font-size: 0.8rem;">
+                        <b>Desglose por Lotes / Ingresos:</b><br>
+                        ${resumenCategorias}
+                    </div>
+
+                    <div class="potrero-card-meta">
+                        <b>Responsable(s):</b> ${Array.from(grupo.responsables).join(', ')}
+                    </div>
+
+                    <div class="potrero-card-actions">
+                        <select class="status-select ${getStatusClass(cargaHa, 'INVIERNO')}" data-potrero="${nombrePotrero}" disabled>
+                            <option value="ESTABLE">Carga ${cargaHa.toFixed(2)} UGM/ha</option>
+                        </select>
+                        <button class="btn-delete" data-ids="${grupo.registros.map(r => r.id).join(',')}" title="Limpiar / Vaciar Potrero completo"><i class="fa-solid fa-trash-can"></i> Vaciar Potrero</button>
+                    </div>
+                `;
+                potrerosContainer.appendChild(div);
+            });
+
+            const promedioGeneralCarga = totalPotrerosActivos > 0 ? (sumaCargaPromedioGlobal / totalPotrerosActivos) : 0;
+            actualizarKPIsGlobales(acumuladoCabezasGlobal, acumuladoUgmGlobal, promedioGeneralCarga);
+            vincularEventosAccionesMultiples();
+        }, (error) => {
+            console.error("Error al sincronizar con Firestore: ", error);
+            potrerosContainer.innerHTML = '<p style="text-align: center; color: #c1121f; padding: 20px;">Error de sincronización con la base de datos.</p>';
+        });
     }
 
-    [selectPotrero, selectCategoria, selectTemporada, inputCabezas].forEach(el => {
-        if (el) el.addEventListener('change', actualizarAnalisisInteligente);
-        if (el) el.addEventListener('input', actualizarAnalisisInteligente);
-    });
+    function vincularEventosAccionesMultiples() {
+        document.querySelectorAll('.btn-delete').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+                const idsString = e.currentTarget.dataset.ids;
+                if (!idsString) return;
+                const ids = idsString.split(',');
+
+                if (confirm(`¿Está seguro de vaciar este potrero eliminando los ${ids.length} registro(s) asociados?`)) {
+                    try {
+                        for (const id of ids) {
+                            await deleteDoc(doc(db, COLLECTION_NAME, id));
+                        }
+                        mostrarToast("Potrero vaciado y registros eliminados con éxito.");
+                    } catch (error) {
+                        console.error("Error al vaciar el potrero:", error);
+                        mostrarToast("Error al procesar la eliminación.", true);
+                    }
+                }
+            });
+        });
+    }
 
     // Sincronización en Tiempo Real con Firebase Firestore
     function iniciarSincronizacionPotreros() {
