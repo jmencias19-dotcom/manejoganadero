@@ -1,7 +1,13 @@
-document.addEventListener('DOMContentLoaded', () => {
-    console.log('Motor Zootécnico Hato Laguna Brava Activo.');
+/* ==========================================================================
+   MÓDULO DE POTREROS Y CARGA ANIMAL (UGM)
+   Hato Laguna Brava
+   ========================================================================== */
 
-    const CARGA_INVIERNO = 1.20, CARGA_VERANO = 0.76;
+export function inicializarModuloPotreros() {
+    console.log("Cargando módulo: Gestión de Potreros y Carga Animal (UGM)");
+
+    const CARGA_INVIERNO = 1.20;
+    const CARGA_VERANO = 0.76;
 
     const BOVINOS = [
         { id: 'vacas_criando', nombre: 'Vacas Criando', factor: 1.0 },
@@ -49,14 +55,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const kpiUgm = document.getElementById('kpi-total-ugm');
 
     function cargarCategorias() {
-        if (!selectCategoria) return;
+        if (!selectCategoria || !selectEspecie) return;
         const lista = selectEspecie.value === 'BOVINOS' ? BOVINOS : BUFALINOS;
         selectCategoria.innerHTML = lista.map(c => 
             `<option value="${c.id}" data-factor="${c.factor}">${c.nombre}</option>`
         ).join('');
     }
 
-    if (selectEspecie) { selectEspecie.addEventListener('change', cargarCategorias); }
+    if (selectEspecie) {
+        selectEspecie.addEventListener('change', cargarCategorias);
+    }
 
     function refrescarTablero() {
         if (!listaContenedor) return;
@@ -76,7 +84,7 @@ document.addEventListener('DOMContentLoaded', () => {
             potrerosAgrupados[reg.potrero].totalUgm += parseFloat(reg.ugmTotal);
             potrerosAgrupados[reg.potrero].lotes.push({
                 indexOriginal: index,
-                descripcion: `${reg.cabezas} cabezas de ${reg.categoriaText} (${reg.especie})`
+                descripcion: `${reg.cabezas} cabezas de ${reg.categoriaText} (${reg.especie})${reg.responsable ? ' - Resp: ' + reg.responsable : ''}`
             });
         });
 
@@ -125,7 +133,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             ${pot.lotes.map(lote => `
                                 <li style="margin-bottom:4px; display:flex; justify-content:space-between; align-items:center;">
                                     <span>${lote.descripcion}</span>
-                                    <button onclick="eliminarLoteEspecifico(${lote.indexOriginal})" style="background:none; border:none; color:var(--danger); cursor:pointer; font-size:0.75rem; font-weight:bold;">[Retirar]</button>
+                                    <button onclick="window.eliminarLoteEspecifico(${lote.indexOriginal})" style="background:none; border:none; color:var(--danger); cursor:pointer; font-size:0.75rem; font-weight:bold;">[Retirar]</button>
                                 </li>
                             `).join('')}
                         </ul>
@@ -139,8 +147,8 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             const selectPot = document.getElementById('select-potrero');
             const catOption = selectCategoria.options[selectCategoria.selectedIndex];
-            const cabezas = parseInt(document.getElementById('cantidad-cabezas').value);
-            const factorConversion = parseFloat(catOption.getAttribute('data-factor'));
+            const cabezas = parseInt(document.getElementById('cantidad-cabezas').value) || 0;
+            const factorConversion = parseFloat(catOption.getAttribute('data-factor')) || 1.0;
 
             const nuevoLote = {
                 potrero: selectPot.value,
@@ -148,12 +156,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 especie: selectEspecie.value,
                 categoriaText: catOption.text,
                 cabezas: cabezas,
+                responsable: document.getElementById('responsable-potrero') ? document.getElementById('responsable-potrero').value.trim() : '',
                 ugmTotal: cabezas * factorConversion
             };
 
             registrosGanado.push(nuevoLote);
             localStorage.setItem('hato_registros_ganado', JSON.stringify(registrosGanado));
-            document.getElementById('cantidad-cabezas').value = '';
+            formulario.reset();
+            cargarCategorias();
             refrescarTablero();
         });
     }
@@ -168,4 +178,4 @@ document.addEventListener('DOMContentLoaded', () => {
 
     cargarCategorias();
     refrescarTablero();
-});
+}
