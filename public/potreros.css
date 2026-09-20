@@ -605,3 +605,43 @@ input:focus, select:focus, textarea:focus {
         overflow: visible;
     }
 }
+
+/* ==========================================================================
+   CORRECCIÓN MOBILE: TAREAS PROGRAMADAS (ALINEACIÓN Y ESTADOS)
+   ========================================================================== */
+
+@media (max-width: 768px) {
+    /* 1. Aseguramos que los contenedores de tareas en móvil usen diseño en columna flexible */
+    .main-container:not(.panel-principal) .menu-grid,
+    .tarea-item, 
+    .task-card {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    /* 2. Alineamos correctamente el indicador de estado de la tarea */
+    .tarea-item .badge-estado,
+    .task-card .badge-estado,
+    .status-indicator {
+        align-self: flex-start; /* Evita que el indicador se estire o desajuste */
+        margin-bottom: 4px;
+    }
+
+    /* 3. Corregimos la desalineación de la casilla o input de fecha en dispositivos móviles */
+    .tarea-item input[type="date"],
+    .task-card input[type="date"],
+    .tarea-item .fecha-container,
+    .task-card .fecha-container {
+        width: 100% !important;
+        box-sizing: border-box;
+        margin-top: 4px;
+        display: block;
+    }
+
+    /* 4. Optimizamos los espaciados internos de las tarjetas de tareas para pantallas estrechas */
+    .tarea-item, 
+    .task-card {
+        padding: 12px !important;
+    }
+}
