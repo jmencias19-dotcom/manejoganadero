@@ -3,9 +3,9 @@
    ========================================================================== */
 
 export function inicializarModuloPotreros() {
-    console.log("Inicializando módulo: Gestión de Potreros y Carga Animal (UGM)...");
+    console.log("Cargando módulo: Gestión de Potreros y Carga Animal (UGM)");
 
-    // Umbrales ecológicos estándar para sabana inundable
+    // Umbrales ecológicos estándar para el trópico / sabana inundable
     const CARGA_INVIERNO = 1.20;
     const CARGA_VERANO = 0.76;
 
@@ -45,7 +45,8 @@ export function inicializarModuloPotreros() {
         { id: 'bufalos_pad_descarte', nombre: 'Búfalos Padres Descarte', factor: 1.5 }
     ];
 
-    // Captura de elementos del DOM
+    let registrosGanado = JSON.parse(localStorage.getItem('hato_registros_ganado')) || [];
+
     const formulario = document.getElementById('form-mod1') || document.getElementById('potreroForm');
     const selectEspecie = document.getElementById('select-especie');
     const selectPotrero = document.getElementById('select-potrero');
@@ -65,13 +66,7 @@ export function inicializarModuloPotreros() {
     const toast = document.getElementById('toast');
     const toastMessage = document.getElementById('toast-message');
 
-    if (!formulario || !listaContenedor) {
-        console.warn("⚠️ Los elementos del módulo de potreros aún no están presentes en el DOM.");
-        return;
-    }
-
-    let registrosGanado = JSON.parse(localStorage.getItem('hato_registros_ganado')) || [];
-
+    // Función para mostrar notificaciones Toast
     function mostrarToast(mensaje, tipo = 'success') {
         if (!toast || !toastMessage) return;
         toastMessage.textContent = mensaje;
@@ -82,6 +77,7 @@ export function inicializarModuloPotreros() {
         }, 3000);
     }
 
+    // Cargar categorías dinámicamente según la especie seleccionada
     function cargarCategorias() {
         if (!selectCategoria || !selectEspecie) return;
         const lista = selectEspecie.value === 'BOVINOS' ? BOVINOS : BUFALINOS;
@@ -95,17 +91,21 @@ export function inicializarModuloPotreros() {
         selectEspecie.addEventListener('change', cargarCategorias);
     }
 
+    // Asistente Inteligente de Carga (I.D.) al interactuar con el formulario
     function actualizarAsistenteIA() {
-        if (!aiContent || !selectPotrero) return;
+        if (!aiContent) return;
         
+        if (!selectPotrero || !selectPotrero.value) {
+            aiContent.innerHTML = `<p style="margin: 0; font-style: italic;">Seleccione un potrero y categoría para estimar el impacto forrajero...</p>`;
+            return;
+        }
+
         const optionPot = selectPotrero.options[selectPotrero.selectedIndex];
-        if (!optionPot) return;
-        
         const ha = parseFloat(optionPot.getAttribute('data-ha')) || 0;
         const potreroNombre = optionPot.value;
 
         if (!selectCategoria || !selectCategoria.value) {
-            aiContent.innerHTML = `<p style="margin: 0;"><strong>Potrero:</strong> ${potreroNombre} (${ha} ha). <em>Seleccione una categoría.</em></p>`;
+            aiContent.innerHTML = `<p style="margin: 0;"><strong>Potrero:</strong> ${potreroNombre} (${ha} ha). <em>Seleccione una categoría zootécnica.</em></p>`;
             return;
         }
 
@@ -119,7 +119,7 @@ export function inicializarModuloPotreros() {
         let evalColor = "#065f46";
 
         if (presionEstimada > CARGA_INVIERNO) {
-            evalTexto = "🚨 ¡Alerta! Excede sustentación crítica en invierno (> 1.20 UGM/ha).";
+            evalTexto = "🚨 ¡Alerta! Excede la capacidad de sustentación crítica en invierno (> 1.20 UGM/ha).";
             evalColor = "#991b1b";
         } else if (presionEstimada > CARGA_VERANO) {
             evalTexto = "⚠️ Precaución: Presión elevada para época de verano (> 0.76 UGM/ha).";
@@ -172,6 +172,7 @@ export function inicializarModuloPotreros() {
             });
         });
 
+        // Actualizar KPIs Globales
         if (kpiCabezas) kpiCabezas.textContent = globalCabezas;
         if (kpiUgm) kpiUgm.textContent = globalUgm.toFixed(2);
         
@@ -201,14 +202,14 @@ export function inicializarModuloPotreros() {
             const presionReal = pot.ha > 0 ? (pot.totalUgm / pot.ha).toFixed(3) : 0.00;
             const presionNum = parseFloat(presionReal);
             
-            let colorAlerta = '#065f46';
+            let colorAlerta = 'var(--success, #065f46)';
             let mensajeAlerta = '✅ Carga Óptima';
 
             if (presionNum > CARGA_INVIERNO) {
-                colorAlerta = '#991b1b';
+                colorAlerta = 'var(--danger, #991b1b)';
                 mensajeAlerta = '🚨 SOBREPASTOREO CRÍTICO';
             } else if (presionNum > CARGA_VERANO) {
-                colorAlerta = '#92400e';
+                colorAlerta = 'var(--warning, #92400e)';
                 mensajeAlerta = '⚠️ Alerta en Verano';
             }
 
@@ -244,7 +245,7 @@ export function inicializarModuloPotreros() {
                                             </span>
                                             ${lote.observaciones ? `<div style="margin-top:2px; font-style:italic; color:var(--text-muted);">"${lote.observaciones}"</div>` : ''}
                                         </div>
-                                        <button type="button" onclick="window.eliminarLoteEspecifico(${lote.indexOriginal})" style="background:none; border:none; color:#c1121f; cursor:pointer; font-size:0.75rem; font-weight:bold;">[Retirar]</button>
+                                        <button type="button" onclick="window.eliminarLoteEspecifico(${lote.indexOriginal})" style="background:none; border:none; color:var(--danger, #c1121f); cursor:pointer; font-size:0.75rem; font-weight:bold;">[Retirar]</button>
                                     </div>
                                 </li>
                             `).join('')}
@@ -254,45 +255,40 @@ export function inicializarModuloPotreros() {
         }).join('');
     }
 
-    // Prevenir duplicación de listeners removiendo o reemplazando el formulario si ya existía
-    const nuevoFormulario = formulario.cloneNode(true);
-    formulario.parentNode.replaceChild(nuevoFormulario, formulario);
-    
-    // Volver a capturar tras el replaceChild
-    const formularioActivo = document.getElementById('form-mod1');
+    if (formulario) {
+        formulario.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const selectPot = document.getElementById('select-potrero');
+            const catOption = selectCategoria.options[selectCategoria.selectedIndex];
+            const cabezas = parseInt(inputCabezas?.value) || 0;
+            const factorConversion = parseFloat(catOption.getAttribute('data-factor')) || 1.0;
 
-    formularioActivo.addEventListener('submit', (e) => {
-        e.preventDefault();
-        
-        const selectPot = document.getElementById('select-potrero');
-        const catOption = selectCategoria.options[selectCategoria.selectedIndex];
-        const cabezas = parseInt(inputCabezas?.value) || 0;
-        const factorConversion = parseFloat(catOption.getAttribute('data-factor')) || 1.0;
+            const nuevoLote = {
+                potrero: selectPot.value,
+                ha: selectPot.options[selectPot.selectedIndex].getAttribute('data-ha'),
+                especie: selectEspecie.value,
+                categoriaText: catOption.text.replace(/\s\([^)]+\)/g, ''),
+                temporada: selectTemporada ? selectTemporada.value : 'General',
+                fechaIngreso: inputFechaIngreso ? inputFechaIngreso.value : '',
+                fechaSalida: inputFechaSalida ? inputFechaSalida.value : '',
+                cabezas: cabezas,
+                responsable: inputResponsable ? inputResponsable.value.trim() : '',
+                observaciones: inputObservaciones ? inputObservaciones.value.trim() : '',
+                ugmTotal: cabezas * factorConversion
+            };
 
-        const nuevoLote = {
-            potrero: selectPot.value,
-            ha: selectPot.options[selectPot.selectedIndex].getAttribute('data-ha'),
-            especie: selectEspecie.value,
-            categoriaText: catOption.text.replace(/\s\([^)]+\)/g, ''),
-            temporada: selectTemporada ? selectTemporada.value : 'General',
-            fechaIngreso: inputFechaIngreso ? inputFechaIngreso.value : '',
-            fechaSalida: inputFechaSalida ? inputFechaSalida.value : '',
-            cabezas: cabezas,
-            responsable: inputResponsable ? inputResponsable.value.trim() : '',
-            observaciones: inputObservaciones ? inputObservaciones.value.trim() : '',
-            ugmTotal: cabezas * factorConversion
-        };
-
-        registrosGanado.push(nuevoLote);
-        localStorage.setItem('hato_registros_ganado', JSON.stringify(registrosGanado));
-        
-        formularioActivo.reset();
-        cargarCategorias();
-        if (aiContent) aiContent.innerHTML = `<p style="margin: 0; font-style: italic;">Seleccione un potrero y categoría para estimar el impacto forrajero...</p>`;
-        
-        refrescarTablero();
-        mostrarToast("Lote registrado y sincronizado con éxito.");
-    });
+            registrosGanado.push(nuevoLote);
+            localStorage.setItem('hato_registros_ganado', JSON.stringify(registrosGanado));
+            
+            formulario.reset();
+            cargarCategorias();
+            if (aiContent) aiContent.innerHTML = `<p style="margin: 0; font-style: italic;">Seleccione un potrero y categoría para estimar el impacto forrajero...</p>`;
+            
+            refrescarTablero();
+            mostrarToast("Lote registrado y sincronizado con éxito.");
+        });
+    }
 
     window.eliminarLoteEspecifico = function(index) {
         if (confirm('¿Deseas retirar este lote específico de animales del potrero?')) {
@@ -307,7 +303,7 @@ export function inicializarModuloPotreros() {
     refrescarTablero();
 }
 
-// Ejecutar automáticamente si la página carga de golpe
+// Auto-inicialización
 document.addEventListener('DOMContentLoaded', () => {
     inicializarModuloPotreros();
 });
