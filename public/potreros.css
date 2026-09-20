@@ -647,81 +647,78 @@ input:focus, select:focus, textarea:focus {
 }
 
 /* ==========================================================================
-   CORRECCIÓN FINAL MOBILE: ESTADOS Y FECHAS (HATO LAGUNA BRAVA)
+   CORRECCIÓN ABSOLUTA MOBILE: TAREAS PROGRAMADAS (MÁXIMA ESPECIFICIDAD)
    ========================================================================== */
 
 @media (max-width: 768px) {
-    /* 1. Contenedor de la tarjeta individual en móvil con margen seguro */
-    .tarea-item, 
-    .task-card {
-        display: grid !important;
-        grid-template-columns: minmax(0, 1fr) auto !important; /* minmax(0, 1fr) evita que textos largos expandan la caja de más */
-        grid-template-areas: 
-            "titulo estado"
-            "info info"
-            "fecha fecha" !important;
-        align-items: center !important;
-        gap: 8px 10px !important;
+    /* 1. Forzamos la tarjeta individual con un diseño estricto y seguro */
+    body .tarea-item, 
+    body .task-card {
+        display: flex !important;
+        flex-direction: column !important;
+        position: relative !important;
         width: 100% !important;
         box-sizing: border-box !important;
-        padding: 12px !important; /* Reducido ligeramente para optimizar espacio */
+        padding: 12px 12px 12px 12px !important;
         margin-bottom: 12px !important;
-        overflow: hidden !important;
+        background-color: #fff !important; /* Asegura contraste limpio */
+        border-radius: 8px !important;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
     }
 
-    /* 2. Título principal de la tarea */
-    .tarea-item h3, 
-    .tarea-item .task-title, 
-    .task-card h3, 
-    .task-card .task-title {
-        grid-area: titulo;
-        margin: 0 !important;
-        font-size: 14px !important;
-        overflow: hidden !important;
-        text-overflow: ellipsis !important;
+    /* 2. Contenedor superior para alinear título y estado lado a lado de forma infalible */
+    body .tarea-item .header-tarea,
+    body .task-card .task-header,
+    body .tarea-item > div:first-child,
+    body .task-card > div:first-child {
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        width: 100% !important;
+        margin-bottom: 6px !important;
     }
 
-    /* 3. Corrección total para que el indicador de estado NUNCA se corte */
-    .tarea-item .badge-estado, 
-    .task-card .badge-estado, 
-    .status-indicator {
-        grid-area: estado;
-        display: inline-flex !important;
+    /* 3. Indicador de estado liberado de restricciones de ancho */
+    body .tarea-item .badge-estado, 
+    body .task-card .badge-estado, 
+    body .status-indicator,
+    body [class*="badge"],
+    body [class*="estado"] {
+        display: inline-block !important;
+        position: static !important;
         visibility: visible !important;
         opacity: 1 !important;
-        justify-self: end !important;
+        width: auto !important;
+        max-width: none !important; /* Elimina cualquier límite que cortara el texto */
         white-space: nowrap !important;
-        flex-shrink: 0 !important; /* Impide que el contenedor flex comprima o recorte el texto interno */
-        padding: 3px 6px !important; /* Padding compacto para pantallas estrechas */
-        font-size: 11px !important;  /* Tamaño optimizado para evitar desbordes */
+        padding: 4px 8px !important;
+        font-size: 11px !important;
+        font-weight: 600 !important;
         border-radius: 4px !important;
-        max-width: 100px !important; /* Límite de seguridad para textos largos */
-        overflow: hidden !important;
-        text-overflow: ellipsis !important;
+        flex-shrink: 0 !important;
     }
 
-    /* 4. Contenedor de información o texto descriptivo central */
-    .tarea-item .task-info, 
-    .task-card .task-info,
-    .tarea-item p, 
-    .task-card p {
-        grid-area: info;
+    /* 4. Título de la tarea */
+    body .tarea-item h3, 
+    body .task-card h3 {
+        font-size: 14px !important;
         margin: 0 !important;
-        font-size: 13px !important;
+        flex-grow: 1 !important;
+        padding-right: 8px !important;
     }
 
-    /* 5. Casilla de fecha compacta y perfectamente ajustada */
-    .tarea-item input[type="date"],
-    .task-card input[type="date"],
-    .tarea-item .fecha-container,
-    .task-card .fecha-container {
-        grid-area: fecha !important;
+    /* 5. Casilla de fecha compacta, limpia y reducida */
+    body .tarea-item input[type="date"],
+    body .task-card input[type="date"],
+    body .tarea-item .fecha-container,
+    body .task-card .fecha-container {
         display: block !important;
         width: 100% !important;
         max-width: 100% !important;
         box-sizing: border-box !important;
-        margin: 2px 0 0 0 !important;
-        padding: 6px 8px !important; /* Reducción milimétrica de altura para un look balanceado */
-        font-size: 13px !important;
+        margin-top: 8px !important;
+        padding: 5px 6px !important; /* Reducción clave para que quede estéticamente perfecta */
+        font-size: 12px !important;
+        height: auto !important;
     }
 }
