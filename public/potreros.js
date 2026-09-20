@@ -222,8 +222,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 sumaCargaPromedioGlobal += cargaHa;
                 totalPotrerosActivos++;
 
-                // Generación del desglose completo con fechas, observaciones y botón de Salida individual
-                const resumenCategorias = grupo.registros.map(r => `
+                // A. Desglose / Lote de Ingreso (Solo registros con cabezas activas > 0)
+                const registrosActivos = grupo.registros.filter(r => (r.cabezas || 0) > 0);
+                const resumenIngresos = registrosActivos.length > 0 ? registrosActivos.map(r => `
                     <div style="margin-bottom: 8px; border-bottom: 1px dashed #dee2e6; padding-bottom: 6px;">
                         <div style="display: flex; justify-content: space-between; align-items: center;">
                             <span>• <b>${r.cabezas} cab.</b> de ${r.nombreCategoria || r.categoria} (${r.especie || 'BOVINOS'})</span>
@@ -233,8 +234,9 @@ document.addEventListener('DOMContentLoaded', () => {
                                 data-categoria="${r.nombreCategoria || r.categoria}" 
                                 data-potrero="${nombrePotrero}" 
                                 data-factor="${r.factorUgm || 1.0}"
+                                data-salidas="${encodeURIComponent(JSON.stringify(r.salidas || []))}"
                                 title="Retirar animales de este lote" 
-                                style="background: #e63946; color: white; border: none; padding: 2px 6px; border-radius: 4px; font-size: 0.75rem; cursor: pointer;">
+                                style="background: #e63946; color: white; border: none; padding: 1px 5px; border-radius: 3px; font-size: 0.7rem; cursor: pointer;">
                                 <i class="fa-solid fa-right-from-bracket"></i> Salida
                             </button>
                         </div>
@@ -244,7 +246,41 @@ document.addEventListener('DOMContentLoaded', () => {
                         </div>
                         ${r.observaciones ? `<div style="font-size: 0.78rem; color: #6c757d; font-style: italic; margin-top: 1px;"><b>Obs:</b> ${r.observaciones}</div>` : ''}
                     </div>
-                `).join('');
+                `).join('') : '<div style="font-size: 0.8rem; color: #6c757d; font-style: italic;">Sin lotes activos en ingreso.</div>';
+
+                // B. Desglose / Lote de Salida (Se recopilan todas las salidas si existen)
+                let todasLasSalidas = [];
+                grupo.registros.forEach(r => {
+                    if (r.salidas && Array.isArray(r.salidas)) {
+                        r.salidas.forEach(s => {
+                            todasLasSalidas.push({
+                                categoria: r.nombreCategoria || r.categoria,
+                                especie: r.especie || 'BOVINOS',
+                                cabezas: s.cabezas,
+                                fecha: s.fecha
+                            });
+                        });
+                    }
+                });
+
+                let seccionSalidasHTML = '';
+                if (todasLasSalidas.length > 0) {
+                    const resumenSalidas = todasLasSalidas.map(s => `
+                        <div style="margin-bottom: 4px; border-bottom: 1px dotted #ffeeba; padding-bottom: 4px; font-size: 0.78rem; color: #856404;">
+                            <span>• <b>${s.cabezas} cab.</b> de ${s.categoria} (${s.especie}) | <b>Salida:</b> ${s.fecha}</span>
+                        </div>
+                    `).join('');
+
+                    seccionSalidasHTML = `
+                        <!-- 2. Desglose / Lote de Salida (Oculto por defecto, aparece solo si hay registros de salida) -->
+                        <div class="potrero-card-meta" style="background: #fff3cd; padding: 8px 10px; border-radius: 6px; margin-top: 6px; font-size: 0.85rem; border: 1px solid #ffeeba;">
+                            <div style="font-weight: bold; margin-bottom: 6px; color: #856404;">
+                                <i class="fa-solid fa-right-from-bracket"></i> Desglose / Lote de Salida:
+                            </div>
+                            ${resumenSalidas}
+                        </div>
+                    `;
+                }
 
                 const div = document.createElement('div');
                 div.className = 'potrero-card-item';
@@ -253,28 +289,29 @@ document.addEventListener('DOMContentLoaded', () => {
                         <span class="potrero-card-title-item">
                             <i class="fa-solid fa-map-pin" style="color: var(--primary-color);"></i> ${nombrePotrero} (${grupo.areaHa} ha)
                         </span>
-                        ${tieneFechasMultiples ? '<span class="potrero-card-tag" style="background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb;"><i class="fa-solid fa-triangle-exclamation"></i> Fechas Múltiples / Ingresos Desfasados</span>' : '<span class="potrero-card-tag">Lote Consolidado</span>'}
+                        ${tieneFechasMultiples ? '<span class="potrero-card-tag" style="background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb;"><i class="fa-solid fa-triangle-exclamation"></i> Ingresos Desfasados</span>' : '<span class="potrero-card-tag">Lote Consolidado</span>'}
                     </div>
                     
                     <div class="potrero-card-meta" style="margin-top: 6px;">
                         <b>Inventario Actual:</b> ${grupo.totalCabezas} Cabezas | <b>Total UGM:</b> ${grupo.totalUgm.toFixed(2)} | <b>Carga:</b> <span style="font-weight:750;">${cargaHa.toFixed(2)} UGM/ha</span>
                     </div>
 
+                    <!-- 1. Desglose / Lote de Ingreso -->
                     <div class="potrero-card-meta" style="background: #f8f9fa; padding: 8px 10px; border-radius: 6px; margin-top: 6px; font-size: 0.85rem; border: 1px solid #e9ecef;">
                         <div style="font-weight: bold; margin-bottom: 6px; color: var(--primary-color, #2b2b2b);">
-                            <i class="fa-solid fa-list-check"></i> Desglose por Lotes / Salida:
+                            <i class="fa-solid fa-list-check"></i> Desglose / Lote de Ingreso:
                         </div>
-                        ${resumenCategorias}
+                        ${resumenIngresos}
                     </div>
 
+                    ${seccionSalidasHTML}
+
+                    <!-- 3. Responsables -->
                     <div class="potrero-card-meta">
                         <b>Responsable(s):</b> ${Array.from(grupo.responsables).join(', ')}
                     </div>
 
-                    <div class="potrero-card-actions">
-                        <select class="status-select" disabled style="background-color: #e9ecef; cursor: default;">
-                            <option value="">Carga ${cargaHa.toFixed(2)} UGM/ha</option>
-                        </select>
+                    <div class="potrero-card-actions" style="display: flex; justify-content: flex-end; margin-top: 8px;">
                         <button class="btn-delete-all btn-delete" data-ids="${grupo.registros.map(r => r.id).join(',')}" title="Vaciar Potrero completo"><i class="fa-solid fa-trash-can"></i> Vaciar Potrero</button>
                     </div>
                 `;
@@ -298,7 +335,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 4. Gestión de Eventos para Salidas Individuales y Borrado Masivo
     function vincularEventosAccionesMultiples() {
-        // Botón para retirar animales del lote (Parcial o Total de forma directa)
         document.querySelectorAll('.btn-retirar-lote').forEach(btn => {
             btn.addEventListener('click', async (e) => {
                 const id = e.currentTarget.dataset.id;
@@ -306,11 +342,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 const categoriaNombre = e.currentTarget.dataset.categoria || 'Lote';
                 const potreroNombre = e.currentTarget.dataset.potrero || 'Potrero';
                 const factorUgm = parseFloat(e.currentTarget.dataset.factor) || 1.0;
+                
+                let salidasAnteriores = [];
+                try {
+                    salidasAnteriores = JSON.parse(decodeURIComponent(e.currentTarget.dataset.salidas || '[]'));
+                } catch (err) {
+                    salidasAnteriores = [];
+                }
 
-                // Solicitar únicamente cuántas cabezas se retiran
                 const inputCabezasRetiro = prompt(`Retiro para: ${categoriaNombre}\nInventario actual: ${cabezasActuales} cabezas.\n\n¿Cuántas cabezas salen del potrero?`, cabezasActuales);
                 
-                if (inputCabezasRetiro === null) return; // Si cancela
+                if (inputCabezasRetiro === null) return;
 
                 const cabezasRetiradas = parseInt(inputCabezasRetiro);
 
@@ -324,26 +366,25 @@ document.addEventListener('DOMContentLoaded', () => {
                     return;
                 }
 
-                // Fecha automática del sistema (YYYY-MM-DD)
                 const fechaSalidaAutomatica = new Date().toISOString().split('T')[0];
 
                 if (confirm(`¿Confirma la salida de ${cabezasRetiradas} cabeza(s) de ${categoriaNombre} en el potrero ${potreroNombre}?`)) {
                     try {
                         const docRef = doc(db, COLLECTION_NAME, id);
 
-                        if (cabezasRetiradas === cabezasActuales) {
-                            // Si se retiran todas, se elimina el registro por completo
-                            await deleteDoc(docRef);
-                        } else {
-                            // Si es parcial, se descuenta directo y se recalculan las UGM
-                            const nuevasCabezas = cabezasActuales - cabezasRetiradas;
-                            const nuevoUgm = nuevasCabezas * factorUgm;
-                            await updateDoc(docRef, {
-                                cabezas: nuevasCabezas,
-                                ugm: nuevoUgm,
-                                fechaSalida: fechaSalidaAutomatica
-                            });
-                        }
+                        salidasAnteriores.push({
+                            cabezas: cabezasRetiradas,
+                            fecha: fechaSalidaAutomatica
+                        });
+
+                        const nuevasCabezas = cabezasActuales - cabezasRetiradas;
+                        const nuevoUgm = nuevasCabezas * factorUgm;
+
+                        await updateDoc(docRef, {
+                            cabezas: nuevasCabezas,
+                            ugm: nuevoUgm,
+                            salidas: salidasAnteriores
+                        });
 
                         mostrarToast(`Salida de ${cabezasRetiradas} cabeza(s) aplicada con éxito.`);
                     } catch (error) {
@@ -354,7 +395,6 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
 
-        // Botón para vaciar todo el potrero de golpe
         document.querySelectorAll('.btn-delete').forEach(btn => {
             btn.addEventListener('click', async (e) => {
                 const idsString = e.currentTarget.dataset.ids;
@@ -376,10 +416,9 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Asignación de Eventos en el DOM
     if (selectEspecie) {
         selectEspecie.addEventListener('change', actualizarCategorias);
-        actualizarCategorias(); // Inicializa por defecto
+        actualizarCategorias();
     }
 
     [selectPotrero, selectCategoria, selectTemporada, inputCabezas].forEach(el => {
@@ -387,7 +426,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (el) el.addEventListener('input', actualizarAnalisisInteligente);
     });
 
-    // Envío del Formulario
     if (potreroForm) {
         potreroForm.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -425,6 +463,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 responsable: document.getElementById('responsable-potrero').value.trim(),
                 observaciones: document.getElementById('observaciones-potrero').value.trim(),
                 estadoCarga: estadoCarga,
+                salidas: [],
                 timestamp: Date.now()
             };
 
