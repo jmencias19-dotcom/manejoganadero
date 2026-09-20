@@ -44,7 +44,6 @@
         @media (min-width: 768px) { .toast-notification { width: 350px; left: 20px; right: auto; } }
         .toast-notification.show { opacity: 1; transform: translateY(0); }
 
-        /* Área de Inteligencia Intuitiva / Asistente Forrajero */
         .ai-recommendations-box { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 14px; margin-top: 15px; }
         .ai-title { font-size: 0.88rem; color: #1e40af; font-weight: 700; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
         .ai-content { font-size: 0.82rem; color: #1e3a8a; line-height: 1.4; display: flex; flex-direction: column; gap: 6px; }
@@ -111,48 +110,19 @@
                         </select>
                     </div>
 
+                    <!-- Selector de Especie Añadido para cohexionar con potreros.js -->
+                    <div class="input-group">
+                        <label for="select-especie">Especie Pecuaria:</label>
+                        <select id="select-especie" required>
+                            <option value="BOVINOS">Bovinos (Mestizos Brahman)</option>
+                            <option value="BUFALINOS">Bufalinos (Búfalos)</option>
+                        </select>
+                    </div>
+
                     <div class="input-group">
                         <label for="select-categoria">Categoría Zootécnica Oficial:</label>
                         <select id="select-categoria" required>
                             <option value="" disabled selected>-- Seleccione Categoría --</option>
-                            
-                            <!-- GRUPO BOVINOS -->
-                            <optgroup label="Bovinos - Mestizos Brahman">
-                                <option value="vacas_criando" data-ugm="1.0">Vacas Criando (1.0 UGM)</option>
-                                <option value="vacas_criando_pre" data-ugm="1.0">Vacas Criando Preñada (1.0 UGM)</option>
-                                <option value="vacas_vacia" data-ugm="1.0">Vacas Vacías (1.0 UGM)</option>
-                                <option value="vacas_prenadas" data-ugm="1.0">Vacas Preñadas (1.0 UGM)</option>
-                                <option value="vacas_descarte" data-ugm="1.0">Vacas Descarte (1.0 UGM)</option>
-                                <option value="novillas_vacia" data-ugm="0.8">Novillas Vacías (0.8 UGM)</option>
-                                <option value="novillas_descarte" data-ugm="0.8">Novillas Descarte (0.8 UGM)</option>
-                                <option value="novillas_prenada" data-ugm="0.8">Novillas Preñadas (0.8 UGM)</option>
-                                <option value="novillas_monta" data-ugm="0.8">Novillas en Monta (0.8 UGM)</option>
-                                <option value="mautes" data-ugm="0.5">Mautes (0.5 UGM)</option>
-                                <option value="mautas" data-ugm="0.5">Mautas (0.5 UGM)</option>
-                                <option value="becerros" data-ugm="0.25">Becerros (0.25 UGM)</option>
-                                <option value="becerras" data-ugm="0.25">Becerras (0.25 UGM)</option>
-                                <option value="toros_padrotes" data-ugm="1.25">Toros Padrotes (1.25 UGM)</option>
-                                <option value="toros_padres_descarte" data-ugm="1.25">Toros Padres Descarte (1.25 UGM)</option>
-                            </optgroup>
-
-                            <!-- GRUPO BUFALINOS -->
-                            <optgroup label="Bufalinos - Búfalos y Búfalas">
-                                <option value="bufalas_criando" data-ugm="1.2">Búfalas Criando (1.2 UGM)</option>
-                                <option value="bufalas_criando_pre" data-ugm="1.2">Búfalas Criando Preñada (1.2 UGM)</option>
-                                <option value="bufalas_vacia" data-ugm="1.2">Búfalas Vacías (1.2 UGM)</option>
-                                <option value="bufalas_prenadas" data-ugm="1.2">Búfalas Preñadas (1.2 UGM)</option>
-                                <option value="bufalas_descarte" data-ugm="1.2">Búfalas Descarte (1.2 UGM)</option>
-                                <option value="buvillas_vacia" data-ugm="0.95">Buvillas Vacías (0.95 UGM)</option>
-                                <option value="buvillas_descarte" data-ugm="0.95">Buvillas Descarte (0.95 UGM)</option>
-                                <option value="buvillas_prenada" data-ugm="0.95">Buvillas Preñadas (0.95 UGM)</option>
-                                <option value="buvillas_monta" data-ugm="0.95">Buvillas en Monta (0.95 UGM)</option>
-                                <option value="baute" data-ugm="0.6">Baute (0.6 UGM)</option>
-                                <option value="bauta" data-ugm="0.6">Bauta (0.6 UGM)</option>
-                                <option value="bucerros" data-ugm="0.3">Bucerros (0.3 UGM)</option>
-                                <option value="bucerras" data-ugm="0.3">Bucerras (0.3 UGM)</option>
-                                <option value="bufalos_padrote" data-ugm="1.5">Búfalos Padrotes (1.5 UGM)</option>
-                                <option value="bufalos_padres_descarte" data-ugm="1.5">Búfalos Padres Descarte (1.5 UGM)</option>
-                            </optgroup>
                         </select>
                     </div>
 
