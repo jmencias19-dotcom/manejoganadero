@@ -1,11 +1,11 @@
 /* ==========================================================================
-   MÓDULO DE POTREROS Y CARGA ANIMAL (UGM) - HATO LAGUNA BRAVA (V2.6 - Sync Cloud)
+   MÓDULO DE POTREROS Y CARGA ANIMAL (UGM) - HATO LAGUNA BRAVA (V2.7 - Sync Cloud + Fix UI)
    ========================================================================== */
-import { db } from './firebase-config.js'; // Ajusta la ruta de tu archivo de configuración de Firebase
+import { db } from './firebase-config.js'; 
 import { ref, set, onValue, push, remove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
 export function inicializarModuloPotreros() {
-    console.log("Cargando módulo avanzado: Gestión de Potreros y Carga Animal con Sincronización en la Nube");
+    console.log("Cargando módulo avanzado: Gestión de Potreros y Carga Animal (Con Categoría Zootécnica y Sync)");
 
     const UMBRAL_INVIERNO = 1.20;
     const UMBRAL_VERANO = 0.76;
@@ -51,7 +51,7 @@ export function inicializarModuloPotreros() {
     const formulario = document.getElementById('potreroForm');
     const selectEspecie = document.getElementById('select-especie');
     const selectPotrero = document.getElementById('select-potrero');
-    const selectCategoria = document.getElementById('select-categoria');
+    const selectCategoria = document.getElementById('select-categoria'); // <- Asegurado en DOM
     const selectTemporada = document.getElementById('select-temporada');
     const inputFechaIngreso = document.getElementById('fecha-ingreso');
     const inputFechaSalida = document.getElementById('fecha-salida');
@@ -103,7 +103,7 @@ export function inicializarModuloPotreros() {
     function cargarCategorias() {
         if (!selectCategoria || !selectEspecie) return;
         const lista = selectEspecie.value === 'BOVINOS' ? BOVINOS : BUFALINOS;
-        selectCategoria.innerHTML = `<option value="" disabled selected>-- Seleccione Categoría --</option>` + 
+        selectCategoria.innerHTML = `<option value="" disabled selected>-- Seleccione Categoría Zootécnica --</option>` + 
             lista.map(c => `<option value="${c.id}" data-factor="${c.factor}">${c.nombre} (${c.factor} UGM)</option>`).join('');
         actualizarAsistenteIA();
     }
@@ -115,7 +115,7 @@ export function inicializarModuloPotreros() {
     function actualizarAsistenteIA() {
         if (!aiContent) return;
         if (!selectPotrero || !selectPotrero.value) {
-            aiContent.innerHTML = `<p style="margin: 0; font-style: italic;">Seleccione un potrero y categoría para estimar el impacto forrajero...</p>`;
+            aiContent.innerHTML = `<p style="margin: 0; font-style: italic;">Seleccione un potrero y categoría zootécnica para estimar el impacto forrajero...</p>`;
             return;
         }
 
@@ -124,7 +124,7 @@ export function inicializarModuloPotreros() {
         const potreroNombre = optionPot.value;
 
         if (!selectCategoria || !selectCategoria.value) {
-            aiContent.innerHTML = `<p style="margin: 0;"><strong>Potrero:</strong> ${potreroNombre} (${ha} ha). <em>Seleccione categoría.</em></p>`;
+            aiContent.innerHTML = `<p style="margin: 0;"><strong>Potrero:</strong> ${potreroNombre} (${ha} ha). <em>Seleccione categoría zootécnica oficial.</em></p>`;
             return;
         }
 
@@ -167,7 +167,6 @@ export function inicializarModuloPotreros() {
         let globalUgm = 0.0;
         const potrerosAgrupados = {};
 
-        // registrosGanado ahora es un objeto o array sincronizado desde Firebase
         const listaArray = Array.isArray(registrosGanado) ? registrosGanado : Object.keys(registrosGanado).map(key => ({ idFirebase: key, ...registrosGanado[key] }));
 
         listaArray.forEach((reg) => {
@@ -286,7 +285,6 @@ export function inicializarModuloPotreros() {
         }).join('');
     }
 
-    // --- ESCUCHA EN TIEMPO REAL DESDE FIREBASE (Sincroniza Celular y PC al instante) ---
     const dbRef = ref(db, 'hato_laguna_brava/registros_ganado');
     onValue(dbRef, (snapshot) => {
         const data = snapshot.val();
@@ -302,8 +300,8 @@ export function inicializarModuloPotreros() {
                 alert("Por favor seleccione un potrero válido.");
                 return;
             }
-            if (!selectCategoria || selectCategoria.selectedIndex < 0) {
-                alert("Por favor seleccione una categoría zootécnica válida.");
+            if (!selectCategoria || selectCategoria.selectedIndex < 0 || !selectCategoria.value) {
+                alert("Por favor seleccione una categoría zootécnica oficial válida.");
                 return;
             }
 
@@ -351,12 +349,11 @@ export function inicializarModuloPotreros() {
                 auditMod: auditString
             };
 
-            // Guardar usando push en Firebase para generar un ID único sincronizado en la nube
             const nuevoRegistroRef = push(dbRef);
             set(nuevoRegistroRef, nuevoLote).then(() => {
                 formulario.reset();
                 cargarCategorias();
-                if (aiContent) aiContent.innerHTML = `<p style="margin: 0; font-style: italic;">Seleccione un potrero y categoría para estimar el impacto forrajero...</p>`;
+                if (aiContent) aiContent.innerHTML = `<p style="margin: 0; font-style: italic;">Seleccione un potrero y categoría zootécnica para estimar el impacto forrajero...</p>`;
                 
                 if (auditString) {
                     mostrarToast("⚠️ Alerta de Campo: Anexo con fecha posterior detectado. Modificación registrada.", "danger");
@@ -385,7 +382,6 @@ export function inicializarModuloPotreros() {
     cargarCategorias();
 }
 
-// Auto-inicialización segura del módulo
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
         inicializarModuloPotreros();
