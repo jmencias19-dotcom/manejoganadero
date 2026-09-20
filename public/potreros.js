@@ -1,11 +1,12 @@
 /* ==========================================================================
-   MÓDULO DE POTREROS Y CARGA ANIMAL (UGM) - HATO LAGUNA BRAVA (V2.5)
+   MÓDULO DE POTREROS Y CARGA ANIMAL (UGM) - HATO LAGUNA BRAVA (V2.6 - Sync Cloud)
    ========================================================================== */
+import { db } from './firebase-config.js'; // Ajusta la ruta de tu archivo de configuración de Firebase
+import { ref, set, onValue, push, remove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
 export function inicializarModuloPotreros() {
-    console.log("Cargando módulo avanzado: Gestión de Potreros y Carga Animal (UGM)");
+    console.log("Cargando módulo avanzado: Gestión de Potreros y Carga Animal con Sincronización en la Nube");
 
-    // Umbrales ecológicos estándar para el trópico / sabana inundable
     const UMBRAL_INVIERNO = 1.20;
     const UMBRAL_VERANO = 0.76;
 
@@ -46,12 +47,6 @@ export function inicializarModuloPotreros() {
     ];
 
     let registrosGanado = [];
-    try {
-        registrosGanado = JSON.parse(localStorage.getItem('hato_registros_ganado')) || [];
-    } catch (e) {
-        console.error("Error al leer localStorage de ganado:", e);
-        registrosGanado = [];
-    }
 
     const formulario = document.getElementById('potreroForm');
     const selectEspecie = document.getElementById('select-especie');
@@ -72,7 +67,6 @@ export function inicializarModuloPotreros() {
     const toast = document.getElementById('toast');
     const toastMessage = document.getElementById('toast-message');
 
-    // Función para reproducir alerta sonora de campo (Beep de confirmación/alerta)
     function reproducirAlertaSonora() {
         try {
             const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -80,7 +74,7 @@ export function inicializarModuloPotreros() {
             const gainNode = audioCtx.createGain();
             
             oscillator.type = 'sine';
-            oscillator.frequency.setValueAtTime(587.33, audioCtx.currentTime); // Nota D5
+            oscillator.frequency.setValueAtTime(587.33, audioCtx.currentTime);
             oscillator.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.15);
             
             gainNode.gain.setValueAtTime(0.15, audioCtx.currentTime);
@@ -92,7 +86,7 @@ export function inicializarModuloPotreros() {
             oscillator.start();
             oscillator.stop(audioCtx.currentTime + 0.3);
         } catch (e) {
-            console.log("Audio de navegador no soportado o bloqueado sin interacción previa:", e);
+            console.log("Audio de navegador no soportado:", e);
         }
     }
 
@@ -120,7 +114,6 @@ export function inicializarModuloPotreros() {
 
     function actualizarAsistenteIA() {
         if (!aiContent) return;
-        
         if (!selectPotrero || !selectPotrero.value) {
             aiContent.innerHTML = `<p style="margin: 0; font-style: italic;">Seleccione un potrero y categoría para estimar el impacto forrajero...</p>`;
             return;
@@ -131,7 +124,7 @@ export function inicializarModuloPotreros() {
         const potreroNombre = optionPot.value;
 
         if (!selectCategoria || !selectCategoria.value) {
-            aiContent.innerHTML = `<p style="margin: 0;"><strong>Potrero:</strong> ${potreroNombre} (${ha} ha). <em>Seleccione una categoría zootécnica.</em></p>`;
+            aiContent.innerHTML = `<p style="margin: 0;"><strong>Potrero:</strong> ${potreroNombre} (${ha} ha). <em>Seleccione categoría.</em></p>`;
             return;
         }
 
@@ -150,7 +143,7 @@ export function inicializarModuloPotreros() {
         let evalColor = "#065f46";
 
         if (presionEstimada > umbralActual) {
-            evalTexto = `🚨 ¡Alerta! Excede la capacidad recomendada para ${nombreEpoca} (> ${umbralActual} UGM/ha).`;
+            evalTexto = `🚨 ¡Alerta! Excede capacidad recomendada para ${nombreEpoca} (> ${umbralActual} UGM/ha).`;
             evalColor = "#991b1b";
         }
 
@@ -174,7 +167,10 @@ export function inicializarModuloPotreros() {
         let globalUgm = 0.0;
         const potrerosAgrupados = {};
 
-        registrosGanado.forEach((reg, index) => {
+        // registrosGanado ahora es un objeto o array sincronizado desde Firebase
+        const listaArray = Array.isArray(registrosGanado) ? registrosGanado : Object.keys(registrosGanado).map(key => ({ idFirebase: key, ...registrosGanado[key] }));
+
+        listaArray.forEach((reg) => {
             globalCabezas += Number(reg.cabezas) || 0;
             globalUgm += parseFloat(reg.ugmTotal) || 0;
 
@@ -192,7 +188,7 @@ export function inicializarModuloPotreros() {
             potrerosAgrupados[reg.potrero].totalUgm += parseFloat(reg.ugmTotal) || 0;
             
             potrerosAgrupados[reg.potrero].lotes.push({
-                indexOriginal: index,
+                idFirebase: reg.idFirebase,
                 descripcion: `${reg.cabezas} cabezas de ${reg.categoriaText} (${reg.especie})`,
                 responsable: reg.responsable,
                 temporada: reg.temporada || 'No especificada',
@@ -244,7 +240,6 @@ export function inicializarModuloPotreros() {
                 mensajeAlerta = `🚨 Alerta en ${nombreEpocaLabel}`;
             }
 
-            // Detectar si el potrero tiene múltiples lotes o especies (rebaño mixto)
             const esMixto = pot.lotes.length > 1;
 
             return `
@@ -281,7 +276,7 @@ export function inicializarModuloPotreros() {
                                             ${lote.auditMod ? `<div style="margin-top:2px; font-size:0.7rem; color:#b45309; font-weight:600;"><i class="fa-solid fa-triangle-exclamation"></i> Modificación posterior registrada: ${lote.auditMod}</div>` : ''}
                                             ${lote.observaciones ? `<div style="margin-top:2px; font-style:italic; color:var(--text-muted);">"${lote.observaciones}"</div>` : ''}
                                         </div>
-                                        <button type="button" onclick="window.eliminarLoteEspecifico(${lote.indexOriginal})" style="background:none; border:none; color:var(--danger, #c1121f); cursor:pointer; font-size:0.7rem; font-weight:bold; white-space:nowrap; padding: 2px 6px; border: 1px solid #fca5a5; border-radius: 4px; background-color: #fff5f5;">[Retirar]</button>
+                                        <button type="button" onclick="window.eliminarLoteEspecifico('${lote.idFirebase}')" style="background:none; border:none; color:var(--danger, #c1121f); cursor:pointer; font-size:0.7rem; font-weight:bold; white-space:nowrap; padding: 2px 6px; border: 1px solid #fca5a5; border-radius: 4px; background-color: #fff5f5;">[Retirar]</button>
                                     </div>
                                 </li>
                             `).join('')}
@@ -290,6 +285,14 @@ export function inicializarModuloPotreros() {
                 </div>`;
         }).join('');
     }
+
+    // --- ESCUCHA EN TIEMPO REAL DESDE FIREBASE (Sincroniza Celular y PC al instante) ---
+    const dbRef = ref(db, 'hato_laguna_brava/registros_ganado');
+    onValue(dbRef, (snapshot) => {
+        const data = snapshot.val();
+        registrosGanado = data ? data : [];
+        refrescarTablero();
+    });
 
     if (formulario) {
         formulario.addEventListener('submit', (e) => {
@@ -311,18 +314,26 @@ export function inicializarModuloPotreros() {
             const nombrePotreroSeleccionado = selectPotrero.value;
             const fechaIngresoVal = inputFechaIngreso ? inputFechaIngreso.value : '';
 
-            // Verificar si ya existe un registro previo en este mismo potrero para auditoría de modificación
-            const registroExistenteIndex = registrosGanado.findIndex(r => r.potrero === nombrePotreroSeleccionado);
+            const listaArray = Array.isArray(registrosGanado) ? registrosGanado : Object.keys(registrosGanado).map(key => registrosGanado[key]);
+            const lotesExistentesEnPotrero = listaArray.filter(r => r.potrero === nombrePotreroSeleccionado);
             let auditString = null;
+            let esModificacionPosterior = false;
 
-            if (registroExistenteIndex !== -1) {
-                // Se están anexando animales a un potrero que ya tenía inventario activo
-                const ahora = new Date();
-                const fechaHoraStr = ahora.toLocaleDateString() + ' ' + ahora.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                auditString = `Anexo de animales ejecutado el ${fechaHoraStr}`;
-                
-                // Disparar alarma sonora de campo para notificar al operario
-                reproducirAlertaSonora();
+            if (lotesExistentesEnPotrero.length > 0) {
+                const fechaNueva = new Date(fechaIngresoVal);
+                for (let lotePrevio of lotesExistentesEnPotrero) {
+                    if (lotePrevio.fechaIngreso && fechaNueva > new Date(lotePrevio.fechaIngreso)) {
+                        esModificacionPosterior = true;
+                        break;
+                    }
+                }
+
+                if (esModificacionPosterior || lotesExistentesEnPotrero.length > 0) {
+                    const ahora = new Date();
+                    const fechaHoraStr = ahora.toLocaleDateString() + ' ' + ahora.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                    auditString = `Modificación/Anexo en potrero registrado el ${fechaHoraStr}`;
+                    reproducirAlertaSonora();
+                }
             }
 
             const nuevoLote = {
@@ -340,45 +351,38 @@ export function inicializarModuloPotreros() {
                 auditMod: auditString
             };
 
-            registrosGanado.push(nuevoLote);
-
-            try {
-                localStorage.setItem('hato_registros_ganado', JSON.stringify(registrosGanado));
-            } catch (err) {
-                console.error("Error al guardar en localStorage:", err);
-                mostrarToast("Error crítico: No se pudo guardar en el almacenamiento local.", "danger");
-                return;
-            }
-            
-            formulario.reset();
-            cargarCategorias();
-            if (aiContent) aiContent.innerHTML = `<p style="margin: 0; font-style: italic;">Seleccione un potrero y categoría para estimar el impacto forrajero...</p>`;
-            
-            refrescarTablero();
-            
-            if (auditString) {
-                mostrarToast("⚠️ Alerta: Se anexaron animales a un potrero activo. Modificación registrada.", "danger");
-            } else {
-                mostrarToast("Lote registrado y sincronizado con éxito.");
-            }
+            // Guardar usando push en Firebase para generar un ID único sincronizado en la nube
+            const nuevoRegistroRef = push(dbRef);
+            set(nuevoRegistroRef, nuevoLote).then(() => {
+                formulario.reset();
+                cargarCategorias();
+                if (aiContent) aiContent.innerHTML = `<p style="margin: 0; font-style: italic;">Seleccione un potrero y categoría para estimar el impacto forrajero...</p>`;
+                
+                if (auditString) {
+                    mostrarToast("⚠️ Alerta de Campo: Anexo con fecha posterior detectado. Modificación registrada.", "danger");
+                } else {
+                    mostrarToast("Lote registrado y sincronizado en la nube con éxito.");
+                }
+            }).catch((err) => {
+                console.error("Error al sincronizar con Firebase:", err);
+                mostrarToast("Error crítico: No se pudo sincronizar con la nube.", "danger");
+            });
         });
     }
 
-    window.eliminarLoteEspecifico = function(index) {
+    window.eliminarLoteEspecifico = function(idFirebase) {
         if (confirm('¿Deseas retirar este lote específico de animales del potrero?')) {
-            registrosGanado.splice(index, 1);
-            try {
-                localStorage.setItem('hato_registros_ganado', JSON.stringify(registrosGanado));
-            } catch (err) {
-                console.error("Error al actualizar localStorage tras eliminar:", err);
-            }
-            refrescarTablero();
-            mostrarToast("Lote retirado correctamente.", "danger");
+            const loteRef = ref(db, `hato_laguna_brava/registros_ganado/${idFirebase}`);
+            remove(loteRef).then(() => {
+                mostrarToast("Lote retirado y actualizado en la nube.", "danger");
+            }).catch((err) => {
+                console.error("Error al eliminar de Firebase:", err);
+                mostrarToast("Error al eliminar el registro.", "danger");
+            });
         }
     };
 
     cargarCategorias();
-    refrescarTablero();
 }
 
 // Auto-inicialización segura del módulo
