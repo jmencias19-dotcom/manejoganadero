@@ -1,5 +1,5 @@
 /* ==========================================================================
-   MÓDULO DE POTREROS Y CARGA ANIMAL (UGM) - HATO LAGUNA BRAVA
+   MÓDULO DE POTREROS Y CARGA ANIMAL (UGM) - HATO LAGUNA BRAVA (ROBUSTO)
    ========================================================================== */
 
 export function inicializarModuloPotreros() {
@@ -45,9 +45,16 @@ export function inicializarModuloPotreros() {
         { id: 'bufalos_pad_descarte', nombre: 'Búfalos Padres Descarte', factor: 1.5 }
     ];
 
-    let registrosGanado = JSON.parse(localStorage.getItem('hato_registros_ganado')) || [];
+    let registrosGanado = [];
+    try {
+        registrosGanado = JSON.parse(localStorage.getItem('hato_registros_ganado')) || [];
+    } catch (e) {
+        console.error("Error al leer localStorage de ganado:", e);
+        registrosGanado = [];
+    }
 
-    const formulario = document.getElementById('form-mod1') || document.getElementById('potreroForm');
+    // Ampliación de selectores para asegurar compatibilidad con distintos IDs de formularios
+    const formulario = document.getElementById('form-mod1') || document.getElementById('potreroForm') || document.getElementById('potrerosForm');
     const selectEspecie = document.getElementById('select-especie');
     const selectPotrero = document.getElementById('select-potrero');
     const selectCategoria = document.getElementById('select-categoria');
@@ -146,20 +153,20 @@ export function inicializarModuloPotreros() {
         const potrerosAgrupados = {};
 
         registrosGanado.forEach((reg, index) => {
-            globalCabezas += Number(reg.cabezas);
-            globalUgm += parseFloat(reg.ugmTotal);
+            globalCabezas += Number(reg.cabezas) || 0;
+            globalUgm += parseFloat(reg.ugmTotal) || 0;
 
             if (!potrerosAgrupados[reg.potrero]) {
                 potrerosAgrupados[reg.potrero] = {
                     nombre: reg.potrero,
-                    ha: Number(reg.ha),
+                    ha: Number(reg.ha) || 0,
                     totalCabezas: 0,
                     totalUgm: 0.0,
                     lotes: []
                 };
             }
-            potrerosAgrupados[reg.potrero].totalCabezas += Number(reg.cabezas);
-            potrerosAgrupados[reg.potrero].totalUgm += parseFloat(reg.ugmTotal);
+            potrerosAgrupados[reg.potrero].totalCabezas += Number(reg.cabezas) || 0;
+            potrerosAgrupados[reg.potrero].totalUgm += parseFloat(reg.ugmTotal) || 0;
             
             potrerosAgrupados[reg.potrero].lotes.push({
                 indexOriginal: index,
@@ -259,15 +266,24 @@ export function inicializarModuloPotreros() {
         formulario.addEventListener('submit', (e) => {
             e.preventDefault();
             
-            const selectPot = document.getElementById('select-potrero');
+            if (!selectPotrero || selectPotrero.selectedIndex < 0) {
+                alert("Por favor seleccione un potrero válido.");
+                return;
+            }
+            if (!selectCategoria || selectCategoria.selectedIndex < 0) {
+                alert("Por favor seleccione una categoría zootécnica válida.");
+                return;
+            }
+
+            const potOption = selectPotrero.options[selectPotrero.selectedIndex];
             const catOption = selectCategoria.options[selectCategoria.selectedIndex];
             const cabezas = parseInt(inputCabezas?.value) || 0;
             const factorConversion = parseFloat(catOption.getAttribute('data-factor')) || 1.0;
 
             const nuevoLote = {
-                potrero: selectPot.value,
-                ha: selectPot.options[selectPot.selectedIndex].getAttribute('data-ha'),
-                especie: selectEspecie.value,
+                potrero: selectPotrero.value,
+                ha: potOption.getAttribute('data-ha') || 0,
+                especie: selectEspecie ? selectEspecie.value : 'BOVINOS',
                 categoriaText: catOption.text.replace(/\s\([^)]+\)/g, ''),
                 temporada: selectTemporada ? selectTemporada.value : 'General',
                 fechaIngreso: inputFechaIngreso ? inputFechaIngreso.value : '',
@@ -279,7 +295,14 @@ export function inicializarModuloPotreros() {
             };
 
             registrosGanado.push(nuevoLote);
-            localStorage.setItem('hato_registros_ganado', JSON.stringify(registrosGanado));
+
+            try {
+                localStorage.setItem('hato_registros_ganado', JSON.stringify(registrosGanado));
+            } catch (err) {
+                console.error("Error al guardar en localStorage:", err);
+                mostrarToast("Error crítico: No se pudo guardar en el almacenamiento local.", "danger");
+                return;
+            }
             
             formulario.reset();
             cargarCategorias();
@@ -288,12 +311,18 @@ export function inicializarModuloPotreros() {
             refrescarTablero();
             mostrarToast("Lote registrado y sincronizado con éxito.");
         });
+    } else {
+        console.warn("Advertencia: No se encontró el formulario de potreros en el DOM.");
     }
 
     window.eliminarLoteEspecifico = function(index) {
         if (confirm('¿Deseas retirar este lote específico de animales del potrero?')) {
             registrosGanado.splice(index, 1);
-            localStorage.setItem('hato_registros_ganado', JSON.stringify(registrosGanado));
+            try {
+                localStorage.setItem('hato_registros_ganado', JSON.stringify(registrosGanado));
+            } catch (err) {
+                console.error("Error al actualizar localStorage tras eliminar:", err);
+            }
             refrescarTablero();
             mostrarToast("Lote retirado correctamente.", "danger");
         }
@@ -303,7 +332,11 @@ export function inicializarModuloPotreros() {
     refrescarTablero();
 }
 
-// Auto-inicialización
-document.addEventListener('DOMContentLoaded', () => {
+// Auto-inicialización segura si el script se carga de forma directa
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+        inicializarModuloPotreros();
+    });
+} else {
     inicializarModuloPotreros();
-});
+}
