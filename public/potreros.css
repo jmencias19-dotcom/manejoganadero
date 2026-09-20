@@ -647,78 +647,38 @@ input:focus, select:focus, textarea:focus {
 }
 
 /* ==========================================================================
-   CORRECCIÓN ABSOLUTA MOBILE: TAREAS PROGRAMADAS (MÁXIMA ESPECIFICIDAD)
+   CORRECCIÓN EXCLUSIVA PARA ÍCONOS EN TAREAS MÓVIL
    ========================================================================== */
 
 @media (max-width: 768px) {
-    /* 1. Forzamos la tarjeta individual con un diseño estricto y seguro */
-    body .tarea-item, 
-    body .task-card {
-        display: flex !important;
-        flex-direction: column !important;
-        position: relative !important;
-        width: 100% !important;
-        box-sizing: border-box !important;
-        padding: 12px 12px 12px 12px !important;
-        margin-bottom: 12px !important;
-        background-color: #fff !important; /* Asegura contraste limpio */
-        border-radius: 8px !important;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
-    }
-
-    /* 2. Contenedor superior para alinear título y estado lado a lado de forma infalible */
-    body .tarea-item .header-tarea,
-    body .task-card .task-header,
-    body .tarea-item > div:first-child,
-    body .task-card > div:first-child {
-        display: flex !important;
-        justify-content: space-between !important;
-        align-items: center !important;
-        width: 100% !important;
-        margin-bottom: 6px !important;
-    }
-
-    /* 3. Indicador de estado liberado de restricciones de ancho */
-    body .tarea-item .badge-estado, 
-    body .task-card .badge-estado, 
-    body .status-indicator,
-    body [class*="badge"],
-    body [class*="estado"] {
+    /* 1. Liberamos cualquier restricción en íconos, etiquetas i, SVG o clases de iconos */
+    body .tarea-item i, 
+    body .task-card i,
+    body .tarea-item svg, 
+    body .task-card svg,
+    body .tarea-item [class*="icon"],
+    body .task-card [class*="icon"],
+    body .tarea-item [class*="fa-"],
+    body .task-card [class*="fa-"] {
         display: inline-block !important;
-        position: static !important;
-        visibility: visible !important;
-        opacity: 1 !important;
         width: auto !important;
-        max-width: none !important; /* Elimina cualquier límite que cortara el texto */
-        white-space: nowrap !important;
-        padding: 4px 8px !important;
-        font-size: 11px !important;
-        font-weight: 600 !important;
-        border-radius: 4px !important;
+        height: auto !important;
+        max-width: none !important;
+        max-height: none !important;
+        overflow: visible !important;
+        font-size: 14px !important; /* Asegura un tamaño proporcional y visible */
+        line-height: 1 !important;
         flex-shrink: 0 !important;
     }
 
-    /* 4. Título de la tarea */
-    body .tarea-item h3, 
-    body .task-card h3 {
-        font-size: 14px !important;
-        margin: 0 !important;
-        flex-grow: 1 !important;
-        padding-right: 8px !important;
-    }
-
-    /* 5. Casilla de fecha compacta, limpia y reducida */
-    body .tarea-item input[type="date"],
-    body .task-card input[type="date"],
-    body .tarea-item .fecha-container,
-    body .task-card .fecha-container {
-        display: block !important;
-        width: 100% !important;
-        max-width: 100% !important;
-        box-sizing: border-box !important;
-        margin-top: 8px !important;
-        padding: 5px 6px !important; /* Reducción clave para que quede estéticamente perfecta */
-        font-size: 12px !important;
-        height: auto !important;
+    /* 2. Aseguramos que el contenedor del estado/ícono no restrinja su interior */
+    body .tarea-item .badge-estado, 
+    body .task-card .badge-estado, 
+    body .status-indicator,
+    body .tarea-item [class*="badge"],
+    body .task-card [class*="badge"] {
+        overflow: visible !important;
+        text-overflow: clip !important;
+        max-width: none !important;
     }
 }
