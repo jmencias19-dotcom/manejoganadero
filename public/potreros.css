@@ -647,17 +647,25 @@ input:focus, select:focus, textarea:focus {
 }
 
 /* ==========================================================================
-   CORRECCIÓN DEFINITIVA MOBILE: TAREAS PROGRAMADAS Y FECHAS
+   CORRECCIÓN DEFINITIVA MOBILE: TAREAS PROGRAMADAS Y FECHAS (OPTIMIZADO)
    ========================================================================== */
 
 @media (max-width: 768px) {
-    /* 1. Forzamos un contenedor en cuadrícula limpia para cada tarjeta de tarea en móvil */
+    /* 1. Aseguramos que el contenedor principal o listado general fluya de forma vertical normal */
+    .tareas-container,
+    .section-box,
+    #tareas-section {
+        display: flex !important;
+        flex-direction: column !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    /* 2. Aplicamos la cuadrícula EXCLUSIVAMENTE a cada tarjeta de tarea individual */
     .tarea-item, 
-    .task-card,
-    [class*="tarea"],
-    [class*="task"] {
+    .task-card {
         display: grid !important;
-        grid-template-columns: 1fr auto !important; /* Columna principal fluida y columna derecha para estado/acciones */
+        grid-template-columns: 1fr auto !important;
         grid-template-areas: 
             "titulo estado"
             "info info"
@@ -667,24 +675,24 @@ input:focus, select:focus, textarea:focus {
         width: 100% !important;
         box-sizing: border-box !important;
         padding: 14px !important;
-        overflow: hidden !important; /* Evita que elementos internos rompan los bordes */
+        margin-bottom: 12px !important; /* Espaciado limpio entre tarjeta y tarjeta */
+        overflow: hidden !important;
     }
 
-    /* 2. Asignación limpia de áreas por si tus elementos usan clases específicas */
-    /* Título o descripción principal de la tarea */
-    .tarea-item h3, .tarea-item .task-title, .task-card h3, .task-card .task-title {
+    /* 3. Título o descripción principal de la tarea */
+    .tarea-item h3, 
+    .tarea-item .task-title, 
+    .task-card h3, 
+    .task-card .task-title {
         grid-area: titulo;
         margin: 0 !important;
         font-size: 15px !important;
     }
 
-    /* Indicador de estado (Aseguramos que se muestre y no se oculte) */
+    /* 4. Indicador de estado perfectamente visible y posicionado */
     .tarea-item .badge-estado, 
     .task-card .badge-estado, 
-    .status-indicator,
-    [class*="estado"],
-    [class*="badge"],
-    [class*="status"] {
+    .status-indicator {
         grid-area: estado;
         display: inline-flex !important;
         visibility: visible !important;
@@ -696,7 +704,7 @@ input:focus, select:focus, textarea:focus {
         border-radius: 4px !important;
     }
 
-    /* Contenedor de información o texto descriptivo central */
+    /* 5. Contenedor de información o texto descriptivo central */
     .tarea-item .task-info, 
     .task-card .task-info,
     .tarea-item p, 
@@ -705,12 +713,11 @@ input:focus, select:focus, textarea:focus {
         margin: 0 !important;
     }
 
-    /* 3. Corrección absoluta para la casilla de fecha (Evita que se descuadre o se salga) */
+    /* 6. Casilla de fecha alineada al 100% sin desbordamientos */
     .tarea-item input[type="date"],
     .task-card input[type="date"],
     .tarea-item .fecha-container,
-    .task-card .fecha-container,
-    input[type="date"] {
+    .task-card .fecha-container {
         grid-area: fecha !important;
         display: block !important;
         width: 100% !important;
