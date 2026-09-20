@@ -101,7 +101,52 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 3500);
     }
 
-    // Poblar dinámicamente las categorías zootécnicas al cambiar de especie
+    // 1. Declarar primero el Asistente de Carga Animal (evita errores de referencia)
+    function actualizarAnalisisInteligente() {
+        if (!aiContent) return;
+
+        const potreroOpt = selectPotrero && selectPotrero.selectedOptions[0];
+        const categoriaOpt = selectCategoria && selectCategoria.selectedOptions[0];
+        const temporadaVal = selectTemporada ? selectTemporada.value : '';
+        const cabezas = parseFloat(inputCabezas ? inputCabezas.value : 0) || 0;
+
+        if (!potreroOpt || !potreroOpt.value || !categoriaOpt || !categoriaOpt.value) {
+            aiContent.innerHTML = '<p style="margin: 0; font-style: italic;">Seleccione un potrero y categoría zootécnica para estimar el impacto forrajero...</p>';
+            return;
+        }
+
+        const areaHa = parseFloat(potreroOpt.dataset.ha) || 1;
+        const factor = parseFloat(categoriaOpt.dataset.factor) || 1.0;
+        const totalUgm = cabezas * factor;
+        const cargaHa = totalUgm / areaHa;
+
+        const esInvierno = temporadaVal.includes('INVIERNO');
+        const umbralActual = esInvierno ? UMBRAL_INVIERNO : UMBRAL_VERANO;
+        const nombreTemporada = esInvierno ? 'Invierno (Lluvias)' : 'Verano (Sequía)';
+
+        let estadoClase = 'status-estable';
+        let mensajeAlerta = 'Carga óptima dentro de los límites ecológicos de la sabana.';
+
+        if (cargaHa > umbralActual) {
+            estadoClase = 'status-critico';
+            mensajeAlerta = `⚠️ Alerta: La carga (${cargaHa.toFixed(2)} UGM/ha) supera el umbral ecológico de ${nombreTemporada} (${umbralActual} UGM/ha). Riesgo de sobrepastoreo.`;
+        } else if (cargaHa > (umbralActual * 0.85)) {
+            estadoClase = 'status-moderado';
+            mensajeAlerta = `⚡ Precaución: Carga cercana al límite máximo sostenible para ${nombreTemporada}.`;
+        } else {
+            mensajeAlerta = `✅ Sostenible: Carga adecuada bajo el régimen de ${nombreTemporada}.`;
+        }
+
+        aiContent.innerHTML = `
+            <div><b>Potrero:</b> ${potreroOpt.value} (${areaHa} ha)</div>
+            <div><b>Carga Estimada:</b> ${totalUgm.toFixed(2)} UGM (${cargaHa.toFixed(2)} UGM/ha)</div>
+            <div style="font-weight: 600; padding: 4px 8px; border-radius: 4px; display: inline-block;" class="${estadoClase}">
+                ${mensajeAlerta}
+            </div>
+        `;
+    }
+
+    // 2. Declarar la función de categorías después
     function actualizarCategorias() {
         if (!selectEspecie || !selectCategoria) return;
         const especieSeleccionada = selectEspecie.value;
@@ -118,12 +163,7 @@ document.addEventListener('DOMContentLoaded', () => {
         actualizarAnalisisInteligente();
     }
 
-    if (selectEspecie) {
-        selectEspecie.addEventListener('change', actualizarCategorias);
-        actualizarCategorias(); // Carga inicial por defecto (Bovinos)
-    }
-
-    // Sincronización en Tiempo Real y Consolidación por Potrero (Múltiples fechas / Lotes acumulados)
+    // 3. Sincronización en Tiempo Real y Consolidación por Potrero
     function iniciarSincronizacionPotreros() {
         if (!potrerosContainer) return;
 
@@ -138,7 +178,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            // Diccionario para agrupar registros por Nombre de Potrero
             const potrerosAgrupados = {};
 
             snapshot.forEach((docSnap) => {
@@ -173,7 +212,6 @@ document.addEventListener('DOMContentLoaded', () => {
             let sumaCargaPromedioGlobal = 0;
             let totalPotrerosActivos = 0;
 
-            // Renderizar cada potrero consolidado
             Object.keys(potrerosAgrupados).forEach(nombrePotrero => {
                 const grupo = potrerosAgrupados[nombrePotrero];
                 const cargaHa = grupo.totalUgm / grupo.areaHa;
@@ -184,7 +222,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 sumaCargaPromedioGlobal += cargaHa;
                 totalPotrerosActivos++;
 
-                // Construir resumen de categorías y especies
                 const resumenCategorias = grupo.registros.map(r => 
                     `• ${r.cabezas} cab. de ${r.nombreCategoria || r.categoria} (${r.especie || 'BOVINOS'}) [Ingreso: ${r.fechaIngreso}]`
                 ).join('<br>');
@@ -213,10 +250,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
 
                     <div class="potrero-card-actions">
-                        <select class="status-select ${getStatusClass(cargaHa, 'INVIERNO')}" data-potrero="${nombrePotrero}" disabled>
-                            <option value="ESTABLE">Carga ${cargaHa.toFixed(2)} UGM/ha</option>
+                        <select class="status-select" disabled style="background-color: #e9ecef; cursor: default;">
+                            <option value="">Carga ${cargaHa.toFixed(2)} UGM/ha</option>
                         </select>
-                        <button class="btn-delete" data-ids="${grupo.registros.map(r => r.id).join(',')}" title="Limpiar / Vaciar Potrero completo"><i class="fa-solid fa-trash-can"></i> Vaciar Potrero</button>
+                        <button class="btn-delete" data-ids="${grupo.registros.map(r => r.id).join(',')}" title="Vaciar Potrero completo"><i class="fa-solid fa-trash-can"></i> Vaciar Potrero</button>
                     </div>
                 `;
                 potrerosContainer.appendChild(div);
@@ -229,6 +266,12 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error("Error al sincronizar con Firestore: ", error);
             potrerosContainer.innerHTML = '<p style="text-align: center; color: #c1121f; padding: 20px;">Error de sincronización con la base de datos.</p>';
         });
+    }
+
+    function actualizarKPIsGlobales(cabezas, ugm, promedioCarga) {
+        if (kpiTotalCabezas) kpiTotalCabezas.textContent = cabezas;
+        if (kpiTotalUgm) kpiTotalUgm.textContent = ugm.toFixed(2);
+        if (kpiCargaPromedio) kpiCargaPromedio.textContent = promedioCarga.toFixed(2);
     }
 
     function vincularEventosAccionesMultiples() {
@@ -253,124 +296,18 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Sincronización en Tiempo Real con Firebase Firestore
-    function iniciarSincronizacionPotreros() {
-        if (!potrerosContainer) return;
-
-        const q = query(collection(db, COLLECTION_NAME), orderBy("timestamp", "desc"));
-        
-        onSnapshot(q, (snapshot) => {
-            potrerosContainer.innerHTML = '';
-            
-            if (snapshot.empty) {
-                potrerosContainer.innerHTML = '<p style="text-align: center; color: var(--text-muted); font-size: 0.9rem; padding: 20px;">No hay lotes activos registrados en los potreros.</p>';
-                actualizarKPIsGlobales(0, 0, 0);
-                return;
-            }
-
-            let acumuladoCabezas = 0;
-            let acumuladoUgm = 0;
-            let sumaCargaPromedio = 0;
-            let totalLotes = 0;
-
-            snapshot.forEach((docSnap) => {
-                const item = docSnap.data();
-                const id = docSnap.id;
-
-                const cabezas = parseFloat(item.cabezas) || 0;
-                const ugm = parseFloat(item.ugm) || 0;
-                const cargaHa = parseFloat(item.cargaHa) || 0;
-
-                acumuladoCabezas += cabezas;
-                acumuladoUgm += ugm;
-                sumaCargaPromedio += cargaHa;
-                totalLotes++;
-
-                const div = document.createElement('div');
-                div.className = 'potrero-card-item';
-                div.innerHTML = `
-                    <div class="potrero-card-row">
-                        <span class="potrero-card-title-item"><i class="fa-solid fa-map-pin" style="color: var(--primary-color);"></i> ${item.potrero}</span>
-                        <span class="potrero-card-tag">${item.especie || 'BOVINOS'}</span>
-                    </div>
-                    <div class="potrero-card-meta">
-                        <b>Categoría:</b> ${item.nombreCategoria || item.categoria} | <b>Cabezas:</b> ${cabezas} | <b>UGM:</b> ${ugm.toFixed(2)} (${cargaHa.toFixed(2)} UGM/ha)
-                    </div>
-                    <div class="potrero-card-meta">
-                        <b>Época:</b> ${item.temporada} | <b>Ingreso:</b> ${item.fechaIngreso} al ${item.fechaSalida}
-                    </div>
-                    <div class="potrero-card-meta">
-                        <b>Responsable:</b> ${item.responsable}
-                    </div>
-                    ${item.observaciones ? `<div class="potrero-card-obs"><i class="fa-solid fa-note-sticky"></i> ${item.observaciones}</div>` : ''}
-                    
-                    <div class="potrero-card-actions">
-                        <select class="status-select ${getStatusClass(cargaHa, item.temporada)}" data-id="${id}">
-                            <option value="ESTABLE" ${item.estadoCarga === 'ESTABLE' ? 'selected' : ''}>🟢 Estable (${cargaHa.toFixed(2)} UGM/ha)</option>
-                            <option value="MODERADO" ${item.estadoCarga === 'MODERADO' ? 'selected' : ''}>🟡 Moderado</option>
-                            <option value="CRITICO" ${item.estadoCarga === 'CRITICO' ? 'selected' : ''}>🔴 Crítico / Sobrepasado</option>
-                        </select>
-                        <button class="btn-delete" data-id="${id}" title="Eliminar registro"><i class="fa-solid fa-trash-can"></i></button>
-                    </div>
-                `;
-                potrerosContainer.appendChild(div);
-            });
-
-            const promedioGeneralCarga = totalLotes > 0 ? (sumaCargaPromedio / totalLotes) : 0;
-            actualizarKPIsGlobales(acumuladoCabezas, acumuladoUgm, promedioGeneralCarga);
-            vincularEventosAcciones();
-        }, (error) => {
-            console.error("Error al sincronizar con Firestore: ", error);
-            potrerosContainer.innerHTML = '<p style="text-align: center; color: #c1121f; padding: 20px;">Error de sincronización con la base de datos.</p>';
-        });
+    // Asignación de Eventos en el DOM
+    if (selectEspecie) {
+        selectEspecie.addEventListener('change', actualizarCategorias);
+        actualizarCategorias(); // Inicializa por defecto
     }
 
-    function getStatusClass(cargaHa, temporada) {
-        const esInvierno = temporada && temporada.includes('INVIERNO');
-        const umbral = esInvierno ? UMBRAL_INVIERNO : UMBRAL_VERANO;
-        if (cargaHa > umbral) return 'status-critico';
-        if (cargaHa > (umbral * 0.85)) return 'status-moderado';
-        return 'status-estable';
-    }
+    [selectPotrero, selectCategoria, selectTemporada, inputCabezas].forEach(el => {
+        if (el) el.addEventListener('change', actualizarAnalisisInteligente);
+        if (el) el.addEventListener('input', actualizarAnalisisInteligente);
+    });
 
-    function actualizarKPIsGlobales(cabezas, ugm, promedioCarga) {
-        if (kpiTotalCabezas) kpiTotalCabezas.textContent = cabezas;
-        if (kpiTotalUgm) kpiTotalUgm.textContent = ugm.toFixed(2);
-        if (kpiCargaPromedio) kpiCargaPromedio.textContent = promedioCarga.toFixed(2);
-    }
-
-    function vincularEventosAcciones() {
-        document.querySelectorAll('.status-select').forEach(select => {
-            select.addEventListener('change', async (e) => {
-                const id = e.target.dataset.id;
-                const nuevoEstado = e.target.value;
-                try {
-                    await updateDoc(doc(db, COLLECTION_NAME, id), { estadoCarga: nuevoEstado });
-                    mostrarToast("Estado de carga actualizado correctamente.");
-                } catch (error) {
-                    console.error("Error al actualizar estado:", error);
-                    mostrarToast("No se pudo actualizar el estado.", true);
-                }
-            });
-        });
-
-        document.querySelectorAll('.btn-delete').forEach(btn => {
-            btn.addEventListener('click', async (e) => {
-                const id = e.currentTarget.dataset.id;
-                if (confirm("¿Está seguro de eliminar este registro de asignación del potrero?")) {
-                    try {
-                        await deleteDoc(doc(db, COLLECTION_NAME, id));
-                        mostrarToast("Registro eliminado con éxito.");
-                    } catch (error) {
-                        console.error("Error al eliminar registro:", error);
-                        mostrarToast("Error al eliminar el registro.", true);
-                    }
-                }
-            });
-        });
-    }
-
-    // Registro de Asignación desde el Formulario
+    // Envío del Formulario
     if (potreroForm) {
         potreroForm.addEventListener('submit', async (e) => {
             e.preventDefault();
