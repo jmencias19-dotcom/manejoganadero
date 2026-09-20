@@ -1,5 +1,5 @@
 /* ==========================================================================
-    Módulo: Control y Gestión de Potreros (Con Firestore Real-Time)
+    Módulo: Control, Gestión y Carga Animal de Potreros (Con Firestore Real-Time)
     Hato Laguna Brava
     ========================================================================== */
 
@@ -30,18 +30,58 @@ const firebaseConfig = {
 // Inicializar Firebase y Firestore
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-const COLLECTION_NAME = "hato_potreros"; // Colección específica para potreros
+const COLLECTION_NAME = "hato_potreros";
+
+// Umbrales ecológicos estándar para el trópico / sabana inundable
+const UMBRAL_INVIERNO = 1.20;
+const UMBRAL_VERANO = 0.76;
+
+// Factores de ponderación por categoría - Bovinos
+const BOVINOS = [
+    { id: 'vacas_criando', nombre: 'Vacas Criando', factor: 1.0 },
+    { id: 'vacas_criando_pre', nombre: 'Vacas Criando Preñada', factor: 1.0 },
+    { id: 'vacas_vacia', nombre: 'Vacas Vacías', factor: 1.0 },
+    { id: 'vacas_prenadas', nombre: 'Vacas Preñadas', factor: 1.0 },
+    { id: 'vacas_descarte', nombre: 'Vacas Descarte', factor: 1.0 },
+    { id: 'novillas_vacia', nombre: 'Novillas Vacías', factor: 0.8 },
+    { id: 'novillas_descarte', nombre: 'Novillas Descarte', factor: 0.8 },
+    { id: 'novillas_prenada', nombre: 'Novillas Preñadas', factor: 0.8 },
+    { id: 'novillas_monta', nombre: 'Novillas en Monta', factor: 0.8 },
+    { id: 'mautes_machos', nombre: 'Mautes Machos', factor: 0.5 },
+    { id: 'mautas_hembras', nombre: 'Mautas Hembras', factor: 0.5 },
+    { id: 'becerros_lactantes', nombre: 'Becerros / Lactantes', factor: 0.25 },
+    { id: 'becerras_lactantes', nombre: 'Becerras / Lactantes', factor: 0.25 },
+    { id: 'toros_padrotes', nombre: 'Toros Padrotes', factor: 1.25 },
+    { id: 'toros_pad_descarte', nombre: 'Toros Padres Descarte', factor: 1.25 }
+];
+
+// Factores de ponderación por categoría - Bufalinos
+const BUFALINOS = [
+    { id: 'bufalas_criando', nombre: 'Búfalas Criando', factor: 1.2 },
+    { id: 'bufalas_criando_pre', nombre: 'Búfalas Criando Preñada', factor: 1.2 },
+    { id: 'bufalas_vacia', nombre: 'Búfalas Vacías', factor: 1.2 },
+    { id: 'bufalas_prenadas', nombre: 'Búfalas Preñadas', factor: 1.2 },
+    { id: 'bufalas_descarte', nombre: 'Búfalas Descarte', factor: 1.2 },
+    { id: 'buvillas_vacia', nombre: 'Buvillas Vacías', factor: 0.95 },
+    { id: 'buvillas_descarte', nombre: 'Buvillas Descarte', factor: 0.95 },
+    { id: 'buvillas_prenada', nombre: 'Buvillas Preñadas', factor: 0.95 },
+    { id: 'buvillas_monta', nombre: 'Buvillas en Monta', factor: 0.95 },
+    { id: 'baute_machos', nombre: 'Baute Machos (bautes)', factor: 0.6 },
+    { id: 'bauta_hembras', nombre: 'Bauta Hembras (bautas)', factor: 0.6 },
+    { id: 'bucerros_lactantes', nombre: 'Bucerros / Lactantes', factor: 0.3 },
+    { id: 'bucerras_lactantes', nombre: 'Bucerras / Lactantes', factor: 0.3 },
+    { id: 'bufalos_padrotes', nombre: 'Búfalos Padrotes', factor: 1.5 },
+    { id: 'bufalos_pad_descarte', nombre: 'Búfalos Padres Descarte', factor: 1.5 }
+];
 
 document.addEventListener('DOMContentLoaded', () => {
-    const potreroForm = document.getElementById('potreroForm'); // ID ajustado para el formulario de potreros
-    const potrerosContainer = document.getElementById('potreros-container'); // Contenedor en el HTML
+    const potreroForm = document.getElementById('potreroForm');
+    const potrerosContainer = document.getElementById('potreros-container');
     
-    // Contadores de KPIs o resúmenes (opcionales según tu diseño)
     const kpiTotalPotreros = document.getElementById('kpi-total-potreros');
     const kpiDescanso = document.getElementById('kpi-descanso');
     const kpiOcupados = document.getElementById('kpi-ocupados');
 
-    // Escuchar cambios en tiempo real desde Firestore
     function iniciarSincronizacionPotreros() {
         if (!potrerosContainer) return;
 
@@ -115,7 +155,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function vincularEventosPotreros() {
-        // Actualizar estado del potrero en Firestore
         document.querySelectorAll('.status-select').forEach(select => {
             select.addEventListener('change', async (e) => {
                 const id = e.target.dataset.id;
@@ -129,7 +168,6 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
 
-        // Eliminar potrero de Firestore
         document.querySelectorAll('.btn-delete').forEach(btn => {
             btn.addEventListener('click', async (e) => {
                 const id = e.currentTarget.dataset.id;
@@ -144,7 +182,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Evento de Envío del Formulario de Potreros
     if (potreroForm) {
         potreroForm.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -172,6 +209,5 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Arrancar la sincronización en tiempo real para potreros
     iniciarSincronizacionPotreros();
 });
