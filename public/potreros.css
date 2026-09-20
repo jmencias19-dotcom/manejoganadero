@@ -647,38 +647,47 @@ input:focus, select:focus, textarea:focus {
 }
 
 /* ==========================================================================
-   CORRECCIÓN EXCLUSIVA PARA ÍCONOS EN TAREAS MÓVIL
+   SOLUCIÓN LIMPIA Y REAL PARA MÓVIL (HATO LAGUNA BRAVA)
    ========================================================================== */
 
 @media (max-width: 768px) {
-    /* 1. Liberamos cualquier restricción en íconos, etiquetas i, SVG o clases de iconos */
-    body .tarea-item i, 
-    body .task-card i,
-    body .tarea-item svg, 
-    body .task-card svg,
-    body .tarea-item [class*="icon"],
-    body .task-card [class*="icon"],
-    body .tarea-item [class*="fa-"],
-    body .task-card [class*="fa-"] {
-        display: inline-block !important;
-        width: auto !important;
-        height: auto !important;
-        max-width: none !important;
-        max-height: none !important;
+    /* 1. Tarjeta de tarea adaptada a columna en móvil */
+    .task-card-item {
+        display: flex !important;
+        flex-direction: column !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+        padding: 12px !important;
+        margin-bottom: 12px !important;
         overflow: visible !important;
-        font-size: 14px !important; /* Asegura un tamaño proporcional y visible */
-        line-height: 1 !important;
-        flex-shrink: 0 !important;
     }
 
-    /* 2. Aseguramos que el contenedor del estado/ícono no restrinja su interior */
-    body .tarea-item .badge-estado, 
-    body .task-card .badge-estado, 
-    body .status-indicator,
-    body .tarea-item [class*="badge"],
-    body .task-card [class*="badge"] {
-        overflow: visible !important;
-        text-overflow: clip !important;
+    /* 2. Fila superior donde va el título y el estado */
+    .task-card-row {
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        width: 100% !important;
+        gap: 8px !important;
+    }
+
+    /* 3. Selector de estado / ícono sin recortes */
+    .task-card-item .status-select {
+        width: auto !important;
         max-width: none !important;
+        flex-shrink: 0 !important;
+        font-size: 12px !important;
+        padding: 4px 8px !important;
+        height: auto !important;
+    }
+
+    /* 4. Casilla de fecha con el ancho perfecto y sin desbordes */
+    .task-card-date {
+        display: block !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+        margin-top: 6px !important;
+        padding: 6px 8px !important;
+        font-size: 12px !important;
     }
 }
