@@ -1,14 +1,12 @@
-// ==========================================
-// APP.JS - ENRUTADOR CENTRAL Y NÚCLEO DE RED
-// Hato Laguna Brava
-// ==========================================
+/* ==========================================
+   APP.JS - ENRUTADOR CENTRAL Y NÚCLEO DE RED
+   Hato Laguna Brava
+   ========================================== */
 
 import { sincronizarConServidor } from './syncManager.js';
 import { inicializarModuloTareas } from './modules/tareas.js';
-// Importa aquí futuros módulos cuando los crees:
-// import { inicializarModuloInventario } from './modules/inventario.js';
+import { inicializarModuloPotreros } from './modules/potreros.js'; // 👈 1. Importas el módulo aquí arriba
 
-// Función global para actualizar el semáforo y texto de sincronización en tu header
 export function actualizarUIEstadoSync(esSincronizado, mensaje) {
     const light = document.getElementById("light");
     const statusText = document.getElementById("statusText");
@@ -25,7 +23,7 @@ export function actualizarUIEstadoSync(esSincronizado, mensaje) {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-    // 1. Sincronización automática y escuchas de red globales (para todas las vistas)
+    // 1. Sincronización automática y escuchas de red globales
     sincronizarConServidor(actualizarUIEstadoSync);
 
     window.addEventListener('online', () => {
@@ -37,7 +35,7 @@ document.addEventListener("DOMContentLoaded", () => {
         actualizarUIEstadoSync(false, "Modo Offline");
     });
 
-    // 2. Botón manual de sincronización en la cabecera (si existe en la vista)
+    // 2. Botón manual de sincronización en la cabecera
     const btnSync = document.getElementById("btn-sync");
     if (btnSync) {
         btnSync.addEventListener("click", () => {
@@ -50,15 +48,12 @@ document.addEventListener("DOMContentLoaded", () => {
     // ==========================================
     const rutaActual = window.location.pathname;
 
-    // Si estamos en la página de planificación o tareas
     if (rutaActual.includes("planificacion.html") || rutaActual.includes("tareas.html")) {
         console.log("Cargando módulo: Planificación de Campo");
         inicializarModuloTareas();
     }
-    
-    // Si en el futuro creas inventario.html, el enrutador lo activará solo ahí:
-    // else if (rutaActual.includes("inventario.html")) {
-    //     console.log("Cargando módulo: Inventario Ganadero");
-    //     inicializarModuloInventario();
-    // }
+    else if (rutaActual.includes("potreros.html") || rutaActual.includes("carga.html")) {
+        console.log("Cargando módulo: Gestión de Potreros y Carga Animal");
+        inicializarModuloPotreros(); // 👈 2. Lo ejecutas solo cuando la app abre la vista de potreros
+    }
 });
