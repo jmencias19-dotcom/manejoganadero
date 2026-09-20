@@ -222,24 +222,29 @@ document.addEventListener('DOMContentLoaded', () => {
                 sumaCargaPromedioGlobal += cargaHa;
                 totalPotrerosActivos++;
 
-                // Generación del desglose con botón de Salida individual por sub-lote
+                // Generación del desglose completo con fechas, observaciones y botón de Salida individual
                 const resumenCategorias = grupo.registros.map(r => `
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; border-bottom: 1px dashed #dee2e6; padding-bottom: 4px;">
-        <span>• <b>${r.cabezas} cab.</b> de ${r.nombreCategoria || r.categoria} (${r.especie || 'BOVINOS'}) [Ing: ${r.fechaIngreso}]</span>
-        <div>
-            <button class="btn-retirar-lote" 
-                data-id="${r.id}" 
-                data-cabezas="${r.cabezas}" 
-                data-categoria="${r.nombreCategoria || r.categoria}" 
-                data-potrero="${nombrePotrero}" 
-                data-factor="${r.factorUgm || 1.0}"
-                title="Retirar animales de este lote" 
-                style="background: #e63946; color: white; border: none; padding: 2px 6px; border-radius: 4px; font-size: 0.75rem; cursor: pointer; margin-right: 4px;">
-                <i class="fa-solid fa-right-from-bracket"></i> Salida
-            </button>
-        </div>
-    </div>
-`).join('');
+                    <div style="margin-bottom: 8px; border-bottom: 1px dashed #dee2e6; padding-bottom: 6px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span>• <b>${r.cabezas} cab.</b> de ${r.nombreCategoria || r.categoria} (${r.especie || 'BOVINOS'})</span>
+                            <button class="btn-retirar-lote" 
+                                data-id="${r.id}" 
+                                data-cabezas="${r.cabezas}" 
+                                data-categoria="${r.nombreCategoria || r.categoria}" 
+                                data-potrero="${nombrePotrero}" 
+                                data-factor="${r.factorUgm || 1.0}"
+                                title="Retirar animales de este lote" 
+                                style="background: #e63946; color: white; border: none; padding: 2px 6px; border-radius: 4px; font-size: 0.75rem; cursor: pointer;">
+                                <i class="fa-solid fa-right-from-bracket"></i> Salida
+                            </button>
+                        </div>
+                        <div style="font-size: 0.78rem; color: #555; margin-top: 2px;">
+                            <span><b>Ingreso:</b> ${r.fechaIngreso || 'N/D'}</span> | 
+                            <span style="color: #c1121f;"><b>Salida Estimada:</b> ${r.fechaSalida || 'No definida'}</span>
+                        </div>
+                        ${r.observaciones ? `<div style="font-size: 0.78rem; color: #6c757d; font-style: italic; margin-top: 1px;"><b>Obs:</b> ${r.observaciones}</div>` : ''}
+                    </div>
+                `).join('');
 
                 const div = document.createElement('div');
                 div.className = 'potrero-card-item';
@@ -255,8 +260,10 @@ document.addEventListener('DOMContentLoaded', () => {
                         <b>Inventario Actual:</b> ${grupo.totalCabezas} Cabezas | <b>Total UGM:</b> ${grupo.totalUgm.toFixed(2)} | <b>Carga:</b> <span style="font-weight:750;">${cargaHa.toFixed(2)} UGM/ha</span>
                     </div>
 
-                    <div class="potrero-card-meta" style="background: #f8f9fa; padding: 6px 8px; border-radius: 4px; margin-top: 4px; font-size: 0.8rem;">
-                        <b>Desglose por Lotes / Ingresos:</b><br>
+                    <div class="potrero-card-meta" style="background: #f8f9fa; padding: 8px 10px; border-radius: 6px; margin-top: 6px; font-size: 0.85rem; border: 1px solid #e9ecef;">
+                        <div style="font-weight: bold; margin-bottom: 6px; color: var(--primary-color, #2b2b2b);">
+                            <i class="fa-solid fa-list-check"></i> Desglose por Lotes / Salida:
+                        </div>
                         ${resumenCategorias}
                     </div>
 
