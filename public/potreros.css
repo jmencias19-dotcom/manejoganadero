@@ -647,49 +647,41 @@ input:focus, select:focus, textarea:focus {
 }
 
 /* ==========================================================================
-   CORRECCIÓN DEFINITIVA MOBILE: TAREAS PROGRAMADAS Y FECHAS (OPTIMIZADO)
+   CORRECCIÓN FINAL MOBILE: ESTADOS Y FECHAS (HATO LAGUNA BRAVA)
    ========================================================================== */
 
 @media (max-width: 768px) {
-    /* 1. Aseguramos que el contenedor principal o listado general fluya de forma vertical normal */
-    .tareas-container,
-    .section-box,
-    #tareas-section {
-        display: flex !important;
-        flex-direction: column !important;
-        width: 100% !important;
-        box-sizing: border-box !important;
-    }
-
-    /* 2. Aplicamos la cuadrícula EXCLUSIVAMENTE a cada tarjeta de tarea individual */
+    /* 1. Contenedor de la tarjeta individual en móvil con margen seguro */
     .tarea-item, 
     .task-card {
         display: grid !important;
-        grid-template-columns: 1fr auto !important;
+        grid-template-columns: minmax(0, 1fr) auto !important; /* minmax(0, 1fr) evita que textos largos expandan la caja de más */
         grid-template-areas: 
             "titulo estado"
             "info info"
             "fecha fecha" !important;
         align-items: center !important;
-        gap: 8px 12px !important;
+        gap: 8px 10px !important;
         width: 100% !important;
         box-sizing: border-box !important;
-        padding: 14px !important;
-        margin-bottom: 12px !important; /* Espaciado limpio entre tarjeta y tarjeta */
+        padding: 12px !important; /* Reducido ligeramente para optimizar espacio */
+        margin-bottom: 12px !important;
         overflow: hidden !important;
     }
 
-    /* 3. Título o descripción principal de la tarea */
+    /* 2. Título principal de la tarea */
     .tarea-item h3, 
     .tarea-item .task-title, 
     .task-card h3, 
     .task-card .task-title {
         grid-area: titulo;
         margin: 0 !important;
-        font-size: 15px !important;
+        font-size: 14px !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
     }
 
-    /* 4. Indicador de estado perfectamente visible y posicionado */
+    /* 3. Corrección total para que el indicador de estado NUNCA se corte */
     .tarea-item .badge-estado, 
     .task-card .badge-estado, 
     .status-indicator {
@@ -699,21 +691,26 @@ input:focus, select:focus, textarea:focus {
         opacity: 1 !important;
         justify-self: end !important;
         white-space: nowrap !important;
-        padding: 4px 8px !important;
-        font-size: 12px !important;
+        flex-shrink: 0 !important; /* Impide que el contenedor flex comprima o recorte el texto interno */
+        padding: 3px 6px !important; /* Padding compacto para pantallas estrechas */
+        font-size: 11px !important;  /* Tamaño optimizado para evitar desbordes */
         border-radius: 4px !important;
+        max-width: 100px !important; /* Límite de seguridad para textos largos */
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
     }
 
-    /* 5. Contenedor de información o texto descriptivo central */
+    /* 4. Contenedor de información o texto descriptivo central */
     .tarea-item .task-info, 
     .task-card .task-info,
     .tarea-item p, 
     .task-card p {
         grid-area: info;
         margin: 0 !important;
+        font-size: 13px !important;
     }
 
-    /* 6. Casilla de fecha alineada al 100% sin desbordamientos */
+    /* 5. Casilla de fecha compacta y perfectamente ajustada */
     .tarea-item input[type="date"],
     .task-card input[type="date"],
     .tarea-item .fecha-container,
@@ -723,8 +720,8 @@ input:focus, select:focus, textarea:focus {
         width: 100% !important;
         max-width: 100% !important;
         box-sizing: border-box !important;
-        margin: 4px 0 0 0 !important;
-        padding: 8px !important;
-        font-size: 14px !important;
+        margin: 2px 0 0 0 !important;
+        padding: 6px 8px !important; /* Reducción milimétrica de altura para un look balanceado */
+        font-size: 13px !important;
     }
 }
