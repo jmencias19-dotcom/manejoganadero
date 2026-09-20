@@ -101,7 +101,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 3500);
     }
 
-    // 1. Declarar primero el Asistente de Carga Animal (evita errores de referencia)
+    // 1. Asistente de Carga Animal
     function actualizarAnalisisInteligente() {
         if (!aiContent) return;
 
@@ -146,7 +146,7 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
     }
 
-    // 2. Declarar la función de categorías después
+    // 2. Actualizar Categorías
     function actualizarCategorias() {
         if (!selectEspecie || !selectCategoria) return;
         const especieSeleccionada = selectEspecie.value;
@@ -222,22 +222,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 sumaCargaPromedioGlobal += cargaHa;
                 totalPotrerosActivos++;
 
-                // Dentro de la función de renderizado en iniciarSincronizacionPotreros():
-
-const resumenCategorias = grupo.registros.map(r => `
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; border-bottom: 1px dashed #dee2e6; padding-bottom: 4px;">
-        <span>• <b>${r.cabezas} cab.</b> de ${r.nombreCategoria || r.categoria} (${r.especie || 'BOVINOS'}) [Ing: ${r.fechaIngreso}]</span>
-        <div>
-            <button class="btn-retirar-lote" data-id="${r.id}" title="Retirar este lote específico del potrero" style="background: #e63946; color: white; border: none; padding: 2px 6px; border-radius: 4px; font-size: 0.75rem; cursor: pointer; margin-right: 4px;">
-                <i class="fa-solid fa-right-from-bracket"></i> Salida
-            </button>
-        </div>
-    </div>
-`).join('');
-
-                const resumenCategorias = grupo.registros.map(r => 
-                    `• ${r.cabezas} cab. de ${r.nombreCategoria || r.categoria} (${r.especie || 'BOVINOS'}) [Ingreso: ${r.fechaIngreso}]`
-                ).join('<br>');
+                // Generación del desglose con botón de Salida individual por sub-lote
+                const resumenCategorias = grupo.registros.map(r => `
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; border-bottom: 1px dashed #dee2e6; padding-bottom: 4px;">
+                        <span>• <b>${r.cabezas} cab.</b> de ${r.nombreCategoria || r.categoria} (${r.especie || 'BOVINOS'}) [Ing: ${r.fechaIngreso}]</span>
+                        <div>
+                            <button class="btn-retirar-lote" data-id="${r.id}" title="Retirar este lote específico del potrero" style="background: #e63946; color: white; border: none; padding: 2px 6px; border-radius: 4px; font-size: 0.75rem; cursor: pointer; margin-right: 4px;">
+                                <i class="fa-solid fa-right-from-bracket"></i> Salida
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
 
                 const div = document.createElement('div');
                 div.className = 'potrero-card-item';
@@ -266,7 +261,7 @@ const resumenCategorias = grupo.registros.map(r => `
                         <select class="status-select" disabled style="background-color: #e9ecef; cursor: default;">
                             <option value="">Carga ${cargaHa.toFixed(2)} UGM/ha</option>
                         </select>
-                        <button class="btn-delete" data-ids="${grupo.registros.map(r => r.id).join(',')}" title="Vaciar Potrero completo"><i class="fa-solid fa-trash-can"></i> Vaciar Potrero</button>
+                        <button class="btn-delete-all btn-delete" data-ids="${grupo.registros.map(r => r.id).join(',')}" title="Vaciar Potrero completo"><i class="fa-solid fa-trash-can"></i> Vaciar Potrero</button>
                     </div>
                 `;
                 potrerosContainer.appendChild(div);
@@ -287,7 +282,25 @@ const resumenCategorias = grupo.registros.map(r => `
         if (kpiCargaPromedio) kpiCargaPromedio.textContent = promedioCarga.toFixed(2);
     }
 
+    // 4. Gestión de Eventos para Salidas Individuales y Borrado Masivo
     function vincularEventosAccionesMultiples() {
+        // Botón para retirar un sub-lote individual (Salida parcial/específica)
+        document.querySelectorAll('.btn-retirar-lote').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+                const id = e.currentTarget.dataset.id;
+                if (confirm("¿Confirma la salida de este lote específico del potrero?")) {
+                    try {
+                        await deleteDoc(doc(db, COLLECTION_NAME, id));
+                        mostrarToast("Lote retirado del potrero con éxito.");
+                    } catch (error) {
+                        console.error("Error al retirar el lote:", error);
+                        mostrarToast("Error al procesar la salida.", true);
+                    }
+                }
+            });
+        });
+
+        // Botón para vaciar todo el potrero de golpe
         document.querySelectorAll('.btn-delete').forEach(btn => {
             btn.addEventListener('click', async (e) => {
                 const idsString = e.currentTarget.dataset.ids;
