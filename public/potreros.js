@@ -1,5 +1,5 @@
 /* ==========================================================================
-   MÓDULO DE POTREROS Y CARGA ANIMAL (UGM) - HATO LAGUNA BRAVA (ROBUSTO)
+   MÓDULO DE POTREROS Y CARGA ANIMAL (UGM) - HATO LAGUNA BRAVA
    ========================================================================== */
 
 export function inicializarModuloPotreros() {
@@ -53,8 +53,7 @@ export function inicializarModuloPotreros() {
         registrosGanado = [];
     }
 
-    // Ampliación de selectores para asegurar compatibilidad con distintos IDs de formularios
-    const formulario = document.getElementById('form-mod1') || document.getElementById('potreroForm') || document.getElementById('potrerosForm');
+    const formulario = document.getElementById('potreroForm');
     const selectEspecie = document.getElementById('select-especie');
     const selectPotrero = document.getElementById('select-potrero');
     const selectCategoria = document.getElementById('select-categoria');
@@ -65,7 +64,7 @@ export function inicializarModuloPotreros() {
     const inputResponsable = document.getElementById('responsable-potrero');
     const inputObservaciones = document.getElementById('observaciones-potrero');
 
-    const listaContenedor = document.querySelector('.potreros-container') || document.getElementById('potreros-container');
+    const listaContenedor = document.getElementById('potreros-container');
     const kpiCabezas = document.getElementById('kpi-total-cabezas');
     const kpiUgm = document.getElementById('kpi-total-ugm');
     const kpiCargaPromedio = document.getElementById('kpi-carga-promedio');
@@ -73,7 +72,6 @@ export function inicializarModuloPotreros() {
     const toast = document.getElementById('toast');
     const toastMessage = document.getElementById('toast-message');
 
-    // Función para mostrar notificaciones Toast
     function mostrarToast(mensaje, tipo = 'success') {
         if (!toast || !toastMessage) return;
         toastMessage.textContent = mensaje;
@@ -84,13 +82,11 @@ export function inicializarModuloPotreros() {
         }, 3000);
     }
 
-    // Cargar categorías dinámicamente según la especie seleccionada
     function cargarCategorias() {
         if (!selectCategoria || !selectEspecie) return;
         const lista = selectEspecie.value === 'BOVINOS' ? BOVINOS : BUFALINOS;
-        selectCategoria.innerHTML = lista.map(c => 
-            `<option value="${c.id}" data-factor="${c.factor}">${c.nombre} (${c.factor} UGM)</option>`
-        ).join('');
+        selectCategoria.innerHTML = `<option value="" disabled selected>-- Seleccione Categoría --</option>` + 
+            lista.map(c => `<option value="${c.id}" data-factor="${c.factor}">${c.nombre} (${c.factor} UGM)</option>`).join('');
         actualizarAsistenteIA();
     }
 
@@ -98,7 +94,6 @@ export function inicializarModuloPotreros() {
         selectEspecie.addEventListener('change', cargarCategorias);
     }
 
-    // Asistente Inteligente de Carga (I.D.) al interactuar con el formulario
     function actualizarAsistenteIA() {
         if (!aiContent) return;
         
@@ -179,7 +174,6 @@ export function inicializarModuloPotreros() {
             });
         });
 
-        // Actualizar KPIs Globales
         if (kpiCabezas) kpiCabezas.textContent = globalCabezas;
         if (kpiUgm) kpiUgm.textContent = globalUgm.toFixed(2);
         
@@ -311,8 +305,6 @@ export function inicializarModuloPotreros() {
             refrescarTablero();
             mostrarToast("Lote registrado y sincronizado con éxito.");
         });
-    } else {
-        console.warn("Advertencia: No se encontró el formulario de potreros en el DOM.");
     }
 
     window.eliminarLoteEspecifico = function(index) {
@@ -332,7 +324,7 @@ export function inicializarModuloPotreros() {
     refrescarTablero();
 }
 
-// Auto-inicialización segura si el script se carga de forma directa
+// Auto-inicialización segura del módulo
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
         inicializarModuloPotreros();
