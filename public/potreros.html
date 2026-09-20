@@ -117,43 +117,73 @@
                         </select>
                     </div>
 
-                    <div class="kpi-container" style="margin-top: 0; gap: 10px;">
-                        <div class="input-group">
-                            <label for="fecha-ingreso">Fecha de Ingreso</label>
-                            <input type="date" id="fecha-ingreso" required>
-                        </div>
-                        <div class="input-group">
-                            <label for="fecha-salida">Fecha de Salida</label>
-                            <input type="date" id="fecha-salida" required>
-                        </div>
+                   <div class="kpi-card" style="display: flex; justify-content: space-between; align-items: center; padding: 15px;">
+                        <label style="margin: 0; font-weight: bold; color: var(--primary-color);">Total UGM Global</label>
+                        <div id="kpi-total-ugm" class="kpi-value" style="margin: 0; font-size: 1.4rem;">0.00</div>
                     </div>
-
-                    <div class="input-group">
-                        <label for="cantidad-cabezas">Cantidad de Cabezas</label>
-                        <input type="number" id="cantidad-cabezas" placeholder="Ej: 80" min="1" required>
+                    <div class="kpi-card" style="display: flex; justify-content: space-between; align-items: center; padding: 15px;">
+                        <label style="margin: 0; font-weight: bold; color: var(--primary-color);">Carga Promedio (UGM/ha)</label>
+                        <div id="kpi-carga-promedio" class="kpi-value" style="margin: 0; font-size: 1.4rem;">0.00</div>
                     </div>
+                </div>
 
-                    <button type="submit" class="btn" style="margin-top: 10px;">
-                        <i class="fa-solid fa-floppy-disk"></i> Registrar Carga Animal
-                    </button>
-                </form>
+                <!-- Alerta o Estado del Balance Forrajero en tiempo real -->
+                <div class="alert-box" id="balance-forrajero-status" style="margin-top: 20px; padding: 12px; border-radius: 8px; background: #f8f9fa; border-left: 4px solid var(--primary-color);">
+                    <h4 style="margin: 0 0 5px 0; font-size: 0.95rem; color: var(--primary-color);">
+                        <i class="fa-solid fa-triangle-exclamation"></i> Estado del Balance Forrajero
+                    </h4>
+                    <p id="status-message" style="margin: 0; font-size: 0.85rem; color: #555;">
+                        Seleccione un potrero e ingrese la carga para evaluar la presión de pastoreo en sabana.
+                    </p>
+                </div>
             </section>
 
             <!-- ==========================================
-                 COLUMNA 2: TABLERO DE CARGA ECOLÓGICA
+                 COLUMNA 3: REGISTROS Y CONTROL ACTIVO
                  ========================================== -->
             <section class="section-box" style="height: auto;">
                 <div class="card-header">
-                    <div class="card-icon">📊</div>
-                    <h2 class="card-title">Carga Ecológica</h2>
+                    <div class="card-icon">📋</div>
+                    <h2 class="card-title">Lotes en Potreros</h2>
                 </div>
-                <p class="card-description">Indicadores agregados en tiempo real de Unidades de Gran Ganado (UGM) globales.</p>
-                
-                <!-- Corregido el quiebre de etiquetas del kpi-container -->
-                <div class="kpi-container" style="grid-template-columns: 1fr; gap: 10px;">
-                    <div class="kpi-card" style="display: flex; justify-content: space-between; align-items: center; padding: 15px;">
-                        <label style="margin: 0; font-weight: bold; color: var(--primary-color);">Total Animales</label>
-                        <div id="kpi-total-cabezas" class="kpi-value" style="margin: 0; font-size: 1.4rem;">0</div>
-                    </div>
-                    <div class="kpi-card" style="display: flex; justify-content: space-between; align-items: center; padding: 15px;">
-                        <label style="margin: 0; font-weight: bold; color: var(--primary-color);">Total UGM Global</label>
+                <p class="card-description">Asignaciones vigentes y control de rotación de animales.</p>
+
+                <div class="table-responsive" style="max-height: 350px; overflow-y: auto; margin-top: 15px;">
+                    <table id="tabla-asignaciones" style="width: 100%; border-collapse: collapse; font-size: 0.85rem;">
+                        <thead>
+                            <tr style="background: var(--primary-color); color: white; text-align: left;">
+                                <th style="padding: 8px;">Potrero</th>
+                                <th style="padding: 8px;">Categoría</th>
+                                <th style="padding: 8px;">Cabezas</th>
+                                <th style="padding: 8px;">UGM</th>
+                                <th style="padding: 8px; text-align: center;">Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody-asignaciones">
+                            <!-- Los registros dinámicos se inyectarán vía JavaScript -->
+                            <tr>
+                                <td colspan="5" style="text-align: center; padding: 20px; color: #777;">
+                                    No hay lotes activos registrados en este módulo.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div style="margin-top: 20px; display: flex; gap: 10px;">
+                    <button type="button" id="btn-exportar-csv" class="btn" style="background-color: #28a745; flex: 1;">
+                        <i class="fa-solid fa-file-excel"></i> Exportar Datos
+                    </button>
+                    <button type="button" id="btn-limpiar-storage" class="btn" style="background-color: #dc3545; flex: 1;">
+                        <i class="fa-solid fa-trash-can"></i> Limpiar
+                    </button>
+                </div>
+            </section>
+
+        </div> <!-- Fin de menu-grid -->
+    </main>
+
+    <!-- Scripts de la aplicación -->
+    <script src="./potreros.js?v=4.1"></script>
+</body>
+</html>
