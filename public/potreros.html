@@ -119,19 +119,58 @@
                                 <option value="BUFALINOS">Bufalinos (Búfalos)</option>
                             </select>
                         </div>
-                        <div class="input-group">
-                            <label for="select-categoria">Categoría Zootécnica:</label>
-                            <select id="select-categoria" required>
-                                <option value="" disabled selected>-- Seleccione --</option>
-                                <option value="VACAS_PARIDAS" data-ugm="1.0">Vacas Paridas (1.0 UGM)</option>
-                                <option value="ESCAMPADAS" data-ugm="0.8">Vacas Escampadas (0.8 UGM)</option>
-                                <option value="NOVILLAS" data-ugm="0.7">Novillas (0.7 UGM)</option>
-                                <option value="MAUTES" data-ugm="0.5">Mautes (0.5 UGM)</option>
-                                <option value="TOROS" data-ugm="1.2">Toros (1.2 UGM)</option>
-                            </select>
-                        </div>
+                       <div class="input-group">
+                        <label for="select-especie">Especie Ganadera:</label>
+                        <select id="select-especie" required>
+                            <option value="BOVINOS" selected>Bovinos (Vacunos)</option>
+                            <option value="BUFALINOS">Bufalinos (Búfalos)</option>
+                        </select>
                     </div>
 
+                    <div class="input-group">
+                        <label for="select-categoria">Categoría Zootécnica Oficial:</label>
+                        <select id="select-categoria" required>
+                            <option value="" disabled selected>-- Seleccione Categoría --</option>
+                            
+                            <!-- GRUPO BOVINOS -->
+                            <optgroup label="Bovinos - Hembras y Machos" id="grupo-bovinos">
+                                <option value="vacas_criando" data-ugm="1.0" data-especie="BOVINOS">Vacas Criando (1.0 UGM)</option>
+                                <option value="vacas_criando_pre" data-ugm="1.0" data-especie="BOVINOS">Vacas Criando Preñada (1.0 UGM)</option>
+                                <option value="vacas_vacia" data-ugm="1.0" data-especie="BOVINOS">Vacas Vacías (1.0 UGM)</option>
+                                <option value="vacas_prenadas" data-ugm="1.0" data-especie="BOVINOS">Vacas Preñadas (1.0 UGM)</option>
+                                <option value="vacas_descarte" data-ugm="1.0" data-especie="BOVINOS">Vacas Descarte (1.0 UGM)</option>
+                                <option value="novillas_vacia" data-ugm="0.8" data-especie="BOVINOS">Novillas Vacías (0.8 UGM)</option>
+                                <option value="novillas_descarte" data-ugm="0.8" data-especie="BOVINOS">Novillas Descarte (0.8 UGM)</option>
+                                <option value="novillas_prenada" data-ugm="0.8" data-especie="BOVINOS">Novillas Preñadas (0.8 UGM)</option>
+                                <option value="novillas_monta" data-ugm="0.8" data-especie="BOVINOS">Novillas en Monta (0.8 UGM)</option>
+                                <option value="mautes" data-ugm="0.5" data-especie="BOVINOS">Mautes (0.5 UGM)</option>
+                                <option value="mautas" data-ugm="0.5" data-especie="BOVINOS">Mautas (0.5 UGM)</option>
+                                <option value="becerros" data-ugm="0.25" data-especie="BOVINOS">Becerros (0.25 UGM)</option>
+                                <option value="becerras" data-ugm="0.25" data-especie="BOVINOS">Becerras (0.25 UGM)</option>
+                                <option value="toros_padrotes" data-ugm="1.25" data-especie="BOVINOS">Toros Padrotes (1.25 UGM)</option>
+                                <option value="toros_padres_descarte" data-ugm="1.25" data-especie="BOVINOS">Toros Padres Descarte (1.25 UGM)</option>
+                            </optgroup>
+
+                            <!-- GRUPO BUFALINOS -->
+                            <optgroup label="Bufalinos - Búfalos y Búfalas" id="grupo-bufalinos">
+                                <option value="bufalas_criando" data-ugm="1.2" data-especie="BUFALINOS">Búfalas Criando (1.2 UGM)</option>
+                                <option value="bufalas_criando_pre" data-ugm="1.2" data-especie="BUFALINOS">Búfalas Criando Preñada (1.2 UGM)</option>
+                                <option value="bufalas_vacia" data-ugm="1.2" data-especie="BUFALINOS">Búfalas Vacías (1.2 UGM)</option>
+                                <option value="bufalas_prenadas" data-ugm="1.2" data-especie="BUFALINOS">Búfalas Preñadas (1.2 UGM)</option>
+                                <option value="bufalas_descarte" data-ugm="1.2" data-especie="BUFALINOS">Búfalas Descarte (1.2 UGM)</option>
+                                <option value="buvillas_vacia" data-ugm="0.95" data-especie="BUFALINOS">Buvillas Vacías (0.95 UGM)</option>
+                                <option value="buvillas_descarte" data-ugm="0.95" data-especie="BUFALINOS">Buvillas Descarte (0.95 UGM)</option>
+                                <option value="buvillas_prenada" data-ugm="0.95" data-especie="BUFALINOS">Buvillas Preñadas (0.95 UGM)</option>
+                                <option value="buvillas_monta" data-ugm="0.95" data-especie="BUFALINOS">Buvillas en Monta (0.95 UGM)</option>
+                                <option value="baute" data-ugm="0.6" data-especie="BUFALINOS">Baute (0.6 UGM)</option>
+                                <option value="bauta" data-ugm="0.6" data-especie="BUFALINOS">Bauta (0.6 UGM)</option>
+                                <option value="bucerros" data-ugm="0.3" data-especie="BUFALINOS">Bucerros (0.3 UGM)</option>
+                                <option value="bucerras" data-ugm="0.3" data-especie="BUFALINOS">Bucerras (0.3 UGM)</option>
+                                <option value="bufalos_padrote" data-ugm="1.5" data-especie="BUFALINOS">Búfalos Padrotes (1.5 UGM)</option>
+                                <option value="bufalos_padres_descarte" data-ugm="1.5" data-especie="BUFALINOS">Búfalos Padres Descarte (1.5 UGM)</option>
+                            </optgroup>
+                        </select>
+                    </div> 
                     <div class="input-group">
                         <label for="select-temporada">Temporada Agroecológica:</label>
                         <select id="select-temporada" required>
