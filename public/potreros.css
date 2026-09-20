@@ -645,3 +645,79 @@ input:focus, select:focus, textarea:focus {
         padding: 12px !important;
     }
 }
+
+/* ==========================================================================
+   CORRECCIÓN DEFINITIVA MOBILE: TAREAS PROGRAMADAS Y FECHAS
+   ========================================================================== */
+
+@media (max-width: 768px) {
+    /* 1. Forzamos un contenedor en cuadrícula limpia para cada tarjeta de tarea en móvil */
+    .tarea-item, 
+    .task-card,
+    [class*="tarea"],
+    [class*="task"] {
+        display: grid !important;
+        grid-template-columns: 1fr auto !important; /* Columna principal fluida y columna derecha para estado/acciones */
+        grid-template-areas: 
+            "titulo estado"
+            "info info"
+            "fecha fecha" !important;
+        align-items: center !important;
+        gap: 8px 12px !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+        padding: 14px !important;
+        overflow: hidden !important; /* Evita que elementos internos rompan los bordes */
+    }
+
+    /* 2. Asignación limpia de áreas por si tus elementos usan clases específicas */
+    /* Título o descripción principal de la tarea */
+    .tarea-item h3, .tarea-item .task-title, .task-card h3, .task-card .task-title {
+        grid-area: titulo;
+        margin: 0 !important;
+        font-size: 15px !important;
+    }
+
+    /* Indicador de estado (Aseguramos que se muestre y no se oculte) */
+    .tarea-item .badge-estado, 
+    .task-card .badge-estado, 
+    .status-indicator,
+    [class*="estado"],
+    [class*="badge"],
+    [class*="status"] {
+        grid-area: estado;
+        display: inline-flex !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        justify-self: end !important;
+        white-space: nowrap !important;
+        padding: 4px 8px !important;
+        font-size: 12px !important;
+        border-radius: 4px !important;
+    }
+
+    /* Contenedor de información o texto descriptivo central */
+    .tarea-item .task-info, 
+    .task-card .task-info,
+    .tarea-item p, 
+    .task-card p {
+        grid-area: info;
+        margin: 0 !important;
+    }
+
+    /* 3. Corrección absoluta para la casilla de fecha (Evita que se descuadre o se salga) */
+    .tarea-item input[type="date"],
+    .task-card input[type="date"],
+    .tarea-item .fecha-container,
+    .task-card .fecha-container,
+    input[type="date"] {
+        grid-area: fecha !important;
+        display: block !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        margin: 4px 0 0 0 !important;
+        padding: 8px !important;
+        font-size: 14px !important;
+    }
+}
