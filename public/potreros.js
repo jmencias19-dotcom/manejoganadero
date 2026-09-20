@@ -291,17 +291,57 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 4. Gestión de Eventos para Salidas Individuales y Borrado Masivo
     function vincularEventosAccionesMultiples() {
-        // Botón para retirar un sub-lote individual (Salida parcial/específica)
+        // Botón para retirar animales del lote (Parcial o Total de forma directa)
         document.querySelectorAll('.btn-retirar-lote').forEach(btn => {
             btn.addEventListener('click', async (e) => {
                 const id = e.currentTarget.dataset.id;
-                if (confirm("¿Confirma la salida de este lote específico del potrero?")) {
+                const cabezasActuales = parseInt(e.currentTarget.dataset.cabezas) || 0;
+                const categoriaNombre = e.currentTarget.dataset.categoria || 'Lote';
+                const potreroNombre = e.currentTarget.dataset.potrero || 'Potrero';
+                const factorUgm = parseFloat(e.currentTarget.dataset.factor) || 1.0;
+
+                // Solicitar únicamente cuántas cabezas se retiran
+                const inputCabezasRetiro = prompt(`Retiro para: ${categoriaNombre}\nInventario actual: ${cabezasActuales} cabezas.\n\n¿Cuántas cabezas salen del potrero?`, cabezasActuales);
+                
+                if (inputCabezasRetiro === null) return; // Si cancela
+
+                const cabezasRetiradas = parseInt(inputCabezasRetiro);
+
+                if (isNaN(cabezasRetiradas) || cabezasRetiradas <= 0) {
+                    mostrarToast("Debe ingresar un número válido de cabezas.", true);
+                    return;
+                }
+
+                if (cabezasRetiradas > cabezasActuales) {
+                    mostrarToast(`No puede retirar ${cabezasRetiradas} cabezas porque el lote solo cuenta con ${cabezasActuales}.`, true);
+                    return;
+                }
+
+                // Fecha automática del sistema (YYYY-MM-DD)
+                const fechaSalidaAutomatica = new Date().toISOString().split('T')[0];
+
+                if (confirm(`¿Confirma la salida de ${cabezasRetiradas} cabeza(s) de ${categoriaNombre} en el potrero ${potreroNombre}?`)) {
                     try {
-                        await deleteDoc(doc(db, COLLECTION_NAME, id));
-                        mostrarToast("Lote retirado del potrero con éxito.");
+                        const docRef = doc(db, COLLECTION_NAME, id);
+
+                        if (cabezasRetiradas === cabezasActuales) {
+                            // Si se retiran todas, se elimina el registro por completo
+                            await deleteDoc(docRef);
+                        } else {
+                            // Si es parcial, se descuenta directo y se recalculan las UGM
+                            const nuevasCabezas = cabezasActuales - cabezasRetiradas;
+                            const nuevoUgm = nuevasCabezas * factorUgm;
+                            await updateDoc(docRef, {
+                                cabezas: nuevasCabezas,
+                                ugm: nuevoUgm,
+                                fechaSalida: fechaSalidaAutomatica
+                            });
+                        }
+
+                        mostrarToast(`Salida de ${cabezasRetiradas} cabeza(s) aplicada con éxito.`);
                     } catch (error) {
-                        console.error("Error al retirar el lote:", error);
-                        mostrarToast("Error al procesar la salida.", true);
+                        console.error("Error al procesar la salida:", error);
+                        mostrarToast("Error al procesar la salida en la base de datos.", true);
                     }
                 }
             });
@@ -319,7 +359,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         for (const id of ids) {
                             await deleteDoc(doc(db, COLLECTION_NAME, id));
                         }
-                        mostrarToast("Potrero vaciado y registros eliminados con éxito.");
+                        mostrarToast("Potrero vaciado con éxito.");
                     } catch (error) {
                         console.error("Error al vaciar el potrero:", error);
                         mostrarToast("Error al procesar la eliminación.", true);
