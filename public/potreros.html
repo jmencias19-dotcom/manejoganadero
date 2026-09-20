@@ -3,31 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Título del Módulo - Hato Laguna Brava</title>
-    <!-- Ruta relativa unificada y con control de caché activo -->
+    <title>Gestión de Potreros - Hato Laguna Brava</title>
+    
+    <!-- Centralizado en tus Estilos Maestros Unificados (v4.1) -->
     <link rel="stylesheet" href="./potreros.css?v=4.1">
+    
+    <!-- CDN oficial de iconos FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Manifiesto PWA -->
     <link rel="manifest" href="manifest.json">
-    <!-- Iconos y fuentes -->
-    <link rel="stylesheet" href="https://cloudflare.com">
+    
+    <style>
+        .potrero-card-item {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            box-shadow: 0 2px 4px rgba(27, 67, 50, 0.02);
+            margin-bottom: 12px;
+        }
+        .potrero-card-row { display: flex; justify-content: space-between; align-items: center; }
+        .potrero-card-tag { font-size: 0.8rem; font-weight: 700; color: var(--primary-color); background-color: var(--divider-color); padding: 3px 8px; border-radius: 4px; }
+        .potrero-card-meta { font-size: 0.85rem; color: var(--text-muted); }
+        .potrero-card-title-item { font-size: 1rem; font-weight: 600; color: var(--text-main); word-break: break-word; }
+        .potrero-card-obs { font-size: 0.85rem; color: var(--text-main); background: #f0f4f1; padding: 8px; border-radius: 6px; font-style: italic; border-left: 3px solid var(--accent-color); }
+        .potrero-card-actions { display: flex; gap: 10px; align-items: center; margin-top: 4px; border-top: 1px solid var(--divider-color); padding-top: 8px; }
+        
+        .status-select { padding: 6px 10px; border-radius: 6px; border: 1px solid var(--border-color); font-weight: 700; font-size: 0.85rem; flex: 1; height: 38px; cursor: pointer; }
+        .status-estable { background-color: #d4edda !important; color: #155724 !important; }
+        .status-moderado { background-color: #fff3cd !important; color: #856404 !important; }
+        .status-critico { background-color: #f8d7da !important; color: #721c24 !important; }
+
+        .btn-delete { background-color: #c1121f; color: white; padding: 0 14px; font-size: 0.85rem; border-radius: 6px; border: none; height: 38px; display: flex; align-items: center; justify-content: center; font-weight: 600; width: auto; cursor: pointer; }
+        
+        .toast-notification { position: fixed; bottom: 20px; left: 5%; right: 5%; width: 90%; background: #222222; color: white; padding: 12px 16px; border-radius: 10px; opacity: 0; pointer-events: none; transition: opacity 0.3s, transform 0.3s; transform: translateY(20px); z-index: 1000; font-size: 0.9rem; display: flex; align-items: center; gap: 10px; border-left: 5px solid var(--accent-color); }
+        @media (min-width: 768px) { .toast-notification { width: 350px; left: 20px; right: auto; } }
+        .toast-notification.show { opacity: 1; transform: translateY(0); }
+
+        /* Área de Inteligencia Intuitiva / Asistente Forrajero */
+        .ai-recommendations-box { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 14px; margin-top: 15px; }
+        .ai-title { font-size: 0.88rem; color: #1e40af; font-weight: 700; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+        .ai-content { font-size: 0.82rem; color: #1e3a8a; line-height: 1.4; display: flex; flex-direction: column; gap: 6px; }
+    </style>
 </head>
 <body>
 
-    <!-- Contenedor dinámico donde header.js inyectará el encabezado unificado -->
     <div id="app-header"></div>
 
-    <!-- ENCABEZADO MAESTRO NATIVO (Respaldo robusto offline para el campo) -->
     <header class="main-header">
         <div class="header-container">
             <nav class="header-nav">
                 <a href="./index.html" class="btn-back" style="text-decoration: none;">
-                    <i class="fa-solid fa-arrow-left"></i> Volver al Panel
+                    <i class="fa-solid fa-arrow-left"></i> <span class="btn-back-text">Volver al Panel</span>
                 </a>
             </nav>
             <div class="header-title-wrapper">
                 <h1>Hato Laguna Brava - <span>Gestión de Potreros</span></h1>
                 <p>Matriz Técnica Oficial de Carga Animal y Control de UGM</p>
             </div>
-            <!-- Semáforo de Sincronización Estándar -->
             <div class="sync-status-wrapper">
                 <div id="light" class="semaphore online"></div>
                 <span id="statusText" class="sync-text">Sincronizado Local</span>
@@ -35,24 +72,20 @@
         </div>
     </header>
 
-    <!-- CONTENEDOR PRINCIPAL Y REJILLA (Modelo de 3 Columnas de Trabajo Uniformes) -->
     <main class="main-container">
         <div class="menu-grid">
             
-            <!-- ==========================================
-                 COLUMNA 1: FORMULARIO DE ASIGNACIÓN
-                 ========================================== -->
+            <!-- COLUMNA 1: Formulario Técnico de Asignación -->
             <section class="section-box" style="height: auto;">
                 <div class="card-header">
-                    <div class="card-icon">🌱</div>
+                    <div class="card-icon"><i class="fa-solid fa-seedling"></i></div>
                     <h2 class="card-title">Asignar Ganado a Potrero</h2>
                 </div>
                 <p class="card-description">Configure la entrada de lotes animales controlando el balance forrajero.</p>
                 
-                <form id="form-mod1" onsubmit="event.preventDefault();">
-                    
+                <form id="potreroForm">
                     <div class="input-group">
-                        <label for="select-potrero">Seleccionar Potrero</label>
+                        <label for="select-potrero">Seleccionar Potrero:</label>
                         <select id="select-potrero" required>
                             <option value="" disabled selected>-- Elija un Potrero --</option>
                             <option value="Macanillal" data-ha="432">Macanillal (432 ha)</option>
@@ -70,7 +103,7 @@
                             <option value="Módulo B" data-ha="36">Módulo B (36 ha)</option>
                             <option value="Módulo C" data-ha="36">Módulo C (36 ha)</option>
                             <option value="Módulo D" data-ha="36">Módulo D (36 ha)</option>
-                            <option value="Módulo E" data-ha="143">Módulo F (143 ha)</option>
+                            <option value="Módulo F" data-ha="143">Módulo F (143 ha)</option>
                             <option value="Saladillal" data-ha="125">Saladillal (125 ha)</option>
                             <option value="Carretera" data-ha="142">Carretera (142 ha)</option>
                             <option value="María del Carmen" data-ha="32">María del Carmen (32 ha)</option>
@@ -78,30 +111,29 @@
                         </select>
                     </div>
 
-                    <div class="kpi-container" style="margin-top: 0; gap: 10px;">
+                    <div class="kpi-container">
                         <div class="input-group">
-                            <label for="select-especie">Especie Ganadera</label>
+                            <label for="select-especie">Especie Ganadera:</label>
                             <select id="select-especie" required>
                                 <option value="BOVINOS">Bovinos (Vacunos)</option>
                                 <option value="BUFALINOS">Bufalinos (Búfalos)</option>
                             </select>
                         </div>
-                        
                         <div class="input-group">
-                            <label for="select-categoria">Categoría Zootécnica</label>
+                            <label for="select-categoria">Categoría Zootécnica:</label>
                             <select id="select-categoria" required>
                                 <option value="" disabled selected>-- Seleccione --</option>
-                                <option value="VACAS_PARIDAS">Vacas Paridas (1.0 UGM)</option>
-                                <option value="ESCAMPADAS">Vacas Escampadas (0.8 UGM)</option>
-                                <option value="NOVILLAS">Novillas (0.7 UGM)</option>
-                                <option value="MAUTES">Mautes (0.5 UGM)</option>
-                                <option value="TOROS">Toros (1.2 UGM)</option>
+                                <option value="VACAS_PARIDAS" data-ugm="1.0">Vacas Paridas (1.0 UGM)</option>
+                                <option value="ESCAMPADAS" data-ugm="0.8">Vacas Escampadas (0.8 UGM)</option>
+                                <option value="NOVILLAS" data-ugm="0.7">Novillas (0.7 UGM)</option>
+                                <option value="MAUTES" data-ugm="0.5">Mautes (0.5 UGM)</option>
+                                <option value="TOROS" data-ugm="1.2">Toros (1.2 UGM)</option>
                             </select>
                         </div>
                     </div>
 
                     <div class="input-group">
-                        <label for="select-temporada">Temporada Agroecológica</label>
+                        <label for="select-temporada">Temporada Agroecológica:</label>
                         <select id="select-temporada" required>
                             <option value="" disabled selected>-- Seleccione Época --</option>
                             <optgroup label="Invierno (Lluvias)">
@@ -117,73 +149,83 @@
                         </select>
                     </div>
 
-                   <div class="kpi-card" style="display: flex; justify-content: space-between; align-items: center; padding: 15px;">
-                        <label style="margin: 0; font-weight: bold; color: var(--primary-color);">Total UGM Global</label>
-                        <div id="kpi-total-ugm" class="kpi-value" style="margin: 0; font-size: 1.4rem;">0.00</div>
+                    <div class="kpi-container">
+                        <div class="input-group">
+                            <label for="fecha-ingreso">Fecha de Ingreso:</label>
+                            <input type="date" id="fecha-ingreso" required>
+                        </div>
+                        <div class="input-group">
+                            <label for="fecha-salida">Fecha de Salida:</label>
+                            <input type="date" id="fecha-salida" required>
+                        </div>
                     </div>
-                    <div class="kpi-card" style="display: flex; justify-content: space-between; align-items: center; padding: 15px;">
-                        <label style="margin: 0; font-weight: bold; color: var(--primary-color);">Carga Promedio (UGM/ha)</label>
-                        <div id="kpi-carga-promedio" class="kpi-value" style="margin: 0; font-size: 1.4rem;">0.00</div>
-                    </div>
-                </div>
 
-                <!-- Alerta o Estado del Balance Forrajero en tiempo real -->
-                <div class="alert-box" id="balance-forrajero-status" style="margin-top: 20px; padding: 12px; border-radius: 8px; background: #f8f9fa; border-left: 4px solid var(--primary-color);">
-                    <h4 style="margin: 0 0 5px 0; font-size: 0.95rem; color: var(--primary-color);">
-                        <i class="fa-solid fa-triangle-exclamation"></i> Estado del Balance Forrajero
-                    </h4>
-                    <p id="status-message" style="margin: 0; font-size: 0.85rem; color: #555;">
-                        Seleccione un potrero e ingrese la carga para evaluar la presión de pastoreo en sabana.
-                    </p>
+                    <div class="input-group">
+                        <label for="cantidad-cabezas">Cantidad de Cabezas:</label>
+                        <input type="number" id="cantidad-cabezas" placeholder="Ej: 80" min="1" required>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="observaciones-potrero">Observaciones de Campo:</label>
+                        <textarea id="observaciones-potrero" placeholder="Condición de pasto, sabana o rotación..." rows="2"></textarea>
+                    </div>
+                    
+                    <div style="margin-top: 10px; width: 100%;">
+                        <button type="submit" class="btn" style="width: 100%;"><i class="fa-solid fa-floppy-disk"></i> Registrar Carga Animal</button>
+                    </div>
+                </form>
+
+                <!-- ÁREA DE INTELIGENCIA FORRAJERA -->
+                <div class="ai-recommendations-box">
+                    <div class="ai-title">
+                        <i class="fa-solid fa-brain"></i> Asistente de Carga Animal (I.D.)
+                    </div>
+                    <div id="ai-potrero-content" class="ai-content">
+                        <p style="margin: 0; font-style: italic;">Seleccione un potrero y categoría para estimar el impacto forrajero...</p>
+                    </div>
                 </div>
             </section>
 
-            <!-- ==========================================
-                 COLUMNA 3: REGISTROS Y CONTROL ACTIVO
-                 ========================================== -->
+            <!-- COLUMNA 2: Tablero de Carga Ecológica y Lotes Activos -->
             <section class="section-box" style="height: auto;">
                 <div class="card-header">
-                    <div class="card-icon">📋</div>
-                    <h2 class="card-title">Lotes en Potreros</h2>
+                    <div class="card-icon"><i class="fa-solid fa-chart-pie"></i></div>
+                    <h2 class="card-title">Carga Ecológica y Lotes</h2>
                 </div>
-                <p class="card-description">Asignaciones vigentes y control de rotación de animales.</p>
-
-                <div class="table-responsive" style="max-height: 350px; overflow-y: auto; margin-top: 15px;">
-                    <table id="tabla-asignaciones" style="width: 100%; border-collapse: collapse; font-size: 0.85rem;">
-                        <thead>
-                            <tr style="background: var(--primary-color); color: white; text-align: left;">
-                                <th style="padding: 8px;">Potrero</th>
-                                <th style="padding: 8px;">Categoría</th>
-                                <th style="padding: 8px;">Cabezas</th>
-                                <th style="padding: 8px;">UGM</th>
-                                <th style="padding: 8px; text-align: center;">Acción</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tbody-asignaciones">
-                            <!-- Los registros dinámicos se inyectarán vía JavaScript -->
-                            <tr>
-                                <td colspan="5" style="text-align: center; padding: 20px; color: #777;">
-                                    No hay lotes activos registrados en este módulo.
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <p class="card-description">Indicadores agregados en tiempo real y asignaciones vigentes.</p>
+                
+                <!-- Recuadro para KPIs Globales de Carga -->
+                <div class="kpi-container" style="grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 15px;">
+                    <div class="kpi-card" style="padding: 8px 4px; background-color: #f8f9fa; border-color: #dee2e6;">
+                        <div class="kpi-title" style="font-size:0.65rem; color:var(--primary-color);">Total Animales</div>
+                        <div id="kpi-total-cabezas" class="kpi-value" style="font-size:1.1rem; color:var(--primary-color);">0</div>
+                    </div>
+                    <div class="kpi-card" style="padding: 8px 4px; background-color: #e2e8f0; border-color: #cbd5e1;">
+                        <div class="kpi-title" style="font-size:0.65rem; color:#1e293b;">Total UGM</div>
+                        <div id="kpi-total-ugm" class="kpi-value" style="font-size:1.1rem; color:#1e293b;">0.00</div>
+                    </div>
+                    <div class="kpi-card" style="padding: 8px 4px; background-color: #d1fae5; border-color: #a7f3d0;">
+                        <div class="kpi-title" style="font-size:0.65rem; color:#065f46;">Promedio UGM/ha</div>
+                        <div id="kpi-carga-promedio" class="kpi-value" style="font-size:1.1rem; color:#065f46;">0.00</div>
+                    </div>
                 </div>
 
-                <div style="margin-top: 20px; display: flex; gap: 10px;">
-                    <button type="button" id="btn-exportar-csv" class="btn" style="background-color: #28a745; flex: 1;">
-                        <i class="fa-solid fa-file-excel"></i> Exportar Datos
-                    </button>
-                    <button type="button" id="btn-limpiar-storage" class="btn" style="background-color: #dc3545; flex: 1;">
-                        <i class="fa-solid fa-trash-can"></i> Limpiar
-                    </button>
+                <!-- Contenedor dinámico donde se listarán las tarjetas de asignación -->
+                <div id="potreros-container">
+                    <p style="text-align: center; color: var(--text-muted); font-size: 0.9rem; padding: 20px;">No hay lotes activos registrados en los potreros.</p>
                 </div>
             </section>
 
-        </div> <!-- Fin de menu-grid -->
+        </div>
     </main>
 
-    <!-- Scripts de la aplicación -->
-    <script src="./potreros.js?v=4.1"></script>
+    <!-- Notificación Toast Dinámica -->
+    <div id="toast" class="toast-notification">
+        <i class="fa-solid fa-circle-check" style="color: var(--accent-color);"></i>
+        <span id="toast-message">Operación realizada con éxito</span>
+    </div>
+
+    <!-- Script del módulo de potreros -->
+    <script type="module" src="./potreros.js"></script>
 </body>
 </html>
