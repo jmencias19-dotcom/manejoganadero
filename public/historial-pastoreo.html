@@ -108,7 +108,7 @@
                 <p class="card-description">Visualización en tiempo real de días de ocupación, carga animal (UGM/ha) y semáforo de estado de potreros.</p>
                 
                 <!-- Barra de Filtros Dinámicos Integrados -->
-                <div class="filters-container" style="display: flex; gap: 8px; margin-bottom: 15px; flex-wrap: wrap;">
+                <div class="filters-container" style="display: flex; gap: 8px; margin-bottom: 15px; flex-wrap: wrap; align-items: center;">
                     <select id="filtro-historial-potrero" class="form-control" style="flex: 1; min-width: 140px; padding: 8px; border-radius: 6px; border: 1px solid var(--border-color); font-size: 0.85rem;">
                         <option value="">Todos los Potreros</option>
                     </select>
@@ -123,13 +123,17 @@
                         <option value="moderado">🟡 Moderado</option>
                         <option value="critico">🔴 Crítico</option>
                     </select>
+                    <!-- Botón Operativo de Carga y Sincronización con estilo institucional -->
+                    <button id="btn-sincronizar-historial" type="button" class="btn" style="padding: 9px 14px; font-size: 0.85rem; display: flex; align-items: center; gap: 6px; cursor: pointer; white-space: nowrap;">
+                        <i class="fa-solid fa-rotate"></i> Sincronizar
+                    </button>
                 </div>
 
                 <div class="table-responsive">
                     <table class="data-table">
                         <thead>
                             <tr>
-                                <!-- Cabeceras eliminadas según solicitud -->
+                                <!-- Cabeceras eliminadas previamente -->
                             </tr>
                         </thead>
                         <tbody id="tabla-potreros-body">
@@ -150,15 +154,15 @@
                     <div class="card-icon"><i class="fa-solid fa-compass"></i></div>
                     <h2 class="card-title">Acciones de Campo</h2>
                 </div>
-                <p class="card-description">Monitoreo inteligente y sugerencias basadas en el análisis de pasturas.</p>
+                <p class="card-description">Monitoreo inteligente y sugerencias basadas en la UGM de cada potrero.</p>
 
                 <!-- ÁREA DE APRENDIZAJE E INTELIGENCIA INTUITIVA (I.D.) -->
                 <div class="ai-recommendations-box" style="margin-top: 0;">
                     <div class="ai-title">
-                        <i class="fa-solid fa-brain"></i> Asistente de Pasturas (I.D.)
+                        <i class="fa-solid fa-brain"></i> Asistente de Carga Animal (I.D.)
                     </div>
                     <div id="ai-sugerencias-content" class="ai-content">
-                        <p style="margin: 0; font-style: italic;">Analizando tiempos de ocupación y descanso de potreros...</p>
+                        <p style="margin: 0; font-style: italic;">Analizando la UGM y presión de carga por potrero...</p>
                     </div>
                 </div>
             </section>
