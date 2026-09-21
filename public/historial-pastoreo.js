@@ -12,6 +12,9 @@ import {
     orderBy 
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
+// Importación del catálogo maestro unificado de potreros de la finca
+import { CATALOGO_POTREROS } from "./potreros.js";
+
 // Credenciales oficiales de Firebase para Hato Laguna Brava
 const firebaseConfig = {
     apiKey: "AIzaSyADbn4gV6ROrppvanBM835IRyX3U8wdAnk",
@@ -32,6 +35,9 @@ let cachePastoreo = [];
 document.addEventListener('DOMContentLoaded', () => {
     console.log("Inicializando módulo de Historial y Estado de Potreros - Hato Laguna Brava...");
     
+    // Cargar vista inicial con el catálogo base mientras responde la red
+    inicializarVistaConCatalogoBase();
+
     // Iniciar sincronización en tiempo real con Firestore
     iniciarSincronizacionHistorialFirebase();
 
@@ -52,44 +58,61 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
+function inicializarVistaConCatalogoBase() {
+    cachePastoreo = CATALOGO_POTREROS.map(p => ({
+        id: p.id,
+        potrero: p.potrero,
+        area: p.area,
+        estado: 'Descanso',
+        diasOcupacion: 0,
+        descanso: 30, // Días base referenciales por defecto
+        ugmHa: 0.00,
+        activo: false,
+        loteActual: 'Sin lote asignado',
+        cabezas: 0
+    }));
+
+    poblarSelectorPotreros(cachePastoreo);
+    renderizarTablaHistorial(cachePastoreo);
+    actualizarMetricasGlobales(cachePastoreo);
+    generarSugerenciasPastoreo(cachePastoreo);
+}
+
 function iniciarSincronizacionHistorialFirebase() {
-    // Consulta general ordenada por fecha o nombre para capturar todo el inventario de potreros
     const q = query(collection(db, COLLECTION_NAME), orderBy("timestamp", "desc"));
 
     onSnapshot(q, (snapshot) => {
-        const datosMapeados = [];
+        const registrosNube = {};
 
         snapshot.forEach((docSnap) => {
             const item = docSnap.data();
-            
-            // Determinación lógica del estado según carga animal y parámetros de campo
-            const cabezas = Number(item.cabezas || item.animalesCount || 0);
-            const estaOcupado = cabezas > 0 || item.estado === 'Ocupado';
-            
-            datosMapeados.push({
-                id: docSnap.id,
-                potrero: item.potrero || item.nombrePotrero || 'Potrero sin identificar',
-                area: Number(item.areaHa || item.superficie || 1),
-                estado: estaOcupado ? 'Ocupado' : 'Descanso',
-                // Si está ocupado calcula días de ocupación, si está en descanso calcula días de reposo
-                diasOcupacion: estaOcupado ? calcularDiasTranscurridos(item.fechaIngreso || item.ultimaModificacion) : 0,
-                descanso: !estaOcupado ? calcularDiasTranscurridos(item.fechaSalida || item.ultimaModificacion) : 0,
-                ugmHa: Number(item.cargaHa || item.ugmHa || 0),
-                activo: estaOcupado,
-                loteActual: item.lote || item.loteAsignado || 'Sin lote asignado',
-                cabezas: cabezas
-            });
+            const nombrePotrero = item.potrero || item.nombrePotrero;
+            if (nombrePotrero && !registrosNube[nombrePotrero]) {
+                registrosNube[nombrePotrero] = item;
+            }
         });
 
-        cachePastoreo = datosMapeados;
+        // Mapeo cruzado: Fusionamos el catálogo maestro fijo con los estados reales en la nube
+        cachePastoreo = CATALOGO_POTREROS.map(cat => {
+            const item = registrosNube[cat.potrero];
+            const cabezas = item ? Number(item.cabezas || item.animalesCount || 0) : 0;
+            const estaOcupado = cabezas > 0 || (item && item.estado === 'Ocupado');
+            
+            return {
+                id: cat.id,
+                potrero: cat.potrero,
+                area: cat.area,
+                estado: estaOcupado ? 'Ocupado' : 'Descanso',
+                diasOcupacion: estaOcupado ? calcularDiasTranscurridos(item.fechaIngreso || item.ultimaModificacion) : 0,
+                descanso: !estaOcupado ? calcularDiasTranscurridos(item ? item.fechaSalida : null) : 30,
+                ugmHa: item ? Number(item.cargaHa || item.ugmHa || 0) : 0.00,
+                activo: estaOcupado,
+                loteActual: item ? (item.lote || item.loteAsignado || 'Lote Activo') : 'Sin lote asignado',
+                cabezas: cabezas
+            };
+        });
 
-        if (cachePastoreo.length === 0) {
-            cachePastoreo = generarDatosPruebaPastoreo(); 
-            actualizarSemoforoUI(true, "Sin registros en nube (Usando mock base)");
-        } else {
-            actualizarSemoforoUI(true, `Sincronizado (${cachePastoreo.length} potreros monitoreados)`);
-        }
-
+        actualizarSemoforoUI(true, `Sincronizado (${cachePastoreo.length} potreros del hato)`);
         poblarSelectorPotreros(cachePastoreo);
         renderizarTablaHistorial(cachePastoreo);
         actualizarMetricasGlobales(cachePastoreo);
@@ -98,8 +121,8 @@ function iniciarSincronizacionHistorialFirebase() {
 
     }, (error) => {
         console.error("Error al sincronizar historial con Firebase:", error);
-        actualizarSemoforoUI(false, "Error de conexión en red");
-        mostrarToast("Error al leer la base de datos de potreros.", true);
+        actualizarSemoforoUI(false, "Modo sin conexión (Catálogo local)");
+        mostrarToast("Error de red. Usando catálogo local.", true);
     });
 }
 
@@ -110,14 +133,6 @@ function calcularDiasTranscurridos(fechaStr) {
     const diferenciaTiempo = hoy - fechaBase;
     const dias = Math.floor(diferenciaTiempo / (1000 * 60 * 60 * 24));
     return dias >= 0 ? dias : 0;
-}
-
-function generarDatosPruebaPastoreo() {
-    return [
-        { id: "P-01", potrero: "Banco Alto 1", area: 32.5, estado: "Ocupado", descanso: 0, ugmHa: 1.42, activo: true, diasOcupacion: 4, lote: "Mestizos Brahman Levante", cabezas: 45 },
-        { id: "P-02", potrero: "Módulo Bajío 3", area: 45.0, estado: "Descanso", descanso: 38, ugmHa: 0.00, activo: false, diasOcupacion: 0, lote: "Ninguno", cabezas: 0 },
-        { id: "P-03", potrero: "Banco Largo 2", area: 28.0, estado: "Descanso", descanso: 45, ugmHa: 0.00, activo: false, diasOcupacion: 0, lote: "Ninguno", cabezas: 0 }
-    ];
 }
 
 function poblarSelectorPotreros(datos) {
@@ -179,7 +194,6 @@ function generarSugerenciasPastoreo(datos) {
     const lista = document.getElementById('lista-potreros-sugeridos');
     if (!lista) return;
 
-    // Filtra los que están en descanso y los ordena de mayor a menor tiempo de reposo para sugerir rotación
     const enDescanso = datos.filter(i => i.estado === 'Descanso');
     const sugeridos = enDescanso.sort((a, b) => b.descanso - a.descanso).slice(0, 2);
 
@@ -231,9 +245,11 @@ function actualizarSemoforoUI(exito, mensaje) {
     if (light && text) {
         if (exito) {
             light.className = "semaphore online";
+            light.style.backgroundColor = "#52b788";
             text.textContent = mensaje || "Sincronizado";
         } else {
             light.className = "semaphore offline";
+            light.style.backgroundColor = "#c1121f";
             text.textContent = mensaje || "Sin conexión";
         }
     }
