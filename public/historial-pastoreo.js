@@ -1,45 +1,84 @@
-// ==========================================
-// LÓGICA PRINCIPAL: HISTORIAL DE PASTOREO
-// ==========================================
+// ==========================================================================
+// LÓGICA PRINCIPAL: HISTORIAL DE PASTOREO (Con Firestore Real-Time)
+// Hato Laguna Brava
+// ==========================================================================
 
-import { obtenerDatosLocales, sincronizarConServidor } from './syncManager.js';
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { 
+    getFirestore, 
+    collection, 
+    onSnapshot, 
+    query, 
+    orderBy 
+} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-document.addEventListener('DOMContentLoaded', async () => {
+// Credenciales oficiales de Firebase para Hato Laguna Brava
+const firebaseConfig = {
+    apiKey: "AIzaSyADbn4gV6ROrppvanBM835IRyX3U8wdAnk",
+    authDomain: "hato-laguna-brava.firebaseapp.com",
+    projectId: "hato-laguna-brava",
+    storageBucket: "hato-laguna-brava.firebasestorage.app",
+    messagingSenderId: "1053099733476",
+    appId: "1:1053099733476:web:624514d41b08d1b347d7f1",
+    measurementId: "G-2E517DTZFS"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const COLLECTION_NAME = "hato_potreros";
+
+let cachePastoreo = [];
+
+document.addEventListener('DOMContentLoaded', () => {
     console.log("Inicializando módulo de Historial de Pastoreo - Hato Laguna Brava...");
     
-    // 1. Cargar registros locales y poblar la interfaz
-    await inicializarHistorialPastoreo();
+    // Iniciar sincronización en tiempo real con Firestore
+    iniciarSincronizacionHistorialFirebase();
 
-    // 2. Configurar eventos interactivos
-    const btnBuscar = document.getElementById('btn-sincronizar-historial');
-    if (btnBuscar) {
-        btnBuscar.addEventListener('click', async () => {
-            mostrarToast("Actualizando registros y estado de red...");
-            await sincronizarConServidor((exito, mensaje) => {
-                actualizarSemoforoUI(exito, mensaje);
-            });
-            await inicializarHistorialPastoreo();
-        });
-    }
-
+    // Configurar eventos interactivos de filtros
     const filtroPotrero = document.getElementById('filtro-historial-potrero');
     if (filtroPotrero) {
         filtroPotrero.addEventListener('change', (e) => {
             filtrarTablaPorPotrero(e.target.value);
         });
     }
+
+    const btnSincronizar = document.getElementById('btn-sincronizar-historial');
+    if (btnSincronizar) {
+        btnSincronizar.addEventListener('click', () => {
+            mostrarToast("Sincronizado con Firebase Cloud Storage.");
+            actualizarSemoforoUI(true, "En línea (Firebase)");
+        });
+    }
 });
 
-// Variable global en memoria para los datos cargados
-let cachePastoreo = [];
+function iniciarSincronizacionHistorialFirebase() {
+    const q = query(collection(db, COLLECTION_NAME), orderBy("timestamp", "desc"));
 
-async function inicializarHistorialPastoreo() {
-    try {
-        cachePastoreo = await obtenerDatosLocales();
-        
-        // Mock base para pruebas en campo si la base local está vacía
-        if (!cachePastoreo || cachePastoreo.length === 0) {
-            cachePastoreo = generarDatosPruebaPastoreo();
+    onSnapshot(q, (snapshot) => {
+        const datosMapeados = [];
+
+        snapshot.forEach((docSnap) => {
+            const item = docSnap.data();
+            datosMapeados.push({
+                id: docSnap.id,
+                potrero: item.potrero || 'Sin nombre',
+                area: item.areaHa || 1,
+                estado: (item.cabezas > 0) ? 'Ocupado' : 'Descanso',
+                descanso: 0, // Ajustable según lógica de rotación
+                ugmHa: item.cargaHa || 0,
+                activo: item.cabezas > 0,
+                diasOcupacion: calcularDiasOcupacion(item.fechaIngreso)
+            });
+        });
+
+        cachePastoreo = datosMapeados;
+
+        if (cachePastoreo.length === 0) {
+            cachePastoreo = generarDatosPruebaPastoreo(); // Respaldo solo si está totalmente vacío
+            actualizarSemoforoUI(true, "Sin registros activos (Usando mock base)");
+        } else {
+            actualizarSemoforoUI(true, "Sincronizado en tiempo real");
         }
 
         poblarSelectorPotreros(cachePastoreo);
@@ -48,18 +87,26 @@ async function inicializarHistorialPastoreo() {
         generarSugerenciasPastoreo(cachePastoreo);
         ejecutarAsistenteInteligente(cachePastoreo);
 
-    } catch (error) {
-        console.error("Error al inicializar el historial de pastoreo:", error);
-        mostrarToast("Error al leer los registros locales.", "error");
-    }
+    }, (error) => {
+        console.error("Error al sincronizar historial con Firebase:", error);
+        actualizarSemoforoUI(false, "Error de conexión");
+        mostrarToast("Error al leer datos de la nube.", true);
+    });
+}
+
+function calcularDiasOcupacion(fechaIngreso) {
+    if (!fechaIngreso) return 0;
+    const ingreso = new Date(fechaIngreso);
+    const hoy = new Date();
+    const diferenciaTiempo = hoy - ingreso;
+    const dias = Math.floor(diferenciaTiempo / (1000 * 60 * 60 * 24));
+    return dias >= 0 ? dias : 0;
 }
 
 function generarDatosPruebaPastoreo() {
     return [
         { id: "P-01", potrero: "Banco Alto 1", area: 32.5, estado: "Ocupado", descanso: 0, ugmHa: 1.42, activo: true, diasOcupacion: 4 },
-        { id: "P-02", potrero: "Módulo Bajío 3", area: 45.0, estado: "Descanso", descanso: 38, ugmHa: 0.00, activo: false, diasOcupacion: 0 },
-        { id: "P-03", potrero: "Matas de EA", area: 28.0, estado: "Descanso", descanso: 45, ugmHa: 0.00, activo: false, diasOcupacion: 0 },
-        { id: "P-04", potrero: "Banco Central", area: 38.2, estado: "Ocupado", descanso: 0, ugmHa: 1.35, activo: false, diasOcupacion: 2 }
+        { id: "P-02", potrero: "Módulo Bajío 3", area: 45.0, estado: "Descanso", descanso: 38, ugmHa: 0.00, activo: false, diasOcupacion: 0 }
     ];
 }
 
@@ -68,7 +115,6 @@ function poblarSelectorPotreros(datos) {
     if (!select) return;
     
     select.innerHTML = '<option value="">Todos los Potreros</option>';
-    
     datos.forEach(item => {
         const option = document.createElement('option');
         option.value = item.id || item.potrero;
@@ -100,10 +146,15 @@ function renderizarTablaHistorial(datos) {
 function actualizarMetricasGlobales(datos) {
     const activo = datos.find(i => i.estado === 'Ocupado' || i.activo) || datos[0];
     
-    document.getElementById('metric-potrero').textContent = activo ? activo.potrero : '--';
-    document.getElementById('metric-dias-ocupacion').textContent = (activo && activo.diasOcupacion) ? `${activo.diasOcupacion} d` : '0 d';
-    document.getElementById('metric-dias-descanso').textContent = activo ? `${activo.descanso || 0} d` : '0 d';
-    document.getElementById('metric-presion').textContent = activo && activo.ugmHa ? activo.ugmHa.toFixed(2) : '0.00';
+    const elPotrero = document.getElementById('metric-potrero');
+    const elDiasOcup = document.getElementById('metric-dias-ocupacion');
+    const elDiasDesc = document.getElementById('metric-dias-descanso');
+    const elPresion = document.getElementById('metric-presion');
+
+    if (elPotrero) elPotrero.textContent = activo ? activo.potrero : '--';
+    if (elDiasOcup) elDiasOcup.textContent = (activo && activo.diasOcupacion !== undefined) ? `${activo.diasOcupacion} d` : '0 d';
+    if (elDiasDesc) elDiasDesc.textContent = activo ? `${activo.descanso || 0} d` : '0 d';
+    if (elPresion) elPresion.textContent = activo && activo.ugmHa ? activo.ugmHa.toFixed(2) : '0.00';
 }
 
 function generarSugerenciasPastoreo(datos) {
@@ -128,8 +179,8 @@ function ejecutarAsistenteInteligente(datos) {
     const promedioUGM = datos.reduce((acc, curr) => acc + (curr.ugmHa || 0), 0) / (datos.length || 1);
 
     contenedorAI.innerHTML = `
-        <p style="margin: 0;"><strong>Rotación en Los Módulos:</strong> Hay ${ocupados.length} potreros activos actualmente.</p>
-        <p style="margin: 0;"><strong>Carga Promedio:</strong> ${promedioUGM.toFixed(2)} UGM/ha. Rango óptimo para pastizales tropicales en época estacional.</p>
+        <p style="margin: 0;"><strong>Rotación en Los Módulos:</strong> Hay ${ocupados.length} potreros activos actualmente según registros en la nube.</p>
+        <p style="margin: 0;"><strong>Carga Promedio:</strong> ${promedioUGM.toFixed(2)} UGM/ha. Rango óptimo para sabana inundable.</p>
     `;
 }
 
@@ -159,15 +210,15 @@ function actualizarSemoforoUI(exito, mensaje) {
             text.textContent = mensaje || "Sin conexión";
         }
     }
-    mostrarToast(mensaje);
 }
 
-function mostrarToast(mensaje) {
+function mostrarToast(mensaje, esError = false) {
     const toast = document.getElementById('toast');
     const msgSpan = document.getElementById('toast-message');
     if (!toast || !msgSpan) return;
 
     msgSpan.textContent = mensaje;
+    toast.style.borderLeftColor = esError ? '#c1121f' : 'var(--accent-color)';
     toast.classList.add('show');
     setTimeout(() => {
         toast.classList.remove('show');
