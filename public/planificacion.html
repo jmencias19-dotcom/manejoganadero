@@ -168,6 +168,16 @@
                     </div>
                 </div>
 
+                <!-- SELECTORES DE FILTRO DINÁMICO (NUEVO) -->
+                <div class="filters-container" style="display: flex; gap: 10px; margin-bottom: 15px;">
+                    <select id="filtro-potrero" class="form-control" style="flex: 1; padding: 8px; border-radius: 6px; border: 1px solid var(--border-color); font-size: 0.85rem;">
+                        <option value="">Todos los Potreros / Lotes</option>
+                    </select>
+                    <select id="filtro-personal" class="form-control" style="flex: 1; padding: 8px; border-radius: 6px; border: 1px solid var(--border-color); font-size: 0.85rem;">
+                        <option value="">Todo el Personal</option>
+                    </select>
+                </div>
+
                 <!-- Contenedor dinámico donde se listarán las tarjetas de tareas -->
                 <div id="tasks-container">
                     <p style="text-align: center; color: var(--text-muted); font-size: 0.9rem; padding: 20px;">No hay tareas registradas actualmente.</p>
@@ -183,7 +193,7 @@
         <span id="toast-message">Operación realizada con éxito</span>
     </div>
 
-    <!-- Script del módulo corregido a ruta relativa para evitar errores 404 en PWA -->
+    <!-- Script del módulo de tareas -->
     <script type="module" src="./tareas.js"></script>
 </body>
 </html>
