@@ -72,7 +72,7 @@
         .ai-title { font-size: 0.88rem; color: #1e40af; font-weight: 700; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
         .ai-content { font-size: 0.82rem; color: #1e3a8a; line-height: 1.4; display: flex; flex-direction: column; gap: 6px; }
 
-        /* Estilos específicos para métricas y listas añadidas */
+        /* Estilos específicos para métricas y listas unificadas */
         .metrics-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
@@ -119,7 +119,7 @@
             border: 1px solid var(--border-color);
             border-radius: 8px;
             background: var(--divider-color, #e9ecef);
-            height: 160px;
+            height: 140px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -129,6 +129,7 @@
             font-size: 0.85rem;
             text-align: center;
             padding: 10px;
+            margin-bottom: 15px;
         }
     </style>
 </head>
@@ -158,7 +159,7 @@
     <main class="main-container">
         <div class="menu-grid">
             
-            <!-- COLUMNA 1: Tabla Principal de Historial y Filtros Dinámicos -->
+            <!-- COLUMNA 1: Tabla Principal de Historial y Filtros Simplificados -->
             <section class="section-box" style="height: auto;">
                 <div class="card-header">
                     <div class="card-icon"><i class="fa-solid fa-map-location-dot"></i></div>
@@ -166,21 +167,10 @@
                 </div>
                 <p class="card-description">Visualización en tiempo real de días de ocupación, carga animal (UGM/ha) y semáforo de estado de potreros.</p>
                 
-                <!-- Barra de Filtros Dinámicos Integrados -->
+                <!-- Barra de Filtros (Solo selector de potrero y botón de sincronización) -->
                 <div class="filters-container" style="display: flex; gap: 8px; margin-bottom: 15px; flex-wrap: wrap; align-items: center;">
-                    <select id="filtro-historial-potrero" class="form-control" style="flex: 1; min-width: 140px; padding: 8px; border-radius: 6px; border: 1px solid var(--border-color); font-size: 0.85rem;">
+                    <select id="filtro-historial-potrero" class="form-control" style="flex: 1; min-width: 180px; padding: 8px; border-radius: 6px; border: 1px solid var(--border-color); font-size: 0.85rem;">
                         <option value="">Todos los Potreros</option>
-                    </select>
-                    <select id="filtro-historial-especie" class="form-control" style="flex: 1; min-width: 120px; padding: 8px; border-radius: 6px; border: 1px solid var(--border-color); font-size: 0.85rem;">
-                        <option value="">Todas las Especies</option>
-                        <option value="BOVINOS">Bovinos</option>
-                        <option value="BUFALINOS">Bufalinos</option>
-                    </select>
-                    <select id="filtro-historial-estado" class="form-control" style="flex: 1; min-width: 120px; padding: 8px; border-radius: 6px; border: 1px solid var(--border-color); font-size: 0.85rem;">
-                        <option value="">Todos los Estados</option>
-                        <option value="estable">🟢 Estable</option>
-                        <option value="moderado">🟡 Moderado</option>
-                        <option value="critico">🔴 Crítico</option>
                     </select>
                     <!-- Botón Operativo con estilo institucional -->
                     <button id="btn-sincronizar-historial" type="button" class="btn" style="padding: 9px 14px; font-size: 0.85rem; display: flex; align-items: center; gap: 6px; cursor: pointer; white-space: nowrap;">
@@ -202,13 +192,13 @@
                 </div>
             </section>
 
-            <!-- COLUMNA 2: Historial de Ocupación y Rotación (Parámetros, Sugerencias y Mapa) -->
+            <!-- COLUMNA 2: Historial de Ocupación y Rotación (Contenido unificado, ordenado y práctico) -->
             <section class="section-box" style="height: auto;">
                 <div class="card-header">
                     <div class="card-icon"><i class="fa-solid fa-clock-rotate-left"></i></div>
                     <h2 class="card-title">Historial de Ocupación y Rotación</h2>
                 </div>
-                <p class="card-description">Métricas clave de uso, selección inteligente de potreros para pastoreo y geoposicionamiento.</p>
+                <p class="card-description">Panel integral de parámetros, sugerencias de pastoreo y geoposicionamiento del hato.</p>
 
                 <!-- Métricas Operativas de Parámetros -->
                 <div class="metrics-grid" style="margin-top: 15px;">
@@ -231,7 +221,7 @@
                 </div>
 
                 <!-- Lista de Potreros Sugeridos para Pastoreo -->
-                <div style="margin-top: 15px;">
+                <div>
                     <h3 style="font-size: 0.9rem; color: var(--primary-color); margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
                         <i class="fa-solid fa-list-check"></i> Potreros Sugeridos para Pastoreo
                     </h3>
@@ -244,18 +234,18 @@
                 </div>
 
                 <!-- Mapa de los Potreros del Hato -->
-                <div style="margin-top: 15px;">
+                <div>
                     <h3 style="font-size: 0.9rem; color: var(--primary-color); margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
                         <i class="fa-solid fa-map"></i> Mapa de Potreros del Hato
                     </h3>
                     <div id="mapa-potreros-box" class="map-container-box">
-                        <i class="fa-solid fa-map-location-dot" style="font-size: 1.5rem; color: var(--primary-color);"></i>
+                        <i class="fa-solid fa-map-location-dot" style="font-size: 1.4rem; color: var(--primary-color);"></i>
                         <span>Vista cartográfica de potreros y sectores de Los Módulos</span>
                     </div>
                 </div>
 
-                <!-- ÁREA DE APRENDIZAJE E INTELIGENCIA INTUITIVA (I.D.) -->
-                <div class="ai-recommendations-box">
+                <!-- Áre de Inteligencia Intuitiva / Asistente UGM -->
+                <div class="ai-recommendations-box" style="margin-top: 0;">
                     <div class="ai-title">
                         <i class="fa-solid fa-brain"></i> Asistente de Carga Animal (I.D.)
                     </div>
