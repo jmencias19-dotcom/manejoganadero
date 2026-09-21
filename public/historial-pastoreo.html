@@ -15,7 +15,7 @@
     <link rel="manifest" href="manifest.json">
     
     <style>
-        /* Estilos específicos adaptados para tablas de control de potreros y pasturas */
+        /* Estilos específicos adaptados para tablas y componentes de control de potreros */
         .table-responsive {
             width: 100%;
             overflow-x: auto;
@@ -94,28 +94,29 @@
     <main class="main-container">
         <div class="menu-grid">
             
-            <!-- COLUMNA 1: Tabla Principal de Historial de Potreros -->
+            <!-- COLUMNA 1: Tabla Principal de Historial y KPIs de Potreros -->
             <section class="section-box" style="height: auto;">
                 <div class="card-header">
                     <div class="card-icon"><i class="fa-solid fa-map-location-dot"></i></div>
                     <h2 class="card-title">Registro de Ocupación y Rotación</h2>
                 </div>
-                <p class="card-description">Visualización analítica de días de ocupación, descanso, presión de pastoreo (UA/ha) y semáforo operativo.</p>
+                <p class="card-description">Visualización en tiempo real de días de ocupación, carga animal (UA/ha) y semáforo de estado de potreros.</p>
                 
                 <div class="table-responsive">
                     <table class="data-table">
                         <thead>
                             <tr>
                                 <th><i class="fa-solid fa-signs-post"></i> Potrero / Área</th>
-                                <th><i class="fa-solid fa-cow"></i> Lote y Presión</th>
-                                <th><i class="fa-regular fa-calendar-days"></i> Fechas / Tiempos</th>
+                                <th><i class="fa-solid fa-cow"></i> Lote y Presión (UA/ha)</th>
+                                <th><i class="fa-regular fa-calendar-days"></i> Fechas / Ocupación</th>
                                 <th><i class="fa-solid fa-seedling"></i> Estado / Alerta</th>
                             </tr>
                         </thead>
                         <tbody id="tabla-potreros-body">
+                            <!-- El archivo historialPotreros.js inyectará dinámicamente las filas aquí -->
                             <tr>
                                 <td colspan="4" style="text-align: center; color: var(--text-muted); padding: 20px;">
-                                    Cargando historial de potreros locales...
+                                    Cargando registros y calculando indicadores locales...
                                 </td>
                             </tr>
                         </tbody>
@@ -123,13 +124,13 @@
                 </div>
             </section>
 
-            <!-- COLUMNA 2: Acciones y Acceso Rápido Operativo -->
+            <!-- COLUMNA 2: Acciones y Acceso Operativo Rápido -->
             <section class="section-box" style="height: auto;">
                 <div class="card-header">
                     <div class="card-icon"><i class="fa-solid fa-compass"></i></div>
-                    <h2 class="card-title">Gestión de Potreros</h2>
+                    <h2 class="card-title">Acciones de Campo</h2>
                 </div>
-                <p class="card-description">Controle los movimientos de rebaños entre potreros y el registro de aforos de pasturas.</p>
+                <p class="card-description">Gestione los flujos de rotación de lotes, salidas de potrero y registro de aforos.</p>
                 
                 <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 15px;">
                     <a href="./asignar-potrero.html" class="btn" style="text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 8px;">
@@ -153,7 +154,7 @@
         <span id="toast-message">Operación realizada con éxito</span>
     </div>
 
-    <!-- Scripts del Sistema y Módulo -->
+    <!-- Scripts del Sistema y Módulo (Carga como Módulo JS para la BD local) -->
     <script src="./js/header.js"></script>
     <script src="./js/syncManager.js"></script>
     <script type="module" src="./historialPotreros.js"></script>
