@@ -1,6 +1,6 @@
 /* ==========================================================================
-   Módulo: Planificación de Tareas y Control Operativo (Con Filtros y Firestore)
-   Hato Laguna Brava
+   Módulo: Planificación de Tareas y Control Operativo (Integrado v4.1)
+   Hato Laguna Brava - Mantecal, Apure, Venezuela
    ========================================================================== */
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
@@ -31,7 +31,7 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const COLLECTION_NAME = "hato_tareas";
 
-// Variable global para almacenar la lista completa de tareas en memoria
+// Caché global en memoria para operaciones reactivas
 let tareasCache = [];
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -43,9 +43,24 @@ document.addEventListener('DOMContentLoaded', () => {
     const kpiProceso = document.getElementById('kpi-proceso');
     const kpiEjecutadas = document.getElementById('kpi-ejecutadas');
 
-    // Elementos de Filtro (Asegúrate de agregarlos en tu HTML si deseas usarlos)
+    // Elementos de Filtro Reactivo
     const filtroPotrero = document.getElementById('filtro-potrero');
     const filtroPersonal = document.getElementById('filtro-personal');
+
+    // Función auxiliar para mostrar notificaciones Toast estandarizadas
+    function mostrarToast(mensaje, tipo = "success") {
+        const toast = document.getElementById('toast');
+        const toastMessage = document.getElementById('toast-message');
+        if (!toast || !toastMessage) return;
+
+        toastMessage.textContent = mensaje;
+        toast.style.borderLeftColor = tipo === "error" ? "#c1121f" : "var(--accent-color, #2d6a4f)";
+        toast.classList.add('show');
+
+        setTimeout(() => {
+            toast.classList.remove('show');
+        }, 3500);
+    }
 
     // Escuchar cambios en tiempo real desde Firestore
     function iniciarSincronizacionEnTiempoReal() {
@@ -54,7 +69,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const q = query(collection(db, COLLECTION_NAME), orderBy("fecha", "desc"));
         
         onSnapshot(q, (snapshot) => {
-            tareasCache = []; // Limpiar caché local
+            tareasCache = []; 
             
             snapshot.forEach((docSnap) => {
                 tareasCache.push({
@@ -63,26 +78,27 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             });
 
-            // Actualizar selectores de filtros dinámicamente si existen
+            // Actualizar opciones de filtros sin duplicar elementos existentes
             actualizarOpcionesFiltros(tareasCache);
 
-            // Renderizar aplicando los filtros actuales
+            // Renderizar la vista aplicando los filtros actuales
             renderizarTareasFiltradas();
 
         }, (error) => {
             console.error("Error al sincronizar con Firestore: ", error);
-            tasksContainer.innerHTML = '<p style="text-align: center; color: var(--danger); padding: 20px;">Error de sincronización con la base de datos.</p>';
+            tasksContainer.innerHTML = '<p style="text-align: center; color: #c1121f; padding: 20px;">Error de sincronización con la base de datos de tareas.</p>';
+            mostrarToast("Error de conexión con Firestore", "error");
         });
     }
 
-    // Función principal de renderizado y aplicación de filtros
+    // Función principal de renderizado y aplicación de filtros cruzados
     window.renderizarTareasFiltradas = function() {
         if (!tasksContainer) return;
 
         const potreroSeleccionado = filtroPotrero ? filtroPotrero.value.toLowerCase() : '';
         const personalSeleccionado = filtroPersonal ? filtroPersonal.value.toLowerCase() : '';
 
-        // Filtrar el caché local
+        // Filtrado sobre el caché local
         const tareasFiltradas = tareasCache.filter(tarea => {
             const coincidePotrero = !potreroSeleccionado || (tarea.potrero && tarea.potrero.toLowerCase().includes(potreroSeleccionado));
             const coincidePersonal = !personalSeleccionado || (tarea.personal && tarea.personal.toLowerCase().includes(personalSeleccionado));
@@ -92,7 +108,7 @@ document.addEventListener('DOMContentLoaded', () => {
         tasksContainer.innerHTML = '';
 
         if (tareasFiltradas.length === 0) {
-            tasksContainer.innerHTML = '<p style="text-align: center; color: var(--text-muted); font-size: 0.9rem; padding: 20px;">No hay tareas que coincidan con los filtros seleccionados.</p>';
+            tasksContainer.innerHTML = '<p style="text-align: center; color: var(--text-muted); font-size: 0.9rem; padding: 20px;">No hay labores operativas que coincidan con los filtros seleccionados.</p>';
             actualizarKPIs(0, 0, 0);
             return;
         }
@@ -133,11 +149,11 @@ document.addEventListener('DOMContentLoaded', () => {
         vincularEventosDinamicos();
     };
 
-    // Poblar dinámicamente los selectores de filtro para evitar duplicados
+    // Poblar de forma inteligente los selectores de filtros sin duplicar
     function actualizarOpcionesFiltros(data) {
         if (filtroPotrero && filtroPotrero.options.length <= 1) {
-            const potreros = [...new Set(data.map(t => t.potrero).filter(Boolean))].sort();
-            potreros.forEach(p => {
+            const potrerosUnicos = [...new Set(data.map(t => t.potrero).filter(Boolean))].sort();
+            potrerosUnicos.forEach(p => {
                 const opt = document.createElement('option');
                 opt.value = p;
                 opt.textContent = p;
@@ -146,8 +162,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (filtroPersonal && filtroPersonal.options.length <= 1) {
-            const personales = [...new Set(data.map(t => t.personal).filter(Boolean))].sort();
-            personales.forEach(p => {
+            const personalesUnicos = [...new Set(data.map(t => t.personal).filter(Boolean))].sort();
+            personalesUnicos.forEach(p => {
                 const opt = document.createElement('option');
                 opt.value = p;
                 opt.textContent = p;
@@ -156,7 +172,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Escuchar cambios en los elementos de selección de filtro
+    // Listeners para los filtros
     if (filtroPotrero) filtroPotrero.addEventListener('change', renderizarTareasFiltradas);
     if (filtroPersonal) filtroPersonal.addEventListener('change', renderizarTareasFiltradas);
 
@@ -173,6 +189,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (kpiEjecutadas) kpiEjecutadas.textContent = ejecutadas;
     }
 
+    // Vincular eventos a los elementos generados dinámicamente
     function vincularEventosDinamicos() {
         document.querySelectorAll('.status-select').forEach(select => {
             select.addEventListener('change', async (e) => {
@@ -181,8 +198,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 try {
                     const tareaRef = doc(db, COLLECTION_NAME, id);
                     await updateDoc(tareaRef, { estado: nuevoEstado });
+                    mostrarToast("Estado de labor actualizado correctamente");
                 } catch (error) {
                     console.error("Error al actualizar estado:", error);
+                    mostrarToast("No se pudo actualizar el estado", "error");
                 }
             });
         });
@@ -190,18 +209,20 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('.btn-delete').forEach(btn => {
             btn.addEventListener('click', async (e) => {
                 const id = e.currentTarget.dataset.id;
-                if (confirm("¿Está seguro de eliminar esta labor del registro?")) {
+                if (confirm("¿Está seguro de eliminar esta labor del registro operativo?")) {
                     try {
                         await deleteDoc(doc(db, COLLECTION_NAME, id));
+                        mostrarToast("Labor eliminada del registro");
                     } catch (error) {
                         console.error("Error al eliminar la tarea:", error);
+                        mostrarToast("Error al eliminar la labor", "error");
                     }
                 }
             });
         });
     }
 
-    // Envío del Formulario
+    // Manejo de envío del formulario de planificación
     if (taskForm) {
         taskForm.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -223,23 +244,28 @@ document.addEventListener('DOMContentLoaded', () => {
                     await addDoc(collection(db, COLLECTION_NAME), nuevaTarea);
                     taskForm.reset();
                     
+                    // Restablecer fecha actual por defecto tras el envío
                     const ahora = new Date();
                     const today = `${ahora.getFullYear()}-${String(ahora.getMonth() + 1).padStart(2, '0')}-${String(ahora.getDate()).padStart(2, '0')}`;
                     const inputFecha = document.getElementById('fecha');
                     if (inputFecha) inputFecha.value = today;
+
+                    mostrarToast("Labor planificada y sincronizada con éxito");
                 } catch (error) {
                     console.error("Error al guardar la tarea:", error);
-                    alert("No se pudo guardar la tarea. Verifique su conexión.");
+                    mostrarToast("Error de red: No se pudo guardar la labor", "error");
                 }
             }
         });
     }
 
+    // Inicializar fecha por defecto en el formulario si está vacío
     const inputFecha = document.getElementById('fecha');
     if (inputFecha && !inputFecha.value) {
         const ahora = new Date();
         inputFecha.value = `${ahora.getFullYear()}-${String(ahora.getMonth() + 1).padStart(2, '0')}-${String(ahora.getDate()).padStart(2, '0')}`;
     }
 
+    // Iniciar sincronización de base de datos al cargar el DOM
     iniciarSincronizacionEnTiempoReal();
 });
