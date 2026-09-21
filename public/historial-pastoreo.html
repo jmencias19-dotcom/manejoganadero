@@ -1,63 +1,133 @@
-<!-- ==========================================================================
-     Vista HTML: Módulo de Historial Indefinido y Rutas de Pastoreo
-     Hato Laguna Brava - Apure, Venezuela
-     ========================================================================== -->
-
-<div class="container-fluid py-3" style="background-color: #f8f9fa; min-height: 100vh;">
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Inteligencia de Rutas y Historial - Hato Laguna Brava</title>
     
-    <!-- Encabezado del Módulo -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div style="background: linear-gradient(135deg, #1b5e20, #2e7d32); color: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-                <h2 style="margin: 0; font-size: 1.5rem; font-weight: 700;">
-                    <i class="fa-solid fa-route"></i> Inteligencia de Rutas & Historial Indefinido
-                </h2>
-                <p style="margin: 5px 0 0 0; font-size: 0.9rem; opacity: 0.9;">
-                    Hato Laguna Brava | Memoria agronómica acumulada de los 20 potreros
-                </p>
+    <!-- Centralizado en tus Estilos Maestros Unificados (v4.1) -->
+    <link rel="stylesheet" href="./potreros.css?v=4.1">
+    
+    <!-- CDN oficial de iconos FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Manifiesto PWA -->
+    <link rel="manifest" href="manifest.json">
+    
+    <style>
+        .potrero-card-item {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            box-shadow: 0 2px 4px rgba(27, 67, 50, 0.02);
+            margin-bottom: 12px;
+        }
+        .potrero-card-row { display: flex; justify-content: space-between; align-items: center; }
+        .potrero-card-tag { font-size: 0.8rem; font-weight: 700; color: var(--primary-color); background-color: var(--divider-color); padding: 3px 8px; border-radius: 4px; }
+        .potrero-card-meta { font-size: 0.85rem; color: var(--text-muted); }
+        .potrero-card-title-item { font-size: 1rem; font-weight: 600; color: var(--text-main); word-break: break-word; }
+        .potrero-card-obs { font-size: 0.85rem; color: var(--text-main); background: #f0f4f1; padding: 8px; border-radius: 6px; font-style: italic; border-left: 3px solid var(--accent-color); }
+        .potrero-card-actions { display: flex; gap: 10px; align-items: center; margin-top: 4px; border-top: 1px solid var(--divider-color); padding-top: 8px; }
+        
+        .status-select { padding: 6px 10px; border-radius: 6px; border: 1px solid var(--border-color); font-weight: 700; font-size: 0.85rem; flex: 1; height: 38px; cursor: pointer; }
+        .status-estable { background-color: #d4edda !important; color: #155724 !important; }
+        .status-moderado { background-color: #fff3cd !important; color: #856404 !important; }
+        .status-critico { background-color: #f8d7da !important; color: #721c24 !important; }
+
+        .btn-delete { background-color: #c1121f; color: white; padding: 0 14px; font-size: 0.85rem; border-radius: 6px; border: none; height: 38px; display: flex; align-items: center; justify-content: center; font-weight: 600; width: auto; cursor: pointer; }
+        
+        .toast-notification { position: fixed; bottom: 20px; left: 5%; right: 5%; width: 90%; background: #222222; color: white; padding: 12px 16px; border-radius: 10px; opacity: 0; pointer-events: none; transition: opacity 0.3s, transform 0.3s; transform: translateY(20px); z-index: 1000; font-size: 0.9rem; display: flex; align-items: center; gap: 10px; border-left: 5px solid var(--accent-color); }
+        @media (min-width: 768px) { .toast-notification { width: 350px; left: 20px; right: auto; } }
+        .toast-notification.show { opacity: 1; transform: translateY(0); }
+
+        /* Área de Inteligencia Forrajera y Rutas */
+        .ai-recommendations-box { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 14px; margin-top: 15px; }
+        .ai-title { font-size: 0.88rem; color: #1e40af; font-weight: 700; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+        .ai-content { font-size: 0.82rem; color: #1e3a8a; line-height: 1.4; display: flex; flex-direction: column; gap: 6px; }
+    </style>
+</head>
+<body>
+
+    <!-- ==========================================
+         SEGMENTO 1: ENCABEZADO MAESTRO DEL MÓDULO
+         ========================================== -->
+    <header class="main-header">
+        <div class="header-container">
+            <nav class="header-nav">
+                <a href="./index.html" class="btn-back" style="text-decoration: none;">
+                    <i class="fa-solid fa-arrow-left"></i> <span class="btn-back-text">Volver al Panel</span>
+                </a>
+            </nav>
+            <div class="header-title-wrapper">
+                <h1>Hato Laguna Brava - <span>Inteligencia Forrajera y Rutas de Pastoreo</span></h1>
+                <p>Memoria agronómica acumulada y optimización de ciclos de descanso en los 20 potreros</p>
+            </div>
+            <div class="sync-status-wrapper">
+                <div id="light" class="semaphore online"></div>
+                <span id="statusText" class="sync-text">Sincronizado Local</span>
             </div>
         </div>
-    </div>
+    </header>
 
-    <div class="row">
-        <!-- Columna Izquierda: Panel de Recomendación Predictiva por IA -->
-        <div class="col-lg-4 mb-4">
-            <div style="background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border-top: 4px solid #198754;">
-                <h4 style="font-size: 1.1rem; color: #1b5e20; margin-bottom: 15px; font-weight: 700;">
-                    <i class="fa-solid fa-lightbulb"></i> Recomendador de Ingreso
-                </h4>
-                
-                <!-- Contenedor donde el script inyectará la recomendación óptima -->
-                <div id="ai-recomendacion-rutas">
-                    <div style="color: #6c757d; font-size: 0.88rem; text-align: center; padding: 20px;">
-                        <i class="fa-solid fa-spinner fa-spin"></i> Analizando ciclos históricos...
+    <!-- ==========================================
+         SEGMENTO 2: CONTENEDOR Y GRILLA PRINCIPAL
+         ========================================== -->
+    <main class="main-container">
+        <div class="menu-grid">
+            
+            <!-- Columna Izquierda: Panel Predictivo / Recomendador -->
+            <section class="section-box">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <i class="fa-solid fa-lightbulb"></i>
+                    </div>
+                    <div>
+                        <h2 class="card-title" style="font-size: 1.1rem;">Recomendador de Ingreso</h2>
                     </div>
                 </div>
-            </div>
-        </div>
+                <p class="card-description">
+                    Algoritmo basado en la memoria histórica de vaciados para determinar los potreros óptimos de descanso.
+                </p>
+                <div id="ai-recomendacion-rutas">
+                    <!-- Inyección dinámica desde el script de inteligencia -->
+                </div>
+            </section>
 
-        <!-- Columna Derecha: Matriz de Estado y Memoria de los Potreros -->
-        <div class="col-lg-8">
-            <div style="background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+            <!-- Columna Derecha: Matriz de Historial y Ciclos -->
+            <section class="section-box">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                    <h4 style="font-size: 1.1rem; color: #1b5e20; margin: 0; font-weight: 700;">
-                        <i class="fa-solid fa-chart-pie"></i> Matriz de Descanso y Ciclos Acumulados
-                    </h4>
-                    <span style="font-size: 0.8rem; background: #e8f5e9; color: #2e7d32; padding: 4px 10px; border-radius: 6px; font-weight: 600;">
-                        Actualización en Tiempo Real
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <div class="card-icon" style="margin-bottom: 0;">
+                            <i class="fa-solid fa-chart-pie"></i>
+                        </div>
+                        <h2 class="card-title" style="font-size: 1.1rem; margin: 0;">Matriz de Estado y Descanso</h2>
+                    </div>
+                    <span style="font-size: 0.75rem; background: #e8f5e9; color: var(--secondary-color); padding: 4px 10px; border-radius: 6px; font-weight: 700; text-transform: uppercase;">
+                        Tiempo Real
                     </span>
                 </div>
-
-                <!-- Contenedor donde el script genera la lista o tarjetas de los 20 potreros -->
-                <div id="matriz-historial-container" style="max-height: 600px; overflow-y: auto; padding-right: 5px;">
-                    <div style="color: #6c757d; font-size: 0.88rem; text-align: center; padding: 40px;">
-                        <i class="fa-solid fa-database"></i> Cargando registro histórico de potreros...
-                    </div>
+                <p class="card-description">
+                    Registro acumulado del comportamiento productivo y cargas históricas medias del hato.
+                </p>
+                <div id="matriz-historial-container" class="potreros-container">
+                    <!-- Inyección dinámica de los 20 potreros -->
                 </div>
-            </div>
-        </div>
-    </div>
-</div>
+            </section>
 
-<!-- Importante: Asegúrate de enlazar tu script tipo module al final o en el head -->
-<script type="module" src="./historial-inteligente-pastoreo.js"></script>
+        </div>
+    </main>
+
+    <!-- Componente Toast de Notificaciones del Sistema -->
+    <div id="toastNotification" class="toast-notification">
+        <i class="fa-solid fa-circle-info" style="color: var(--accent-color); font-size: 1.1rem;"></i>
+        <span id="toastMessage">Operación completada con éxito.</span>
+    </div>
+
+    <!-- Script Principal del Módulo -->
+    <script type="module" src="./historial-inteligente-pastoreo.js"></script>
+</body>
+</html>
