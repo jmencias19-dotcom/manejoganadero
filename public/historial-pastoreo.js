@@ -12,17 +12,19 @@ import {
     orderBy 
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-// Importación robusta del catálogo maestro unificado de potreros con alias de respaldo
-import { CATALOGO_POTREROS as CATALOGO_IMPORTADO } from "./potreros.js";
+// Importación corregida por defecto para empalmar con potreros.js
+import CATALOGO_IMPORTADO from "./potreros.js";
 
-// Respaldo de seguridad en caso de que el módulo externo exporte con otra nomenclatura
+// Respaldo de seguridad en caso de que el módulo externo varíe o no cargue
 const CATALOGO_POTREROS = (typeof CATALOGO_IMPORTADO !== 'undefined' && Array.isArray(CATALOGO_IMPORTADO)) 
     ? CATALOGO_IMPORTADO 
-    : [
-        { id: "P-01", potrero: "Modo 1 - Banco de Soyana", area: 45.5 },
-        { id: "P-02", potrero: "Modo 2 -estero Principal", area: 60.0 },
-        { id: "P-03", potrero: "Módulo 3 - Cububal", area: 52.0 }
-      ];
+    : (CATALOGO_IMPORTADO && Array.isArray(CATALOGO_IMPORTADO.default)) 
+        ? CATALOGO_IMPORTADO.default 
+        : [
+            { id: "P-01", potrero: "Modo 1 - Banco de Soyana", area: 45.5 },
+            { id: "P-02", potrero: "Modo 2 - Estero Principal", area: 60.0 },
+            { id: "P-03", potrero: "Módulo 3 - Cububal", area: 52.0 }
+          ];
 
 // Credenciales oficiales de Firebase para Hato Laguna Brava
 const firebaseConfig = {
