@@ -226,8 +226,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 const registrosActivos = grupo.registros.filter(r => (r.cabezas || 0) > 0);
                 const resumenIngresos = registrosActivos.length > 0 ? registrosActivos.map(r => `
                     <div style="margin-bottom: 8px; border-bottom: 1px dashed #dee2e6; padding-bottom: 6px;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px;">
-                            <span style="flex-grow: 1;">• <b>${r.cabezas} cab.</b> de ${r.nombreCategoria || r.categoria} (${r.especie || 'BOVINOS'})</span>
+                        <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px;">
+                            <span style="font-size: 0.85rem; line-height: 1.2; word-break: break-word; flex: 1;">
+                                • <b>${r.cabezas} cab.</b> de ${r.nombreCategoria || r.categoria} (${r.especie || 'BOVINOS'})
+                            </span>
                             <button class="btn-retirar-lote" 
                                 data-id="${r.id}" 
                                 data-cabezas="${r.cabezas}" 
@@ -236,7 +238,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                 data-factor="${r.factorUgm || 1.0}"
                                 data-salidas="${encodeURIComponent(JSON.stringify(r.salidas || []))}"
                                 title="Retirar animales de este lote" 
-                                style="background: #e63946; color: white; border: none; padding: 6px 10px; border-radius: 4px; font-size: 0.75rem; font-weight: 600; cursor: pointer; white-space: nowrap; flex-shrink: 0; display: inline-flex; align-items: center; gap: 4px;">
+                                style="background: #e63946; color: white; border: none; padding: 4px 10px; border-radius: 4px; font-size: 0.75rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; height: 26px; line-height: 1; flex-shrink: 0;">
                                 <i class="fa-solid fa-right-from-bracket"></i> Salida
                             </button>
                         </div>
@@ -247,7 +249,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         ${r.observaciones ? `<div style="font-size: 0.78rem; color: #6c757d; font-style: italic; margin-top: 1px;"><b>Obs:</b> ${r.observaciones}</div>` : ''}
                     </div>
                 `).join('') : '<div style="font-size: 0.8rem; color: #6c757d; font-style: italic;">Sin lotes activos en ingreso.</div>';
-
                 // B. Historial de Salidas Parciales
                 let todasLasSalidas = [];
                 grupo.registros.forEach(r => {
