@@ -12,19 +12,21 @@ import {
     orderBy 
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-// Importación corregida por defecto para empalmar con potreros.js
-import CATALOGO_IMPORTADO from "./potreros.js";
+// Importamos todo el módulo de potreros como un objeto para evitar conflictos de nombres
+import * as MODULO_POTREROS from "./potreros.js";
 
-// Respaldo de seguridad en caso de que el módulo externo varíe o no cargue
-const CATALOGO_POTREROS = (typeof CATALOGO_IMPORTADO !== 'undefined' && Array.isArray(CATALOGO_IMPORTADO)) 
-    ? CATALOGO_IMPORTADO 
-    : (CATALOGO_IMPORTADO && Array.isArray(CATALOGO_IMPORTADO.default)) 
-        ? CATALOGO_IMPORTADO.default 
-        : [
-            { id: "P-01", potrero: "Modo 1 - Banco de Soyana", area: 45.5 },
-            { id: "P-02", potrero: "Modo 2 - Estero Principal", area: 60.0 },
-            { id: "P-03", potrero: "Módulo 3 - Cububal", area: 52.0 }
-          ];
+// Extraemos de forma segura el arreglo sin importar qué nombre use el archivo externo
+const CATALOGO_POTREROS = (Array.isArray(MODULO_POTREROS.CATALOGO_POTREROS)) 
+    ? MODULO_POTREROS.CATALOGO_POTREROS 
+    : (Array.isArray(MODULO_POTREROS.default)) 
+        ? MODULO_POTREROS.default 
+        : (Object.values(MODULO_POTREROS).find(val => Array.isArray(val))) 
+            ? Object.values(MODULO_POTREROS).find(val => Array.isArray(val))
+            : [
+                { id: "P-01", potrero: "Modo 1 - Banco de Soyana", area: 45.5 },
+                { id: "P-02", potrero: "Modo 2 - Estero Principal", area: 60.0 },
+                { id: "P-03", potrero: "Módulo 3 - Cububal", area: 52.0 }
+              ];
 
 // Credenciales oficiales de Firebase para Hato Laguna Brava
 const firebaseConfig = {
