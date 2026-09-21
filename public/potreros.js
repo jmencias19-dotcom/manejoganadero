@@ -3,8 +3,7 @@
     Hato Laguna Brava
     ========================================================================== */
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { 
+import { obtenerDatosLocales, guardarLocalmente as guardarDatoLocal } from './syncManager.js';
     getFirestore, 
     collection, 
     addDoc, 
