@@ -66,12 +66,35 @@
         }
         @media (min-width: 768px) { .toast-notification { width: 350px; left: 20px; right: auto; } }
         .toast-notification.show { opacity: 1; transform: translateY(0); }
+
+        /* Área de Inteligencia Intuitiva / Asistente */
+        .ai-recommendations-box { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 14px; margin-top: 15px; }
+        .ai-title { font-size: 0.88rem; color: #1e40af; font-weight: 700; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+        .ai-content { font-size: 0.82rem; color: #1e3a8a; line-height: 1.4; display: flex; flex-direction: column; gap: 6px; }
     </style>
 </head>
 <body>
 
     <!-- Punto de inyección dinámica del Header institucional (header.js) -->
     <div id="app-header"></div>
+
+    <header class="main-header">
+        <div class="header-container">
+            <nav class="header-nav">
+                <a href="./index.html" class="btn-back" style="text-decoration: none;">
+                    <i class="fa-solid fa-arrow-left"></i> <span class="btn-back-text">Volver al Panel</span>
+                </a>
+            </nav>
+            <div class="header-title-wrapper">
+                <h1>Hato Laguna Brava - <span>Potreros</span></h1>
+                <p>Historial de Ocupación y Rotación</p>
+            </div>
+            <div class="sync-status-wrapper">
+                <div id="light" class="semaphore online"></div>
+                <span id="statusText" class="sync-text">Sincronizado Local</span>
+            </div>
+        </div>
+    </header>
 
     <main class="main-container">
         <div class="menu-grid">
@@ -124,7 +147,7 @@
                 </div>
             </section>
 
-            <!-- COLUMNA 2: Acciones y Acceso Operativo Rápido -->
+            <!-- COLUMNA 2: Acciones y Acceso Operativo Rápido + Asistente I.D. -->
             <section class="section-box" style="height: auto;">
                 <div class="card-header">
                     <div class="card-icon"><i class="fa-solid fa-compass"></i></div>
@@ -142,6 +165,16 @@
                     <a href="./index.html" class="btn" style="background-color: var(--text-muted); text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 8px;">
                         <i class="fa-solid fa-house"></i> Volver al Inicio
                     </a>
+                </div>
+
+                <!-- ÁREA DE APRENDIZAJE E INTELIGENCIA INTUITIVA (I.D.) -->
+                <div class="ai-recommendations-box">
+                    <div class="ai-title">
+                        <i class="fa-solid fa-brain"></i> Asistente de Pasturas (I.D.)
+                    </div>
+                    <div id="ai-sugerencias-content" class="ai-content">
+                        <p style="margin: 0; font-style: italic;">Analizando tiempos de ocupación y descanso de potreros...</p>
+                    </div>
                 </div>
             </section>
 
