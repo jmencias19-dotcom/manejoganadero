@@ -15,7 +15,6 @@
     <link rel="manifest" href="manifest.json">
     
     <style>
-        /* Estilos específicos adaptados para tablas y componentes de control de potreros */
         .table-responsive {
             width: 100%;
             overflow-x: auto;
@@ -77,20 +76,38 @@
     <main class="main-container">
         <div class="menu-grid">
             
-            <!-- COLUMNA 1: Tabla Principal de Historial y KPIs de Potreros -->
+            <!-- COLUMNA 1: Tabla Principal de Historial y Filtros Dinámicos -->
             <section class="section-box" style="height: auto;">
                 <div class="card-header">
                     <div class="card-icon"><i class="fa-solid fa-map-location-dot"></i></div>
                     <h2 class="card-title">Registro de Ocupación y Rotación</h2>
                 </div>
-                <p class="card-description">Visualización en tiempo real de días de ocupación, carga animal (UA/ha) y semáforo de estado de potreros.</p>
+                <p class="card-description">Visualización en tiempo real de días de ocupación, carga animal (UGM/ha) y semáforo de estado de potreros.</p>
                 
+                <!-- Barra de Filtros Dinámicos Integrados -->
+                <div class="filters-container" style="display: flex; gap: 8px; margin-bottom: 15px; flex-wrap: wrap;">
+                    <select id="filtro-historial-potrero" class="form-control" style="flex: 1; min-width: 140px; padding: 8px; border-radius: 6px; border: 1px solid var(--border-color); font-size: 0.85rem;">
+                        <option value="">Todos los Potreros</option>
+                    </select>
+                    <select id="filtro-historial-especie" class="form-control" style="flex: 1; min-width: 120px; padding: 8px; border-radius: 6px; border: 1px solid var(--border-color); font-size: 0.85rem;">
+                        <option value="">Todas las Especies</option>
+                        <option value="BOVINOS">Bovinos</option>
+                        <option value="BUFALINOS">Bufalinos</option>
+                    </select>
+                    <select id="filtro-historial-estado" class="form-control" style="flex: 1; min-width: 120px; padding: 8px; border-radius: 6px; border: 1px solid var(--border-color); font-size: 0.85rem;">
+                        <option value="">Todos los Estados</option>
+                        <option value="estable">🟢 Estable</option>
+                        <option value="moderado">🟡 Moderado</option>
+                        <option value="critico">🔴 Crítico</option>
+                    </select>
+                </div>
+
                 <div class="table-responsive">
                     <table class="data-table">
                         <thead>
                             <tr>
                                 <th><i class="fa-solid fa-signs-post"></i> Potrero / Área</th>
-                                <th><i class="fa-solid fa-cow"></i> Lote y Presión (UA/ha)</th>
+                                <th><i class="fa-solid fa-cow"></i> Lote y Presión (UGM/ha)</th>
                                 <th><i class="fa-regular fa-calendar-days"></i> Fechas / Ocupación</th>
                                 <th><i class="fa-solid fa-seedling"></i> Estado / Alerta</th>
                             </tr>
@@ -99,7 +116,7 @@
                             <!-- El archivo historialPotreros.js inyectará dinámicamente las filas aquí -->
                             <tr>
                                 <td colspan="4" style="text-align: center; color: var(--text-muted); padding: 20px;">
-                                    Cargando registros y calculando indicadores locales...
+                                    Cargando registros y sincronizando con Firestore...
                                 </td>
                             </tr>
                         </tbody>
@@ -137,11 +154,11 @@
         <span id="toast-message">Operación realizada con éxito</span>
     </div>
 
-    <!-- Scripts del Sistema (Asegurarse de que header.js y syncManager.js estén ubicados en la carpeta /js/) -->
+    <!-- Scripts del Sistema -->
     <script src="./js/header.js"></script>
     <script src="./js/syncManager.js"></script>
     
-    <!-- Lógica Principal del Módulo (Debe estar en la raíz junto al HTML) -->
+    <!-- Lógica Principal del Módulo -->
     <script type="module" src="./historialPotreros.js"></script>
 </body>
 </html>
