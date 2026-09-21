@@ -446,7 +446,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const umbral = esInvierno ? UMBRAL_INVIERNO : UMBRAL_VERANO;
             const estadoCarga = cargaHa > umbral ? 'CRITICO' : (cargaHa > (umbral * 0.85) ? 'MODERADO' : 'ESTABLE');
 
-            const nuevoRegistro =[
+            const nuevoRegistro = {
                 potrero: potreroNombre,
                 areaHa: areaHa,
                 especie: especie,
@@ -464,7 +464,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 estadoCarga: estadoCarga,
                 salidas: [],
                 timestamp: Date.now()
-            ]; // Ajuste sintáctico controlado en llave de objeto
+            };
 
             try {
                 await addDoc(collection(db, COLLECTION_NAME), nuevoRegistro);
