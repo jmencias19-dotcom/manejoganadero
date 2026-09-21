@@ -44,6 +44,7 @@
         @media (min-width: 768px) { .toast-notification { width: 350px; left: 20px; right: auto; } }
         .toast-notification.show { opacity: 1; transform: translateY(0); }
 
+        /* Área de Inteligencia Forrajera */
         .ai-recommendations-box { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 14px; margin-top: 15px; }
         .ai-title { font-size: 0.88rem; color: #1e40af; font-weight: 700; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
         .ai-content { font-size: 0.82rem; color: #1e3a8a; line-height: 1.4; display: flex; flex-direction: column; gap: 6px; }
@@ -110,11 +111,11 @@
                         </select>
                     </div>
 
-                    <!-- Selector de Especie Añadido para cohexionar con potreros.js -->
+                    <!-- Selector de Especie Pecuaria -->
                     <div class="input-group">
                         <label for="select-especie">Especie Pecuaria:</label>
                         <select id="select-especie" required>
-                            <option value="BOVINOS">Bovinos (Mestizos Brahman)</option>
+                            <option value="BOVINOS" selected>Bovinos (Mestizos Brahman)</option>
                             <option value="BUFALINOS">Bufalinos (Búfalos)</option>
                         </select>
                     </div>
@@ -175,7 +176,7 @@
                     </div>
                 </form>
 
-                <!-- ÁREA DE INTELIGENCIA FORRAJERA -->
+                <!-- ÁREA DE INTELIGENCIA FORRAJERA (I.D.) -->
                 <div class="ai-recommendations-box">
                     <div class="ai-title">
                         <i class="fa-solid fa-brain"></i> Asistente de Carga Animal (I.D.)
@@ -208,6 +209,25 @@
                         <div class="kpi-title" style="font-size:0.65rem; color:#065f46;">Promedio UGM/ha</div>
                         <div id="kpi-carga-promedio" class="kpi-value" style="font-size:1.1rem; color:#065f46;">0.00</div>
                     </div>
+                </div>
+
+                <!-- SELECTORES DE FILTRO DINÁMICO REACTIVOS -->
+                <div class="filters-container" style="display: flex; gap: 8px; margin-bottom: 15px; flex-wrap: wrap;">
+                    <select id="filtro-potrero" class="form-control" style="flex: 1; min-width: 130px; padding: 8px; border-radius: 6px; border: 1px solid var(--border-color); font-size: 0.85rem;">
+                        <option value="">Todos los Potreros</option>
+                        <!-- Se puebla dinámicamente o usa las mismas opciones -->
+                    </select>
+                    <select id="filtro-especie" class="form-control" style="flex: 1; min-width: 120px; padding: 8px; border-radius: 6px; border: 1px solid var(--border-color); font-size: 0.85rem;">
+                        <option value="">Todas las Especies</option>
+                        <option value="BOVINOS">Bovinos</option>
+                        <option value="BUFALINOS">Bufalinos</option>
+                    </select>
+                    <select id="filtro-estado-carga" class="form-control" style="flex: 1; min-width: 120px; padding: 8px; border-radius: 6px; border: 1px solid var(--border-color); font-size: 0.85rem;">
+                        <option value="">Todos los Estados</option>
+                        <option value="estable">🟢 Estable</option>
+                        <option value="moderado">🟡 Moderado</option>
+                        <option value="critico">🔴 Crítico</option>
+                    </select>
                 </div>
 
                 <!-- Contenedor dinámico donde se listarán las tarjetas de asignación -->
