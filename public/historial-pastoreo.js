@@ -10,13 +10,11 @@ import {
     addDoc,  
     onSnapshot,  
     doc,  
-    getDoc,  
-    deleteDoc,  
     query,  
-    orderBy,
-    getDocs
+    orderBy  
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
+// Credenciales oficiales de Firebase para Hato Laguna Brava
 const firebaseConfig = {
     apiKey: "AIzaSyADbn4gV6ROrppvanBM835IRyX3U8wdAnk",
     authDomain: "hato-laguna-brava.firebaseapp.com",
@@ -30,10 +28,9 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-const COL_ACTUAL = "hato_potreros_actual";
 const COL_HISTORIAL = "historial_rotaciones_indefinido_hl";
 
-// Catálogo Oficial de los 20 Potreros de Hato Laguna Brava
+// Catálogo Oficial de los 20 Potreros de Hato Laguna Brava (Áreas en Hectáreas)
 const CATALOGO_POTREROS = [
     { potrero: "Macanillal", area: 432 },
     { potrero: "El Galpón", area: 569 },
@@ -62,7 +59,8 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 /**
- * Motor analítico que procesa la memoria indefinida y alimenta el sistema de rutas
+ * Motor analítico en tiempo real que procesa la memoria indefinida 
+ * y alimenta el sistema predictivo de rutas de pastoreo.
  */
 function sincronizarHistorialIndefinido() {
     const contenedorMatriz = document.getElementById('matriz-historial-container');
@@ -95,7 +93,6 @@ function sincronizarHistorialIndefinido() {
                 historialesPorPotrero[pot].acumuladoCargaHa += (data.cargaPromedioHa || 0);
                 historialesPorPotrero[pot].historialCiclos.push(data);
                 
-                // Tomar la fecha de vaciado más reciente como referencia de descanso actual
                 if (data.fechaVaciadoReal) {
                     historialesPorPotrero[pot].ultimoVaciado = data.fechaVaciadoReal;
                 }
@@ -115,7 +112,7 @@ function sincronizarHistorialIndefinido() {
                 const diffTime = Math.abs(new Date() - new Date(h.ultimoVaciado));
                 diasDescansoReal = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
             } else {
-                diasDescansoReal = 999; // Máxima prioridad si nunca ha sido usado recientemente
+                diasDescansoReal = 999; // Máxima prioridad si nunca ha sido usado en el histórico
             }
 
             potrerosParaRuta.push({
@@ -149,7 +146,6 @@ function sincronizarHistorialIndefinido() {
 
         // Motor de Inteligencia Predictiva basado en el Histórico Indefinido
         if (panelRecomendaciones) {
-            // Ordenar potreros priorizando los que tienen mayor tiempo de reposo biológico
             potrerosParaRuta.sort((a, b) => b.diasDescanso - a.diasDescanso);
             const opt1 = potrerosParaRuta[0] || { potrero: 'Macanillal', diasDescanso: 60 };
             const opt2 = potrerosParaRuta[1] || { potrero: 'El Galpón', diasDescanso: 45 };
@@ -176,35 +172,35 @@ function sincronizarHistorialIndefinido() {
 }
 
 /**
- * Función global que debe invocarse en la app cuando un potrero es VACIADO (cabezas = 0)
- * Esta función toma todo el récord del potrero activo y lo archiva indefinidamente en el histórico.
+ * Función global exportable que se ejecuta automáticamente al vaciar un potrero.
+ * Archiva de forma permanente e indefinida el récord del ciclo en Firestore.
  */
 export async function archivarCicloAlVaciarse(potreroNombre, datosLoteActivo) {
     try {
         const fechaVaciadoReal = new Date().toISOString().split('T')[0];
+        const fechaIngreso = datosLoteActivo.fechaIngreso || fechaVaciadoReal;
         
-        // Calcular días reales transcurridos desde el ingreso hasta el vaciado completo
-        const diffTime = Math.abs(new Date(fechaVaciadoReal) - new Date(datosLoteActivo.fechaIngreso || fechaVaciadoReal));
+        const diffTime = Math.abs(new Date(fechaVaciadoReal) - new Date(fechaIngreso));
         const diasOcupacion = Math.max(1, Math.ceil(diffTime / (1000 * 60 * 60 * 24)));
 
         const registroHistoricoPermanente = {
             potrero: potreroNombre,
-            areaHa: datosLoteActivo.areaHa,
+            areaHa: datosLoteActivo.areaHa || 1,
             especie: datosLoteActivo.especie || 'BOVINOS',
-            categoriaPrincipal: datosLoteActivo.nombreCategoria || 'Lote Mixto',
-            totalCabezasInicial: datosLoteActivo.cabezasIniciales || datosLoteActivo.cabezas,
+            categoriaPrincipal: datosLoteActivo.nombreCategoria || datosLoteActivo.categoria || 'Lote Mixto',
+            totalCabezasInicial: datosLoteActivo.cabezasIniciales || datosLoteActivo.cabezas || 0,
             cargaPromedioHa: datosLoteActivo.cargaHa || 0,
-            fechaIngreso: datosLoteActivo.fechaIngreso || fechaVaciadoReal,
+            fechaIngreso: fechaIngreso,
             fechaVaciadoReal: fechaVaciadoReal,
             diasOcupacionReales: diasOcupacion,
             temporada: datosLoteActivo.temporada || 'General',
-            observacionesFinales: datosLoteActivo.observaciones || 'Cierre por vaciado de potrero',
+            observacionesFinales: datosLoteActivo.observaciones || 'Cierre automático por vaciado total de potrero',
             timestampArchivo: Date.now()
         };
 
-        // Guardar en la colección de memoria indefinida
+        // Almacenamiento indefinido en la colección histórica de Hato Laguna Brava
         await addDoc(collection(db, COL_HISTORIAL), registroHistoricoPermanente);
-        console.log(`[HISTÓRICO INDEFINIDO] El potrero ${potreroNombre} archivó su ciclo de forma exitosa tras su vaciado.`);
+        console.log(`[HISTÓRICO INDEFINIDO] El potrero ${potreroNombre} archivó su ciclo exitosamente.`);
     } catch (error) {
         console.error("Error al archivar el ciclo en el histórico indefinido:", error);
     }
