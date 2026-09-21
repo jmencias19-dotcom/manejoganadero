@@ -1,345 +1,63 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Historial de Pastoreo - Hato Laguna Brava</title>
+<!-- ==========================================================================
+     Vista HTML: Módulo de Historial Indefinido y Rutas de Pastoreo
+     Hato Laguna Brava - Apure, Venezuela
+     ========================================================================== -->
+
+<div class="container-fluid py-3" style="background-color: #f8f9fa; min-height: 100vh;">
     
-    <!-- Centralizado en tus Estilos Maestros Unificados (v4.1) -->
-    <link rel="stylesheet" href="./potreros.css?v=4.1">
-    
-    <!-- CDN oficial de iconos FontAwesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Manifiesto PWA -->
-    <link rel="manifest" href="manifest.json">
-    
-    <style>
-        /* Optimizaciones generales y responsive mobile-first */
-        body {
-            box-sizing: border-box;
-            overflow-x: hidden;
-            margin: 0;
-            padding: 0;
-            background-color: var(--bg-color, #f4f6f4);
-            font-family: var(--font-family, sans-serif);
-            color: var(--text-main, #333);
-        }
-        .main-container {
-            width: 100%;
-            padding: 10px;
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        /* Estilos del Cintillo Institucional / Header */
-        .app-header-bar {
-            background-color: var(--card-bg, #ffffff);
-            border-bottom: 1px solid var(--border-color, #e0e0e0);
-            padding: 10px 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-        .header-brand {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .header-brand h1 {
-            font-size: 0.95rem;
-            color: var(--primary-color, #1b4332);
-            margin: 0;
-            font-weight: 700;
-            line-height: 1.2;
-        }
-        .header-brand span {
-            font-size: 0.75rem;
-            color: var(--text-muted, #6c757d);
-        }
-        .header-status {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            color: var(--text-muted, #6c757d);
-            background: rgba(0,0,0,0.03);
-            padding: 4px 8px;
-            border-radius: 12px;
-        }
-        .semaphore {
-            width: 9px;
-            height: 9px;
-            border-radius: 50%;
-            display: inline-block;
-        }
-        .semaphore.online { background-color: #52b788; box-shadow: 0 0 4px #52b788; }
-        .semaphore.offline { background-color: #c1121f; box-shadow: 0 0 4px #c1121f; }
-
-        .table-responsive {
-            width: 100%;
-            overflow-x: auto;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-            background-color: var(--card-bg);
-            margin-bottom: 15px;
-            -webkit-overflow-scrolling: touch;
-        }
-        .data-table {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: left;
-            font-size: 0.85rem;
-        }
-        .data-table th, .data-table td {
-            padding: 10px 12px;
-            border-bottom: 1px solid var(--divider-color);
-            color: var(--text-main);
-        }
-        .data-table th {
-            background-color: var(--divider-color);
-            font-weight: 700;
-            color: var(--primary-color);
-        }
-        .data-table tbody tr:hover {
-            background-color: rgba(27, 67, 50, 0.02);
-        }
-
-        .toast-notification {
-            position: fixed;
-            bottom: 20px;
-            left: 5%;
-            right: 5%;
-            width: 90%;
-            background: #222222;
-            color: white;
-            padding: 12px 16px;
-            border-radius: 10px;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s, transform 0.3s;
-            transform: translateY(20px);
-            z-index: 1000;
-            font-size: 0.9rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            border-left: 5px solid var(--accent-color);
-        }
-        @media (min-width: 768px) { .toast-notification { width: 350px; left: 20px; right: auto; } }
-        .toast-notification.show { opacity: 1; transform: translateY(0); }
-
-        /* Barra de filtros adaptada para móviles */
-        .filters-container {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 15px;
-            flex-wrap: nowrap;
-            align-items: center;
-        }
-        @media (max-width: 480px) {
-            .filters-container {
-                flex-direction: column;
-                align-items: stretch;
-            }
-        }
-
-        /* Área de Inteligencia Intuitiva / Asistente */
-        .ai-recommendations-box { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 12px; margin-top: 15px; }
-        .ai-title { font-size: 0.85rem; color: #1e40af; font-weight: 700; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
-        .ai-content { font-size: 0.8rem; color: #1e3a8a; line-height: 1.4; display: flex; flex-direction: column; gap: 4px; }
-
-        /* Métricas Operativas */
-        .metrics-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 8px;
-            margin-bottom: 15px;
-        }
-        @media (min-width: 576px) {
-            .metrics-grid {
-                grid-template-columns: repeat(4, 1fr);
-            }
-        }
-        .metric-card {
-            background: var(--card-bg, #f8f9fa);
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            padding: 8px;
-            text-align: center;
-        }
-        .metric-card .metric-label {
-            font-size: 0.7rem;
-            color: var(--text-muted);
-            margin-bottom: 2px;
-            display: block;
-        }
-        .metric-card .metric-value {
-            font-size: 0.95rem;
-            font-weight: 700;
-            color: var(--primary-color);
-        }
-        .suggested-list {
-            list-style: none;
-            padding: 0;
-            margin: 0 0 15px 0;
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-        .suggested-item {
-            background: rgba(40, 167, 69, 0.05);
-            border: 1px dashed var(--accent-color, #28a745);
-            border-radius: 6px;
-            padding: 8px 10px;
-            font-size: 0.8rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .map-container-box {
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            background: var(--divider-color, #e9ecef);
-            height: 130px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            gap: 4px;
-            color: var(--text-muted);
-            font-size: 0.8rem;
-            text-align: center;
-            padding: 10px;
-            margin-bottom: 15px;
-        }
-    </style>
-</head>
-<body>
-
-    <!-- Cintillo Institucional Unificado con Semáforo de Estado en Tiempo Real -->
-    <header class="app-header-bar">
-        <div class="header-brand">
-            <i class="fa-solid fa-cow" style="font-size: 1.3rem; color: var(--primary-color);"></i>
-            <div>
-                <h1>Hato Laguna Brava</h1>
-                <span>Los Módulos, Mantecal, Apure</span>
+    <!-- Encabezado del Módulo -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div style="background: linear-gradient(135deg, #1b5e20, #2e7d32); color: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                <h2 style="margin: 0; font-size: 1.5rem; font-weight: 700;">
+                    <i class="fa-solid fa-route"></i> Inteligencia de Rutas & Historial Indefinido
+                </h2>
+                <p style="margin: 5px 0 0 0; font-size: 0.9rem; opacity: 0.9;">
+                    Hato Laguna Brava | Memoria agronómica acumulada de los 20 potreros
+                </p>
             </div>
         </div>
-        <div class="header-status">
-            <span id="light" class="semaphore online"></span>
-            <span id="statusText">Sincronizando...</span>
-        </div>
-    </header>
-
-    <main class="main-container">
-        <!-- Contenedor único adaptado para dispositivos móviles y escritorio -->
-        <section class="section-box" style="height: auto; padding: 12px;">
-            <div class="card-header">
-                <div class="card-icon"><i class="fa-solid fa-clock-rotate-left"></i></div>
-                <h2 class="card-title" style="font-size: 1.1rem;">Historial de Pastoreo y Rotación</h2>
-            </div>
-            <p class="card-description" style="font-size: 0.85rem;">Panel integral de registros de pastoreo, parámetros operativos, sugerencias, mapas y análisis UGM.</p>
-            
-            <!-- Barra de Filtros ajustada -->
-            <div class="filters-container">
-                <!-- Ventana desplegable ampliada con flex: 2 -->
-                <select id="filtro-historial-potrero" class="form-control" style="flex: 2; padding: 8px; border-radius: 6px; border: 1px solid var(--border-color); font-size: 0.85rem;">
-                    <option value="">Todos los Potreros</option>
-                </select>
-
-                <!-- Botón de Sincronización renombrado a "Buscar", más pequeño y compacto -->
-                <button id="btn-sincronizar-historial" type="button" class="btn" style="padding: 8px 10px; font-size: 0.8rem; display: flex; align-items: center; justify-content: center; gap: 5px; cursor: pointer; white-space: nowrap; flex: 0.5;">
-                    <i class="fa-solid fa-magnifying-glass"></i> Buscar
-                </button>
-            </div>
-
-            <!-- Tabla Principal de Registros -->
-            <div class="table-responsive">
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>Potrero</th>
-                            <th>Área (ha)</th>
-                            <th>Estado</th>
-                            <th>Descanso</th>
-                            <th>UGM/ha</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tabla-potreros-body">
-                        <!-- El archivo historial-pastoreo.js inyectará dinámicamente las filas aquí -->
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- Métricas Operativas de Parámetros -->
-            <div class="metrics-grid">
-                <div class="metric-card">
-                    <span class="metric-label"><i class="fa-solid fa-signs-post"></i> Potrero Activo</span>
-                    <span id="metric-potrero" class="metric-value">--</span>
-                </div>
-                <div class="metric-card">
-                    <span class="metric-label"><i class="fa-solid fa-business-time"></i> Ocupación</span>
-                    <span id="metric-dias-ocupacion" class="metric-value">0 d</span>
-                </div>
-                <div class="metric-card">
-                    <span class="metric-label"><i class="fa-solid fa-spa"></i> Descanso</span>
-                    <span id="metric-dias-descanso" class="metric-value">0 d</span>
-                </div>
-                <div class="metric-card">
-                    <span class="metric-label"><i class="fa-solid fa-weight-scale"></i> UGM/ha</span>
-                    <span id="metric-presion" class="metric-value">0.00</span>
-                </div>
-            </div>
-
-            <!-- Lista de Potreros Sugeridos para Pastoreo -->
-            <div style="margin-top: 12px;">
-                <h3 style="font-size: 0.85rem; color: var(--primary-color); margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
-                    <i class="fa-solid fa-list-check"></i> Potreros Sugeridos para Pastoreo
-                </h3>
-                <ul id="lista-potreros-sugeridos" class="suggested-list">
-                    <li class="suggested-item">
-                        <span>Sugerencia 1: Evaluando descanso...</span>
-                        <i class="fa-solid fa-chevron-right" style="font-size: 0.7rem; color: var(--text-muted);"></i>
-                    </li>
-                </ul>
-            </div>
-
-            <!-- Mapa de los Potreros del Hato -->
-            <div style="margin-top: 12px;">
-                <h3 style="font-size: 0.85rem; color: var(--primary-color); margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
-                    <i class="fa-solid fa-map"></i> Mapa de Potreros del Hato
-                </h3>
-                <div id="mapa-potreros-box" class="map-container-box">
-                    <i class="fa-solid fa-map-location-dot" style="font-size: 1.3rem; color: var(--primary-color);"></i>
-                    <span>Vista cartográfica de potreros y sectores de Los Módulos</span>
-                </div>
-            </div>
-
-            <!-- Asistente de Carga Animal (I.D.) -->
-            <div class="ai-recommendations-box">
-                <div class="ai-title">
-                    <i class="fa-solid fa-brain"></i> Asistente de Carga Animal (I.D.)
-                </div>
-                <div id="ai-sugerencias-content" class="ai-content">
-                    <p style="margin: 0; font-style: italic;">Analizando la UGM y presión de carga por potrero...</p>
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <!-- Notificación Toast Dinámica -->
-    <div id="toast" class="toast-notification">
-        <i class="fa-solid fa-circle-check" style="color: var(--accent-color);"></i>
-        <span id="toast-message">Operación realizada con éxito</span>
     </div>
 
-    <!-- Lógica Principal del Módulo (Conecta directamente con los elementos del cintillo e historial) -->
-    <script type="module" src="./historial-pastoreo.js"></script>
-</body>
-</html>
+    <div class="row">
+        <!-- Columna Izquierda: Panel de Recomendación Predictiva por IA -->
+        <div class="col-lg-4 mb-4">
+            <div style="background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border-top: 4px solid #198754;">
+                <h4 style="font-size: 1.1rem; color: #1b5e20; margin-bottom: 15px; font-weight: 700;">
+                    <i class="fa-solid fa-lightbulb"></i> Recomendador de Ingreso
+                </h4>
+                
+                <!-- Contenedor donde el script inyectará la recomendación óptima -->
+                <div id="ai-recomendacion-rutas">
+                    <div style="color: #6c757d; font-size: 0.88rem; text-align: center; padding: 20px;">
+                        <i class="fa-solid fa-spinner fa-spin"></i> Analizando ciclos históricos...
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Columna Derecha: Matriz de Estado y Memoria de los Potreros -->
+        <div class="col-lg-8">
+            <div style="background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <h4 style="font-size: 1.1rem; color: #1b5e20; margin: 0; font-weight: 700;">
+                        <i class="fa-solid fa-chart-pie"></i> Matriz de Descanso y Ciclos Acumulados
+                    </h4>
+                    <span style="font-size: 0.8rem; background: #e8f5e9; color: #2e7d32; padding: 4px 10px; border-radius: 6px; font-weight: 600;">
+                        Actualización en Tiempo Real
+                    </span>
+                </div>
+
+                <!-- Contenedor donde el script genera la lista o tarjetas de los 20 potreros -->
+                <div id="matriz-historial-container" style="max-height: 600px; overflow-y: auto; padding-right: 5px;">
+                    <div style="color: #6c757d; font-size: 0.88rem; text-align: center; padding: 40px;">
+                        <i class="fa-solid fa-database"></i> Cargando registro histórico de potreros...
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Importante: Asegúrate de enlazar tu script tipo module al final o en el head -->
+<script type="module" src="./historial-inteligente-pastoreo.js"></script>
