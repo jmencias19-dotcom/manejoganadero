@@ -1,10 +1,9 @@
 /* ==========================================================================
-   SERVICE WORKER OFICIAL (v5.0) - HATO LAGUNA BRAVA
-   Soporte Offline Robusto y Control de Caché Antivolcado de Vercel
+   SERVICE WORKER OFICIAL (v5.1) - HATO LAGUNA BRAVA
+   Soporte Offline Robusto y Corrección de Redirecciones de Vercel
    ========================================================================== */
 
-// Elevamos la versión para obligar a los teléfonos y PC a vaciar el almacenamiento roto
-const CACHE_NAME = 'laguna-brava-v5.0';
+const CACHE_NAME = 'laguna-brava-v5.1';
 
 const ASSETS_TO_CACHE = [
     './',
@@ -17,12 +16,12 @@ const ASSETS_TO_CACHE = [
     './combustible.html',
     './indicadores-gestion.html',
     './potreros.css?v=4.0',
-    './icon-192.png',  /* Directo en la raíz */
-    './icon-512.png',  /* Directo en la raíz */
+    './icon-192.png',
+    './icon-512.png',
     './manifest.json'
 ];
 
-// 1. Instalación robusta a prueba de redirecciones de Vercel
+// 1. Instalación robusta
 self.addEventListener('install', (event) => {
     event.waitUntil(
         caches.open(CACHE_NAME).then((cache) => {
@@ -42,13 +41,12 @@ self.addEventListener('install', (event) => {
     self.skipWaiting();
 });
 
-// 2. Activación y Limpieza Autónoma de Cachés Obsoletas
+// 2. Activación y Limpieza de Cachés Obsoletas
 self.addEventListener('activate', (event) => {
     event.waitUntil(
         caches.keys().then((cacheNames) => {
             return Promise.all(
                 cacheNames.map((cache) => {
-                    // Si el caché almacenado no coincide con la versión actual, se elimina de inmediato
                     if (cache !== CACHE_NAME) {
                         console.log(`[Service Worker] Purgando caché obsoleto: ${cache}`);
                         return caches.delete(cache);
@@ -60,11 +58,20 @@ self.addEventListener('activate', (event) => {
     self.clients.claim();
 });
 
-// 3. Interceptación de Red con manejo estricto de redirección
+// Función clave para limpiar los flags de redirección que bloquean los móviles
+function limpiarRespuestaRedireccion(response) {
+    if (!response) return response;
+    return new Response(response.body, {
+        status: response.status,
+        statusText: response.statusText,
+        headers: response.headers
+    });
+}
+
+// 3. Interceptación de Red con manejo estricto
 self.addEventListener('fetch', (event) => {
     const url = new URL(event.request.url);
 
-    // Filtrar peticiones ajenas o métodos de escritura (POST, PUT, DELETE)
     if (url.origin !== location.origin || event.request.method !== 'GET') {
         return;
     }
@@ -74,15 +81,9 @@ self.addEventListener('fetch', (event) => {
         event.respondWith(
             fetch(event.request)
                 .then((networkResponse) => {
-                    // Si Vercel redirigió el HTML (ej. trailing slashes), limpiamos el objeto respuesta
                     if (networkResponse.redirected) {
-                        return new Response(networkResponse.body, {
-                            status: networkResponse.status,
-                            statusText: networkResponse.statusText,
-                            headers: networkResponse.headers
-                        });
+                        return limpiarRespuestaRedireccion(networkResponse);
                     }
-
                     if (networkResponse && networkResponse.status === 200) {
                         const responseClone = networkResponse.clone();
                         caches.open(CACHE_NAME).then((cache) => {
@@ -91,34 +92,43 @@ self.addEventListener('fetch', (event) => {
                     }
                     return networkResponse;
                 })
-                .catch(() => {
-                    // Respaldo de navegación offline para el hato
-                    return caches.match(event.request).then((cached) => {
-                        return cached || caches.match('./planificacion.html') || caches.match('./index.html');
-                    });
+                .catch(async () => {
+                    // Buscar en caché y limpiar la respuesta para evitar bloqueos offline
+                    const cached = await caches.match(event.request);
+                    if (cached) return limpiarRespuestaRedireccion(cached);
+                    
+                    const fallbackPlanificacion = await caches.match('./planificacion.html');
+                    if (fallbackPlanificacion) return limpiarRespuestaRedireccion(fallbackPlanificacion);
+                    
+                    const fallbackIndex = await caches.match('./index.html');
+                    if (fallbackIndex) return limpiarRespuestaRedireccion(fallbackIndex);
+
+                    return new Response('Sin conexión a la red del hato.', { status: 404, headers: { 'Content-Type': 'text/plain;charset=utf-8' } });
                 })
         );
         return;
     }
 
-    // B) MANEJO DE RECURSOS ESTÁTICOS (CSS, JS, Manifest, etc.)
+    // B) MANEJO DE RECURSOS ESTÁTICOS
     event.respondWith(
-        caches.match(event.request).then((cachedResponse) => {
+        caches.match(event.request).then(async (cachedResponse) => {
             if (cachedResponse) {
-                return cachedResponse;
+                return limpiarRespuestaRedireccion(cachedResponse);
             }
             
-            return fetch(event.request).then((networkResponse) => {
+            try {
+                const networkResponse = await fetch(event.request);
                 if (!networkResponse || networkResponse.status !== 200) {
                     return networkResponse;
                 }
-                
                 const responseToCache = networkResponse.clone();
                 caches.open(CACHE_NAME).then((cache) => {
                     cache.put(event.request, responseToCache);
                 });
                 return networkResponse;
-            });
+            } catch (err) {
+                return new Response('Recurso no disponible offline', { status: 404 });
+            }
         })
     );
 });
