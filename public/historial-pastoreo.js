@@ -2,7 +2,7 @@
 // LÓGICA PRINCIPAL: HISTORIAL DE PASTOREO
 // ==========================================
 
-import { obtenerDatosLocales, sincronizarConServidor } from './js/syncManager.js';
+import { obtenerDatosLocales, sincronizarConServidor } from './syncManager.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
     console.log("Inicializando módulo de Historial de Pastoreo - Hato Laguna Brava...");
