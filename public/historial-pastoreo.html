@@ -123,9 +123,9 @@
                         <option value="moderado">🟡 Moderado</option>
                         <option value="critico">🔴 Crítico</option>
                     </select>
-                    <!-- Botón Operativo de Carga y Sincronización con estilo institucional -->
+                    <!-- Botón Operativo con estilo institucional -->
                     <button id="btn-sincronizar-historial" type="button" class="btn" style="padding: 9px 14px; font-size: 0.85rem; display: flex; align-items: center; gap: 6px; cursor: pointer; white-space: nowrap;">
-                        <i class="fa-solid fa-rotate"></i> Sincronizar
+                        <i class="fa-solid fa-rotate"></i> Cargar registros y sincronizar
                     </button>
                 </div>
 
@@ -138,11 +138,6 @@
                         </thead>
                         <tbody id="tabla-potreros-body">
                             <!-- El archivo historialPotreros.js inyectará dinámicamente las filas aquí -->
-                            <tr>
-                                <td colspan="4" style="text-align: center; color: var(--text-muted); padding: 20px;">
-                                    Cargando registros y sincronizando con Firestore...
-                                </td>
-                            </tr>
                         </tbody>
                     </table>
                 </div>
