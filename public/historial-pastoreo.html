@@ -215,11 +215,15 @@
                 <table class="data-table">
                     <thead>
                         <tr>
-                            <!-- Cabeceras que puede poblar dinámicamente potreros.js / historialPotreros.js -->
+                            <th>Potrero</th>
+                            <th>Área (ha)</th>
+                            <th>Estado</th>
+                            <th>Descanso</th>
+                            <th>UGM/ha</th>
                         </tr>
                     </thead>
                     <tbody id="tabla-potreros-body">
-                        <!-- El archivo historialPotreros.js / potreros.js inyectará dinámicamente las filas aquí -->
+                        <!-- El archivo historialPotreros.js inyectará dinámicamente las filas aquí -->
                     </tbody>
                 </table>
             </div>
@@ -249,7 +253,6 @@
                 <h3 style="font-size: 0.85rem; color: var(--primary-color); margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
                     <i class="fa-solid fa-list-check"></i> Potreros Sugeridos para Pastoreo
                 </h3>
-                <!-- ID único añadido para inyectar la lista de sugerencias -->
                 <ul id="lista-potreros-sugeridos" class="suggested-list">
                     <li class="suggested-item">
                         <span>Sugerencia 1: Evaluando descanso...</span>
@@ -263,7 +266,6 @@
                 <h3 style="font-size: 0.85rem; color: var(--primary-color); margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
                     <i class="fa-solid fa-map"></i> Mapa de Potreros del Hato
                 </h3>
-                <!-- ID único añadido para renderizar o actualizar el mapa -->
                 <div id="mapa-potreros-box" class="map-container-box">
                     <i class="fa-solid fa-map-location-dot" style="font-size: 1.3rem; color: var(--primary-color);"></i>
                     <span>Vista cartográfica de potreros y sectores de Los Módulos</span>
@@ -275,7 +277,6 @@
                 <div class="ai-title">
                     <i class="fa-solid fa-brain"></i> Asistente de Carga Animal (I.D.)
                 </div>
-                <!-- ID único añadido para el contenido dinámico del asistente -->
                 <div id="ai-sugerencias-content" class="ai-content">
                     <p style="margin: 0; font-style: italic;">Analizando la UGM y presión de carga por potrero...</p>
                 </div>
@@ -289,7 +290,7 @@
         <span id="toast-message">Operación realizada con éxito</span>
     </div>
 
-    <!-- Scripts del Sistema -->
+    <!-- Scripts del Sistema (Rutas ajustadas de acuerdo a la ubicación estándar de componentes) -->
     <script src="./js/header.js"></script>
     <script src="./js/syncManager.js"></script>
     
