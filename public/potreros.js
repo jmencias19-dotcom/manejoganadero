@@ -1,9 +1,10 @@
 /* ==========================================================================
     Módulo: Control, Gestión y Carga Animal de Potreros (Con Firestore Real-Time)
-    Hato Laguna Brava
+    Hato Laguna Brava - Versión Optimizada
     ========================================================================== */
 
-import { obtenerDatosLocales, guardarLocalmente as guardarDatoLocal } from './syncManager.js';
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { 
     getFirestore, 
     collection, 
     addDoc, 
@@ -12,7 +13,8 @@ import { obtenerDatosLocales, guardarLocalmente as guardarDatoLocal } from './sy
     updateDoc, 
     deleteDoc, 
     query, 
-    orderBy 
+    orderBy,
+    runTransaction
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 // Credenciales oficiales de Firebase para Hato Laguna Brava
@@ -26,12 +28,11 @@ const firebaseConfig = {
     measurementId: "G-2E517DTZFS"
 };
 
-// Inicializar Firebase y Firestore
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const COLLECTION_NAME = "hato_potreros";
 
-// Umbrales ecológicos estándar para el trópico / sabana inundable
+// Umbrales ecológicos estándar para el trópico / sabana inundable (Apure)
 const UMBRAL_INVIERNO = 1.20;
 const UMBRAL_VERANO = 0.76;
 
@@ -93,14 +94,14 @@ document.addEventListener('DOMContentLoaded', () => {
     function mostrarToast(mensaje, esError = false) {
         if (!toast || !toastMessage) return;
         toastMessage.textContent = mensaje;
-        toast.style.borderLeftColor = esError ? '#c1121f' : 'var(--accent-color)';
+        toast.style.borderLeftColor = esError ? '#c1121f' : 'var(--accent-color, #2a9d8f)';
         toast.classList.add('show');
         setTimeout(() => {
             toast.classList.remove('show');
         }, 3500);
     }
 
-    // 1. Asistente de Carga Animal
+    // 1. Asistente de Carga Animal (Evaluación de presión de pastoreo)
     function actualizarAnalisisInteligente() {
         if (!aiContent) return;
 
@@ -139,13 +140,13 @@ document.addEventListener('DOMContentLoaded', () => {
         aiContent.innerHTML = `
             <div><b>Potrero:</b> ${potreroOpt.value} (${areaHa} ha)</div>
             <div><b>Carga Estimada:</b> ${totalUgm.toFixed(2)} UGM (${cargaHa.toFixed(2)} UGM/ha)</div>
-            <div style="font-weight: 600; padding: 4px 8px; border-radius: 4px; display: inline-block;" class="${estadoClase}">
+            <div style="font-weight: 600; padding: 4px 8px; border-radius: 4px; display: inline-block; margin-top: 4px;" class="${estadoClase}">
                 ${mensajeAlerta}
             </div>
         `;
     }
 
-    // 2. Actualizar Categorías
+    // 2. Actualizar Dinámica de Categorías por Especie
     function actualizarCategorias() {
         if (!selectEspecie || !selectCategoria) return;
         const especieSeleccionada = selectEspecie.value;
@@ -172,7 +173,7 @@ document.addEventListener('DOMContentLoaded', () => {
             potrerosContainer.innerHTML = '';
             
             if (snapshot.empty) {
-                potrerosContainer.innerHTML = '<p style="text-align: center; color: var(--text-muted); font-size: 0.9rem; padding: 20px;">No hay lotes activos registrados en los potreros.</p>';
+                potrerosContainer.innerHTML = '<p style="text-align: center; color: var(--text-muted, #666); font-size: 0.9rem; padding: 20px;">No hay lotes activos registrados en los potreros.</p>';
                 actualizarKPIsGlobales(0, 0, 0);
                 return;
             }
@@ -213,7 +214,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             Object.keys(potrerosAgrupados).forEach(nombrePotrero => {
                 const grupo = potrerosAgrupados[nombrePotrero];
-                const cargaHa = grupo.totalUgm / grupo.areaHa;
+                const cargaHa = grupo.areaHa > 0 ? (grupo.totalUgm / grupo.areaHa) : 0;
                 const tieneFechasMultiples = grupo.fechasIngreso.size > 1;
 
                 acumuladoCabezasGlobal += grupo.totalCabezas;
@@ -221,13 +222,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 sumaCargaPromedioGlobal += cargaHa;
                 totalPotrerosActivos++;
 
-                // A. Desglose / Lote de Ingreso (Solo registros con cabezas activas > 0)
+                // A. Lotes de Ingreso Activos (> 0 cabezas)
                 const registrosActivos = grupo.registros.filter(r => (r.cabezas || 0) > 0);
                 const resumenIngresos = registrosActivos.length > 0 ? registrosActivos.map(r => `
                     <div style="margin-bottom: 8px; border-bottom: 1px dashed #dee2e6; padding-bottom: 6px;">
                         <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px;">
                             <span style="flex-grow: 1;">• <b>${r.cabezas} cab.</b> de ${r.nombreCategoria || r.categoria} (${r.especie || 'BOVINOS'})</span>
-                            <button class="btn-retirar-lote btn-delete" 
+                            <button class="btn-retirar-lote" 
                                 data-id="${r.id}" 
                                 data-cabezas="${r.cabezas}" 
                                 data-categoria="${r.nombreCategoria || r.categoria}" 
@@ -247,7 +248,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 `).join('') : '<div style="font-size: 0.8rem; color: #6c757d; font-style: italic;">Sin lotes activos en ingreso.</div>';
 
-                // B. Desglose / Lote de Salida (Oculto por defecto, aparece solo si hay registros de salida)
+                // B. Historial de Salidas Parciales
                 let todasLasSalidas = [];
                 grupo.registros.forEach(r => {
                     if (r.salidas && Array.isArray(r.salidas)) {
@@ -294,7 +295,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         <b>Inventario Actual:</b> ${grupo.totalCabezas} Cabezas | <b>Total UGM:</b> ${grupo.totalUgm.toFixed(2)} | <b>Carga:</b> <span style="font-weight:750;">${cargaHa.toFixed(2)} UGM/ha</span>
                     </div>
 
-                    <!-- 1. Desglose / Lote de Ingreso -->
                     <div class="potrero-card-meta" style="background: #f8f9fa; padding: 8px 10px; border-radius: 6px; margin-top: 6px; font-size: 0.85rem; border: 1px solid #e9ecef;">
                         <div style="font-weight: bold; margin-bottom: 6px; color: var(--primary-color, #2b2b2b);">
                             <i class="fa-solid fa-list-check"></i> Desglose / Lote de Ingreso:
@@ -304,13 +304,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     ${seccionSalidasHTML}
 
-                    <!-- 3. Responsables -->
-                    <div class="potrero-card-meta">
-                        <b>Responsable(s):</b> ${Array.from(grupo.responsables).join(', ')}
+                    <div class="potrero-card-meta" style="margin-top: 6px;">
+                        <b>Responsable(s):</b> ${Array.from(grupo.responsables).join(', ') || 'No asignado'}
                     </div>
 
                     <div class="potrero-card-actions" style="display: flex; justify-content: flex-end; margin-top: 8px;">
-                        <button class="btn-delete-all btn-delete" data-ids="${grupo.registros.map(r => r.id).join(',')}" title="Vaciar Potrero completo"><i class="fa-solid fa-trash-can"></i> Vaciar Potrero</button>
+                        <button class="btn-delete-all btn-delete" data-ids="${grupo.registros.map(r => r.id).join(',')}" title="Vaciar Potrero completo" style="background: #c1121f; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-size: 0.8rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+                            <i class="fa-solid fa-trash-can"></i> Vaciar Potrero
+                        </button>
                     </div>
                 `;
                 potrerosContainer.appendChild(div);
@@ -331,7 +332,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (kpiCargaPromedio) kpiCargaPromedio.textContent = promedioCarga.toFixed(2);
     }
 
-    // 4. Gestión de Eventos para Salidas Individuales y Borrado Masivo
+    // 4. Gestión Atómica de Salidas y Borrado Masivo
     function vincularEventosAccionesMultiples() {
         document.querySelectorAll('.btn-retirar-lote').forEach(btn => {
             btn.addEventListener('click', async (e) => {
@@ -393,7 +394,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
 
-        document.querySelectorAll('.btn-delete').forEach(btn => {
+        document.querySelectorAll('.btn-delete-all').forEach(btn => {
             btn.addEventListener('click', async (e) => {
                 const idsString = e.currentTarget.dataset.ids;
                 if (!idsString) return;
@@ -420,8 +421,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     [selectPotrero, selectCategoria, selectTemporada, inputCabezas].forEach(el => {
-        if (el) el.addEventListener('change', actualizarAnalisisInteligente);
-        if (el) el.addEventListener('input', actualizarAnalisisInteligente);
+        if (el) {
+            el.addEventListener('change', actualizarAnalisisInteligente);
+            el.addEventListener('input', actualizarAnalisisInteligente);
+        }
     });
 
     if (potreroForm) {
@@ -440,7 +443,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const temporada = selectTemporada.value;
 
             const ugm = cabezas * factor;
-            const cargaHa = ugm / areaHa;
+            const cargaHa = areaHa > 0 ? (ugm / areaHa) : 0;
             const esInvierno = temporada.includes('INVIERNO');
             const umbral = esInvierno ? UMBRAL_INVIERNO : UMBRAL_VERANO;
             const estadoCarga = cargaHa > umbral ? 'CRITICO' : (cargaHa > (umbral * 0.85) ? 'MODERADO' : 'ESTABLE');
@@ -456,10 +459,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 ugm: ugm,
                 cargaHa: cargaHa,
                 temporada: selectTemporada.selectedOptions[0].textContent,
-                fechaIngreso: document.getElementById('fecha-ingreso').value,
-                fechaSalida: document.getElementById('fecha-salida').value,
-                responsable: document.getElementById('responsable-potrero').value.trim(),
-                observaciones: document.getElementById('observaciones-potrero').value.trim(),
+                fechaIngreso: document.getElementById('fecha-ingreso')?.value || '',
+                fechaSalida: document.getElementById('fecha-salida')?.value || '',
+                responsable: document.getElementById('responsable-potrero')?.value.trim() || '',
+                observaciones: document.getElementById('observaciones-potrero')?.value.trim() || '',
                 estadoCarga: estadoCarga,
                 salidas: [],
                 timestamp: Date.now()
