@@ -71,6 +71,65 @@
         .ai-recommendations-box { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 14px; margin-top: 15px; }
         .ai-title { font-size: 0.88rem; color: #1e40af; font-weight: 700; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
         .ai-content { font-size: 0.82rem; color: #1e3a8a; line-height: 1.4; display: flex; flex-direction: column; gap: 6px; }
+
+        /* Estilos específicos para métricas y listas añadidas */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .metric-card {
+            background: var(--card-bg, #f8f9fa);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 10px;
+            text-align: center;
+        }
+        .metric-card .metric-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+            display: block;
+        }
+        .metric-card .metric-value {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        .suggested-list {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 15px 0;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .suggested-item {
+            background: rgba(40, 167, 69, 0.05);
+            border: 1px dashed var(--accent-color, #28a745);
+            border-radius: 6px;
+            padding: 8px 12px;
+            font-size: 0.85rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .map-container-box {
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--divider-color, #e9ecef);
+            height: 160px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 6px;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            text-align: center;
+            padding: 10px;
+        }
     </style>
 </head>
 <body>
@@ -143,16 +202,60 @@
                 </div>
             </section>
 
-            <!-- COLUMNA 2: Asistente I.D. -->
+            <!-- COLUMNA 2: Historial de Ocupación y Rotación (Parámetros, Sugerencias y Mapa) -->
             <section class="section-box" style="height: auto;">
                 <div class="card-header">
-                    <div class="card-icon"><i class="fa-solid fa-compass"></i></div>
-                    <h2 class="card-title">Acciones de Campo</h2>
+                    <div class="card-icon"><i class="fa-solid fa-clock-rotate-left"></i></div>
+                    <h2 class="card-title">Historial de Ocupación y Rotación</h2>
                 </div>
-                <p class="card-description">Monitoreo inteligente y sugerencias basadas en la UGM de cada potrero.</p>
+                <p class="card-description">Métricas clave de uso, selección inteligente de potreros para pastoreo y geoposicionamiento.</p>
+
+                <!-- Métricas Operativas de Parámetros -->
+                <div class="metrics-grid" style="margin-top: 15px;">
+                    <div class="metric-card">
+                        <span class="metric-label"><i class="fa-solid fa-signs-post"></i> Potrero Activo</span>
+                        <span id="metric-potrero" class="metric-value">--</span>
+                    </div>
+                    <div class="metric-card">
+                        <span class="metric-label"><i class="fa-solid fa-business-time"></i> Días Ocupación</span>
+                        <span id="metric-dias-ocupacion" class="metric-value">0 d</span>
+                    </div>
+                    <div class="metric-card">
+                        <span class="metric-label"><i class="fa-solid fa-spa"></i> Días Descanso</span>
+                        <span id="metric-dias-descanso" class="metric-value">0 d</span>
+                    </div>
+                    <div class="metric-card">
+                        <span class="metric-label"><i class="fa-solid fa-weight-scale"></i> Presión (UGM/ha)</span>
+                        <span id="metric-presion" class="metric-value">0.00</span>
+                    </div>
+                </div>
+
+                <!-- Lista de Potreros Sugeridos para Pastoreo -->
+                <div style="margin-top: 15px;">
+                    <h3 style="font-size: 0.9rem; color: var(--primary-color); margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+                        <i class="fa-solid fa-list-check"></i> Potreros Sugeridos para Pastoreo
+                    </h3>
+                    <ul id="lista-potreros-sugeridos" class="suggested-list">
+                        <li class="suggested-item">
+                            <span>Sugerencia 1: Evaluando descanso...</span>
+                            <i class="fa-solid fa-chevron-right" style="font-size: 0.75rem; color: var(--text-muted);"></i>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Mapa de los Potreros del Hato -->
+                <div style="margin-top: 15px;">
+                    <h3 style="font-size: 0.9rem; color: var(--primary-color); margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+                        <i class="fa-solid fa-map"></i> Mapa de Potreros del Hato
+                    </h3>
+                    <div id="mapa-potreros-box" class="map-container-box">
+                        <i class="fa-solid fa-map-location-dot" style="font-size: 1.5rem; color: var(--primary-color);"></i>
+                        <span>Vista cartográfica de potreros y sectores de Los Módulos</span>
+                    </div>
+                </div>
 
                 <!-- ÁREA DE APRENDIZAJE E INTELIGENCIA INTUITIVA (I.D.) -->
-                <div class="ai-recommendations-box" style="margin-top: 0;">
+                <div class="ai-recommendations-box">
                     <div class="ai-title">
                         <i class="fa-solid fa-brain"></i> Asistente de Carga Animal (I.D.)
                     </div>
