@@ -226,8 +226,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 const registrosActivos = grupo.registros.filter(r => (r.cabezas || 0) > 0);
                 const resumenIngresos = registrosActivos.length > 0 ? registrosActivos.map(r => `
                     <div style="margin-bottom: 8px; border-bottom: 1px dashed #dee2e6; padding-bottom: 6px;">
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <span>• <b>${r.cabezas} cab.</b> de ${r.nombreCategoria || r.categoria} (${r.especie || 'BOVINOS'})</span>
+                        <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px;">
+                            <span style="flex-grow: 1;">• <b>${r.cabezas} cab.</b> de ${r.nombreCategoria || r.categoria} (${r.especie || 'BOVINOS'})</span>
                             <button class="btn-retirar-lote" 
                                 data-id="${r.id}" 
                                 data-cabezas="${r.cabezas}" 
@@ -236,7 +236,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                 data-factor="${r.factorUgm || 1.0}"
                                 data-salidas="${encodeURIComponent(JSON.stringify(r.salidas || []))}"
                                 title="Retirar animales de este lote" 
-                                style="background: #e63946; color: white; border: none; padding: 1px 5px; border-radius: 3px; font-size: 0.7rem; cursor: pointer;">
+                                style="background: #e63946; color: white; border: none; padding: 3px 8px; border-radius: 4px; font-size: 0.72rem; font-weight: 600; cursor: pointer; white-space: nowrap; flex-shrink: 0;">
                                 <i class="fa-solid fa-right-from-bracket"></i> Salida
                             </button>
                         </div>
@@ -248,7 +248,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 `).join('') : '<div style="font-size: 0.8rem; color: #6c757d; font-style: italic;">Sin lotes activos en ingreso.</div>';
 
-                // B. Desglose / Lote de Salida (Se recopilan todas las salidas si existen)
+                // B. Desglose / Lote de Salida (Oculto por defecto, aparece solo si hay registros de salida)
                 let todasLasSalidas = [];
                 grupo.registros.forEach(r => {
                     if (r.salidas && Array.isArray(r.salidas)) {
@@ -272,7 +272,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     `).join('');
 
                     seccionSalidasHTML = `
-                        <!-- 2. Desglose / Lote de Salida (Oculto por defecto, aparece solo si hay registros de salida) -->
                         <div class="potrero-card-meta" style="background: #fff3cd; padding: 8px 10px; border-radius: 6px; margin-top: 6px; font-size: 0.85rem; border: 1px solid #ffeeba;">
                             <div style="font-weight: bold; margin-bottom: 6px; color: #856404;">
                                 <i class="fa-solid fa-right-from-bracket"></i> Desglose / Lote de Salida:
