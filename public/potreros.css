@@ -751,3 +751,36 @@ input:focus, select:focus, textarea:focus {
         padding: 14px !important;
     }
 }
+
+/* ==========================================================================
+   OPTIMIZACIÓN DE EXPANSIÓN: COLUMNA IZQUIERDA (RECOMENDADOR DE RUTAS)
+   ========================================================================== */
+
+@media (min-width: 1025px) {
+    /* Hacemos que la primera sección de la grilla interna se estire al 100% de la altura disponible */
+    .main-container:not(.panel-principal) .menu-grid > section:nth-child(1),
+    .main-container:not(.panel-principal) .menu-grid > .section-box:nth-child(1) {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+
+    /* Permitimos que el contenedor interno de las recomendaciones crezca para llenar el espacio vertical */
+    #ai-recomendacion-rutas {
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+        justify-content: space-between;
+    }
+}
+
+/* Estilo mejorado para la caja de recomendaciones para que luzca imponente y con gran legibilidad */
+.ai-recommendations-box, #ai-recomendacion-rutas > div {
+    background: #f0f7f4;
+    border: 1px solid var(--border-color);
+    border-left: 4px solid var(--accent-color);
+    border-radius: 8px;
+    padding: 18px;
+    margin-top: 12px;
+    flex-grow: 1;
+}
