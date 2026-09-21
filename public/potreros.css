@@ -691,3 +691,63 @@ input:focus, select:focus, textarea:focus {
         font-size: 12px !important;
     }
 }
+
+/* ==========================================================================
+   OPTIMIZACIÓN QUIRÚRGICA FINAL - HATO LAGUNA BRAVA (PC Y MÓVIL)
+   ========================================================================== */
+
+/* 1. Blindaje contra desbordes de cuadrícula en contenedores dinámicos */
+.menu-grid, .section-box, .card {
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+/* 2. Suavizado de transiciones y scroll en la matriz de potreros e historiales */
+.potreros-container {
+    scrollbar-width: thin;
+    scrollbar-color: var(--secondary-color) #f1f1f1;
+}
+
+.potreros-container::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+.potreros-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.potreros-container::-webkit-scrollbar-thumb {
+    background: var(--secondary-color);
+    border-radius: 4px;
+}
+
+/* 3. Corrección de alineación vertical en pantallas de PC para el grid sticky */
+@media (min-width: 1025px) {
+    .main-container:not(.panel-principal) .menu-grid > section:nth-child(1) {
+        max-height: calc(100vh - 100px);
+        position: sticky;
+        top: 24px;
+    }
+}
+
+/* 4. Ajustes táctiles específicos para dispositivos móviles de campo (< 576px) */
+@media (max-width: 576px) {
+    .header-container {
+        padding: 10px 5px;
+    }
+
+    .header-title-wrapper h1 {
+        font-size: 1.15rem;
+    }
+
+    .header-title-wrapper p {
+        font-size: 0.78rem;
+    }
+
+    /* Uniformidad total en botones de acción dentro de listas móviles */
+    .task-card-item, .potrero-item-card {
+        padding: 14px !important;
+    }
+}
