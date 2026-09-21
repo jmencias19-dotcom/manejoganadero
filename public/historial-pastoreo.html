@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Historial Sanitario - Hato Laguna Brava</title>
+    <title>Historial de Potreros - Hato Laguna Brava</title>
     
     <!-- Centralizado en tus Estilos Maestros Unificados (v4.1) -->
     <link rel="stylesheet" href="./potreros.css?v=4.1">
@@ -15,7 +15,7 @@
     <link rel="manifest" href="manifest.json">
     
     <style>
-        /* Estilos específicos adaptados para tablas y componentes de control sanitario */
+        /* Estilos específicos adaptados para tablas de control de potreros y pasturas */
         .table-responsive {
             width: 100%;
             overflow-x: auto;
@@ -81,8 +81,8 @@
                 </a>
             </nav>
             <div class="header-title-wrapper">
-                <h1>Hato Laguna Brava - <span>Historial Sanitario</span></h1>
-                <p>Matriz de Control Biológico, Vacunaciones y Tratamientos del Rebaño</p>
+                <h1>Hato Laguna Brava - <span>Historial de Potreros</span></h1>
+                <p>Matriz de Ocupación, Rotación de Lotes y Disponibilidad de Forrajes</p>
             </div>
             <div class="sync-status-wrapper">
                 <div id="light" class="semaphore online"></div>
@@ -94,28 +94,28 @@
     <main class="main-container">
         <div class="menu-grid">
             
-            <!-- COLUMNA 1: Tabla Principal de Historial de Tratamientos -->
+            <!-- COLUMNA 1: Tabla Principal de Historial de Potreros -->
             <section class="section-box" style="height: auto;">
                 <div class="card-header">
-                    <div class="card-icon"><i class="fa-solid fa-syringe"></i></div>
-                    <h2 class="card-title">Historial de Tratamientos Registrados</h2>
+                    <div class="card-icon"><i class="fa-solid fa-map-location-dot"></i></div>
+                    <h2 class="card-title">Registro de Ocupación y Rotación</h2>
                 </div>
-                <p class="card-description">Visualización de controles sanitarios, vacunaciones y aplicaciones farmacológicas vigentes.</p>
+                <p class="card-description">Visualización del historial de uso por potrero, carga animal actual y tiempos de descanso.</p>
                 
                 <div class="table-responsive">
                     <table class="data-table">
                         <thead>
                             <tr>
-                                <th><i class="fa-regular fa-calendar"></i> Fecha</th>
-                                <th><i class="fa-solid fa-tag"></i> Arete / Lote</th>
-                                <th><i class="fa-solid fa-notes-medical"></i> Tratamiento</th>
-                                <th><i class="fa-solid fa-pills"></i> Producto</th>
+                                <th><i class="fa-solid fa-signs-post"></i> Potrero</th>
+                                <th><i class="fa-solid fa-cow"></i> Lote Asignado</th>
+                                <th><i class="fa-regular fa-calendar-days"></i> Ingreso / Salida</th>
+                                <th><i class="fa-solid fa-seedling"></i> Estado del Pasto</th>
                             </tr>
                         </thead>
-                        <tbody id="tabla-eventos-body">
+                        <tbody id="tabla-potreros-body">
                             <tr>
                                 <td colspan="4" style="text-align: center; color: var(--text-muted); padding: 20px;">
-                                    Cargando registros sanitarios locales...
+                                    Cargando historial de potreros locales...
                                 </td>
                             </tr>
                         </tbody>
@@ -126,14 +126,17 @@
             <!-- COLUMNA 2: Acciones y Acceso Rápido Operativo -->
             <section class="section-box" style="height: auto;">
                 <div class="card-header">
-                    <div class="card-icon"><i class="fa-solid fa-kit-medical"></i></div>
-                    <h2 class="card-title">Acciones Sanitarias</h2>
+                    <div class="card-icon"><i class="fa-solid fa-compass"></i></div>
+                    <h2 class="card-title">Gestión de Potreros</h2>
                 </div>
-                <p class="card-description">Gestione los flujos de salud animal y control biológico del rebaño de forma rápida.</p>
+                <p class="card-description">Controle los movimientos de rebaños entre potreros y el registro de aforos de pasturas.</p>
                 
                 <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 15px;">
-                    <a href="./inventario-sanitario.html" class="btn" style="text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 8px;">
-                        <i class="fa-solid fa-plus"></i> Registrar Nuevo Tratamiento
+                    <a href="./asignar-potrero.html" class="btn" style="text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                        <i class="fa-solid fa-right-left"></i> Registrar Rotación de Lote
+                    </a>
+                    <a href="./aforo-pastos.html" class="btn" style="background-color: var(--secondary-color, #2d6a4f); text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                        <i class="fa-solid fa-seedling"></i> Registrar Aforo de Forraje
                     </a>
                     <a href="./index.html" class="btn" style="background-color: var(--text-muted); text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 8px;">
                         <i class="fa-solid fa-house"></i> Volver al Inicio
@@ -153,6 +156,6 @@
     <!-- Scripts del Sistema y Módulo -->
     <script src="./js/header.js"></script>
     <script src="./js/syncManager.js"></script>
-    <script type="module" src="./eventos.js"></script>
+    <script type="module" src="./historialPotreros.js"></script>
 </body>
 </html>
