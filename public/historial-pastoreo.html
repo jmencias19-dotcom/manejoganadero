@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Historial de Potreros - Hato Laguna Brava</title>
+    <title>Historial de Pastoreo - Hato Laguna Brava</title>
     
     <!-- Centralizado en tus Estilos Maestros Unificados (v4.1) -->
     <link rel="stylesheet" href="./potreros.css?v=4.1">
@@ -173,12 +173,11 @@
     <main class="main-container">
         <!-- Contenedor único adaptado para dispositivos móviles y escritorio -->
         <section class="section-box" style="height: auto; padding: 12px;">
-            ...
             <div class="card-header">
                 <div class="card-icon"><i class="fa-solid fa-clock-rotate-left"></i></div>
-                <h2 class="card-title" style="font-size: 1.1rem;">Historial de Ocupación y Rotación</h2>
+                <h2 class="card-title" style="font-size: 1.1rem;">Historial de Pastoreo y Rotación</h2>
             </div>
-            <p class="card-description" style="font-size: 0.85rem;">Panel integral de registros, parámetros operativos, sugerencias, mapas y análisis UGM.</p>
+            <p class="card-description" style="font-size: 0.85rem;">Panel integral de registros de pastoreo, parámetros operativos, sugerencias, mapas y análisis UGM.</p>
             
             <!-- Barra de Filtros ajustada -->
             <div class="filters-container">
@@ -206,7 +205,7 @@
                         </tr>
                     </thead>
                     <tbody id="tabla-potreros-body">
-                        <!-- El archivo historialPotreros.js inyectará dinámicamente las filas aquí -->
+                        <!-- El archivo historial-pastoreo.js inyectará dinámicamente las filas aquí -->
                     </tbody>
                 </table>
             </div>
@@ -273,11 +272,11 @@
         <span id="toast-message">Operación realizada con éxito</span>
     </div>
 
-    <!-- Scripts del Sistema (Rutas ajustadas de acuerdo a la ubicación estándar de componentes) -->
+    <!-- Scripts del Sistema -->
     <script src="./js/header.js"></script>
     <script src="./js/syncManager.js"></script>
     
-    <!-- Lógica Principal del Módulo -->
-    <script type="module" src="./historialPotreros.js"></script>
+    <!-- Lógica Principal del Módulo de Historial de Pastoreo -->
+    <script type="module" src="./historial-pastoreo.js"></script>
 </body>
 </html>
