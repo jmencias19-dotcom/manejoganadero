@@ -197,20 +197,16 @@
             </div>
             <p class="card-description" style="font-size: 0.85rem;">Panel integral de registros, parámetros operativos, sugerencias, mapas y análisis UGM.</p>
             
-            <!-- Barra de Filtros con los cambios solicitados -->
+            <!-- Barra de Filtros ajustada -->
             <div class="filters-container">
-                <select id="filtro-historial-potrero" class="form-control" style="flex: 1; padding: 8px; border-radius: 6px; border: 1px solid var(--border-color); font-size: 0.85rem;">
+                <!-- Ventana desplegable ampliada con flex: 2 -->
+                <select id="filtro-historial-potrero" class="form-control" style="flex: 2; padding: 8px; border-radius: 6px; border: 1px solid var(--border-color); font-size: 0.85rem;">
                     <option value="">Todos los Potreros</option>
                 </select>
 
-                <!-- Botón Potreros agregado con espacio -->
-                <button id="btn-filtro-potreros" type="button" class="btn" style="padding: 8px 12px; font-size: 0.85rem; display: flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; white-space: nowrap;">
-                    <i class="fa-solid fa-signs-post"></i> Potreros
-                </button>
-
-                <!-- Botón de Sincronización renombrado -->
-                <button id="btn-sincronizar-historial" type="button" class="btn" style="padding: 8px 12px; font-size: 0.85rem; display: flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; white-space: nowrap;">
-                    <i class="fa-solid fa-rotate"></i> Carga y Sincronizacion
+                <!-- Botón de Sincronización renombrado a "Buscar", más pequeño y compacto -->
+                <button id="btn-sincronizar-historial" type="button" class="btn" style="padding: 8px 10px; font-size: 0.8rem; display: flex; align-items: center; justify-content: center; gap: 5px; cursor: pointer; white-space: nowrap; flex: 0.5;">
+                    <i class="fa-solid fa-magnifying-glass"></i> Buscar
                 </button>
             </div>
 
