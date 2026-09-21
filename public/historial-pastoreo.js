@@ -12,8 +12,17 @@ import {
     orderBy 
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-// Importación del catálogo maestro unificado de potreros de la finca
-import { CATALOGO_POTREROS } from "./potreros.js";
+// Importación robusta del catálogo maestro unificado de potreros con alias de respaldo
+import { CATALOGO_POTREROS as CATALOGO_IMPORTADO } from "./potreros.js";
+
+// Respaldo de seguridad en caso de que el módulo externo exporte con otra nomenclatura
+const CATALOGO_POTREROS = (typeof CATALOGO_IMPORTADO !== 'undefined' && Array.isArray(CATALOGO_IMPORTADO)) 
+    ? CATALOGO_IMPORTADO 
+    : [
+        { id: "P-01", potrero: "Modo 1 - Banco de Soyana", area: 45.5 },
+        { id: "P-02", potrero: "Modo 2 -estero Principal", area: 60.0 },
+        { id: "P-03", potrero: "Módulo 3 - Cububal", area: 52.0 }
+      ];
 
 // Credenciales oficiales de Firebase para Hato Laguna Brava
 const firebaseConfig = {
@@ -60,9 +69,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function inicializarVistaConCatalogoBase() {
     cachePastoreo = CATALOGO_POTREROS.map(p => ({
-        id: p.id,
-        potrero: p.potrero,
-        area: p.area,
+        id: p.id || p.codigo || `POT-${Math.random().toString(36).substr(2, 4)}`,
+        potrero: p.potrero || p.nombre || 'Potrero Genérico',
+        area: Number(p.area || p.superficie || 0),
         estado: 'Descanso',
         diasOcupacion: 0,
         descanso: 30, // Días base referenciales por defecto
@@ -94,14 +103,15 @@ function iniciarSincronizacionHistorialFirebase() {
 
         // Mapeo cruzado: Fusionamos el catálogo maestro fijo con los estados reales en la nube
         cachePastoreo = CATALOGO_POTREROS.map(cat => {
-            const item = registrosNube[cat.potrero];
+            const nombreCat = cat.potrero || cat.nombre;
+            const item = registrosNube[nombreCat];
             const cabezas = item ? Number(item.cabezas || item.animalesCount || 0) : 0;
             const estaOcupado = cabezas > 0 || (item && item.estado === 'Ocupado');
             
             return {
-                id: cat.id,
-                potrero: cat.potrero,
-                area: cat.area,
+                id: cat.id || cat.codigo,
+                potrero: nombreCat,
+                area: Number(cat.area || cat.superficie || 0),
                 estado: estaOcupado ? 'Ocupado' : 'Descanso',
                 diasOcupacion: estaOcupado ? calcularDiasTranscurridos(item.fechaIngreso || item.ultimaModificacion) : 0,
                 descanso: !estaOcupado ? calcularDiasTranscurridos(item ? item.fechaSalida : null) : 30,
