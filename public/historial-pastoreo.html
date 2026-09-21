@@ -71,25 +71,8 @@
 </head>
 <body>
 
+    <!-- Punto de inyección dinámica del Header institucional (header.js) -->
     <div id="app-header"></div>
-
-    <header class="main-header">
-        <div class="header-container">
-            <nav class="header-nav">
-                <a href="./index.html" class="btn-back" style="text-decoration: none;">
-                    <i class="fa-solid fa-arrow-left"></i> <span class="btn-back-text">Volver al Panel</span>
-                </a>
-            </nav>
-            <div class="header-title-wrapper">
-                <h1>Hato Laguna Brava - <span>Historial de Potreros</span></h1>
-                <p>Matriz de Ocupación, Rotación de Lotes y Disponibilidad de Forrajes</p>
-            </div>
-            <div class="sync-status-wrapper">
-                <div id="light" class="semaphore online"></div>
-                <span id="statusText" class="sync-text">Sincronizado Local</span>
-            </div>
-        </div>
-    </header>
 
     <main class="main-container">
         <div class="menu-grid">
@@ -154,9 +137,11 @@
         <span id="toast-message">Operación realizada con éxito</span>
     </div>
 
-    <!-- Scripts del Sistema y Módulo (Carga como Módulo JS para la BD local) -->
+    <!-- Scripts del Sistema (Asegurarse de que header.js y syncManager.js estén ubicados en la carpeta /js/) -->
     <script src="./js/header.js"></script>
     <script src="./js/syncManager.js"></script>
+    
+    <!-- Lógica Principal del Módulo (Debe estar en la raíz junto al HTML) -->
     <script type="module" src="./historialPotreros.js"></script>
 </body>
 </html>
