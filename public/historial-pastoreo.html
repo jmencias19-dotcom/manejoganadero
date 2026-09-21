@@ -15,6 +15,17 @@
     <link rel="manifest" href="manifest.json">
     
     <style>
+        /* Optimizaciones generales y responsive mobile-first */
+        body {
+            box-sizing: border-box;
+            overflow-x: hidden;
+        }
+        .main-container {
+            width: 100%;
+            padding: 10px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
         .table-responsive {
             width: 100%;
             overflow-x: auto;
@@ -22,15 +33,16 @@
             border: 1px solid var(--border-color);
             background-color: var(--card-bg);
             margin-bottom: 15px;
+            -webkit-overflow-scrolling: touch;
         }
         .data-table {
             width: 100%;
             border-collapse: collapse;
             text-align: left;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
         }
         .data-table th, .data-table td {
-            padding: 12px 14px;
+            padding: 10px 12px;
             border-bottom: 1px solid var(--divider-color);
             color: var(--text-main);
         }
@@ -67,33 +79,53 @@
         @media (min-width: 768px) { .toast-notification { width: 350px; left: 20px; right: auto; } }
         .toast-notification.show { opacity: 1; transform: translateY(0); }
 
-        /* Área de Inteligencia Intuitiva / Asistente */
-        .ai-recommendations-box { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 14px; margin-top: 15px; }
-        .ai-title { font-size: 0.88rem; color: #1e40af; font-weight: 700; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
-        .ai-content { font-size: 0.82rem; color: #1e3a8a; line-height: 1.4; display: flex; flex-direction: column; gap: 6px; }
+        /* Barra de filtros adaptada para móviles */
+        .filters-container {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 15px;
+            flex-wrap: nowrap;
+            align-items: center;
+        }
+        @media (max-width: 480px) {
+            .filters-container {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
 
-        /* Estilos específicos para métricas y listas unificadas */
+        /* Área de Inteligencia Intuitiva / Asistente */
+        .ai-recommendations-box { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 12px; margin-top: 15px; }
+        .ai-title { font-size: 0.85rem; color: #1e40af; font-weight: 700; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
+        .ai-content { font-size: 0.8rem; color: #1e3a8a; line-height: 1.4; display: flex; flex-direction: column; gap: 4px; }
+
+        /* Métricas Operativas */
         .metrics-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-            gap: 10px;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
             margin-bottom: 15px;
+        }
+        @media (min-width: 576px) {
+            .metrics-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
         }
         .metric-card {
             background: var(--card-bg, #f8f9fa);
             border: 1px solid var(--border-color);
             border-radius: 6px;
-            padding: 10px;
+            padding: 8px;
             text-align: center;
         }
         .metric-card .metric-label {
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             color: var(--text-muted);
-            margin-bottom: 4px;
+            margin-bottom: 2px;
             display: block;
         }
         .metric-card .metric-value {
-            font-size: 1rem;
+            font-size: 0.95rem;
             font-weight: 700;
             color: var(--primary-color);
         }
@@ -103,14 +135,14 @@
             margin: 0 0 15px 0;
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 6px;
         }
         .suggested-item {
             background: rgba(40, 167, 69, 0.05);
             border: 1px dashed var(--accent-color, #28a745);
             border-radius: 6px;
-            padding: 8px 12px;
-            font-size: 0.85rem;
+            padding: 8px 10px;
+            font-size: 0.8rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -119,14 +151,14 @@
             border: 1px solid var(--border-color);
             border-radius: 8px;
             background: var(--divider-color, #e9ecef);
-            height: 140px;
+            height: 130px;
             display: flex;
             align-items: center;
             justify-content: center;
             flex-direction: column;
-            gap: 6px;
+            gap: 4px;
             color: var(--text-muted);
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             text-align: center;
             padding: 10px;
             margin-bottom: 15px;
@@ -142,7 +174,7 @@
         <div class="header-container">
             <nav class="header-nav">
                 <a href="./index.html" class="btn-back" style="text-decoration: none;">
-                    <i class="fa-solid fa-arrow-left"></i> <span class="btn-back-text">Volver al Panel</span>
+                    <i class="fa-solid fa-arrow-left"></i> <span class="btn-back-text">Volver</span>
                 </a>
             </nav>
             <div class="header-title-wrapper">
@@ -151,101 +183,99 @@
             </div>
             <div class="sync-status-wrapper">
                 <div id="light" class="semaphore online"></div>
-                <span id="statusText" class="sync-text">Sincronizado Local</span>
+                <span id="statusText" class="sync-text">Sincronizado</span>
             </div>
         </div>
     </header>
 
     <main class="main-container">
-        <!-- Contenedor único ordenado bajo una sola sección y un solo título -->
-        <div style="width: 100%; max-width: 900px; margin: 0 auto;">
-            <section class="section-box" style="height: auto;">
-                <div class="card-header">
-                    <div class="card-icon"><i class="fa-solid fa-clock-rotate-left"></i></div>
-                    <h2 class="card-title">Historial de Ocupación y Rotación</h2>
-                </div>
-                <p class="card-description">Panel integral de registros, parámetros operativos, sugerencias de pastoreo, mapas y análisis UGM del hato.</p>
-                
-                <!-- Barra de Filtros y Botón de Sincronización -->
-                <div class="filters-container" style="display: flex; gap: 8px; margin-bottom: 15px; flex-wrap: wrap; align-items: center;">
-                    <select id="filtro-historial-potrero" class="form-control" style="flex: 1; min-width: 180px; padding: 8px; border-radius: 6px; border: 1px solid var(--border-color); font-size: 0.85rem;">
-                        <option value="">Todos los Potreros</option>
-                    </select>
-                    <!-- Botón Operativo con estilo institucional -->
-                    <button id="btn-sincronizar-historial" type="button" class="btn" style="padding: 9px 14px; font-size: 0.85rem; display: flex; align-items: center; gap: 6px; cursor: pointer; white-space: nowrap;">
-                        <i class="fa-solid fa-rotate"></i> Cargar registros y sincronizar
-                    </button>
-                </div>
+        <!-- Contenedor único adaptado para dispositivos móviles y escritorio -->
+        <section class="section-box" style="height: auto; padding: 12px;">
+            <div class="card-header">
+                <div class="card-icon"><i class="fa-solid fa-clock-rotate-left"></i></div>
+                <h2 class="card-title" style="font-size: 1.1rem;">Historial de Ocupación y Rotación</h2>
+            </div>
+            <p class="card-description" style="font-size: 0.85rem;">Panel integral de registros, parámetros operativos, sugerencias, mapas y análisis UGM.</p>
+            
+            <!-- Barra de Filtros y Botón de Sincronización Corto -->
+            <div class="filters-container">
+                <select id="filtro-historial-potrero" class="form-control" style="flex: 1; padding: 8px; border-radius: 6px; border: 1px solid var(--border-color); font-size: 0.85rem;">
+                    <option value="">Todos los Potreros</option>
+                </select>
+                <!-- Botón de Sincronización acortado -->
+                <button id="btn-sincronizar-historial" type="button" class="btn" style="padding: 8px 12px; font-size: 0.85rem; display: flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; white-space: nowrap;">
+                    <i class="fa-solid fa-rotate"></i> Sincronizar
+                </button>
+            </div>
 
-                <!-- Tabla Principal de Registros -->
-                <div class="table-responsive">
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <!-- Cabeceras ocultas según diseño previo -->
-                            </tr>
-                        </thead>
-                        <tbody id="tabla-potreros-body">
-                            <!-- El archivo historialPotreros.js inyectará dinámicamente las filas aquí -->
-                        </tbody>
-                    </table>
-                </div>
+            <!-- Tabla Principal de Registros -->
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <!-- Cabeceras ocultas según diseño previo -->
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-potreros-body">
+                        <!-- El archivo historialPotreros.js inyectará dinámicamente las filas aquí -->
+                    </tbody>
+                </table>
+            </div>
 
-                <!-- Métricas Operativas de Parámetros -->
-                <div class="metrics-grid" style="margin-top: 20px;">
-                    <div class="metric-card">
-                        <span class="metric-label"><i class="fa-solid fa-signs-post"></i> Potrero Activo</span>
-                        <span id="metric-potrero" class="metric-value">--</span>
-                    </div>
-                    <div class="metric-card">
-                        <span class="metric-label"><i class="fa-solid fa-business-time"></i> Días Ocupación</span>
-                        <span id="metric-dias-ocupacion" class="metric-value">0 d</span>
-                    </div>
-                    <div class="metric-card">
-                        <span class="metric-label"><i class="fa-solid fa-spa"></i> Días Descanso</span>
-                        <span id="metric-dias-descanso" class="metric-value">0 d</span>
-                    </div>
-                    <div class="metric-card">
-                        <span class="metric-label"><i class="fa-solid fa-weight-scale"></i> Presión (UGM/ha)</span>
-                        <span id="metric-presion" class="metric-value">0.00</span>
-                    </div>
+            <!-- Métricas Operativas de Parámetros -->
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <span class="metric-label"><i class="fa-solid fa-signs-post"></i> Potrero Activo</span>
+                    <span id="metric-potrero" class="metric-value">--</span>
                 </div>
+                <div class="metric-card">
+                    <span class="metric-label"><i class="fa-solid fa-business-time"></i> Ocupación</span>
+                    <span id="metric-dias-ocupacion" class="metric-value">0 d</span>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-label"><i class="fa-solid fa-spa"></i> Descanso</span>
+                    <span id="metric-dias-descanso" class="metric-value">0 d</span>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-label"><i class="fa-solid fa-weight-scale"></i> UGM/ha</span>
+                    <span id="metric-presion" class="metric-value">0.00</span>
+                </div>
+            </div>
 
-                <!-- Lista de Potreros Sugeridos para Pastoreo -->
-                <div style="margin-top: 15px;">
-                    <h3 style="font-size: 0.9rem; color: var(--primary-color); margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
-                        <i class="fa-solid fa-list-check"></i> Potreros Sugeridos para Pastoreo
-                    </h3>
-                    <ul id="lista-potreros-sugeridos" class="suggested-list">
-                        <li class="suggested-item">
-                            <span>Sugerencia 1: Evaluando descanso...</span>
-                            <i class="fa-solid fa-chevron-right" style="font-size: 0.75rem; color: var(--text-muted);"></i>
-                        </li>
-                    </ul>
-                </div>
+            <!-- Lista de Potreros Sugeridos para Pastoreo -->
+            <div style="margin-top: 12px;">
+                <h3 style="font-size: 0.85rem; color: var(--primary-color); margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
+                    <i class="fa-solid fa-list-check"></i> Potreros Sugeridos para Pastoreo
+                </h3>
+                <ul id="lista-potreros-sugeridos" class="suggested-list">
+                    <li class="suggested-item">
+                        <span>Sugerencia 1: Evaluando descanso...</span>
+                        <i class="fa-solid fa-chevron-right" style="font-size: 0.7rem; color: var(--text-muted);"></i>
+                    </li>
+                </ul>
+            </div>
 
-                <!-- Mapa de los Potreros del Hato -->
-                <div style="margin-top: 15px;">
-                    <h3 style="font-size: 0.9rem; color: var(--primary-color); margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
-                        <i class="fa-solid fa-map"></i> Mapa de Potreros del Hato
-                    </h3>
-                    <div id="mapa-potreros-box" class="map-container-box">
-                        <i class="fa-solid fa-map-location-dot" style="font-size: 1.4rem; color: var(--primary-color);"></i>
-                        <span>Vista cartográfica de potreros y sectores de Los Módulos</span>
-                    </div>
+            <!-- Mapa de los Potreros del Hato -->
+            <div style="margin-top: 12px;">
+                <h3 style="font-size: 0.85rem; color: var(--primary-color); margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
+                    <i class="fa-solid fa-map"></i> Mapa de Potreros del Hato
+                </h3>
+                <div id="mapa-potreros-box" class="map-container-box">
+                    <i class="fa-solid fa-map-location-dot" style="font-size: 1.3rem; color: var(--primary-color);"></i>
+                    <span>Vista cartográfica de potreros y sectores de Los Módulos</span>
                 </div>
+            </div>
 
-                <!-- Asistente de Carga Animal (I.D.) -->
-                <div class="ai-recommendations-box">
-                    <div class="ai-title">
-                        <i class="fa-solid fa-brain"></i> Asistente de Carga Animal (I.D.)
-                    </div>
-                    <div id="ai-sugerencias-content" class="ai-content">
-                        <p style="margin: 0; font-style: italic;">Analizando la UGM y presión de carga por potrero...</p>
-                    </div>
+            <!-- Asistente de Carga Animal (I.D.) -->
+            <div class="ai-recommendations-box">
+                <div class="ai-title">
+                    <i class="fa-solid fa-brain"></i> Asistente de Carga Animal (I.D.)
                 </div>
-            </section>
-        </div>
+                <div id="ai-sugerencias-content" class="ai-content">
+                    <p style="margin: 0; font-style: italic;">Analizando la UGM y presión de carga por potrero...</p>
+                </div>
+            </div>
+        </section>
     </main>
 
     <!-- Notificación Toast Dinámica -->
