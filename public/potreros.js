@@ -225,11 +225,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 // A. Lotes de Ingreso Activos (> 0 cabezas)
                 const registrosActivos = grupo.registros.filter(r => (r.cabezas || 0) > 0);
                 const resumenIngresos = registrosActivos.length > 0 ? registrosActivos.map(r => `
-                    <div style="margin-bottom: 8px; border-bottom: 1px dashed #dee2e6; padding-bottom: 6px;">
-                        <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px;">
-                            <span style="font-size: 0.85rem; line-height: 1.2; word-break: break-word; flex: 1;">
-                                • <b>${r.cabezas} cab.</b> de ${r.nombreCategoria || r.categoria} (${r.especie || 'BOVINOS'})
-                            </span>
+                    <div style="margin-bottom: 10px; border-bottom: 1px dashed #dee2e6; padding-bottom: 8px;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px;">
+                            <div style="font-size: 0.85rem; line-height: 1.3; flex: 1; min-width: 0; word-break: break-word;">
+                                • <b>${r.cabezas} cab.</b> de ${r.nombreCategoria || r.categoria} 
+                                <span style="color: #6c757d; font-size: 0.8rem;">(${r.especie || 'BOVINOS'})</span>
+                            </div>
                             <button class="btn-retirar-lote" 
                                 data-id="${r.id}" 
                                 data-cabezas="${r.cabezas}" 
@@ -238,40 +239,17 @@ document.addEventListener('DOMContentLoaded', () => {
                                 data-factor="${r.factorUgm || 1.0}"
                                 data-salidas="${encodeURIComponent(JSON.stringify(r.salidas || []))}"
                                 title="Retirar animales de este lote" 
-                                style="background: #e63946; color: white; border: none; padding: 4px 10px; border-radius: 4px; font-size: 0.75rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; height: 26px; line-height: 1; flex-shrink: 0;">
-                                <i class="fa-solid fa-right-from-bracket"></i> Salida
+                                style="background: #e63946; color: white; border: none; padding: 0 12px; border-radius: 4px; font-size: 0.75rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 5px; height: 28px; min-height: 28px; line-height: normal; flex-shrink: 0; white-space: nowrap;">
+                                <i class="fa-solid fa-right-from-bracket" style="font-size: 0.7rem;"></i> Salida
                             </button>
                         </div>
-                        <div style="font-size: 0.78rem; color: #555; margin-top: 2px;">
+                        <div style="font-size: 0.78rem; color: #555; margin-top: 3px;">
                             <span><b>Ingreso:</b> ${r.fechaIngreso || 'N/D'}</span> | 
                             <span style="color: #c1121f;"><b>Salida Estimada:</b> ${r.fechaSalida || 'No definida'}</span>
                         </div>
-                        ${r.observaciones ? `<div style="font-size: 0.78rem; color: #6c757d; font-style: italic; margin-top: 1px;"><b>Obs:</b> ${r.observaciones}</div>` : ''}
+                        ${r.observaciones ? `<div style="font-size: 0.78rem; color: #6c757d; font-style: italic; margin-top: 2px;"><b>Obs:</b> ${r.observaciones}</div>` : ''}
                     </div>
                 `).join('') : '<div style="font-size: 0.8rem; color: #6c757d; font-style: italic;">Sin lotes activos en ingreso.</div>';
-                // B. Historial de Salidas Parciales
-                let todasLasSalidas = [];
-                grupo.registros.forEach(r => {
-                    if (r.salidas && Array.isArray(r.salidas)) {
-                        r.salidas.forEach(s => {
-                            todasLasSalidas.push({
-                                categoria: r.nombreCategoria || r.categoria,
-                                especie: r.especie || 'BOVINOS',
-                                cabezas: s.cabezas,
-                                fecha: s.fecha
-                            });
-                        });
-                    }
-                });
-
-                let seccionSalidasHTML = '';
-                if (todasLasSalidas.length > 0) {
-                    const resumenSalidas = todasLasSalidas.map(s => `
-                        <div style="margin-bottom: 4px; border-bottom: 1px dotted #ffeeba; padding-bottom: 4px; font-size: 0.78rem; color: #856404;">
-                            <span>• <b>${s.cabezas} cab.</b> de ${s.categoria} (${s.especie}) | <b>Salida:</b> ${s.fecha}</span>
-                        </div>
-                    `).join('');
-
                     seccionSalidasHTML = `
                         <div class="potrero-card-meta" style="background: #fff3cd; padding: 8px 10px; border-radius: 6px; margin-top: 6px; font-size: 0.85rem; border: 1px solid #ffeeba;">
                             <div style="font-weight: bold; margin-bottom: 6px; color: #856404;">
@@ -280,8 +258,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             ${resumenSalidas}
                         </div>
                     `;
-                }
-
+                                           
                 const div = document.createElement('div');
                 div.className = 'potrero-card-item';
                 div.innerHTML = `
