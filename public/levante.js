@@ -100,6 +100,7 @@ const HatoApp = {
         let registrosLote = historial.filter(r => r.lote === loteNombre);
         let gmdCalculada = 0.50; 
 
+        // Cálculo robusto de GMD basada en el último pesaje histórico registrado
         if (registrosLote.length > 0) {
             let ultimoReg = registrosLote[registrosLote.length - 1];
             let fAnterior = new Date(ultimoReg.fechaActual);
@@ -109,7 +110,7 @@ const HatoApp = {
             if (diasTranscurridos > 0) {
                 let diffKilos = pesoProm - ultimoReg.pesoPromedioLote;
                 gmdCalculada = diffKilos / diasTranscurridos;
-                if (gmdCalculada < 0) gmdCalculada = 0.01;
+                if (gmdCalculada <= 0.01) gmdCalculada = 0.01;
             }
         } else {
             let kgsMetaInit = pesoObj - pesoProm;
@@ -123,9 +124,10 @@ const HatoApp = {
         let kgsFaltantes = pesoObj - pesoProm;
         if (kgsFaltantes < 0) kgsFaltantes = 0;
 
-        let diasTotales = gmdCalculada > 0 ? (kgsFaltantes / gmdCalculada) : 0;
-        let mesesFaltantes = Math.floor(diasTotales / 30);
-        let diasRestantes = Math.round(diasTotales % 30);
+        // FÓRMULA CORREGIDA: Días totales exactos basados en la GMD real y los kilos pendientes
+        let diasTotalesFaltantes = gmdCalculada > 0 ? Math.ceil(kgsFaltantes / gmdCalculada) : 0;
+        let mesesFaltantes = Math.floor(diasTotalesFaltantes / 30);
+        let diasRestantes = diasTotalesFaltantes % 30;
 
         const elemKgsF = document.getElementById('resumenKgsFaltantes');
         if (elemKgsF) elemKgsF.innerText = `+${kgsFaltantes.toFixed(1)} kg`;
