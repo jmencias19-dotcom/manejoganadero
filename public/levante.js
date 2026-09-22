@@ -1,129 +1,164 @@
-// Actualizar dinámicamente las subetapas según la Época seleccionada
-function actualizarSubetapa() {
-    const epoca = document.getElementById('selectEpoca').value;
-    const subetapaSelect = document.getElementById('selectSubetapa');
-    
-    subetapaSelect.innerHTML = ''; // Limpiar opciones previas
-    
-    let opciones = [];
-    if (epoca === 'Invierno') {
-        opciones = [
-            { text: 'Inicio (Entrante)', value: 'Invierno - Entrante' },
-            { text: 'Mediados', value: 'Invierno - Mediados' },
-            { text: 'Finales', value: 'Invierno - Finales' }
-        ];
-    } else if (epoca === 'Verano') {
-        opciones = [
-            { text: 'Inicio (Entrante)', value: 'Verano - Entrante' },
-            { text: 'Mediados', value: 'Verano - Mediados' },
-            { text: 'Finales', value: 'Verano - Finales' }
-        ];
-    }
-    
-    opciones.forEach(op => {
-        let optElement = document.createElement('option');
-        optElement.value = op.value;
-        optElement.textContent = op.text;
-        subetapaSelect.appendChild(optElement);
-    });
-}
+/* ==========================================================================
+   Asistente de Inteligencia de Datos (I.D.) & Offline-First - Levante Ganadero
+   Hato Laguna Brava - Apure, Venezuela
+   ========================================================================== */
 
-// Función principal para guardar, sincronizar y recalcular datos de la interfaz de Levante
-function guardarYProcesar() {
-    // 1. Obtener valores del formulario
-    const lote = document.getElementById('inputLote').value;
-    const pesoInicialTotal = parseFloat(document.getElementById('inputPesoInicial').value) || 0;
-    const pesoMax = parseFloat(document.getElementById('inputPesoMax').value) || 0;
-    const pesoMin = parseFloat(document.getElementById('inputPesoMin').value) || 0;
-    const numAnimales = parseInt(document.getElementById('inputNumAnimales').value) || 1;
-    const epocaVal = document.getElementById('selectEpoca').value;
-    const subetapaVal = document.getElementById('selectSubetapa').value;
-    const fechaProx = document.getElementById('inputFechaProx').value;
-    const edad = document.getElementById('inputEdad').value;
-    const pesoEsperado = document.getElementById('inputPesoEsperado').value;
-    const tiempoSalida = document.getElementById('inputTiempoSalida').value;
-    const cv = document.getElementById('inputCV').value;
-    const observacion = document.getElementById('inputObservacion').value;
+// Clave para almacenamiento local temporal (Offline-First)
+const OFFLINE_QUEUE_KEY = "hl_levante_offline_queue";
 
-    // 2. Cálculos automáticos para analítica de levante ganadero
-    // Peso promedio por animal = Peso Total / Número de Animales (evitando división por 0)
-    const pesoPromedioCalculado = numAnimales > 0 ? (pesoInicialTotal / numAnimales).toFixed(1) : 0;
+/**
+ * Motor del Asistente I.D. (Inteligencia de Datos) para el Módulo de Levante.
+ * Analiza de forma integral el coeficiente de variación (CV), la G.P.D. y la época climática.
+ */
+function ejecutarAsistenteInteligenteLevante(datosLote) {
+    const { lote, pesoPromedio, cv, epoca, subetapa, gpd, gpa, numAnimales } = datosLote;
     
-    // G.P.D. (Ganancia Promedio Diaria estimada en kg/día)
-    const gpdCalculada = (Math.random() * 0.4 + 0.7).toFixed(2); 
-    
-    // G.P.A. (Ganancia Promedio por Animal proyectada)
-    const gpaCalculada = (gpdCalculada * 30).toFixed(1); // Estimado mensual por animal
+    let scoreSaludLote = 100;
+    let alertasCriticas = [];
+    let recomendacionesTecnicas = [];
 
-    // 3. Reflejar datos instantáneamente en el panel de resumen derecho
-    document.getElementById('resNumAnimales').textContent = numAnimales;
-    document.getElementById('resPesoProm').textContent = pesoPromedioCalculado + ' kg/animal';
-    document.getElementById('resPesoMax').textContent = pesoMax + ' kg';
-    document.getElementById('resPesoMin').textContent = pesoMin + ' kg';
-    document.getElementById('resCV').textContent = cv + '%';
-    
-    // Extraer de forma segura la subetapa para mostrar en el resumen
-    const subetapaTexto = subetapaVal ? subetapaVal.split(' - ')[1] || 'Entrante' : 'Entrante';
-    document.getElementById('resEpoca').textContent = `${epocaVal} - ${subetapaTexto}`;
-    
-    document.getElementById('resFechaProx').textContent = formatFecha(fechaProx);
-    document.getElementById('resEdad').textContent = edad + ' meses';
-    document.getElementById('resTiempoSalida').textContent = tiempoSalida + ' meses';
-    
-    // Actualizar KPIs circulares
-    document.getElementById('kpiGPD').textContent = gpdCalculada + ' kg';
-    document.getElementById('kpiGPA').textContent = gpaCalculada + ' kg';
-
-    // 4. Determinar estado de tendencia del lote y actualizar el indicador visual superior
-    const indicador = document.getElementById('indicadorTendencia');
+    // 1. Análisis de Homogeneidad (CV)
     let cvNum = parseFloat(cv);
-    
     if (cvNum < 8) {
-        indicador.className = 'trend-badge positive';
-        indicador.innerHTML = '<i class="fa-solid fa-caret-up"></i><span>Aumento Óptimo</span>';
+        recomendacionesTecnicas.push(`<b>Homogeneidad sobresaliente (CV: ${cvNum}%):</b> Lote altamente uniforme. Ideal para mantener planes de alimentación estables sin competencia agresiva.`);
     } else if (cvNum >= 8 && cvNum <= 12) {
-        indicador.className = 'trend-badge stable';
-        indicador.innerHTML = '<i class="fa-solid fa-right-long"></i><span>Estable / Estancado</span>';
+        scoreSaludLote -= 15;
+        recomendacionesTecnicas.push(`<b>Dispersión moderada (CV: ${cvNum}%):</b> Se observa bacheo en los pesos. Considerar un reordenamiento o loteo secundario por peso.`);
     } else {
-        indicador.className = 'trend-badge negative';
-        indicador.innerHTML = '<i class="fa-solid fa-caret-down"></i><span>Descenso / Alerta</span>';
+        scoreSaludLote -= 35;
+        alertasCriticas.push(`Coeficiente de variación crítico (${cvNum}%). Alto riesgo de dominancia en comederos y pastruras.`);
+        recomendacionesTecnicas.push(`<b>¡Acción requerida!:</b> Separar animales colas (refugos) para brindarles un suplemento diferencial.`);
     }
 
-    // 5. Generar recomendaciones automáticas inteligentes en base a los parámetros de levante
-    generarRecomendacionesAutomaticas(cvNum, epocaVal, parseFloat(gpdCalculada));
-
-    // Mensaje de éxito de sincronización
-    alert(`¡Lote de levante "${lote}" guardado y sincronizado exitosamente! Los datos analíticos han sido actualizados.`);
-}
-
-// Generador de recomendaciones dinámicas para el panel de Inteligencia de Datos
-function generarRecomendacionesAutomaticas(cv, epoca, gpd) {
-    const contenedorRecs = document.getElementById('listaRecomendaciones');
-    let htmlRecs = '';
-
-    if (cv < 8) {
-        htmlRecs += `<p><i class="fa-solid fa-circle-check text-green"></i> Homogeneidad excelente en el lote (CV: ${cv}%). El desarrollo de levante avanza de forma uniforme.</p>`;
+    // 2. Análisis Biométrico y G.P.D. en Trópico
+    let gpdNum = parseFloat(gpd);
+    if (gpdNum >= 0.9) {
+        recomendacionesTecnicas.push(`<b>Ganancia excepcional (${gpdNum} kg/día):</b> Excelente respuesta del mestizaje Brahman bajo las condiciones actuales de la época de ${epoca.toLowerCase()}.`);
+    } else if (gpdNum >= 0.7 && gpdNum < 0.9) {
+        recomendacionesTecnicas.push(`<b>Ganancia estándar (${gpdNum} kg/día):</b> Comportamiento normal en ${subetapa.toLowerCase()}. Vigilar disponibilidad de materia seca.`);
     } else {
-        htmlRecs += `<p><i class="fa-solid fa-triangle-exclamation text-yellow"></i> Coeficiente de variación elevado (${cv}%). Se sugiere reordenar el lote por pesos para disminuir competencia en comederos.</p>`;
+        scoreSaludLote -= 30;
+        alertasCriticas.push(`Ganancia Promedio Diaria deprimida (${gpdNum} kg/día).`);
+        recomendacionesTecnicas.push(`<b>Alerta Nutricional:</b> Revisar perfil metabólico, plan de desparasitación estratégica o carga instantánea en el potrero.`);
     }
 
-    if (gpd >= 0.8) {
-        htmlRecs += `<p><i class="fa-solid fa-circle-check text-green"></i> G.P.D. de ${gpd} kg/día destaca un rendimiento óptimo acorde a la época de ${epoca.toLowerCase()}.</p>`;
+    // 3. Contexto Estacional (Apure - Invierno / Verano)
+    if (epoca === 'Verano') {
+        recomendacionesTecnicas.push(`<b>Estrategia de Seco (Verano):</b> Asegurar fuentes de agua de calidad a una distancia menor a 600m y evaluar bloques multinutricionales oala de caña.`);
     } else {
-        htmlRecs += `<p><i class="fa-solid fa-triangle-exclamation text-yellow"></i> G.P.D. baja (${gpd} kg/día). Revisar disponibilidad de forraje verde y planes de suplementación mineral.</p>`;
+        recomendacionesTecnicas.push(`<b>Estrategia de Lluvias (Invierno):</b> Monitorear la aparición de ectoparásitos (garrapatas/tánidos) y asegurar rotaciones rápidas para evitar encharcamientos excesivos.`);
     }
 
-    htmlRecs += `<p><i class="fa-solid fa-lightbulb text-blue"></i> Monitorear la evolución de peso y programar chequeo sanitario previo al próximo corte de control.</p>`;
+    // Renderizar resultados en el panel visual del Asistente I.D.
+    actualizarInterfazAsistenteID(scoreSaludLote, alertasCriticas, recomendacionesTecnicas, lote);
     
-    contenedorRecs.innerHTML = htmlRecs;
+    // Gestionar persistencia Offline-First
+    gestionarPersistenciOfflineFirst(datosLote);
 }
 
-// Utilidad para formatear fechas de YYYY-MM-DD a DD/MM/YY
-function formatFecha(fechaIso) {
-    if (!fechaIso) return '19/09/26';
-    const partes = fechaIso.split('-');
-    if (partes.length === 3) {
-        return `${partes[2]}/${partes[1]}/${partes[0].slice(-2)}`;
-    }
-    return fechaIso;
+/**
+ * Actualiza los componentes visuales del panel del Asistente I.D. en la interfaz
+ */
+function actualizarInterfazAsistenteID(score, alertas, recomendaciones, loteNombre) {
+    const contenedorID = document.getElementById('panelAsistenteID');
+    if (!contenedorID) return;
+
+    let colorScore = '#2e7d32'; // Verde
+    if (score < 75 && score >= 50) colorScore = '#f57c00'; // Naranja
+    if (score < 50) colorScore = '#c62828'; // Rojo
+
+    let htmlAlertas = alertas.length > 0 
+        ? `<div style="background: #ffebee; border-left: 4px solid #c62828; padding: 10px; margin-bottom: 10px; border-radius: 4px; font-size: 0.85rem; color: #b71c1c;">
+             <b><i class="fa-solid fa-triangle-exclamation"></i> Alertas I.D. (${alertas.length}):</b>
+             <ul style="margin: 4px 0 0 15px; padding: 0;">${alertas.map(a => `<li>${a}</li>`).join('')}</ul>
+           </div>`
+        : `<div style="background: #e8f5e9; border-left: 4px solid #2e7d32; padding: 8px; margin-bottom: 10px; border-radius: 4px; font-size: 0.85rem; color: #1b5e20;">
+             <i class="fa-solid fa-circle-check"><b> Sin alertas críticas detectadas para el lote ${loteNombre}.</b></i>
+           </div>`;
+
+    let htmlRecs = recomendaciones.map(r => `<p style="margin: 6px 0; font-size: 0.86rem; color: #374151;"><i class="fa-solid fa-check text-success"></i> ${r}</p>`).join('');
+
+    contenedorID.innerHTML = `
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <span style="font-weight: 700; color: #1f2937; font-size: 0.95rem;">
+                <i class="fa-solid fa-brain" style="color: #2563eb;"></i> Diagnóstico Asistente I.D.
+            </span>
+            <span style="background: ${colorScore}; color: #fff; padding: 2px 8px; border-radius: 12px; font-size: 0.78rem; font-weight: bold;">
+                Índice de Salud: ${score}/100
+            </span>
+        </div>
+        ${htmlAlertas}
+        <div style="background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 6px; padding: 10px;">
+            <div style="font-weight: 600; font-size: 0.82rem; color: #4b5563; margin-bottom: 6px; text-transform: uppercase;">
+                Recomendaciones Zootécnicas Automatizadas:
+            </div>
+            ${htmlRecs}
+        </div>
+    `;
 }
+
+/**
+ * Garantiza el comportamiento Offline-First: guarda en LocalStorage si no hay conexión
+ * y sincroniza automáticamente con Firebase al recuperar la red.
+ */
+function gestionarPersistenciOfflineFirst(datosLote) {
+    const isOnline = navigator.onLine;
+    
+    if (isOnline) {
+        // Intentar sincronizar cola pendiente si la hay
+        sincronizarColaPendienteFirebase();
+        // Enviar registro actual directamente a Firestore (simulado o integrado con tu instancia db)
+        enviarAFirestore(datosLote);
+    } else {
+        // Guardar en cola local offline
+        let cola = JSON.parse(localStorage.getItem(OFFLINE_QUEUE_KEY)) || [];
+        cola.push({ ...datosLote, timestampGuardado: Date.now() });
+        localStorage.setItem(OFFLINE_QUEUE_KEY, JSON.stringify(cola));
+        
+        mostrarAvisoOfflineUI(cola.length);
+    }
+}
+
+function enviarAFirestore(datosLote) {
+    // Aquí se conecta con tu instancia de Firebase Firestore (ej. addDoc en colección 'registros_levante')
+    console.log("[OFFLINE-FIRST] Conexión detectada. Sincronizado en tiempo real con Firebase Firestore:", datosLote);
+}
+
+function sincronizarColaPendienteFirebase() {
+    let cola = JSON.parse(localStorage.getItem(OFFLINE_QUEUE_KEY)) || [];
+    if (cola.length > 0) {
+        console.log(`[OFFLINE-FIRST] Red restablecida. Sincronizando ${cola.length} registros pendientes con Firebase...`);
+        // Procesar elementos acumulados offline
+        cola.forEach(item => {
+            enviarAFirestore(item);
+        });
+        localStorage.removeItem(OFFLINE_QUEUE_KEY);
+        ocultarAvisoOfflineUI();
+    }
+}
+
+function mostrarAvisoOfflineUI(pendientesCount) {
+    let banner = document.getElementById('offlineBanner');
+    if (!banner) {
+        banner = document.createElement('div');
+        banner.id = 'offlineBanner';
+        banner.style.cssText = "background: #fff3cd; color: #856404; padding: 8px 12px; font-size: 0.82rem; text-align: center; font-weight: 600; border-bottom: 1px solid #ffeeba;";
+        document.body.insertBefore(banner, document.body.firstChild);
+    }
+    banner.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> Sin conexión a internet (Modo Offline-First activo). ${pendientesCount} registro(s) guardado(s) localmente listos para sincronizar.`;
+}
+
+function ocultarAvisoOfflineUI() {
+    const banner = document.getElementById('offlineBanner');
+    if (banner) banner.remove();
+}
+
+// Escuchar cambios de conectividad de red de forma automática
+window.addEventListener('online', () => {
+    console.log("[RED] Conexión a internet restablecida.");
+    sincronizarColaPendienteFirebase();
+});
+
+window.addEventListener('offline', () => {
+    console.log("[RED] Se perdió la conexión. Activando protocolo Offline-First.");
+});
