@@ -127,10 +127,10 @@
             color: var(--text-main, #1b4332); 
         }
 
-        /* Alerta visual dinámica para el Coeficiente de Variación */
+        /* Alertas visuales dinámicas para la Brújula de Pesaje */
         .cv-alert-optimal { border-left: 4px solid #2d6a4f; background-color: #f4f9f6; }
         .cv-alert-warning { border-left: 4px solid #d4a373; background-color: #fefae0; }
-        .cv-alert-danger  { border-left: 4px solid #bc6c25; background-color: #fdf0ed; }
+        .cv-alert-danger  { border-left: 4px solid #b7094c; background-color: #fdf0ed; }
 
         .btn-submit { 
             width: 100%; 
@@ -184,7 +184,7 @@
             </nav>
             <div class="header-title-wrapper">
                 <h1>Hato Laguna Brava - <span>Bloques de Estudio & Control</span></h1>
-                <p>Contexto Estacional, GMD Dinámica y Metas de Salida</p>
+                <p>Brújula Temporal, GMD Dinámica y Alertas de Manga</p>
             </div>
             <div class="sync-status-wrapper">
                 <div id="sync-semaphore" class="semaphore online"></div>
@@ -201,9 +201,9 @@
             <section class="section-box">
                 <div class="card-header">
                     <div class="card-icon">📋</div>
-                    <h2 class="card-title">Registro de Pesaje Grupal y Bloque</h2>
+                    <h2 class="card-title">Registro de Pesaje y Brújula de Fechas</h2>
                 </div>
-                <p class="card-description">Defina el bloque, la temporada agroecológica y los parámetros poblacionales actuales.</p>
+                <p class="card-description">Declaración de fechas de control en manga y programación del próximo pesaje.</p>
                 
                 <form id="form-levante" onsubmit="event.preventDefault();" style="display: flex; flex-direction: column; gap: 12px;">
                     
@@ -230,6 +230,18 @@
                         </select>
                     </div>
 
+                    <!-- DECLARACIÓN DE FECHAS (ACTUAL Y PRÓXIMO PESAJE) -->
+                    <div class="kpi-container">
+                        <div class="input-group">
+                            <label for="inputFechaActual">Fecha del Pesaje Actual</label>
+                            <input type="date" id="inputFechaActual" required>
+                        </div>
+                        <div class="input-group">
+                            <label for="inputFechaProximo">Fecha del Próximo Pesaje</label>
+                            <input type="date" id="inputFechaProximo" required>
+                        </div>
+                    </div>
+
                     <div class="kpi-container">
                         <div class="input-group">
                             <label for="inputPesoPromedio">Peso Promedio Actual del Lote (kg)</label>
@@ -249,7 +261,7 @@
                         </div>
                         <div class="input-group">
                             <label for="inputMesesObjetivo">Meta de Salida (Meses)</label>
-                            <input type="number" step="0.5" id="inputMesesObjetivo" value="4.0" required title="Tiempo proyectado en meses para alcanzar la meta">
+                            <input type="number" step="0.5" id="inputMesesObjetivo" value="4.0" required>
                         </div>
                     </div>
 
@@ -292,18 +304,24 @@
                 </form>
             </section>
 
-            <!-- COLUMNA 2: PANEL DE INDICADORES DE ORO Y APRENDIZAJE DE IA -->
+            <!-- COLUMNA 2: PANEL DE INDICADORES DE ORO Y BRÚJULA TEMPORAL -->
             <section class="section-box">
                 <div class="card-header">
                     <div class="card-icon">🎯</div>
-                    <h2 class="card-title">Indicadores, GMD Dinámica y Memoria</h2>
+                    <h2 class="card-title">Brújula Temporal, GMD e IA</h2>
                 </div>
-                <p class="card-description">Resultados calculados por fechas de pesaje histórica, brechas de meta y retroalimentación del sistema experto.</p>
+                <p class="card-description">Monitoreo de cuenta regresiva para el próximo control de manga y diagnóstico experto.</p>
                 
                 <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 5px;">
                     
+                    <!-- ALERTA VISUAL Y SONORA DE LA BRÚJULA -->
+                    <div id="cardBrujulaBox" class="kpi-card-item cv-alert-optimal">
+                        <label><i class="fa-solid fa-bell"></i> Estado de la Brújula de Pesaje</label>
+                        <span id="resumenBrujulaDias" class="kpi-value">En fecha (Faltan 30 días)</span>
+                    </div>
+
                     <div class="kpi-card-item">
-                        <label>GMD Calculada (Historial / Días)</label>
+                        <label>GMD Calculada (Entre Fechas de Pesaje)</label>
                         <span id="resumenGMD" class="kpi-value" style="color: #2d6a4f;">0.54 kg/día</span>
                     </div>
 
@@ -317,15 +335,10 @@
                         <span id="resumenTiempoFaltante" class="kpi-value">4 meses y 5 días</span>
                     </div>
 
-                    <div id="cardCVBox" class="kpi-card-item cv-alert-optimal">
-                        <label>Uniformidad del Lote (CV)</label>
-                        <span id="resumenCV" class="kpi-value">6.4% (Óptimo)</span>
-                    </div>
-
                     <div class="input-group" style="margin-top: 4px;">
                         <label>Diagnóstico Estacional y Memoria de IA</label>
                         <div id="statsInterpretacion" class="stats-interpretation">
-                            <strong>Análisis Integrado (Clima + Numérico + Cualitativo):</strong> Época registrada: <em>Invierno - Salida</em>. El CV se mantiene en 6.4% (< 8%). Cruzando este resultado con la temporada y la meta en meses de salida, el sistema valida que el bloque marcha de acuerdo al cronograma previsto en los esteros de Apure.
+                            <strong>Análisis Integrado (Clima + Fechas + Numérico):</strong> Época registrada: <em>Invierno - Salida</em>. La brújula temporal monitorea el intervalo hacia el próximo pesaje programado para asegurar que el balance de ganancia en los esteros de Apure marche sin desviaciones.
                         </div>
                     </div>
 
@@ -340,45 +353,73 @@
         </div>
     </main>
 
-    <!-- Script de Lógica, GMD Dinámica por Fechas y Memoria Local -->
+    <!-- Script de Lógica, GMD Dinámica, Fechas y Alerta Sonora (Web Audio API) -->
     <script>
+        // Inicializar fechas por defecto en los inputs (Fecha actual y +30 días por defecto)
+        document.getElementById('inputFechaActual').valueAsDate = new Date();
+        let fechaProxDefault = new Date();
+        fechaProxDefault.setDate(fechaProxDefault.getDate() + 30);
+        document.getElementById('inputFechaProximo').valueAsDate = fechaProxDefault;
+
         let historialLotes = JSON.parse(localStorage.getItem('lb_historial_lotes')) || [];
         document.getElementById('resumenConteoHistorial').innerText = `${historialLotes.length} Pesajes Registrados`;
 
+        // Función sintetizadora de alerta sonora (pitido de manga sin depender de archivos externos)
+        function reproducirAlertaSonora(tipo) {
+            try {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = audioCtx.createOscillator();
+                const gainNode = audioCtx.createGain();
+                
+                osc.type = tipo === 'urgente' ? 'sawtooth' : 'sine';
+                osc.frequency.setValueAtTime(tipo === 'urgente' ? 880 : 587.33, audioCtx.currentTime); // Frecuencias de alerta
+                
+                gainNode.gain.setValueAtTime(0.15, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.6);
+                
+                osc.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+                
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.6);
+            } catch(e) {
+                console.log("Audio no soportado o bloqueado por políticas del navegador", e);
+            }
+        }
+
         function calcularIndicadoresDinamicos() {
             let loteNombre = document.getElementById('inputLote').value;
+            let fechaActualStr = document.getElementById('inputFechaActual').value;
+            let fechaProximaStr = document.getElementById('inputFechaProximo').value;
             let pesoProm = parseFloat(document.getElementById('inputPesoPromedio').value) || 0;
             let pesoObj = parseFloat(document.getElementById('inputPesoObjetivo').value) || 0;
             let mesesMeta = parseFloat(document.getElementById('inputMesesObjetivo').value) || 1;
             let cv = parseFloat(document.getElementById('inputCV').value) || 0;
 
-            // Filtrar registros previos del mismo lote para calcular GMD real por días transcurridos
+            // 1. Cálculo de GMD basada en el historial del lote
             let registrosLote = historialLotes.filter(r => r.lote === loteNombre);
-            let gmdCalculada = 0.50; // Valor por defecto inicial si no hay historial previo
+            let gmdCalculada = 0.50; 
 
             if (registrosLote.length > 0) {
-                // Tomar el último registro guardado de este lote
                 let ultimoReg = registrosLote[registrosLote.length - 1];
-                let fechaAnterior = new Date(ultimoReg.fecha);
-                let fechaActual = new Date();
-                let diasTranscurridos = Math.round((fechaActual - fechaAnterior) / (1000 * 60 * 60 * 24));
+                let fAnterior = new Date(ultimoReg.fechaActual || ultimoReg.fecha);
+                let fActual = new Date(fechaActualStr);
+                let diasTranscurridos = Math.round((fActual - fAnterior) / (1000 * 60 * 60 * 24));
 
                 if (diasTranscurridos > 0) {
                     let diffKilos = pesoProm - ultimoReg.pesoPromedioLote;
                     gmdCalculada = diffKilos / diasTranscurridos;
-                    if (gmdCalculada < 0) gmdCalculada = 0.01; // Evitar negativos absurdos
+                    if (gmdCalculada < 0) gmdCalculada = 0.01;
                 }
             } else {
-                // Si es el primer registro, estimar GMD basándose en la meta de meses y kilos faltantes
                 let kgsMetaInit = pesoObj - pesoProm;
                 let diasMetaInit = mesesMeta * 30;
                 if(diasMetaInit > 0) gmdCalculada = kgsMetaInit / diasMetaInit;
             }
 
-            // Actualizar GMD en el panel de indicadores
             document.getElementById('resumenGMD').innerText = `${gmdCalculada.toFixed(2)} kg/día`;
 
-            // 1. Cálculos de Meta
+            // 2. Cálculos de Meta de Peso
             let kgsFaltantes = pesoObj - pesoProm;
             if (kgsFaltantes < 0) kgsFaltantes = 0;
 
@@ -386,20 +427,43 @@
             let mesesFaltantes = Math.floor(diasTotales / 30);
             let diasRestantes = Math.round(diasTotales % 30);
 
-            // Actualizar DOM
             document.getElementById('resumenKgsFaltantes').innerText = `+${kgsFaltantes.toFixed(1)} kg`;
             document.getElementById('resumenTiempoFaltante').innerText = `${mesesFaltantes} meses y ${diasRestantes} días`;
+
+            // 3. Brújula Temporal y Alerta Sonora (Comparando fecha actual del sistema con fecha de próximo pesaje)
+            let cardBrujulaBox = document.getElementById('cardBrujulaBox');
+            let resumenBrujulaDias = document.getElementById('resumenBrujulaDias');
+            
+            if (fechaProximaStr) {
+                let hoy = new Date();
+                hoy.setHours(0,0,0,0);
+                let fProxima = new Date(fechaProximaStr + 'T00:00:00');
+                let diffDiasProximo = Math.round((fProxima - hoy) / (1000 * 60 * 60 * 24));
+
+                cardBrujulaBox.className = "kpi-card-item";
+
+                if (diffDiasProximo < 0) {
+                    cardBrujulaBox.classList.add('cv-alert-danger');
+                    resumenBrujulaDias.innerText = `¡VENCIDO por ${Math.abs(diffDiasProximo)} días!`;
+                    reproducirAlertaSonora('urgente');
+                } else if (diffDiasProximo <= 3) {
+                    cardBrujulaBox.classList.add('cv-alert-warning');
+                    resumenBrujulaDias.innerText = `¡Inminente! (Faltan ${diffDiasProximo} días)`;
+                    reproducirAlertaSonora('suave');
+                } else {
+                    cardBrujulaBox.classList.add('cv-alert-optimal');
+                    resumenBrujulaDias.innerText = `En fecha (Faltan ${diffDiasProximo} días)`;
+                }
+            }
 
             return { gmdCalculada, kgsFaltantes };
         }
 
-        // Ejecutar cálculo al cambiar valores en vivo
-        document.getElementById('inputPesoPromedio').addEventListener('input', calcularIndicadoresDinamicos);
-        document.getElementById('inputPesoObjetivo').addEventListener('input', calcularIndicadoresDinamicos);
-        document.getElementById('inputMesesObjetivo').addEventListener('input', calcularIndicadoresDinamicos);
-        document.getElementById('inputLote').addEventListener('input', calcularIndicadoresDinamicos);
+        // Eventos en vivo para recalcular brújula e indicadores
+        ['inputPesoPromedio', 'inputPesoObjetivo', 'inputMesesObjetivo', 'inputLote', 'inputFechaActual', 'inputFechaProximo'].forEach(id => {
+            document.getElementById(id).addEventListener('input', calcularIndicadoresDinamicos);
+        });
 
-        // Calcular al cargar
         window.onload = function() {
             calcularIndicadoresDinamicos();
         };
@@ -407,6 +471,8 @@
         document.getElementById('btnProcesarPesaje').addEventListener('click', function() {
             let loteNombre = document.getElementById('inputLote').value;
             let temporada = document.getElementById('selectTemporada').value;
+            let fechaActualStr = document.getElementById('inputFechaActual').value;
+            let fechaProximaStr = document.getElementById('inputFechaProximo').value;
             let pesoProm = parseFloat(document.getElementById('inputPesoPromedio').value) || 0;
             let pesoObj = parseFloat(document.getElementById('inputPesoObjetivo').value) || 0;
             let mesesMeta = parseFloat(document.getElementById('inputMesesObjetivo').value) || 0;
@@ -416,32 +482,11 @@
 
             let calculos = calcularIndicadoresDinamicos();
 
-            // 2. Evaluar CV y Alertas con IA Contextual Estacional
-            let cardCVBox = document.getElementById('cardCVBox');
-            let resumenCV = document.getElementById('resumenCV');
-            let interpretacion = document.getElementById('statsInterpretacion');
-
-            cardCVBox.className = "kpi-card-item";
-            let alertaTexto = "";
-
-            if (cv < 8.0) {
-                cardCVBox.classList.add('cv-alert-optimal');
-                resumenCV.innerText = `${cv}% (Óptimo)`;
-                alertaTexto = `<strong>Memoria Estacional & IA:</strong> Época [${temporada}] con CV < 8%. Excelente uniformidad. GMD real calculada en ${calculos.gmdCalculada.toFixed(2)} kg/día. Meta de salida fijada en ${mesesMeta} meses.`;
-            } else if (cv >= 8.0 && cv <= 12.0) {
-                cardCVBox.classList.add('cv-alert-warning');
-                resumenCV.innerText = `${cv}% (Moderado)`;
-                alertaTexto = `<strong>Memoria Estacional & IA:</strong> Época [${temporada}] con CV moderado (8-12%). GMD en ${calculos.gmdCalculada.toFixed(2)} kg/día. Vigilar adaptación estacional del lote.`;
-            } else {
-                cardCVBox.classList.add('cv-alert-danger');
-                resumenCV.innerText = `${cv}% (Desuniforme)`;
-                alertaTexto = `<strong>¡Alerta Crítica de IA!:</strong> Época [${temporada}] con CV > 12%. Dispersión alta. Re-loteo urgente para asegurar la meta de salida a los ${mesesMeta} meses.`;
-            }
-            interpretacion.innerHTML = alertaTexto;
-
-            // 3. Guardar en Memoria Histórica Local (Feedback Loop)
+            // Guardar en Memoria Histórica Local
             let registroActual = {
-                fecha: new Date().toISOString(),
+                timestampRegistro: new Date().toISOString(),
+                fechaActual: fechaActualStr,
+                fechaProximoPesaje: fechaProximaStr,
                 lote: loteNombre,
                 temporada: temporada,
                 pesoPromedioLote: pesoProm,
@@ -457,7 +502,7 @@
             localStorage.setItem('lb_historial_lotes', JSON.stringify(historialLotes));
             document.getElementById('resumenConteoHistorial').innerText = `${historialLotes.length} Pesajes Registrados`;
 
-            alert("¡Pesaje, GMD calculada por historial y meta temporal guardados exitosamente!");
+            alert("¡Pesaje actual, programación del próximo control y brújula guardados en la memoria del sistema!");
         });
 
         // Botón de Archivar / Desincorporar Lote
