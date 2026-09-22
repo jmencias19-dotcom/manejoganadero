@@ -86,6 +86,7 @@ function inicializarFormularioYFiltros() {
     const selectPotrero = document.getElementById('select-potrero');
     const filtroPotrero = document.getElementById('filtro-potrero');
     const form = document.getElementById('potreroForm');
+    const btnRehacer = document.getElementById('btnRehacer'); // Selector del botón de restablecer
 
     // Poblar dinámicamente los selectores de categorías según la especie seleccionada
     if (selectEspecie && selectCategoria) {
@@ -98,11 +99,27 @@ function inicializarFormularioYFiltros() {
         filtroPotrero.innerHTML = '<option value="">Todos los Potreros</option>' + selectPotrero.innerHTML;
     }
 
-    // Evento de envío del formulario
+    // Evento de envío del formulario (Con la lógica unificada de éxito, audio y toast)
     if (form) {
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
             await registrarAsignacionPotrero();
+        });
+    }
+
+    // Evento del botón Rehacer / Restablecer campos
+    if (btnRehacer) {
+        btnRehacer.addEventListener('click', () => {
+            if (form) form.reset();
+            actualizarCategorias();
+            const aiBox = document.getElementById('ai-potrero-content');
+            if (aiBox) {
+                aiBox.innerHTML = `<p style="margin: 0; font-style: italic;">Seleccione un potrero y categoría para estimar el impacto forrajero...</p>`;
+            }
+            if (typeof emitirAlarmaOperativa === 'function') {
+                emitirAlarmaOperativa('success');
+            }
+            mostrarToast("🔄 Campos restablecidos.");
         });
     }
 
@@ -193,7 +210,7 @@ function calcularImpactoForrajeroPreliminar() {
 }
 
 /**
- * Guarda la asignación activa en Firestore y limpia el formulario
+ * Guarda la asignación activa en Firestore, emite alertas y limpia el formulario
  */
 async function registrarAsignacionPotrero() {
     try {
@@ -242,6 +259,12 @@ async function registrarAsignacionPotrero() {
 
         await addDoc(collection(db, COL_LOTES_ACTIVOS), nuevoLote);
         
+        // === APLICANDO LA MISMA LÓGICA DE FEEDBACK Y ALARMA ===
+        if (typeof emitirAlarmaOperativa === 'function') {
+            emitirAlarmaOperativa('success'); // Emite tono operativo de éxito en campo
+        }
+        mostrarToast("💾 Carga animal registrada y sincronizada con éxito."); // Notificación flotante optimizada
+        
         document.getElementById('potreroForm').reset();
         actualizarCategorias();
         
@@ -250,10 +273,12 @@ async function registrarAsignacionPotrero() {
             aiBox.innerHTML = `<p style="margin: 0; font-style: italic;">Seleccione un potrero y categoría para estimar el impacto forrajero...</p>`;
         }
 
-        mostrarToast("Lote asignado y sincronizado con éxito");
     } catch (error) {
         console.error("Error al registrar lote en potrero:", error);
-        mostrarToast("Error al guardar en la base de datos", true);
+        if (typeof emitirAlarmaOperativa === 'function') {
+            emitirAlarmaOperativa('error');
+        }
+        mostrarToast("⚠️ Error: Fallo al guardar en la base de datos", true);
     }
 }
 
