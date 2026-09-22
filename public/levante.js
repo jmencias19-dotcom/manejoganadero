@@ -15,15 +15,6 @@ document.addEventListener('DOMContentLoaded', () => {
 function inicializarModuloLevante() {
     console.log("[SISTEMA] Inicializando Módulo de Levante - Hato Laguna Brava...");
 
-    // Evento del formulario
-    const formLevante = document.getElementById('form-levante');
-    if (formLevante) {
-        formLevante.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            await guardarYProcesar();
-        });
-    }
-
     // Vincular inputs numéricos para cálculo dinámico en tiempo real
     const inputsDinamicos = ['inputPesoInicial', 'inputPesoMax', 'inputPesoMin', 'inputFechaProx', 'selectEpoca'];
     inputsDinamicos.forEach(id => {
@@ -55,10 +46,8 @@ function calcularMetricasEnTiempoReal() {
     if (kpiGPA) kpiGPA.textContent = `${gpa.toFixed(1)} kg`;
 
     // 2. Estimación de G.P.D. (Ganancia Promedio Diaria estándar / adaptada a sabana)
-    // Asumiendo un periodo de control estándar de 60 días o estimado
     let diasTranscurridos = 60; 
     let gpd = diasTranscurridos > 0 ? (gpa / diasTranscurridos) : 0.750;
-    // Evitar valores negativos absurdos en UI si el peso inicial es mayor por error tipográfico
     if (gpd < 0) gpd = 0;
 
     const kpiGPD = document.getElementById('kpiGPD');
@@ -134,7 +123,7 @@ async function guardarYProcesar() {
         // 2. Derivar métricas consolidadas
         const pesoPromedio = (pesoMax + pesoMin) / 2;
         const gpa = pesoMax - pesoInicial;
-        const gpd = gpa > 0 ? (gpa / 60) : 0.750; // Estimación base
+        const gpd = gpa > 0 ? (gpa / 60) : 0.750;
 
         const datosLote = {
             lote,
@@ -191,41 +180,32 @@ function ejecutarAsistenteInteligenteLevante(datosLote) {
     // Análisis de Homogeneidad (CV)
     let cvNum = parseFloat(cv) || 0;
     if (cvNum < 8) {
-        recomendacionesTecnicas.push(`<b>Homogeneidad sobresaliente (CV: ${cvNum}%):</b> Lote de mestizaje Brahman muy uniforme. Ideal para plan alimenticio estable.`);
+        recomendacionesTecnicas.push(`<b>Homogeneidad sobresaliente (CV: ${cvNum}%):</b> Lote de mestizaje Brahman muy uniforme.`);
     } else if (cvNum <= 12) {
         scoreSaludLote -= 15;
-        recomendacionesTecnicas.push(`<b>Dispersión moderada (CV: ${cvNum}%):</b> Evaluar reordenamiento por pesos para evitar dominancia.`);
+        recomendacionesTecnicas.push(`<b>Dispersión moderada (CV: ${cvNum}%):</b> Evaluar reordenamiento por pesos.`);
     } else {
         scoreSaludLote -= 35;
-        alertasCriticas.push(`Coeficiente de variación crítico (${cvNum}%). Riesgo de competencia alta.`);
-        recomendacionesTecnicas.push(`<b>Acción prioritaria:</b> Separar animales colas (refugos) para suplementación diferenciada.`);
+        alertasCriticas.push(`Coeficiente de variación crítico (${cvNum}%).`);
+        recomendacionesTecnicas.push(`<b>Acción prioritaria:</b> Separar animales colas (refugos).`);
     }
 
     // Análisis GPD
     let gpdNum = parseFloat(gpd) || 0;
     if (gpdNum >= 0.750) {
-        recomendacionesTecnicas.push(`<b>Ganancia óptima (${gpdNum.toFixed(3)} kg/día):</b> Excelente respuesta adaptada al trópico sabanero en ${epoca.toLowerCase()}.`);
+        recomendacionesTecnicas.push(`<b>Ganancia óptima (${gpdNum.toFixed(3)} kg/día):</b> Excelente respuesta en ${epoca.toLowerCase()}.`);
     } else {
         scoreSaludLote -= 25;
         alertasCriticas.push(`Ganancia de peso diaria baja (${gpdNum.toFixed(3)} kg/día).`);
-        recomendacionesTecnicas.push(`<b>Alerta Nutricional:</b> Revisar disponibilidad de pastura o plan sanitario (parásitos).`);
-    }
-
-    // Contexto Apure
-    if (epoca === 'Verano') {
-        recomendacionesTecnicas.push(`<b>Época Seca:</b> Asegurar puntos de agua cercanos (< 600m) y bloques multinutricionales.`);
-    } else {
-        recomendacionesTecnicas.push(`<b>Época de Lluvias:</b> Monitorear carga parasitaria en los módulos y rotación de potreros.`);
+        recomendacionesTecnicas.push(`<b>Alerta Nutricional:</b> Revisar pastura o plan sanitario.`);
     }
 
     scoreSaludLote = Math.max(0, scoreSaludLote);
-    
-    // Si tu HTML tiene un contenedor para mostrar este diagnóstico, puedes actualizarlo aquí
-    console.log(`[ASISTENTE I.D.] Índice de Salud del Lote ${lote}: ${score}/100`, recomendacionesTecnicas);
+    console.log(`[ASISTENTE I.D.] Índice de Salud del Lote ${lote}: ${scoreSaludLote}/100`, recomendacionesTecnicas);
 }
 
 /**
- * Persistencia Offline-First robusta con localStorage y sincronización simulada/real
+ * Persistencia Offline-First robusta con localStorage
  */
 async function gestionarPersistenciaOfflineFirst(datosLote) {
     const isOnline = navigator.onLine;
@@ -282,8 +262,6 @@ function verificarEstadoRedUI() {
  * Notificaciones Flotantes (Toast) del Sistema
  */
 function mostrarToast(mensaje, esError = false) {
-    // Si ya existe un sistema de toast global en tu app, puedes usarlo. 
-    // Aquí implementamos un fallback visual dinámico si no estuviera inyectado en el DOM.
     let toast = document.getElementById('toast-flotante');
     if (!toast) {
         toast = document.createElement('div');
@@ -301,7 +279,7 @@ function mostrarToast(mensaje, esError = false) {
     }, 4000);
 }
 
-// Eventos de conectividad automáticos de red
+// Eventos de red
 window.addEventListener('online', () => {
     console.log("[RED] Conexión recuperada.");
     sincronizarColaPendienteFirebase();
