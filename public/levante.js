@@ -233,3 +233,74 @@ window.addEventListener('offline', () => {
     console.log("[RED] Modo Offline activado.");
     verificarEstadoRedUI();
 });
+
+/**
+ * Verifica el estado de la red y gatilla la sincronización si hay datos pendientes en cola.
+ */
+async function verificarEstadoRedUI() {
+    let cola = JSON.parse(localStorage.getItem(OFFLINE_QUEUE_KEY)) || [];
+    const isOnline = navigator.onLine;
+
+    // Si vuelve la red y existen registros pendientes, ejecutamos la migración masiva
+    if (isOnline && cola.length > 0) {
+        await sincronizarColaOfflineAFirebase(cola);
+    } else {
+        actualizarSemafortoSync(isOnline, cola.length);
+    }
+}
+
+/**
+ * Recorre la cola local, envía los datos a Firebase y limpia el almacenamiento del dispositivo.
+ */
+async function sincronizarColaOfflineAFirebase(cola) {
+    console.log(`[SINK] Red detectada. Sincronizando ${cola.length} registros rezagados con Firebase...`);
+    mostrarToast(`🔄 Sincronizando ${cola.length} registros con la nube...`);
+    
+    let erroresSincronizacion = false;
+    
+    // Iteramos sobre cada registro guardado en el potrero de forma offline
+    for (let i = 0; i < cola.length; i++) {
+        const datosLote = cola[i];
+        
+        try {
+            /* 
+               Inyección del SDK de Firebase (Firestore / Realtime Database):
+               Ejemplo para Firestore:
+               await firebase.firestore().collection('levante').add(datosLote);
+            */
+            
+            // Simulación de retraso de red por cada inserción HTTP (Remover en producción real)
+            await new Promise(resolve => setTimeout(resolve, 800)); 
+            
+            console.log(`[SINK] Registro de ${datosLote.lote} (Timestamp: ${datosLote.timestamp}) enviado con éxito.`);
+        } catch (dbError) {
+            console.error(`[ERROR SINK] No se pudo subir el registro de ${datosLote.lote}:`, dbError);
+            erroresSincronizacion = true;
+            break; // Detiene el bucle para preservar el orden y no perder datos
+        }
+    }
+
+    if (!erroresSincronizacion) {
+        // Limpieza absoluta de la cola local tras el éxito completo
+        localStorage.removeItem(OFFLINE_QUEUE_KEY);
+        actualizarSemafortoSync(true, 0);
+        mostrarToast("✅ Sincronización en la nube completada con éxito.");
+        console.log("[SINK] Cola offline vaciada por completo.");
+    } else {
+        mostrarToast("⚠️ Interrupción en la sincronización. Algunos datos siguen en el dispositivo.", true);
+        actualizarSemafortoSync(navigator.onLine, cola.length);
+    }
+}
+
+// ==========================================================================
+// Eventos del Ciclo de Vida de Conectividad del Navegador
+// ==========================================================================
+window.addEventListener('online', async () => {
+    console.log("[RED] Conexión recuperada con las torres de Mantecal.");
+    await verificarEstadoRedUI();
+});
+
+window.addEventListener('offline', () => {
+    console.log("[RED] Modo Offline activado. Los datos se guardarán en el almacenamiento local.");
+    verificarEstadoRedUI();
+});
