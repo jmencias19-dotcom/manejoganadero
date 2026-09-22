@@ -184,7 +184,7 @@
             </nav>
             <div class="header-title-wrapper">
                 <h1>Hato Laguna Brava - <span>Bloques de Estudio & Control</span></h1>
-                <p>Contexto Estacional, Uniformidad (CV) y Memoria Histórica de IA</p>
+                <p>Contexto Estacional, GMD Dinámica y Metas de Salida</p>
             </div>
             <div class="sync-status-wrapper">
                 <div id="sync-semaphore" class="semaphore online"></div>
@@ -203,7 +203,7 @@
                     <div class="card-icon">📋</div>
                     <h2 class="card-title">Registro de Pesaje Grupal y Bloque</h2>
                 </div>
-                <p class="card-description">Defina el bloque, la temporada agroecológica y los parámetros poblacionales del lote.</p>
+                <p class="card-description">Defina el bloque, la temporada agroecológica y los parámetros poblacionales actuales.</p>
                 
                 <form id="form-levante" onsubmit="event.preventDefault();" style="display: flex; flex-direction: column; gap: 12px;">
                     
@@ -236,19 +236,20 @@
                             <input type="number" step="0.1" id="inputPesoPromedio" value="284.5" required>
                         </div>
                         <div class="input-group">
-                            <label for="inputPesoObjetivo">Peso Objetivo / Meta del Lote (kg)</label>
-                            <input type="number" step="0.1" id="inputPesoObjetivo" value="350.0" required>
-                        </div>
-                    </div>
-
-                    <div class="kpi-container">
-                        <div class="input-group">
                             <label for="inputNumAnimales">Nº Animales en el Lote</label>
                             <input type="number" id="inputNumAnimales" value="9" required>
                         </div>
+                    </div>
+
+                    <!-- METAS DEL LOTE: KILOGRAMOS Y MESES DE SALIDA -->
+                    <div class="kpi-container">
                         <div class="input-group">
-                            <label for="inputGMD">GMD Promedio Estimada (kg/día)</label>
-                            <input type="number" step="0.01" id="inputGMD" value="0.54" required>
+                            <label for="inputPesoObjetivo">Peso Meta del Lote (kg)</label>
+                            <input type="number" step="0.1" id="inputPesoObjetivo" value="350.0" required>
+                        </div>
+                        <div class="input-group">
+                            <label for="inputMesesObjetivo">Meta de Salida (Meses)</label>
+                            <input type="number" step="0.5" id="inputMesesObjetivo" value="4.0" required title="Tiempo proyectado en meses para alcanzar la meta">
                         </div>
                     </div>
 
@@ -295,19 +296,24 @@
             <section class="section-box">
                 <div class="card-header">
                     <div class="card-icon">🎯</div>
-                    <h2 class="card-title">Indicadores, Metas y Memoria Histórica</h2>
+                    <h2 class="card-title">Indicadores, GMD Dinámica y Memoria</h2>
                 </div>
-                <p class="card-description">Proyecciones dinámicas y retroalimentación del sistema experto cruzando clima, peso y uniformidad.</p>
+                <p class="card-description">Resultados calculados por fechas de pesaje histórica, brechas de meta y retroalimentación del sistema experto.</p>
                 
                 <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 5px;">
                     
                     <div class="kpi-card-item">
-                        <label>Kg Faltantes para la Meta del Lote</label>
-                        <span id="resumenKgsFaltantes" class="kpi-value" style="color: #2d6a4f;">+65.5 kg</span>
+                        <label>GMD Calculada (Historial / Días)</label>
+                        <span id="resumenGMD" class="kpi-value" style="color: #2d6a4f;">0.54 kg/día</span>
                     </div>
 
                     <div class="kpi-card-item">
-                        <label>Tiempo Faltante Estimado</label>
+                        <label>Kg Faltantes para la Meta del Lote</label>
+                        <span id="resumenKgsFaltantes" class="kpi-value">+65.5 kg</span>
+                    </div>
+
+                    <div class="kpi-card-item">
+                        <label>Tiempo Faltante Estimado (según GMD)</label>
                         <span id="resumenTiempoFaltante" class="kpi-value">4 meses y 5 días</span>
                     </div>
 
@@ -319,7 +325,7 @@
                     <div class="input-group" style="margin-top: 4px;">
                         <label>Diagnóstico Estacional y Memoria de IA</label>
                         <div id="statsInterpretacion" class="stats-interpretation">
-                            <strong>Análisis Integrado (Clima + Numérico + Cualitativo):</strong> Época registrada: <em>Invierno - Salida</em>. El CV se mantiene en 6.4% (< 8%). Cruzando este resultado con la temporada de salida de lluvias y la nota de manga, el sistema valida que el bloque aprovecha la estabilidad de los esteros de Apure para cumplir la proyección sin fricciones de competencia.
+                            <strong>Análisis Integrado (Clima + Numérico + Cualitativo):</strong> Época registrada: <em>Invierno - Salida</em>. El CV se mantiene en 6.4% (< 8%). Cruzando este resultado con la temporada y la meta en meses de salida, el sistema valida que el bloque marcha de acuerdo al cronograma previsto en los esteros de Apure.
                         </div>
                     </div>
 
@@ -334,32 +340,81 @@
         </div>
     </main>
 
-    <!-- Script de Lógica, Memoria Local e IA con Contexto Estacional -->
+    <!-- Script de Lógica, GMD Dinámica por Fechas y Memoria Local -->
     <script>
         let historialLotes = JSON.parse(localStorage.getItem('lb_historial_lotes')) || [];
         document.getElementById('resumenConteoHistorial').innerText = `${historialLotes.length} Pesajes Registrados`;
+
+        function calcularIndicadoresDinamicos() {
+            let loteNombre = document.getElementById('inputLote').value;
+            let pesoProm = parseFloat(document.getElementById('inputPesoPromedio').value) || 0;
+            let pesoObj = parseFloat(document.getElementById('inputPesoObjetivo').value) || 0;
+            let mesesMeta = parseFloat(document.getElementById('inputMesesObjetivo').value) || 1;
+            let cv = parseFloat(document.getElementById('inputCV').value) || 0;
+
+            // Filtrar registros previos del mismo lote para calcular GMD real por días transcurridos
+            let registrosLote = historialLotes.filter(r => r.lote === loteNombre);
+            let gmdCalculada = 0.50; // Valor por defecto inicial si no hay historial previo
+
+            if (registrosLote.length > 0) {
+                // Tomar el último registro guardado de este lote
+                let ultimoReg = registrosLote[registrosLote.length - 1];
+                let fechaAnterior = new Date(ultimoReg.fecha);
+                let fechaActual = new Date();
+                let diasTranscurridos = Math.round((fechaActual - fechaAnterior) / (1000 * 60 * 60 * 24));
+
+                if (diasTranscurridos > 0) {
+                    let diffKilos = pesoProm - ultimoReg.pesoPromedioLote;
+                    gmdCalculada = diffKilos / diasTranscurridos;
+                    if (gmdCalculada < 0) gmdCalculada = 0.01; // Evitar negativos absurdos
+                }
+            } else {
+                // Si es el primer registro, estimar GMD basándose en la meta de meses y kilos faltantes
+                let kgsMetaInit = pesoObj - pesoProm;
+                let diasMetaInit = mesesMeta * 30;
+                if(diasMetaInit > 0) gmdCalculada = kgsMetaInit / diasMetaInit;
+            }
+
+            // Actualizar GMD en el panel de indicadores
+            document.getElementById('resumenGMD').innerText = `${gmdCalculada.toFixed(2)} kg/día`;
+
+            // 1. Cálculos de Meta
+            let kgsFaltantes = pesoObj - pesoProm;
+            if (kgsFaltantes < 0) kgsFaltantes = 0;
+
+            let diasTotales = gmdCalculada > 0 ? (kgsFaltantes / gmdCalculada) : 0;
+            let mesesFaltantes = Math.floor(diasTotales / 30);
+            let diasRestantes = Math.round(diasTotales % 30);
+
+            // Actualizar DOM
+            document.getElementById('resumenKgsFaltantes').innerText = `+${kgsFaltantes.toFixed(1)} kg`;
+            document.getElementById('resumenTiempoFaltante').innerText = `${mesesFaltantes} meses y ${diasRestantes} días`;
+
+            return { gmdCalculada, kgsFaltantes };
+        }
+
+        // Ejecutar cálculo al cambiar valores en vivo
+        document.getElementById('inputPesoPromedio').addEventListener('input', calcularIndicadoresDinamicos);
+        document.getElementById('inputPesoObjetivo').addEventListener('input', calcularIndicadoresDinamicos);
+        document.getElementById('inputMesesObjetivo').addEventListener('input', calcularIndicadoresDinamicos);
+        document.getElementById('inputLote').addEventListener('input', calcularIndicadoresDinamicos);
+
+        // Calcular al cargar
+        window.onload = function() {
+            calcularIndicadoresDinamicos();
+        };
 
         document.getElementById('btnProcesarPesaje').addEventListener('click', function() {
             let loteNombre = document.getElementById('inputLote').value;
             let temporada = document.getElementById('selectTemporada').value;
             let pesoProm = parseFloat(document.getElementById('inputPesoPromedio').value) || 0;
             let pesoObj = parseFloat(document.getElementById('inputPesoObjetivo').value) || 0;
-            let gmd = parseFloat(document.getElementById('inputGMD').value) || 0.001;
+            let mesesMeta = parseFloat(document.getElementById('inputMesesObjetivo').value) || 0;
             let cv = parseFloat(document.getElementById('inputCV').value) || 0;
             let observaciones = document.getElementById('inputObservaciones').value;
             let estatus = document.getElementById('selectEstatus').value;
 
-            // 1. Cálculos de Meta
-            let kgsFaltantes = pesoObj - pesoProm;
-            if (kgsFaltantes < 0) kgsFaltantes = 0;
-
-            let diasTotales = gmd > 0 ? (kgsFaltantes / gmd) : 0;
-            let meses = Math.floor(diasTotales / 30);
-            let diasRestantes = Math.round(diasTotales % 30);
-
-            // Actualizar DOM
-            document.getElementById('resumenKgsFaltantes').innerText = `+${kgsFaltantes.toFixed(1)} kg`;
-            document.getElementById('resumenTiempoFaltante').innerText = `${meses} meses y ${diasRestantes} días`;
+            let calculos = calcularIndicadoresDinamicos();
 
             // 2. Evaluar CV y Alertas con IA Contextual Estacional
             let cardCVBox = document.getElementById('cardCVBox');
@@ -372,15 +427,15 @@
             if (cv < 8.0) {
                 cardCVBox.classList.add('cv-alert-optimal');
                 resumenCV.innerText = `${cv}% (Óptimo)`;
-                alertaTexto = `<strong>Memoria Estacional & IA:</strong> Época [${temporada}] con CV < 8%. Excelente uniformidad en el lote. Las notas de manga confirman estabilidad metabólica bajo el régimen climático actual.`;
+                alertaTexto = `<strong>Memoria Estacional & IA:</strong> Época [${temporada}] con CV < 8%. Excelente uniformidad. GMD real calculada en ${calculos.gmdCalculada.toFixed(2)} kg/día. Meta de salida fijada en ${mesesMeta} meses.`;
             } else if (cv >= 8.0 && cv <= 12.0) {
                 cardCVBox.classList.add('cv-alert-warning');
                 resumenCV.innerText = `${cv}% (Moderado)`;
-                alertaTexto = `<strong>Memoria Estacional & IA:</strong> Época [${temporada}] con CV moderado (8-12%). Vigilar adaptación del lote a los cambios de oferta forrajera estacional.`;
+                alertaTexto = `<strong>Memoria Estacional & IA:</strong> Época [${temporada}] con CV moderado (8-12%). GMD en ${calculos.gmdCalculada.toFixed(2)} kg/día. Vigilar adaptación estacional del lote.`;
             } else {
                 cardCVBox.classList.add('cv-alert-danger');
                 resumenCV.innerText = `${cv}% (Desuniforme)`;
-                alertaTexto = `<strong>¡Alerta Crítica de IA!:</strong> Época [${temporada}] con CV > 12%. Dispersión alta en el lote. Re-loteo urgente para evitar castigo de peso en la temporada.`;
+                alertaTexto = `<strong>¡Alerta Crítica de IA!:</strong> Época [${temporada}] con CV > 12%. Dispersión alta. Re-loteo urgente para asegurar la meta de salida a los ${mesesMeta} meses.`;
             }
             interpretacion.innerHTML = alertaTexto;
 
@@ -390,7 +445,9 @@
                 lote: loteNombre,
                 temporada: temporada,
                 pesoPromedioLote: pesoProm,
-                gmdPromedio: gmd,
+                pesoObjetivoLote: pesoObj,
+                mesesObjetivo: mesesMeta,
+                gmdCalculada: calculos.gmdCalculada,
                 cvLote: cv,
                 observaciones: observaciones,
                 estatus: estatus
@@ -400,7 +457,7 @@
             localStorage.setItem('lb_historial_lotes', JSON.stringify(historialLotes));
             document.getElementById('resumenConteoHistorial').innerText = `${historialLotes.length} Pesajes Registrados`;
 
-            alert("¡Pesaje de lote, temporada y notas guardados exitosamente en la memoria del sistema!");
+            alert("¡Pesaje, GMD calculada por historial y meta temporal guardados exitosamente!");
         });
 
         // Botón de Archivar / Desincorporar Lote
