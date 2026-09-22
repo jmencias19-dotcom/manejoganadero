@@ -4,36 +4,188 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Hato Laguna Brava - Control de Levante</title>
-    <!-- Ruta relativa unificada y con control de caché activo -->
-    <link rel="stylesheet" href="./potreros.css?v=4.0">
+    
+    <!-- Centralizado en tus Estilos Maestros Unificados (v4.1) -->
+    <link rel="stylesheet" href="./potreros.css?v=4.1">
+    
+    <!-- CDN oficial de iconos FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Manifiesto PWA -->
     <link rel="manifest" href="manifest.json">
-    <!-- Iconos y fuentes -->
-    <link rel="stylesheet" href="https://cloudflare.com">
+    
     <style>
-        /* Estilos base de respaldo para el entorno de producción */
+        /* Adaptación estricta a la paleta de colores v4.1 (Tema Sabana/Pasturas) */
         :root {
-            --bg-main: #f4f6f4;
-            --text-main: #2d3748;
-            --border-color: #e2e8f0;
-            --secondary-color: #16a34a;
+            --bg-main: #f4f7f5;
+            --card-bg: #ffffff;
+            --text-main: #1b4332;
+            --text-muted: #52b788;
+            --border-color: #d8f3dc;
+            --primary-color: #2d6a4f;
+            --secondary-color: #40916c;
+            --accent-danger: #b7094c;
         }
-        body { background-color: var(--bg-main); color: var(--text-main); font-family: system-ui, -apple-system, sans-serif; margin: 0; padding: 0; }
-        .main-container { padding: 20px; max-width: 1400px; margin: 0 auto; }
-        .menu-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 20px; }
-        .section-box { background: #ffffff; border: 1px solid var(--border-color); border-radius: 12px; padding: 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
-        .card-header { display: flex; align-items: center; gap: 10px; margin-bottom: 15px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; }
-        .card-title { font-size: 1.25rem; margin: 0; color: var(--text-main); }
-        .input-group { display: flex; flex-direction: column; margin-bottom: 12px; }
-        .input-group label { font-size: 0.85rem; font-weight: 600; margin-bottom: 4px; color: #4a5568; }
-        .input-group input, .input-group select, .input-group textarea { padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 0.95rem; }
-        .kpi-container { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .kpi-card { display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; background: #f8fafc; border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 10px; }
-        .kpi-value { font-weight: 700; color: #1e293b; }
-        .btn { width: 100%; padding: 12px; background: var(--secondary-color); color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: background 0.2s; }
-        .btn:hover { background: #15803d; }
-        .semaphore { width: 12px; height: 12px; border-radius: 50%; }
-        .semaphore.online { background: #22c55e; box-shadow: 0 0 8px #22c55e; }
-        .sync-status-wrapper { display: flex; align-items: center; gap: 8px; }
+
+        body { 
+            background-color: var(--bg-main); 
+            color: var(--text-main); 
+            font-family: system-ui, -apple-system, sans-serif; 
+            margin: 0; 
+            padding: 0; 
+        }
+
+        .main-container { 
+            padding: 24px; 
+            max-width: 1400px; 
+            margin: 0 auto; 
+        }
+
+        .menu-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); 
+            gap: 24px; 
+        }
+
+        /* Estructura basada en task-card-item extendida para secciones */
+        .section-box {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(27, 67, 50, 0.03);
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .card-header { 
+            display: flex; 
+            align-items: center; 
+            gap: 12px; 
+            border-bottom: 2px solid var(--border-color); 
+            padding-bottom: 12px; 
+            margin: 0;
+        }
+
+        .card-title { 
+            font-size: 1.3rem; 
+            font-weight: 700;
+            margin: 0; 
+            color: var(--primary-color); 
+        }
+
+        .card-description {
+            font-size: 0.9rem;
+            color: #555;
+            margin: 0;
+        }
+
+        .input-group { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 6px;
+        }
+
+        .input-group label { 
+            font-size: 0.85rem; 
+            font-weight: 700; 
+            color: var(--primary-color);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .input-group input, .input-group select, .input-group textarea { 
+            padding: 10px 14px; 
+            border: 1px solid var(--border-color); 
+            border-radius: 8px; 
+            font-size: 0.95rem;
+            background-color: #fafdfb;
+            color: var(--text-main);
+            transition: border-color 0.2s;
+        }
+
+        .input-group input:focus, .input-group select:focus, .input-group textarea:focus {
+            outline: none;
+            border-color: var(--text-muted);
+        }
+
+        .kpi-container { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 14px; 
+        }
+
+        /* Estilo unificado de tarjetas informativas */
+        .kpi-card-item {
+            background-color: #f7fdfa;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(27, 67, 50, 0.02);
+        }
+
+        .kpi-card-item label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin: 0;
+        }
+
+        .kpi-value { 
+            font-weight: 700; 
+            font-size: 1.2rem;
+            color: var(--text-main); 
+        }
+
+        .btn-submit { 
+            width: 100%; 
+            padding: 14px; 
+            background: var(--primary-color); 
+            color: white; 
+            border: none; 
+            border-radius: 8px; 
+            font-weight: 700; 
+            font-size: 1rem;
+            cursor: pointer; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 10px; 
+            transition: background 0.2s, transform 0.1s; 
+            box-shadow: 0 4px 6px rgba(45, 106, 79, 0.2);
+        }
+
+        .btn-submit:hover { 
+            background: var(--secondary-color); 
+        }
+
+        .btn-submit:active {
+            transform: scale(0.98);
+        }
+
+        .semaphore { 
+            width: 12px; 
+            height: 12px; 
+            border-radius: 50%; 
+            transition: background-color 0.3s;
+        }
+        
+        .semaphore.online { background: #2d6a4f; box-shadow: 0 0 8px #52b788; }
+        .semaphore.offline { background: #b7094c; box-shadow: 0 0 8px #b7094c; }
+
+        .sync-status-wrapper { 
+            display: flex; 
+            align-items: center; 
+            gap: 8px; 
+            background: #f0f7f4;
+            padding: 6px 12px;
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+        }
     </style>
 </head>
 <body>
@@ -42,40 +194,40 @@
     <div id="app-header"></div>
 
     <!-- ENCABEZADO MAESTRO NATIVO (Respaldo offline para la sabana) -->
-    <header class="main-header" style="background: #fff; border-bottom: 1px solid var(--border-color); padding: 15px 20px;">
+    <header class="main-header" style="background: #ffffff; border-bottom: 1px solid var(--border-color); padding: 16px 24px;">
         <div class="header-container" style="display: flex; justify-content: space-between; align-items: center; max-width: 1400px; margin: 0 auto;">
             <nav class="header-nav">
-                <a href="./index.html" class="btn-back" style="text-decoration: none; color: #4a5568; font-weight: 500;">
+                <a href="./index.html" class="btn-back" style="text-decoration: none; color: var(--primary-color); font-weight: 600; display: flex; align-items: center; gap: 8px;">
                     <i class="fa-solid fa-arrow-left"></i> Volver al Panel
                 </a>
             </nav>
             <div class="header-title-wrapper" style="text-align: center;">
-                <h1 style="margin: 0; font-size: 1.5rem;">Hato Laguna Brava - <span style="color: var(--secondary-color);">Control de Levante</span></h1>
-                <p style="margin: 2px 0 0 0; font-size: 0.85rem; color: #718096;">Evolución de Peso, Ganancia Diaria y Carga Estacional</p>
+                <h1 style="margin: 0; font-size: 1.6rem; color: var(--primary-color); font-weight: 800;">Hato Laguna Brava - <span style="color: var(--text-muted);">Control de Levante</span></h1>
+                <p style="margin: 4px 0 0 0; font-size: 0.9rem; color: #555; font-weight: 500;">Evolución de Peso, Ganancia Diaria y Carga Estacional</p>
             </div>
             <!-- Semáforo de Sincronización -->
             <div class="sync-status-wrapper">
                 <div id="sync-semaphore" class="semaphore online"></div>
-                <span id="sync-text" class="sync-text" style="font-size: 0.85rem; font-weight: 500;">Sincronizado Local</span>
+                <span id="sync-text" class="sync-text" style="font-size: 0.85rem; font-weight: 700; color: var(--primary-color);">Sincronizado Local</span>
             </div>
         </div>
     </header>
 
-    <!-- CONTENEDOR PRINCIPAL Y REJILLA (Estructura de Columnas Maestras) -->
+    <!-- CONTENEDOR PRINCIPAL Y REJILLA (Estructura v4.1 adaptada) -->
     <main class="main-container">
         <div class="menu-grid">
             
             <!-- ==========================================
                  COLUMNA 1: FORMULARIO DE ENTRADA DE DATOS
                  ========================================== -->
-            <section class="section-box" style="height: auto;">
+            <section class="section-box">
                 <div class="card-header">
-                    <div class="card-icon">📋</div>
+                    <div class="card-icon" style="font-size: 1.4rem;">📋</div>
                     <h2 class="card-title">Nuevo Registro de Levante</h2>
                 </div>
-                <p class="card-description" style="font-size: 0.85rem; color: #718096; margin-top: 0; margin-bottom: 15px;">Ingrese los datos del pesaje y control periódico evaluado en la sabana.</p>
+                <p class="card-description">Ingrese los datos del pesaje y control periódico evaluado en la sabana.</p>
                 
-                <form id="form-levante" onsubmit="event.preventDefault();">
+                <form id="form-levante" onsubmit="event.preventDefault();" style="display: flex; flex-direction: column; gap: 14px;">
                     <div class="input-group">
                         <label for="inputLote">Lote / Potrero</label>
                         <input type="text" id="inputLote" value="Lote 1" required>
@@ -84,7 +236,7 @@
                     <div class="kpi-container">
                         <div class="input-group">
                             <label for="inputPesoInicial">Peso Inicial Lote (kg)</label>
-                            <input type="number" id="inputPesoInicial" value="269" oninput="calcularMetas()" required>
+                            <input type="number" id="inputPesoInicial" value="269" required>
                         </div>
                         <div class="input-group">
                             <label for="inputPesoMax">Peso Máximo (kg)</label>
@@ -106,57 +258,9 @@
                     <div class="kpi-container">
                         <div class="input-group">
                             <label for="selectEpoca">Época Climática</label>
-                            <select id="selectEpoca" onchange="actualizarSubetapa()" required>
+                            <select id="selectEpoca" onchange="typeof actualizarSubetapa === 'function' && actualizarSubetapa()" required>
                                 <option value="Invierno" selected>Invierno</option>
                                 <option value="Verano">Verano</option>
                             </select>
                         </div>
                         <div class="input-group">
-                            <label for="selectSubetapa">Ciclo Estacional</label>
-                            <select id="selectSubetapa" required>
-                                <option value="Invierno - Entrante" selected>Inicio (Entrante)</option>
-                                <option value="Invierno - Mediados">Mediados</option>
-                                <option value="Invierno - Finales">Finales</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="kpi-container">
-                        <div class="input-group">
-                            <label for="inputFechaProx">Próximo Control</label>
-                            <input type="date" id="inputFechaProx" value="2026-11-18" onchange="calcularDiasRestantes()" required>
-                        </div>
-                        <div class="input-group">
-                            <label>Días Restantes</label>
-                            <div id="displayDiasRestantes" class="kpi-value" style="font-size: 1.1rem; margin-top: 8px; text-align: left;">-- Días</div>
-                        </div>
-                    </div>
-
-                    <div class="kpi-container">
-                        <div class="input-group">
-                            <label for="inputEdad">Edad Promedio (meses)</label>
-                            <input type="number" step="0.1" id="inputEdad" value="8.5" required>
-                        </div>
-                        <div class="input-group">
-                            <label for="inputPesoEsperado">Peso Esperado Salida</label>
-                            <input type="number" id="inputPesoEsperado" value="350" oninput="calcularMetas()" required>
-                        </div>
-                    </div>
-
-                    <div class="kpi-container">
-                        <div class="input-group">
-                            <label for="inputTiempoSalida">Tiempo Salida (meses)</label>
-                            <input type="number" step="0.1" id="inputTiempoSalida" value="3.0" oninput="calcularMetas()" required>
-                        </div>
-                        <div class="input-group">
-                            <label for="inputCV">Coef. Variación (%)</label>
-                            <input type="number" step="0.1" id="inputCV" value="6.5" required>
-                        </div>
-                    </div>
-
-                    <div class="input-group">
-                        <label for="inputObservacion">Observación General</label>
-                        <textarea id="inputObservacion" rows="2" required>Evaluación periódica de lote en sabana.</textarea>
-                    </div>
-
-                    <button type="button" class="btn" onclick="guardarYProcesar()">
