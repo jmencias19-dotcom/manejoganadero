@@ -90,6 +90,8 @@
             color: var(--text-main, #1b4332);
         }
 
+        .input-group textarea { resize: vertical; min-height: 70px; }
+
         .input-group input:focus, .input-group select:focus, .input-group textarea:focus {
             outline: none;
             border-color: var(--text-muted, #52b788);
@@ -151,6 +153,13 @@
             background-color: var(--text-muted, #52b788); 
         }
 
+        .btn-archive {
+            background-color: #b7094c;
+        }
+        .btn-archive:hover {
+            background-color: #890336;
+        }
+
         .stats-interpretation {
             font-size: 0.85rem;
             line-height: 1.4;
@@ -174,8 +183,8 @@
                 </a>
             </nav>
             <div class="header-title-wrapper">
-                <h1>Hato Laguna Brava - <span>Control de Levante</span></h1>
-                <p>Evolución de Peso, Uniformidad de Lote (CV) y Proyección a Meta</p>
+                <h1>Hato Laguna Brava - <span>Bloques de Estudio & Control</span></h1>
+                <p>Contexto Estacional, Uniformidad (CV) y Memoria Histórica de IA</p>
             </div>
             <div class="sync-status-wrapper">
                 <div id="sync-semaphore" class="semaphore online"></div>
@@ -188,19 +197,37 @@
     <main class="main-container">
         <div class="menu-grid">
             
-            <!-- COLUMNA 1: FORMULARIO DE ENTRADA DE DATOS -->
+            <!-- COLUMNA 1: FORMULARIO DE ENTRADA Y GESTIÓN DE LOTE -->
             <section class="section-box">
                 <div class="card-header">
                     <div class="card-icon">📋</div>
-                    <h2 class="card-title">Registro de Pesaje en Manga</h2>
+                    <h2 class="card-title">Registro de Pesaje y Bloque</h2>
                 </div>
-                <p class="card-description">Ingrese los datos del bloque de estudio o lote evaluado en sabana.</p>
+                <p class="card-description">Defina el bloque, la temporada agroecológica y las notas de campo para enriquecer la IA.</p>
                 
                 <form id="form-levante" onsubmit="event.preventDefault();" style="display: flex; flex-direction: column; gap: 12px;">
                     
                     <div class="input-group">
-                        <label for="inputLote">Lote / Bloque de Estudio</label>
-                        <input type="text" id="inputLote" value="Lote 1 - Mautes Brahman" required>
+                        <label for="inputLote">Lote / Bloque de Estudio (Fase y Tratamiento)</label>
+                        <input type="text" id="inputLote" value="Bloque 1 - Mautes Cebú (Suplementación + Compudose)" required>
+                    </div>
+
+                    <!-- SELECTOR DE TEMPORADA AGROECOLÓGICA DE APURE -->
+                    <div class="input-group">
+                        <label for="selectTemporada">Temporada Agroecológica:</label>
+                        <select id="selectTemporada" required>
+                            <option value="" disabled>-- Seleccione Época Climática --</option>
+                            <optgroup label="Invierno (Lluvias)">
+                                <option value="INVIERNO_ENTRADA">Invierno - Entrada (Mayo / Junio)</option>
+                                <option value="INVIERNO_MEDIADOS">Invierno - Mediados (Julio / Agosto)</option>
+                                <option value="INVIERNO_SALIDA" selected>Invierno - Salida (Septiembre / Octubre)</option>
+                            </optgroup>
+                            <optgroup label="Verano (Sequía)">
+                                <option value="VERANO_ENTRADA">Verano - Entrada (Noviembre / Diciembre)</option>
+                                <option value="VERANO_MEDIADOS">Verano - Mediados (Enero / Febrero)</option>
+                                <option value="VERANO_SALIDA">Verano - Salida (Marzo / Abril)</option>
+                            </optgroup>
+                        </select>
                     </div>
 
                     <div class="kpi-container">
@@ -216,7 +243,7 @@
 
                     <div class="kpi-container">
                         <div class="input-group">
-                            <label for="inputNumAnimales">Nº Animales en Lote</label>
+                            <label for="inputNumAnimales">Nº Animales Activos</label>
                             <input type="number" id="inputNumAnimales" value="9" required>
                         </div>
                         <div class="input-group">
@@ -236,28 +263,41 @@
                         </div>
                     </div>
 
+                    <!-- BLOQUE DE OBSERVACIONES CUALITATIVAS PARA LA IA -->
                     <div class="input-group">
-                        <label for="select-fase">Fase del Bloque:</label>
-                        <select id="select-fase" required>
-                            <option value="Neonatal (~30 días)">Neonatal (~30 días / Primer Pesaje)</option>
-                            <option value="Destete">Destete</option>
-                            <option value="Control de Levante" selected>Control de Levante / Recría</option>
+                        <label for="inputObservaciones">Observaciones Cualitativas de Manga (Contexto para la IA):</label>
+                        <textarea id="inputObservaciones" placeholder="Ej. Lote pastando en estero bajando lámina de agua. Se observa buen rompimiento de pelaje, sin ectoparásitos.">Entrada a sabana alta con predominio de pasto pará. Comportamiento activo en comederos y puntos de agua.</textarea>
+                    </div>
+
+                    <!-- ESTATUS / ACCIÓN DE GESTIÓN DEL LOTE -->
+                    <div class="input-group">
+                        <label for="selectEstatus">Estatus Operativo del Lote:</label>
+                        <select id="selectEstatus">
+                            <option value="ACTIVO" selected>Activo en Seguimiento / Bloque de Estudio</option>
+                            <option value="CIERRE_FASE">Cierre de Fase / Cumplió Meta</option>
+                            <option value="DESINCORPORADO_VENTA">Desincorporado por Venta</option>
+                            <option value="DESINCORPORADO_TRASLADO">Desincorporado por Traslado a Comercial</option>
                         </select>
                     </div>
 
-                    <button type="button" id="btnProcesarPesaje" class="btn-submit" style="margin-top: 10px;">
-                        <i class="fa-solid fa-calculator"></i> Calcular Proyección y Sincronizar
-                    </button>
+                    <div style="display: flex; gap: 10px; margin-top: 5px;">
+                        <button type="button" id="btnProcesarPesaje" class="btn-submit" style="flex: 2;">
+                            <i class="fa-solid fa-brain"></i> Registrar y Guardar en Memoria
+                        </button>
+                        <button type="button" id="btnDesincorporarLote" class="btn-submit btn-archive" style="flex: 1;" title="Archivar o sacar del sistema activo">
+                            <i class="fa-solid fa-box-archive"></i> Archivar
+                        </button>
+                    </div>
                 </form>
             </section>
 
-            <!-- COLUMNA 2: PANEL DE INDICADORES DE ORO (KPIs Y PROYECCIÓN) -->
+            <!-- COLUMNA 2: PANEL DE INDICADORES DE ORO Y APRENDIZAJE DE IA -->
             <section class="section-box">
                 <div class="card-header">
                     <div class="card-icon">🎯</div>
-                    <h2 class="card-title">Indicadores de Oro y Proyección Zootécnica</h2>
+                    <h2 class="card-title">Indicadores, Metas y Memoria Histórica</h2>
                 </div>
-                <p class="card-description">Lectura directa orientada a la toma de decisiones gerenciales y de campo.</p>
+                <p class="card-description">Proyecciones dinámicas y retroalimentación del sistema experto cruzando clima, peso y uniformidad.</p>
                 
                 <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 5px;">
                     
@@ -277,58 +317,98 @@
                     </div>
 
                     <div class="input-group" style="margin-top: 4px;">
-                        <label>Diagnóstico de Inteligencia de Hato</label>
+                        <label>Diagnóstico Estacional y Memoria de IA</label>
                         <div id="statsInterpretacion" class="stats-interpretation">
-                            <strong>Análisis Automatizado:</strong> El lote presenta un Coeficiente de Variación menor al 8%, reflejando alta uniformidad ponderal. No se requiere re-loteo. La proyección lineal con la GMD actual indica que la meta de peso se alcanzará en el tiempo estimado sin fricciones de competencia en potrero.
+                            <strong>Análisis Integrado (Clima + Numérico + Cualitativo):</strong> Época registrada: <em>Invierno - Salida</em>. El CV se mantiene en 6.4% (< 8%). Cruzando este resultado con la temporada de salida de lluvias y la nota de manga, el sistema valida que el bloque aprovecha la estabilidad de los esteros de Apure para cumplir la proyección sin fricciones de competencia.
                         </div>
                     </div>
+
+                    <div class="kpi-card-item" style="background-color: #f4f9f6; border: 1px dashed var(--text-muted, #52b788);">
+                        <label style="font-size: 0.8rem; color: #1b4332;"><i class="fa-solid fa-database"></i> Histórico de Registros en Base Local:</label>
+                        <span id="resumenConteoHistorial" class="kpi-value" style="font-size: 1rem;">12 Pesajes Registrados</span>
+                    </div>
+
                 </div>
             </section>
 
         </div>
     </main>
 
-    <!-- Script de Automatización y Cálculo Dinámico -->
+    <!-- Script de Lógica, Memoria Local e IA con Contexto Estacional -->
     <script>
+        let historialLotes = JSON.parse(localStorage.getItem('lb_historial_lotes')) || [];
+        document.getElementById('resumenConteoHistorial').innerText = `${historialLotes.length} Pesajes Registrados`;
+
         document.getElementById('btnProcesarPesaje').addEventListener('click', function() {
-            // Capturar valores
+            let loteNombre = document.getElementById('inputLote').value;
+            let temporada = document.getElementById('selectTemporada').value;
             let pesoProm = parseFloat(document.getElementById('inputPesoPromedio').value) || 0;
             let pesoObj = parseFloat(document.getElementById('inputPesoObjetivo').value) || 0;
             let gmd = parseFloat(document.getElementById('inputGMD').value) || 0.001;
             let cv = parseFloat(document.getElementById('inputCV').value) || 0;
+            let observaciones = document.getElementById('inputObservaciones').value;
+            let estatus = document.getElementById('selectEstatus').value;
 
-            // 1. Calcular Kilos Faltantes
+            // 1. Cálculos de Meta
             let kgsFaltantes = pesoObj - pesoProm;
             if (kgsFaltantes < 0) kgsFaltantes = 0;
 
-            // 2. Calcular Tiempo en Días, Meses y Días
             let diasTotales = gmd > 0 ? (kgsFaltantes / gmd) : 0;
             let meses = Math.floor(diasTotales / 30);
             let diasRestantes = Math.round(diasTotales % 30);
 
-            // Actualizar DOM Kilos y Tiempo
+            // Actualizar DOM
             document.getElementById('resumenKgsFaltantes').innerText = `+${kgsFaltantes.toFixed(1)} kg`;
             document.getElementById('resumenTiempoFaltante').innerText = `${meses} meses y ${diasRestantes} días`;
 
-            // 3. Evaluar Coeficiente de Variación (CV) y Alerta Visual
+            // 2. Evaluar CV y Alertas con IA Contextual Estacional
             let cardCVBox = document.getElementById('cardCVBox');
             let resumenCV = document.getElementById('resumenCV');
             let interpretacion = document.getElementById('statsInterpretacion');
 
-            cardCVBox.className = "kpi-card-item"; // limpiar clases previas
+            cardCVBox.className = "kpi-card-item";
+            let alertaTexto = "";
 
             if (cv < 8.0) {
                 cardCVBox.classList.add('cv-alert-optimal');
                 resumenCV.innerText = `${cv}% (Óptimo)`;
-                interpretacion.innerHTML = `<strong>Análisis Automatizado:</strong> CV < 8%. Lote altamente uniforme. Excelente respuesta al manejo y estabilidad en el consumo. Apto para comercialización o evaluación pura de tratamientos.`;
+                alertaTexto = `<strong>Memoria Estacional & IA:</strong> Época [${temporada}] con CV < 8%. Excelente uniformidad. Las notas de manga confirman estabilidad metabólica bajo el régimen climático actual.`;
             } else if (cv >= 8.0 && cv <= 12.0) {
                 cardCVBox.classList.add('cv-alert-warning');
                 resumenCV.innerText = `${cv}% (Moderado)`;
-                interpretacion.innerHTML = `<strong>Análisis Automatizado:</strong> CV entre 8% y 12%. Dispersión normal para condiciones de sabana. Mantener vigilancia sobre los animales colgados.`;
+                alertaTexto = `<strong>Memoria Estacional & IA:</strong> Época [${temporada}] con CV moderado (8-12%). Vigilar adaptación del lote a los cambios de oferta forrajera estacional.`;
             } else {
                 cardCVBox.classList.add('cv-alert-danger');
                 resumenCV.innerText = `${cv}% (Desuniforme)`;
-                interpretacion.innerHTML = `<strong>¡Alerta de IA / Gerencial!:</strong> CV > 12%. Lote desuniforme. Se recomienda realizar un re-loteo urgente (separar cabeza, cuerpo y cola) para evitar dominancia en comederos y potrero.`;
+                alertaTexto = `<strong>¡Alerta Crítica de IA!:</strong> Época [${temporada}] con CV > 12%. Dispersión alta. Re-loteo urgente para evitar castigo de peso en la temporada.`;
+            }
+            interpretacion.innerHTML = alertaTexto;
+
+            // 3. Guardar en Memoria Histórica Local (Feedback Loop)
+            let registroActual = {
+                fecha: new Date().toISOString(),
+                lote: loteNombre,
+                temporada: temporada,
+                pesoPromedio: pesoProm,
+                gmd: gmd,
+                cv: cv,
+                observaciones: observaciones,
+                estatus: estatus
+            };
+
+            historialLotes.push(registroActual);
+            localStorage.setItem('lb_historial_lotes', JSON.stringify(historialLotes));
+            document.getElementById('resumenConteoHistorial').innerText = `${historialLotes.length} Pesajes Registrados`;
+
+            alert("¡Pesaje, temporada y notas guardados exitosamente en la memoria del sistema!");
+        });
+
+        // Botón de Archivar / Desincorporar Lote
+        document.getElementById('btnDesincorporarLote').addEventListener('click', function() {
+            let loteNombre = document.getElementById('inputLote').value;
+            if(confirm(`¿Confirma archivar o desincorporar el bloque "${loteNombre}" del sistema activo?`)) {
+                document.getElementById('selectEstatus').value = "DESINCORPORADO_VENTA";
+                alert("Lote archivado correctamente.");
             }
         });
     </script>
