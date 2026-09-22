@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="./potreros.css?v=4.1">
     
     <!-- CDN oficial de iconos FontAwesome -->
-    <link rel="stylesheet" href="https://cloudflare.com">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <!-- Manifiesto PWA -->
     <link rel="manifest" href="manifest.json">
@@ -188,6 +188,12 @@
                 <p class="card-description">Ingrese los datos del pesaje y control periódico evaluado en la sabana.</p>
                 
                 <form id="form-levante" onsubmit="event.preventDefault();" style="display: flex; flex-direction: column; gap: 12px;">
+                    
+                    <div class="input-group">
+                        <label for="inputID">Identificador (I.D) del Lote / Animal</label>
+                        <input type="text" id="inputID" value="LB-LEV-2026-01" required placeholder="Ej. Arete o Código de Lote">
+                    </div>
+
                     <div class="input-group">
                         <label for="inputLote">Lote / Potrero</label>
                         <input type="text" id="inputLote" value="Lote 1" required>
@@ -215,22 +221,40 @@
                         </div>
                     </div>
 
-                    <div class="kpi-container">
-                        <div class="input-group">
-                            <label for="selectEpoca">Época Climática</label>
-                            <select id="selectEpoca" onchange="typeof actualizarSubetapa === 'function' && actualizarSubetapa()" required>
-                                <option value="Invierno" selected>Invierno</option>
-                                <option value="Verano">Verano</option>
-                            </select>
-                        </div>
-                        <div class="input-group">
-                            <label for="selectSubetapa">Ciclo Estacional</label>
-                            <select id="selectSubetapa" required>
-                                <option value="Invierno - Entrante" selected>Inicio (Entrante)</option>
-                                <option value="Invierno - Mediados">Mediados</option>
-                                <option value="Invierno - Finales">Finales</option>
-                            </select>
-                        </div>
+                    <div class="input-group">
+                        <label for="select-categoria">Categoría Zootécnica Oficial:</label>
+                        <select id="select-categoria" required>
+                            <option value="" disabled>-- Seleccione Categoría --</option>
+                            <option value="Mautes_Levante" selected>Mautes en Levante (Brahman)</option>
+                            <option value="Maute_Engorde">Maute de Engorde</option>
+                            <option value="Novilla_Levante">Novilla de Levante</option>
+                        </select>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="select-temporada">Temporada Agroecológica:</label>
+                        <select id="select-temporada" required>
+                            <option value="" disabled>-- Seleccione Época --</option>
+                            <optgroup label="Invierno (Lluvias)">
+                                <option value="INVIERNO_ENTRADA">Invierno - Entrada (Mayo/Junio)</option>
+                                <option value="INVIERNO_MEDIADOS">Invierno - Mediados (July/Agosto)</option>
+                                <option value="INVIERNO_SALIDA" selected>Invierno - Salida (Septiembre/Octubre)</option>
+                            </optgroup>
+                            <optgroup label="Verano (Sequía)">
+                                <option value="VERANO_ENTRADA">Verano - Entrada (Noviembre/Diciembre)</option>
+                                <option value="VERANO_MEDIADOS">Verano - Mediados (Enero/Febrero)</option>
+                                <option value="VERANO_SALIDA">Verano - Salida (Marzo/Abril)</option>
+                            </optgroup>
+                        </select>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="select-fase">Fase del Proceso:</label>
+                        <select id="select-fase" required>
+                            <option value="" disabled>-- Seleccione Fase --</option>
+                            <option value="Ingreso">Ingreso</option>
+                            <option value="Control" selected>Control</option>
+                        </select>
                     </div>
 
                     <div class="kpi-container">
@@ -255,3 +279,50 @@
                         </div>
                     </div>
 
+                    <button type="button" id="btnGuardarPesos" class="btn-submit" style="margin-top: 10px;">
+                        <i class="fa-solid fa-cloud-arrow-up"></i> Guardar Pesos / Sincronizar
+                    </button>
+                </form>
+            </section>
+
+            <!-- COLUMNA 2: ÁREA DE RESUMEN E INDICADORES (KPIs) -->
+            <section class="section-box">
+                <div class="card-header">
+                    <div class="card-icon">📊</div>
+                    <h2 class="card-title">Resumen e Indicadores Zootécnicos</h2>
+                </div>
+                <p class="card-description">Panel analítico del lote bajo parámetros adaptados al trópico bajo (Mantecal, Apure).</p>
+                
+                <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 5px;">
+                    <div class="kpi-card-item">
+                        <label>Peso Promedio Actual</label>
+                        <span id="resumenPesoPromedio" class="kpi-value">284.5 kg</span>
+                    </div>
+                    <div class="kpi-card-item">
+                        <label>Ganancia Diaria Estimada (GMD)</label>
+                        <span id="resumenGMD" class="kpi-value">0.540 kg/día</span>
+                    </div>
+                    <div class="kpi-card-item">
+                        <label>Amplitud de Lote (Max - Min)</label>
+                        <span id="resumenAmplitud" class="kpi-value">60 kg</span>
+                    </div>
+                    <div class="kpi-card-item">
+                        <label>Carga Animal (UGM / ha)</label>
+                        <span id="resumenCarga" class="kpi-value">1.25 UGM/ha</span>
+                    </div>
+                    <div class="kpi-card-item">
+                        <label>Déficit / Superávit para Meta</label>
+                        <span id="resumenMeta" class="kpi-value">+65.5 kg</span>
+                    </div>
+                    <div class="kpi-card-item">
+                        <label>Estado de Integridad de Datos</label>
+                        <span id="resumenEstado" class="kpi-value" style="color: #2d6a4f;">Óptimo</span>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+</body>
+</html>
