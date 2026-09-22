@@ -33,22 +33,42 @@ const db = getFirestore(app);
 const COL_LOTES_ACTIVOS = "lotes_activos_potreros_hl";
 const COL_HISTORIAL = "historial_rotaciones_indefinido_hl";
 
-// Catálogo Oficial de Categorías Zootécnicas y sus factores UGM (Unidad Gran Ganado = 450 kg)
-const FACTORES_UGM = {
-    BOVINOS: {
-        "TOROS": 1.25,
-        "VACAS_CRIA": 1.00,
-        "NOVILLOS_LEVANTE": 0.75,
-        "NOVILLAS_VIENTRE": 0.70,
-        "ENHIESTOS_DESTETE": 0.50,
-        "LUTOS_MAUTE": 0.40
-    },
-    BUFALINOS: {
-        "REPRODUCTORES_BUF": 1.40,
-        "BUFAS_ORDEÑO": 1.20,
-        "BUFONAS_LEVANTE": 0.85,
-        "MAUTOS_BUF": 0.45
-    }
+// Catálogo Oficial y Detallado de Categorías Zootécnicas y Factores UGM (Unidad Gran Ganado = 450 kg)
+const CATALOGO_CATEGORIAS = {
+    BOVINOS: [
+        { id: 'vacas_criando', nombre: 'Vacas Criando', factor: 1.0 },
+        { id: 'vacas_criando_pre', nombre: 'Vacas Criando Preñada', factor: 1.0 },
+        { id: 'vacas_vacia', nombre: 'Vacas Vacías', factor: 1.0 },
+        { id: 'vacas_prenadas', nombre: 'Vacas Preñadas', factor: 1.0 },
+        { id: 'vacas_descarte', nombre: 'Vacas Descarte', factor: 1.0 },
+        { id: 'novillas_vacia', nombre: 'Novillas Vacías', factor: 0.8 },
+        { id: 'novillas_descarte', nombre: 'Novillas Descarte', factor: 0.8 },
+        { id: 'novillas_prenada', nombre: 'Novillas Preñadas', factor: 0.8 },
+        { id: 'novillas_monta', nombre: 'Novillas en Monta', factor: 0.8 },
+        { id: 'mautes', nombre: 'Mautes', factor: 0.5 },
+        { id: 'mautas', nombre: 'Mautas', factor: 0.5 },
+        { id: 'becerros', nombre: 'Becerros', factor: 0.25 },
+        { id: 'becerras', nombre: 'Becerras', factor: 0.25 },
+        { id: 'toros_padrotes', nombre: 'Toros Padrotes', factor: 1.25 },
+        { id: 'toros_padres_descarte', nombre: 'Toros Padres Descarte', factor: 1.25 }
+    ],
+    BUFALINOS: [
+        { id: 'bufalas_criando', nombre: 'Búfalas Criando', factor: 1.2 },
+        { id: 'bufalas_criando_pre', nombre: 'Búfalas Criando Preñada', factor: 1.2 },
+        { id: 'bufalas_vacia', nombre: 'Búfalas Vacías', factor: 1.2 },
+        { id: 'bufalas_prenadas', nombre: 'Búfalas Preñadas', factor: 1.2 },
+        { id: 'bufalas_descarte', nombre: 'Búfalas Descarte', factor: 1.2 },
+        { id: 'buvillas_vacia', nombre: 'Buvillas Vacías', factor: 0.95 },
+        { id: 'buvillas_descarte', nombre: 'Buvillas Descarte', factor: 0.95 },
+        { id: 'buvillas_prenada', nombre: 'Buvillas Preñadas', factor: 0.95 },
+        { id: 'buvillas_monta', nombre: 'Buvillas en Monta', factor: 0.95 },
+        { id: 'baute', nombre: 'Baute', factor: 0.6 },
+        { id: 'bauta', nombre: 'Bauta', factor: 0.6 },
+        { id: 'bucerros', nombre: 'Bucerros', factor: 0.3 },
+        { id: 'bucerras', nombre: 'Bucerras', factor: 0.3 },
+        { id: 'bufalos_padrote', nombre: 'Búfalos Padrotes', factor: 1.5 },
+        { id: 'bufalos_padres_descarte', nombre: 'Búfalos Padres Descarte', factor: 1.5 }
+    ]
 };
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -78,7 +98,7 @@ function inicializarFormularioYFiltros() {
         filtroPotrero.innerHTML = '<option value="">Todos los Potreros</option>' + selectPotrero.innerHTML;
     }
 
-    // Evento de envío del formulario (Registro y Sincronización Topológica)
+    // Evento de envío del formulario (Registro, Sincronización Topológica y Limpieza)
     if (form) {
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -86,7 +106,7 @@ function inicializarFormularioYFiltros() {
         });
     }
 
-    // Listener para actualizar el Asistente Forrajero (I.D.) al cambiar potrero o categoría
+    // Listener para actualizar el Asistente Forrajero (I.D.) al cambiar potrero, categoría o cabezas
     const inputsCalculo = ['select-potrero', 'select-especie', 'select-categoria', 'cantidad-cabezas'];
     inputsCalculo.forEach(id => {
         const el = document.getElementById(id);
@@ -100,16 +120,27 @@ function actualizarCategorias() {
     if (!selectEspecie || !selectCategoria) return;
 
     const especie = selectEspecie.value;
-    const categorias = FACTORES_UGM[especie] || {};
+    const listaCategorias = CATALOGO_CATEGORIAS[especie] || [];
 
     selectCategoria.innerHTML = '<option value="" disabled selected>-- Seleccione Categoría --</option>';
-    Object.keys(categorias).forEach(cat => {
+    listaCategorias.forEach(cat => {
         const option = document.createElement('option');
-        option.value = cat;
-        // Formatear texto legible para el usuario
-        option.textContent = cat.replace(/_/g, ' ');
+        option.value = cat.id;
+        option.textContent = cat.nombre;
+        // Guardamos el factor UGM directamente en el dataset de la opción para lectura limpia
+        option.dataset.factor = cat.factor;
         selectCategoria.appendChild(option);
     });
+}
+
+/**
+ * Obtiene el factor UGM de la categoría seleccionada actualmente
+ */
+function obtenerFactorUgmSeleccionado() {
+    const selectCategoria = document.getElementById('select-categoria');
+    if (!selectCategoria || selectCategoria.selectedIndex <= 0) return 1.0;
+    const selectedOption = selectCategoria.options[selectCategoria.selectedIndex];
+    return parseFloat(selectedOption.dataset.factor) || 1.0;
 }
 
 /**
@@ -117,7 +148,6 @@ function actualizarCategorias() {
  */
 function calcularImpactoForrajeroPreliminar() {
     const selectPotrero = document.getElementById('select-potrero');
-    const selectEspecie = document.getElementById('select-especie');
     const selectCategoria = document.getElementById('select-categoria');
     const inputCabezas = document.getElementById('cantidad-cabezas');
     const aiBox = document.getElementById('ai-potrero-content');
@@ -126,20 +156,18 @@ function calcularImpactoForrajeroPreliminar() {
 
     const selectedOption = selectPotrero.options[selectPotrero.selectedIndex];
     const areaHa = parseFloat(selectedOption.getAttribute('data-ha')) || 0;
-    const especie = selectEspecie.value;
-    const categoria = selectCategoria.value;
+    const categoriaId = selectCategoria.value;
     const cabezas = parseInt(inputCabezas.value) || 0;
 
-    if (areaHa === 0 || !categoria || cabezas === 0) {
+    if (areaHa === 0 || !categoriaId || cabezas === 0) {
         aiBox.innerHTML = `<p style="margin: 0; font-style: italic;">Seleccione potrero, categoría y cantidad de cabezas para estimar el balance forrajero...</p>`;
         return;
     }
 
-    const factorUgm = FACTORES_UGM[especie][categoria] || 1.0;
+    const factorUgm = obtenerFactorUgmSeleccionado();
     const totalUgm = cabezas * factorUgm;
     const cargaHa = totalUgm / areaHa;
 
-    // Diagnóstico según umbrales ecológicos en sabanas y módulos del llano
     let estado = "estable";
     let colorEstado = "#155724";
     let bgEstado = "#d4edda";
@@ -159,24 +187,27 @@ function calcularImpactoForrajeroPreliminar() {
 
     aiBox.innerHTML = `
         <div style="background: ${bgEstado}; color: ${colorEstado}; padding: 8px; border-radius: 6px; font-weight: 600;">
-            <i class="fa-solid fa-calculator"><b> Estima:</b> ${totalUgm.toFixed(2)} UGM | ${cargaHa.toFixed(2)} UGM/ha (${estado.toUpperCase()})
+            <i class="fa-solid fa-calculator"></i> <b>Estima:</b> ${totalUgm.toFixed(2)} UGM | ${cargaHa.toFixed(2)} UGM/ha (${estado.toUpperCase()})
         </div>
         <p style="margin: 4px 0 0 0;">${mensajeRecomendacion}</p>
     `;
 }
 
 /**
- * Guarda la asignación activa en Firestore
+ * Guarda la asignación activa en Firestore y limpia totalmente el formulario
  */
 async function registrarAsignacionPotrero() {
     try {
         const selectPotrero = document.getElementById('select-potrero');
         const selectedOption = selectPotrero.options[selectPotrero.selectedIndex];
+        const selectCategoria = document.getElementById('select-categoria');
+        const catSelectedOption = selectCategoria.options[selectCategoria.selectedIndex];
         
         const potreroNombre = selectPotrero.value;
         const areaHa = parseFloat(selectedOption.getAttribute('data-ha')) || 0;
         const especie = document.getElementById('select-especie').value;
-        const categoria = document.getElementById('select-categoria').value;
+        const categoriaId = selectCategoria.value;
+        const nombreCategoriaLegible = catSelectedOption ? catSelectedOption.textContent : categoriaId;
         const cabezas = parseInt(document.getElementById('cantidad-cabezas').value) || 0;
         const temporada = document.getElementById('select-temporada').value;
         const fechaIngreso = document.getElementById('fecha-ingreso').value;
@@ -184,7 +215,7 @@ async function registrarAsignacionPotrero() {
         const responsable = document.getElementById('responsable-potrero').value;
         const observaciones = document.getElementById('observaciones-potrero').value;
 
-        const factorUgm = FACTORES_UGM[especie][categoria] || 1.0;
+        const factorUgm = obtenerFactorUgmSeleccionado();
         const totalUgm = cabezas * factorUgm;
         const cargaHa = totalUgm / areaHa;
 
@@ -196,7 +227,8 @@ async function registrarAsignacionPotrero() {
             potrero: potreroNombre,
             areaHa: areaHa,
             especie: especie,
-            categoria: categoria,
+            categoria: categoriaId,
+            nombreCategoria: nombreCategoriaLegible,
             cabezasIniciales: cabezas,
             totalUgm: totalUgm,
             cargaHa: cargaHa,
@@ -210,8 +242,17 @@ async function registrarAsignacionPotrero() {
         };
 
         await addDoc(collection(db, COL_LOTES_ACTIVOS), nuevoLote);
-        mostrarToast("Lote asignado y sincronizado con éxito");
+        
+        // Limpieza completa del formulario y reseteo del asistente forrajero
         document.getElementById('potreroForm').reset();
+        actualizarCategorias(); // Restablece las categorías predeterminadas de bovinos
+        
+        const aiBox = document.getElementById('ai-potrero-content');
+        if (aiBox) {
+            aiBox.innerHTML = `<p style="margin: 0; font-style: italic;">Seleccione un potrero y categoría para estimar el impacto forrajero...</p>`;
+        }
+
+        mostrarToast("Lote asignado y sincronizado con éxito");
     } catch (error) {
         console.error("Error al registrar lote en potrero:", error);
         mostrarToast("Error al guardar en la base de datos", true);
@@ -241,7 +282,6 @@ function sincronizarLotesActivos() {
             lotes.push({ id: docSnap.id, ...docSnap.data() });
         });
 
-        // Aplicar filtros dinámicos
         const fPotrero = filtroPotreroEl ? filtroPotreroEl.value : "";
         const fEspecie = filtroEspecieEl ? filtroEspecieEl.value : "";
         const fEstado = filtroEstadoEl ? filtroEstadoEl.value : "";
@@ -253,7 +293,6 @@ function sincronizarLotesActivos() {
             return true;
         });
 
-        // Calcular KPIs globales sobre los lotes filtrados (o totales)
         let totalCabezasGlobal = 0;
         let totalUgmGlobal = 0;
         let sumaCargaHa = 0;
@@ -270,7 +309,6 @@ function sincronizarLotesActivos() {
         if (kpiUgm) kpiUgm.textContent = totalUgmGlobal.toFixed(2);
         if (kpiCargaProm) kpiCargaProm.textContent = promedioCargaGlobal.toFixed(2);
 
-        // Renderizar tarjetas visuales
         if (lotesFiltrados.length === 0) {
             contenedor.innerHTML = `<p style="text-align: center; color: var(--text-muted); font-size: 0.9rem; padding: 20px;">No hay lotes activos registrados con los filtros seleccionados.</p>`;
             return;
@@ -279,14 +317,10 @@ function sincronizarLotesActivos() {
         let htmlTarjetas = '';
         lotesFiltrados.forEach(lote => {
             let claseEstado = "status-estable";
-            let etiquetaEstado = "🟢 Estable";
-            if (lote.estadoCarga === "moderado") {
-                claseEstado = "status-moderado";
-                etiquetaEstado = "🟡 Moderado";
-            } else if (lote.estadoCarga === "critico") {
-                claseEstado = "status-critico";
-                etiquetaEstado = "🔴 Crítico";
-            }
+            if (lote.estadoCarga === "moderado") claseEstado = "status-moderado";
+            else if (lote.estadoCarga === "critico") claseEstado = "status-critico";
+
+            const nombreCatDisplay = lote.nombreCategoria || lote.categoria.replace(/_/g, ' ');
 
             htmlTarjetas += `
                 <div class="potrero-card-item" data-id="${lote.id}">
@@ -295,7 +329,7 @@ function sincronizarLotesActivos() {
                         <span class="potrero-card-tag">${lote.especie}</span>
                     </div>
                     <div class="potrero-card-meta">
-                        <b>Categoría:</b> ${lote.categoria.replace(/_/g, ' ')} | <b>Cabezas:</b> ${lote.cabezasIniciales} (${lote.totalUgm.toFixed(2)} UGM)
+                        <b>Categoría:</b> ${nombreCatDisplay} | <b>Cabezas:</b> ${lote.cabezasIniciales} (${lote.totalUgm.toFixed(2)} UGM)
                     </div>
                     <div class="potrero-card-meta">
                         <b>Carga Actual:</b> <span style="font-weight: 700;">${lote.cargaHa.toFixed(2)} UGM/ha</span> | <b>Ingreso:</b> ${lote.fechaIngreso}
@@ -307,7 +341,7 @@ function sincronizarLotesActivos() {
                             <option value="moderado" ${lote.estadoCarga === 'moderado' ? 'selected' : ''}>🟡 Moderado</option>
                             <option value="critico" ${lote.estadoCarga === 'critico' ? 'selected' : ''}>🔴 Crítico</option>
                         </select>
-                        <button class="btn-delete" onclick="window.vaciarYArchivarPotrero('${lote.id}', '${lote.potrero}')" title="Vaciar potrero y enviar al historial indefinido">
+                        <button class="btn-delete" onclick="window.vaciarYArchivarPotrero('${lote.id}', '${lote.potrero}', ${JSON.stringify(lote).replace(/"/g, '&quot;')})" title="Vaciar potrero y enviar al historial indefinido">
                             <i class="fa-solid fa-person-walking-arrow-right"></i> Vaciar
                         </button>
                     </div>
@@ -320,30 +354,21 @@ function sincronizarLotesActivos() {
         console.error("Error al sincronizar lotes activos:", error);
     });
 
-    // Escuchar cambios en los filtros para redibujar al instante
     [filtroPotreroEl, filtroEspecieEl, filtroEstadoEl].forEach(el => {
         if (el) el.addEventListener('change', () => sincronizarLotesActivos());
     });
 }
 
 /**
- * Función global para vaciar un potrero: archiva automáticamente en el historial indefinido
- * y elimina el documento de los lotes activos (Topología de cierre de ciclo).
+ * Función global para vaciar un potrero y archivar con los datos reales del lote
  */
-window.vaciarYArchivarPotrero = async function(idLote, nombrePotrero) {
+window.vaciarYArchivarPotrero = async function(idLote, nombrePotrero, datosLote) {
     if (!confirm(`¿Confirma el vaciado del potrero "${nombrePotrero}"? Esto registrará el ciclo de forma indefinida para las rutas de pastoreo.`)) {
         return;
     }
 
     try {
-        // Obtener la referencia o datos del lote antes de borrarlo para archivarlo
-        // Nota: Para mayor robustez, leemos el documento o usamos el snapshot actual. 
-        // Aquí procedemos a ejecutar la función de archivo importada del historial.
-        
-        // Ejecutamos el archivo permanente en el historial indefinido
-        await archivarCicloAlVaciarseDirecto(nombrePotrero, idLote);
-
-        // Eliminamos el lote activo para liberar el potrero
+        await archivarCicloAlVaciarse(nombrePotrero, datosLote);
         await deleteDoc(doc(db, COL_LOTES_ACTIVOS, idLote));
         mostrarToast(`Potrero ${nombrePotrero} vaciado y archivado en memoria histórica.`);
     } catch (error) {
@@ -353,22 +378,39 @@ window.vaciarYArchivarPotrero = async function(idLote, nombrePotrero) {
 };
 
 /**
- * Función auxiliar interna para respaldar el ciclo al vaciar mediante ID
+ * Función exportable que archiva de forma permanente el récord del ciclo en Firestore.
  */
-async function archivarCicloAlVaciarseDirecto(potreroNombre, idLote) {
-    // Esta función complementa tu motor topológico enviando los datos de cierre
-    const fechaVaciadoReal = new Date().toISOString().split('T')[0];
-    const registroHistoricoPermanente = {
-        potrero: potreroNombre,
-        fechaVaciadoReal: fechaVaciadoReal,
-        timestampArchivo: Date.now(),
-        observacionesFinales: "Cierre manual de ciclo desde el tablero de operaciones."
-    };
-    await addDoc(collection(db, COL_HISTORIAL), registroHistoricoPermanente);
+export async function archivarCicloAlVaciarse(potreroNombre, datosLoteActivo) {
+    try {
+        const fechaVaciadoReal = new Date().toISOString().split('T')[0];
+        const fechaIngreso = datosLoteActivo.fechaIngreso || fechaVaciadoReal;
+        
+        const diffTime = Math.abs(new Date(fechaVaciadoReal) - new Date(fechaIngreso));
+        const diasOcupacion = Math.max(1, Math.ceil(diffTime / (1000 * 60 * 60 * 24)));
+
+        const registroHistoricoPermanente = {
+            potrero: potreroNombre,
+            areaHa: datosLoteActivo.areaHa || 1,
+            especie: datosLoteActivo.especie || 'BOVINOS',
+            categoriaPrincipal: datosLoteActivo.nombreCategoria || datosLoteActivo.categoria || 'Lote Mixto',
+            totalCabezasInicial: datosLoteActivo.cabezasIniciales || 0,
+            cargaPromedioHa: datosLoteActivo.cargaHa || 0,
+            fechaIngreso: fechaIngreso,
+            fechaVaciadoReal: fechaVaciadoReal,
+            diasOcupacionReales: diasOcupacion,
+            temporada: datosLoteActivo.temporada || 'General',
+            observacionesFinales: datosLoteActivo.observaciones || 'Cierre automático por vaciado total de potrero',
+            timestampArchivo: Date.now()
+        };
+
+        await addDoc(collection(db, COL_HISTORIAL), registroHistoricoPermanente);
+        console.log(`[HISTÓRICO INDEFINIDO] El potrero ${potreroNombre} archivó su ciclo exitosamente.`);
+    } catch (error) {
+        console.error("Error al archivar el ciclo en el histórico indefinido:", error);
+    }
 }
 
 window.actualizarEstadoLote = async function(idLote, nuevoEstado) {
-    // Actualización rápida de estado visual en la UI / Base de datos si se requiere
     mostrarToast(`Estado cambiado a: ${nuevoEstado.toUpperCase()}`);
 };
 
@@ -387,8 +429,7 @@ function mostrarToast(mensaje, esError = false) {
 }
 
 /**
- * Motor analítico en tiempo real que procesa la memoria indefinida 
- * y alimenta el sistema predictivo de rutas de pastoreo.
+ * Sincroniza la memoria indefinida y alimenta el sistema predictivo de rutas.
  */
 function sincronizarHistorialIndefinido() {
     const contenedorMatriz = document.getElementById('matriz-historial-container');
