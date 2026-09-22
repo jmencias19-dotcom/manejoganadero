@@ -56,10 +56,10 @@ function calcularMetricasEnTiempoReal() {
     const kpiGPD = document.getElementById('kpiGPD');
     if (kpiGPD) kpiGPD.textContent = `${gpd.toFixed(3)} kg`;
 
-    // Días Restantes
+    // Días Restantes (Fijado a fecha del sistema: 22 de Septiembre de 2026)
     if (fechaProxVal) {
-        const fechaProx = new Date(fechaProxVal);
-        const hoy = new Date();
+        const fechaProx = new Date(fechaProxVal + 'T00:00:00');
+        const hoy = new Date('2026-09-22T00:00:00');
         const diasRestantes = Math.ceil((fechaProx - hoy) / (1000 * 60 * 60 * 24));
         
         const displayDias = document.getElementById('displayDiasRestantes');
@@ -157,7 +157,7 @@ async function guardarYProcesar() {
  */
 function ejecutarAsistenteInteligenteLevante(datosLote) {
     if (!datosLote) return;
-    const { lote, cv, epoca, gpd } = datosLote;
+    const { lote, cv, gpd } = datosLote;
     let scoreSaludLote = 100;
     let recomendacionesTecnicas = [];
 
@@ -190,6 +190,9 @@ async function gestionarPersistenciaOfflineFirst(datosLote) {
     }
 }
 
+/**
+ * Controla visualmente el estado del semáforo de sincronización
+ */
 function actualizarSemafortoSync(isOnline, pendientesCount) {
     const semaphore = document.getElementById('sync-semaphore');
     const syncText = document.getElementById('sync-text');
@@ -204,11 +207,9 @@ function actualizarSemafortoSync(isOnline, pendientesCount) {
     }
 }
 
-function verificarEstadoRedUI() {
-    let cola = JSON.parse(localStorage.getItem(OFFLINE_QUEUE_KEY)) || [];
-    actualizarSemafortoSync(navigator.onLine, cola.length);
-}
-
+/**
+ * Interfaz de notificación flotante (Toast)
+ */
 function mostrarToast(mensaje, esError = false) {
     let toast = document.getElementById('toast-flotante');
     if (!toast) {
@@ -222,17 +223,6 @@ function mostrarToast(mensaje, esError = false) {
     toast.style.display = 'block';
     setTimeout(() => { toast.style.display = 'none'; }, 4000);
 }
-
-// Eventos de conectividad
-window.addEventListener('online', () => {
-    console.log("[RED] Conexión recuperada.");
-    verificarEstadoRedUI();
-});
-
-window.addEventListener('offline', () => {
-    console.log("[RED] Modo Offline activado.");
-    verificarEstadoRedUI();
-});
 
 /**
  * Verifica el estado de la red y gatilla la sincronización si hay datos pendientes en cola.
@@ -252,55 +242,3 @@ async function verificarEstadoRedUI() {
 /**
  * Recorre la cola local, envía los datos a Firebase y limpia el almacenamiento del dispositivo.
  */
-async function sincronizarColaOfflineAFirebase(cola) {
-    console.log(`[SINK] Red detectada. Sincronizando ${cola.length} registros rezagados con Firebase...`);
-    mostrarToast(`🔄 Sincronizando ${cola.length} registros con la nube...`);
-    
-    let erroresSincronizacion = false;
-    
-    // Iteramos sobre cada registro guardado en el potrero de forma offline
-    for (let i = 0; i < cola.length; i++) {
-        const datosLote = cola[i];
-        
-        try {
-            /* 
-               Inyección del SDK de Firebase (Firestore / Realtime Database):
-               Ejemplo para Firestore:
-               await firebase.firestore().collection('levante').add(datosLote);
-            */
-            
-            // Simulación de retraso de red por cada inserción HTTP (Remover en producción real)
-            await new Promise(resolve => setTimeout(resolve, 800)); 
-            
-            console.log(`[SINK] Registro de ${datosLote.lote} (Timestamp: ${datosLote.timestamp}) enviado con éxito.`);
-        } catch (dbError) {
-            console.error(`[ERROR SINK] No se pudo subir el registro de ${datosLote.lote}:`, dbError);
-            erroresSincronizacion = true;
-            break; // Detiene el bucle para preservar el orden y no perder datos
-        }
-    }
-
-    if (!erroresSincronizacion) {
-        // Limpieza absoluta de la cola local tras el éxito completo
-        localStorage.removeItem(OFFLINE_QUEUE_KEY);
-        actualizarSemafortoSync(true, 0);
-        mostrarToast("✅ Sincronización en la nube completada con éxito.");
-        console.log("[SINK] Cola offline vaciada por completo.");
-    } else {
-        mostrarToast("⚠️ Interrupción en la sincronización. Algunos datos siguen en el dispositivo.", true);
-        actualizarSemafortoSync(navigator.onLine, cola.length);
-    }
-}
-
-// ==========================================================================
-// Eventos del Ciclo de Vida de Conectividad del Navegador
-// ==========================================================================
-window.addEventListener('online', async () => {
-    console.log("[RED] Conexión recuperada con las torres de Mantecal.");
-    await verificarEstadoRedUI();
-});
-
-window.addEventListener('offline', () => {
-    console.log("[RED] Modo Offline activado. Los datos se guardarán en el almacenamiento local.");
-    verificarEstadoRedUI();
-});
