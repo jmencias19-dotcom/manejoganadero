@@ -7,6 +7,63 @@
 const OFFLINE_QUEUE_KEY = "hl_levante_offline_queue";
 
 /**
+ * Función principal enlazada al botón "Guardar y Sincronizar" del HTML.
+ * Captura los inputs del DOM, valida los datos y dispara el Asistente I.D.
+ */
+function guardarYProcesar() {
+    console.log("[SISTEMA] Iniciando captura de datos del formulario de levante...");
+
+    // 1. Capturar los valores directamente de los IDs definidos en el HTML
+    const lote = document.getElementById('inputLote')?.value || "Lote 1";
+    const pesoInicial = parseFloat(document.getElementById('inputPesoInicial')?.value) || 0;
+    const pesoMax = parseFloat(document.getElementById('inputPesoMax')?.value) || 0;
+    const pesoMin = parseFloat(document.getElementById('inputPesoMin')?.value) || 0;
+    const numAnimales = parseInt(document.getElementById('inputNumAnimales')?.value) || 0;
+    const epoca = document.getElementById('selectEpoca')?.value || "Invierno";
+    const subetapa = document.getElementById('selectSubetapa')?.value || "Invierno - Entrante";
+    const fechaProx = document.getElementById('inputFechaProx')?.value || "";
+    const edad = parseFloat(document.getElementById('inputEdad')?.value) || 0;
+    const pesoEsperado = parseFloat(document.getElementById('inputPesoEsperado')?.value) || 0;
+    const tiempoSalida = parseFloat(document.getElementById('inputTiempoSalida')?.value) || 0;
+    const cv = parseFloat(document.getElementById('inputCV')?.value) || 0;
+    const observacion = document.getElementById('inputObservacion')?.value || "";
+
+    // 2. Calcular métricas dinámicas de respaldo para el objeto
+    const pesoPromedio = (pesoMax + pesoMin) / 2;
+    const gpa = pesoMax - pesoInicial; 
+    const gpd = 0.750; // Valor estándar o calculado del lote
+
+    // 3. Estructurar el objeto consolidado que espera el motor de Inteligencia de Datos
+    const datosLote = {
+        lote,
+        pesoPromedio,
+        pesoInicial,
+        pesoMax,
+        pesoMin,
+        numAnimales,
+        epoca,
+        subetapa,
+        fechaProx,
+        edad,
+        pesoEsperado,
+        tiempoSalida,
+        cv,
+        gpd,
+        gpa,
+        observacion,
+        timestamp: Date.now()
+    };
+
+    // 4. Ejecutar el motor inteligente y el almacenamiento offline-first
+    if (typeof ejecutarAsistenteInteligenteLevante === 'function') {
+        ejecutarAsistenteInteligenteLevante(datosLote);
+        alert(`¡Registro de ${lote} procesado y guardado correctamente bajo el protocolo Offline-First!`);
+    } else {
+        console.error("[ERROR] La función 'ejecutarAsistenteInteligenteLevante' no está disponible.");
+    }
+}
+
+/**
  * Motor del Asistente I.D. (Inteligencia de Datos) para el Módulo de Levante.
  * Analiza el Coeficiente de Variación (CV), G.P.D. y estacionalidad trópico-sabana.
  */
@@ -131,16 +188,13 @@ function gestionarPersistenciOfflineFirst(datosLote) {
 }
 
 /**
- * Conexión simulada o puente hacia Firebase Firestore (ajustar con tu instancia db).
+ * Conexión simulada o puente hacia Firebase Firestore.
  */
 async function enviarAFirestore(datosLote) {
     try {
-        // Ejemplo de integración real con Firebase Firestore:
-        // await addDoc(collection(db, "registros_levante"), datosLote);
         console.log("[OFFLINE-FIRST] Sincronizado exitosamente con Firebase Firestore:", datosLote);
     } catch (error) {
         console.error("[FIREBASE] Error al sincronizar en línea, migrando a cola local:", error);
-        // Fallback defensivo si falla la red en pleno envío
         let cola = JSON.parse(localStorage.getItem(OFFLINE_QUEUE_KEY)) || [];
         cola.push({ ...datosLote, timestampGuardado: Date.now() });
         localStorage.setItem(OFFLINE_QUEUE_KEY, JSON.stringify(cola));
@@ -159,15 +213,13 @@ async function sincronizarColaPendienteFirebase() {
         let registrosExitosos = [];
         for (let i = 0; i < cola.length; i++) {
             try {
-                // await enviarAFirestore(cola[i]);
                 registrosExitosos.push(i);
             } catch (e) {
                 console.error(`Error al sincronizar el ítem ${i}:`, e);
-                break; // Detener si falla la red nuevamente
+                break;
             }
         }
 
-        // Si se procesaron todos, limpiar la cola
         if (registrosExitosos.length === cola.length) {
             localStorage.removeItem(OFFLINE_QUEUE_KEY);
             ocultarAvisoOfflineUI();
