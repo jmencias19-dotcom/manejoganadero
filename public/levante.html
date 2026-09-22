@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Hato Laguna Brava - Control de Levante</title>
+    <title>Hato Laguna Brava - Control de Levante y Bloques de Estudio</title>
     
     <!-- Centralizado en tus Estilos Maestros Unificados (v4.1) -->
     <link rel="stylesheet" href="./potreros.css?v=4.1">
@@ -15,7 +15,6 @@
     <link rel="manifest" href="manifest.json">
     
     <style>
-        /* Ajustes de diseño de rejilla respetando la semántica v4.1 */
         body {
             background-color: var(--bg-main, #fafdfb);
             color: var(--text-main, #1b4332);
@@ -36,7 +35,6 @@
             gap: 20px; 
         }
 
-        /* Estructura unificada basada en .task-card-item */
         .section-box {
             background-color: var(--card-bg, #ffffff);
             border: 1px solid var(--border-color, #e2e8f0);
@@ -103,7 +101,6 @@
             gap: 12px; 
         }
 
-        /* Subtarjetas internas basadas exactamente en .task-card-item */
         .kpi-card-item {
             background-color: var(--card-bg, #ffffff);
             border: 1px solid var(--border-color, #e2e8f0);
@@ -127,6 +124,11 @@
             font-size: 1.15rem;
             color: var(--text-main, #1b4332); 
         }
+
+        /* Alerta visual dinámica para el Coeficiente de Variación */
+        .cv-alert-optimal { border-left: 4px solid #2d6a4f; background-color: #f4f9f6; }
+        .cv-alert-warning { border-left: 4px solid #d4a373; background-color: #fefae0; }
+        .cv-alert-danger  { border-left: 4px solid #bc6c25; background-color: #fdf0ed; }
 
         .btn-submit { 
             width: 100%; 
@@ -163,10 +165,7 @@
 </head>
 <body>
 
-    <!-- Contenedor dinámico opcional para inyección por script -->
-    <div id="app-header"></div>
-
-    <!-- ENCABEZADO MAESTRO (Alineado estrictamente a tu CSS) -->
+    <!-- ENCABEZADO MAESTRO -->
     <header class="main-header">
         <div class="header-container">
             <nav class="header-nav">
@@ -176,9 +175,8 @@
             </nav>
             <div class="header-title-wrapper">
                 <h1>Hato Laguna Brava - <span>Control de Levante</span></h1>
-                <p>Evolución de Peso, Ganancia Diaria y Carga Estacional</p>
+                <p>Evolución de Peso, Uniformidad de Lote (CV) y Proyección a Meta</p>
             </div>
-            <!-- Semáforo de Sincronización -->
             <div class="sync-status-wrapper">
                 <div id="sync-semaphore" class="semaphore online"></div>
                 <span id="sync-text" class="sync-text">Sincronizado Local</span>
@@ -186,7 +184,7 @@
         </div>
     </header>
 
-    <!-- CONTENEDOR PRINCIPAL Y REJILLA (Estructura de Columnas con Clases del Sistema) -->
+    <!-- CONTENEDOR PRINCIPAL -->
     <main class="main-container">
         <div class="menu-grid">
             
@@ -194,146 +192,95 @@
             <section class="section-box">
                 <div class="card-header">
                     <div class="card-icon">📋</div>
-                    <h2 class="card-title">Nuevo Registro de Levante</h2>
+                    <h2 class="card-title">Registro de Pesaje en Manga</h2>
                 </div>
-                <p class="card-description">Ingrese los datos del pesaje y control periódico evaluado en la sabana.</p>
+                <p class="card-description">Ingrese los datos del bloque de estudio o lote evaluado en sabana.</p>
                 
                 <form id="form-levante" onsubmit="event.preventDefault();" style="display: flex; flex-direction: column; gap: 12px;">
                     
                     <div class="input-group">
-                        <label for="inputLote">Lote / Potrero</label>
-                        <input type="text" id="inputLote" value="Lote 1" required>
+                        <label for="inputLote">Lote / Bloque de Estudio</label>
+                        <input type="text" id="inputLote" value="Lote 1 - Mautes Brahman" required>
                     </div>
 
                     <div class="kpi-container">
                         <div class="input-group">
-                            <label for="inputPesoInicial">Peso Inicial Lote (kg)</label>
-                            <input type="number" id="inputPesoInicial" value="269" required>
+                            <label for="inputPesoPromedio">Peso Promedio Actual (kg)</label>
+                            <input type="number" step="0.1" id="inputPesoPromedio" value="284.5" required>
                         </div>
                         <div class="input-group">
-                            <label for="inputPesoMax">Peso Máximo (kg)</label>
-                            <input type="number" id="inputPesoMax" value="300" required>
+                            <label for="inputPesoObjetivo">Peso Objetivo / Meta (kg)</label>
+                            <input type="number" step="0.1" id="inputPesoObjetivo" value="350.0" required>
                         </div>
                     </div>
 
                     <div class="kpi-container">
                         <div class="input-group">
-                            <label for="inputNumAnimales">Nº Animales / Lote</label>
+                            <label for="inputNumAnimales">Nº Animales en Lote</label>
                             <input type="number" id="inputNumAnimales" value="9" required>
                         </div>
                         <div class="input-group">
-                            <label for="inputPesoMin">Peso Mínimo (kg)</label>
-                            <input type="number" id="inputPesoMin" value="240" required>
+                            <label for="inputGMD">GMD Estimada (kg/día)</label>
+                            <input type="number" step="0.01" id="inputGMD" value="0.54" required>
                         </div>
                     </div>
 
                     <div class="kpi-container">
                         <div class="input-group">
-                            <label for="inputDesviacion">Desviación Estándar (σ)</label>
-                            <input type="number" step="0.1" id="inputDesviacion" value="18.2" required>
-                        </div>
-                        <div class="input-group">
-                            <label for="inputCV">Coeficiente de Variación (%)</label>
+                            <label for="inputCV">Coeficiente de Variación (CV %)</label>
                             <input type="number" step="0.1" id="inputCV" value="6.4" required>
                         </div>
-                    </div>
-
-                    <div class="input-group">
-                        <label for="select-temporada">Temporada Agroecológica:</label>
-                        <select id="select-temporada" required>
-                            <option value="" disabled>-- Seleccione Época --</option>
-                            <optgroup label="Invierno (Lluvias)">
-                                <option value="INVIERNO_ENTRADA">Invierno - Entrada (Mayo/Junio)</option>
-                                <option value="INVIERNO_MEDIADOS">Invierno - Mediados (Julio/Agosto)</option>
-                                <option value="INVIERNO_SALIDA" selected>Invierno - Salida (Septiembre/Octubre)</option>
-                            </optgroup>
-                            <optgroup label="Verano (Sequía)">
-                                <option value="VERANO_ENTRADA">Verano - Entrada (Noviembre/Diciembre)</option>
-                                <option value="VERANO_MEDIADOS">Verano - Mediados (Enero/Febrero)</option>
-                                <option value="VERANO_SALIDA">Verano - Salida (Marzo/Abril)</option>
-                            </optgroup>
-                        </select>
-                    </div>
-
-                    <div class="input-group">
-                        <label for="select-fase">Fase del Proceso:</label>
-                        <select id="select-fase" required>
-                            <option value="" disabled>-- Seleccione Fase --</option>
-                            <option value="Ingreso">Ingreso</option>
-                            <option value="Control" selected>Control</option>
-                        </select>
-                    </div>
-
-                    <div class="kpi-container">
-                        <div class="input-group">
-                            <label for="inputFechaProx">Próximo Control</label>
-                            <input type="date" id="inputFechaProx" value="2026-11-18" required>
-                        </div>
-                        <div class="input-group">
-                            <label>Días Restantes</label>
-                            <div id="displayDiasRestantes" class="kpi-value" style="padding: 8px 0; font-size: 1.1rem; text-align: left;">60 Días</div>
-                        </div>
-                    </div>
-
-                    <div class="kpi-container">
                         <div class="input-group">
                             <label for="inputEdad">Edad Promedio (meses)</label>
                             <input type="number" step="0.1" id="inputEdad" value="8.5" required>
                         </div>
-                        <div class="input-group">
-                            <label for="inputPesoEsperado">Peso Esperado Salida</label>
-                            <input type="number" id="inputPesoEsperado" value="350" required>
-                        </div>
                     </div>
 
-                    <button type="button" id="btnGuardarPesos" class="btn-submit" style="margin-top: 10px;">
-                        <i class="fa-solid fa-cloud-arrow-up"></i> Guardar Pesos / Sincronizar
+                    <div class="input-group">
+                        <label for="select-fase">Fase del Bloque:</label>
+                        <select id="select-fase" required>
+                            <option value="Neonatal (~30 días)">Neonatal (~30 días / Primer Pesaje)</option>
+                            <option value="Destete">Destete</option>
+                            <option value="Control de Levante" selected>Control de Levante / Recría</option>
+                        </select>
+                    </div>
+
+                    <button type="button" id="btnProcesarPesaje" class="btn-submit" style="margin-top: 10px;">
+                        <i class="fa-solid fa-calculator"></i> Calcular Proyección y Sincronizar
                     </button>
                 </form>
             </section>
 
-            <!-- COLUMNA 2: ÁREA DE RESUMEN E INDICADORES (KPIs) Y ESTADÍSTICA -->
+            <!-- COLUMNA 2: PANEL DE INDICADORES DE ORO (KPIs Y PROYECCIÓN) -->
             <section class="section-box">
                 <div class="card-header">
-                    <div class="card-icon">📊</div>
-                    <h2 class="card-title">Resumen e Indicadores Zootécnicos</h2>
+                    <div class="card-icon">🎯</div>
+                    <h2 class="card-title">Indicadores de Oro y Proyección Zootécnica</h2>
                 </div>
-                <p class="card-description">Panel analítico del lote bajo parámetros adaptados al trópico bajo (Mantecal, Apure).</p>
+                <p class="card-description">Lectura directa orientada a la toma de decisiones gerenciales y de campo.</p>
                 
                 <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 5px;">
-                    <div class="kpi-card-item">
-                        <label>Peso Promedio Actual</label>
-                        <span id="resumenPesoPromedio" class="kpi-value">284.5 kg</span>
-                    </div>
-                    <div class="kpi-card-item">
-                        <label>Ganancia Diaria Estimada (GMD)</label>
-                        <span id="resumenGMD" class="kpi-value">0.540 kg/día</span>
-                    </div>
-                    <div class="kpi-card-item">
-                        <label>Amplitud de Lote (Max - Min)</label>
-                        <span id="resumenAmplitud" class="kpi-value">60 kg</span>
-                    </div>
                     
                     <div class="kpi-card-item">
-                        <label>Desviación Estándar (σ)</label>
-                        <span id="resumenDesviacion" class="kpi-value">± 18.2 kg</span>
+                        <label>Kg Faltantes para la Meta</label>
+                        <span id="resumenKgsFaltantes" class="kpi-value" style="color: #2d6a4f;">+65.5 kg</span>
+                    </div>
+
+                    <div class="kpi-card-item">
+                        <label>Tiempo Faltante Estimado</label>
+                        <span id="resumenTiempoFaltante" class="kpi-value">4 meses y 5 días</span>
+                    </div>
+
+                    <div id="cardCVBox" class="kpi-card-item cv-alert-optimal">
+                        <label>Uniformidad del Lote (CV)</label>
+                        <span id="resumenCV" class="kpi-value">6.4% (Óptimo)</span>
                     </div>
 
                     <div class="input-group" style="margin-top: 4px;">
-                        <label>Análisis de Datos e Interpretación Histórica</label>
-                        <div class="stats-interpretation">
-                            <strong>Diagnóstico Biométrico:</strong> El coeficiente de variación se mantiene por debajo del umbral crítico de heterogeneidad del lote (< 10%), lo que denota alta uniformidad en el desarrollo ponderal de los mautes. Históricamente, en la transición de salida de invierno de los módulos de Apure, este comportamiento refleja una respuesta homogénea al pastoreo y estabilidad en la curva de ganancia diaria, minimizando la competencia en comederos y puntos de potrero.
+                        <label>Diagnóstico de Inteligencia de Hato</label>
+                        <div id="statsInterpretacion" class="stats-interpretation">
+                            <strong>Análisis Automatizado:</strong> El lote presenta un Coeficiente de Variación menor al 8%, reflejando alta uniformidad ponderal. No se requiere re-loteo. La proyección lineal con la GMD actual indica que la meta de peso se alcanzará en el tiempo estimado sin fricciones de competencia en potrero.
                         </div>
-                    </div>
-
-                    <!-- NUEVOS INDICADORES DE FALTANTE PARA META OBJETIVO -->
-                    <div class="kpi-card-item">
-                        <label>Kg Faltantes para Meta Objetivo</label>
-                        <span id="resumenKgsFaltantes" class="kpi-value">+65.5 kg</span>
-                    </div>
-                    <div class="kpi-card-item">
-                        <label>Tiempo Faltante Estimado (Meses y Días)</label>
-                        <span id="resumenTiempoFaltante" class="kpi-value">4 meses y 5 días</span>
                     </div>
                 </div>
             </section>
@@ -341,5 +288,49 @@
         </div>
     </main>
 
+    <!-- Script de Automatización y Cálculo Dinámico -->
+    <script>
+        document.getElementById('btnProcesarPesaje').addEventListener('click', function() {
+            // Capturar valores
+            let pesoProm = parseFloat(document.getElementById('inputPesoPromedio').value) || 0;
+            let pesoObj = parseFloat(document.getElementById('inputPesoObjetivo').value) || 0;
+            let gmd = parseFloat(document.getElementById('inputGMD').value) || 0.001;
+            let cv = parseFloat(document.getElementById('inputCV').value) || 0;
+
+            // 1. Calcular Kilos Faltantes
+            let kgsFaltantes = pesoObj - pesoProm;
+            if (kgsFaltantes < 0) kgsFaltantes = 0;
+
+            // 2. Calcular Tiempo en Días, Meses y Días
+            let diasTotales = gmd > 0 ? (kgsFaltantes / gmd) : 0;
+            let meses = Math.floor(diasTotales / 30);
+            let diasRestantes = Math.round(diasTotales % 30);
+
+            // Actualizar DOM Kilos y Tiempo
+            document.getElementById('resumenKgsFaltantes').innerText = `+${kgsFaltantes.toFixed(1)} kg`;
+            document.getElementById('resumenTiempoFaltante').innerText = `${meses} meses y ${diasRestantes} días`;
+
+            // 3. Evaluar Coeficiente de Variación (CV) y Alerta Visual
+            let cardCVBox = document.getElementById('cardCVBox');
+            let resumenCV = document.getElementById('resumenCV');
+            let interpretacion = document.getElementById('statsInterpretacion');
+
+            cardCVBox.className = "kpi-card-item"; // limpiar clases previas
+
+            if (cv < 8.0) {
+                cardCVBox.classList.add('cv-alert-optimal');
+                resumenCV.innerText = `${cv}% (Óptimo)`;
+                interpretacion.innerHTML = `<strong>Análisis Automatizado:</strong> CV < 8%. Lote altamente uniforme. Excelente respuesta al manejo y estabilidad en el consumo. Apto para comercialización o evaluación pura de tratamientos.`;
+            } else if (cv >= 8.0 && cv <= 12.0) {
+                cardCVBox.classList.add('cv-alert-warning');
+                resumenCV.innerText = `${cv}% (Moderado)`;
+                interpretacion.innerHTML = `<strong>Análisis Automatizado:</strong> CV entre 8% y 12%. Dispersión normal para condiciones de sabana. Mantener vigilancia sobre los animales colgados.`;
+            } else {
+                cardCVBox.classList.add('cv-alert-danger');
+                resumenCV.innerText = `${cv}% (Desuniforme)`;
+                interpretacion.innerHTML = `<strong>¡Alerta de IA / Gerencial!:</strong> CV > 12%. Lote desuniforme. Se recomienda realizar un re-loteo urgente (separar cabeza, cuerpo y cola) para evitar dominancia en comederos y potrero.`;
+            }
+        });
+    </script>
 </body>
 </html>
