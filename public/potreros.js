@@ -90,7 +90,7 @@ function inicializarFormularioYFiltros() {
     // Poblar dinámicamente los selectores de categorías según la especie seleccionada
     if (selectEspecie && selectCategoria) {
         selectEspecie.addEventListener('change', actualizarCategorias);
-        actualizarCategorias(); // Carga inicial por defecto (Bovinos)
+        actualizarCategorias(); // Carga inicial por defecto
     }
 
     // Clonar opciones del potrero para el filtro superior de visualización
@@ -98,7 +98,7 @@ function inicializarFormularioYFiltros() {
         filtroPotrero.innerHTML = '<option value="">Todos los Potreros</option>' + selectPotrero.innerHTML;
     }
 
-    // Evento de envío del formulario (Registro, Sincronización Topológica y Limpieza)
+    // Evento de envío del formulario
     if (form) {
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -106,7 +106,7 @@ function inicializarFormularioYFiltros() {
         });
     }
 
-    // Listener para actualizar el Asistente Forrajero (I.D.) al cambiar potrero, categoría o cabezas
+    // Listener para actualizar el Asistente Forrajero al cambiar parámetros
     const inputsCalculo = ['select-potrero', 'select-especie', 'select-categoria', 'cantidad-cabezas'];
     inputsCalculo.forEach(id => {
         const el = document.getElementById(id);
@@ -127,7 +127,6 @@ function actualizarCategorias() {
         const option = document.createElement('option');
         option.value = cat.id;
         option.textContent = cat.nombre;
-        // Guardamos el factor UGM directamente en el dataset de la opción para lectura limpia
         option.dataset.factor = cat.factor;
         selectCategoria.appendChild(option);
     });
@@ -194,7 +193,7 @@ function calcularImpactoForrajeroPreliminar() {
 }
 
 /**
- * Guarda la asignación activa en Firestore y limpia totalmente el formulario
+ * Guarda la asignación activa en Firestore y limpia el formulario
  */
 async function registrarAsignacionPotrero() {
     try {
@@ -243,9 +242,8 @@ async function registrarAsignacionPotrero() {
 
         await addDoc(collection(db, COL_LOTES_ACTIVOS), nuevoLote);
         
-        // Limpieza completa del formulario y reseteo del asistente forrajero
         document.getElementById('potreroForm').reset();
-        actualizarCategorias(); // Restablece las categorías predeterminadas de bovinos
+        actualizarCategorias();
         
         const aiBox = document.getElementById('ai-potrero-content');
         if (aiBox) {
@@ -260,7 +258,7 @@ async function registrarAsignacionPotrero() {
 }
 
 /**
- * Sincroniza en tiempo real los lotes activos y actualiza los KPIs globales y tarjetas visuales.
+ * Sincroniza en tiempo real los lotes activos y actualiza los KPIs globales.
  */
 function sincronizarLotesActivos() {
     const contenedor = document.getElementById('potreros-container');
@@ -341,7 +339,7 @@ function sincronizarLotesActivos() {
                             <option value="moderado" ${lote.estadoCarga === 'moderado' ? 'selected' : ''}>🟡 Moderado</option>
                             <option value="critico" ${lote.estadoCarga === 'critico' ? 'selected' : ''}>🔴 Crítico</option>
                         </select>
-                        <button class="btn-delete" onclick="window.vaciarYArchivarPotrero('${lote.id}', '${lote.potrero}', ${JSON.stringify(lote).replace(/"/g, '&quot;')})" title="Vaciar potrero y enviar al historial indefinido">
+                        <button class="btn-delete" onclick="window.vaciarYArchivarPotrero('${lote.id}', '${lote.potrero}', ${encodeURIComponent(JSON.stringify(lote))})" title="Vaciar potrero y enviar al historial indefinido">
                             <i class="fa-solid fa-person-walking-arrow-right"></i> Vaciar
                         </button>
                     </div>
@@ -362,12 +360,13 @@ function sincronizarLotesActivos() {
 /**
  * Función global para vaciar un potrero y archivar con los datos reales del lote
  */
-window.vaciarYArchivarPotrero = async function(idLote, nombrePotrero, datosLote) {
+window.vaciarYArchivarPotrero = async function(idLote, nombrePotrero, datosLoteEncoded) {
     if (!confirm(`¿Confirma el vaciado del potrero "${nombrePotrero}"? Esto registrará el ciclo de forma indefinida para las rutas de pastoreo.`)) {
         return;
     }
 
     try {
+        const datosLote = JSON.parse(decodeURIComponent(datosLoteEncoded));
         await archivarCicloAlVaciarse(nombrePotrero, datosLote);
         await deleteDoc(doc(db, COL_LOTES_ACTIVOS, idLote));
         mostrarToast(`Potrero ${nombrePotrero} vaciado y archivado en memoria histórica.`);
