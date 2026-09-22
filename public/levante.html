@@ -148,6 +148,17 @@
         .btn-submit:hover { 
             background-color: var(--text-muted, #52b788); 
         }
+
+        .stats-interpretation {
+            font-size: 0.85rem;
+            line-height: 1.4;
+            color: #333;
+            background-color: #f4f9f6;
+            padding: 10px 12px;
+            border-left: 4px solid var(--text-muted, #52b788);
+            border-radius: 4px;
+            margin-top: 4px;
+        }
     </style>
 </head>
 <body>
@@ -190,11 +201,6 @@
                 <form id="form-levante" onsubmit="event.preventDefault();" style="display: flex; flex-direction: column; gap: 12px;">
                     
                     <div class="input-group">
-                        <label for="inputID">Identificador (I.D) del Lote / Animal</label>
-                        <input type="text" id="inputID" value="LB-LEV-2026-01" required placeholder="Ej. Arete o Código de Lote">
-                    </div>
-
-                    <div class="input-group">
                         <label for="inputLote">Lote / Potrero</label>
                         <input type="text" id="inputLote" value="Lote 1" required>
                     </div>
@@ -222,22 +228,12 @@
                     </div>
 
                     <div class="input-group">
-                        <label for="select-categoria">Categoría Zootécnica Oficial:</label>
-                        <select id="select-categoria" required>
-                            <option value="" disabled>-- Seleccione Categoría --</option>
-                            <option value="Mautes_Levante" selected>Mautes en Levante (Brahman)</option>
-                            <option value="Maute_Engorde">Maute de Engorde</option>
-                            <option value="Novilla_Levante">Novilla de Levante</option>
-                        </select>
-                    </div>
-
-                    <div class="input-group">
                         <label for="select-temporada">Temporada Agroecológica:</label>
                         <select id="select-temporada" required>
                             <option value="" disabled>-- Seleccione Época --</option>
                             <optgroup label="Invierno (Lluvias)">
                                 <option value="INVIERNO_ENTRADA">Invierno - Entrada (Mayo/Junio)</option>
-                                <option value="INVIERNO_MEDIADOS">Invierno - Mediados (July/Agosto)</option>
+                                <option value="INVIERNO_MEDIADOS">Invierno - Mediados (Julio/Agosto)</option>
                                 <option value="INVIERNO_SALIDA" selected>Invierno - Salida (Septiembre/Octubre)</option>
                             </optgroup>
                             <optgroup label="Verano (Sequía)">
@@ -285,7 +281,7 @@
                 </form>
             </section>
 
-            <!-- COLUMNA 2: ÁREA DE RESUMEN E INDICADORES (KPIs) -->
+            <!-- COLUMNA 2: ÁREA DE RESUMEN E INDICADORES (KPIs) Y ESTADÍSTICA -->
             <section class="section-box">
                 <div class="card-header">
                     <div class="card-icon">📊</div>
@@ -306,17 +302,27 @@
                         <label>Amplitud de Lote (Max - Min)</label>
                         <span id="resumenAmplitud" class="kpi-value">60 kg</span>
                     </div>
+                    
+                    <!-- NUEVOS BLOQUES ESTADÍSTICOS Y DE ANÁLISIS HISTÓRICO -->
                     <div class="kpi-card-item">
-                        <label>Carga Animal (UGM / ha)</label>
-                        <span id="resumenCarga" class="kpi-value">1.25 UGM/ha</span>
+                        <label>Desviación Estándar (σ)</label>
+                        <span id="resumenDesviacion" class="kpi-value">± 18.2 kg</span>
                     </div>
+                    <div class="kpi-card-item">
+                        <label>Coeficiente de Variación (CV)</label>
+                        <span id="resumenCV" class="kpi-value">6.4 %</span>
+                    </div>
+
+                    <div class="input-group" style="margin-top: 4px;">
+                        <label>Análisis de Datos y Interpretación Histórica</label>
+                        <div class="stats-interpretation">
+                            <strong>Diagnóstico Biométrico:</strong> El coeficiente de variación se mantiene por debajo del umbral crítico de heterogeneidad del lote (< 10%), lo que denota alta uniformidad en el desarrollo ponderal de los mautes. Históricamente, en la transición de salida de invierno de los módulos de Apure, este comportamiento refleja una respuesta homogénea al pastoreo y estabilidad en la curva de ganancia diaria, minimizando la competencia en comederos y puntos de potrero.
+                        </div>
+                    </div>
+
                     <div class="kpi-card-item">
                         <label>Déficit / Superávit para Meta</label>
                         <span id="resumenMeta" class="kpi-value">+65.5 kg</span>
-                    </div>
-                    <div class="kpi-card-item">
-                        <label>Estado de Integridad de Datos</label>
-                        <span id="resumenEstado" class="kpi-value" style="color: #2d6a4f;">Óptimo</span>
                     </div>
                 </div>
             </section>
