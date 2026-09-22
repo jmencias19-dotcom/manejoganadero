@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Módulo: Planificación de Tareas y Control Operativo (Integrado v4.1)
+   Módulo: Planificación de Tareas y Control Operativo (Integrado v4.2 - Corregido)
    Hato Laguna Brava - Mantecal, Apure, Venezuela
    ========================================================================== */
 
@@ -222,39 +222,51 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Manejo de envío del formulario de planificación
+    // Manejo robusto de envío del formulario de planificación y sincronización
     if (taskForm) {
         taskForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             
+            const inputLabor = document.getElementById('labor');
+            const laborTexto = inputLabor ? inputLabor.value.trim() : '';
+
+            if (!laborTexto) {
+                mostrarToast("La descripción de la labor es obligatoria", "error");
+                if (inputLabor) inputLabor.focus();
+                return;
+            }
+
+            const btnSubmit = taskForm.querySelector('button[type="submit"]');
+            if (btnSubmit) btnSubmit.disabled = true;
+
             const nuevaTarea = {
-                fecha: document.getElementById('fecha').value,
-                labor: document.getElementById('labor').value.trim(),
-                prioridad: document.getElementById('prioridad-labor').value,
-                personal: document.getElementById('personal').value.trim(),
-                horario: document.getElementById('horario-labor').value,
-                potrero: document.getElementById('potrero-afectado').value.trim(),
-                observaciones: document.getElementById('observaciones').value.trim(),
+                fecha: document.getElementById('fecha')?.value || '',
+                labor: laborTexto,
+                prioridad: document.getElementById('prioridad-labor')?.value || 'media',
+                personal: document.getElementById('personal')?.value.trim() || 'General',
+                horario: document.getElementById('horario-labor')?.value || 'Todo el día',
+                potrero: document.getElementById('potrero-afectado')?.value.trim() || 'General',
+                observaciones: document.getElementById('observaciones')?.value.trim() || '',
                 estado: 'cola',
                 timestamp: Date.now()
             };
 
-            if (nuevaTarea.labor !== '') {
-                try {
-                    await addDoc(collection(db, COLLECTION_NAME), nuevaTarea);
-                    taskForm.reset();
-                    
-                    // Restablecer fecha actual por defecto tras el envío
-                    const ahora = new Date();
-                    const today = `${ahora.getFullYear()}-${String(ahora.getMonth() + 1).padStart(2, '0')}-${String(ahora.getDate()).padStart(2, '0')}`;
-                    const inputFecha = document.getElementById('fecha');
-                    if (inputFecha) inputFecha.value = today;
+            try {
+                await addDoc(collection(db, COLLECTION_NAME), nuevaTarea);
+                taskForm.reset();
+                
+                // Restablecer fecha actual por defecto tras el envío exitoso
+                const ahora = new Date();
+                const today = `${ahora.getFullYear()}-${String(ahora.getMonth() + 1).padStart(2, '0')}-${String(ahora.getDate()).padStart(2, '0')}`;
+                const inputFecha = document.getElementById('fecha');
+                if (inputFecha) inputFecha.value = today;
 
-                    mostrarToast("Labor planificada y sincronizada con éxito");
-                } catch (error) {
-                    console.error("Error al guardar la tarea:", error);
-                    mostrarToast("Error de red: No se pudo guardar la labor", "error");
-                }
+                mostrarToast("Labor planificada y sincronizada con éxito");
+            } catch (error) {
+                console.error("Error al guardar la tarea en Firestore:", error);
+                mostrarToast("Error de red: No se pudo guardar la labor", "error");
+            } finally {
+                if (btnSubmit) btnSubmit.disabled = false;
             }
         });
     }
