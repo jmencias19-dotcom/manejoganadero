@@ -3,12 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Título del Módulo - Hato Laguna Brava</title>
+    <title>Hato Laguna Brava - Control de Levante</title>
     <!-- Ruta relativa unificada y con control de caché activo -->
     <link rel="stylesheet" href="./potreros.css?v=4.0">
     <link rel="manifest" href="manifest.json">
     <!-- Iconos y fuentes -->
     <link rel="stylesheet" href="https://cloudflare.com">
+    <style>
+        /* Estilos base de respaldo para el entorno de producción */
+        :root {
+            --bg-main: #f4f6f4;
+            --text-main: #2d3748;
+            --border-color: #e2e8f0;
+            --secondary-color: #16a34a;
+        }
+        body { background-color: var(--bg-main); color: var(--text-main); font-family: system-ui, -apple-system, sans-serif; margin: 0; padding: 0; }
+        .main-container { padding: 20px; max-width: 1400px; margin: 0 auto; }
+        .menu-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 20px; }
+        .section-box { background: #ffffff; border: 1px solid var(--border-color); border-radius: 12px; padding: 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+        .card-header { display: flex; align-items: center; gap: 10px; margin-bottom: 15px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; }
+        .card-title { font-size: 1.25rem; margin: 0; color: var(--text-main); }
+        .input-group { display: flex; flex-direction: column; margin-bottom: 12px; }
+        .input-group label { font-size: 0.85rem; font-weight: 600; margin-bottom: 4px; color: #4a5568; }
+        .input-group input, .input-group select, .input-group textarea { padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 0.95rem; }
+        .kpi-container { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .kpi-card { display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; background: #f8fafc; border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 10px; }
+        .kpi-value { font-weight: 700; color: #1e293b; }
+        .btn { width: 100%; padding: 12px; background: var(--secondary-color); color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: background 0.2s; }
+        .btn:hover { background: #15803d; }
+        .semaphore { width: 12px; height: 12px; border-radius: 50%; }
+        .semaphore.online { background: #22c55e; box-shadow: 0 0 8px #22c55e; }
+        .sync-status-wrapper { display: flex; align-items: center; gap: 8px; }
+    </style>
 </head>
 <body>
 
@@ -16,26 +42,26 @@
     <div id="app-header"></div>
 
     <!-- ENCABEZADO MAESTRO NATIVO (Respaldo offline para la sabana) -->
-    <header class="main-header">
-        <div class="header-container">
+    <header class="main-header" style="background: #fff; border-bottom: 1px solid var(--border-color); padding: 15px 20px;">
+        <div class="header-container" style="display: flex; justify-content: space-between; align-items: center; max-width: 1400px; margin: 0 auto;">
             <nav class="header-nav">
-                <a href="./index.html" class="btn-back" style="text-decoration: none;">
+                <a href="./index.html" class="btn-back" style="text-decoration: none; color: #4a5568; font-weight: 500;">
                     <i class="fa-solid fa-arrow-left"></i> Volver al Panel
                 </a>
             </nav>
-            <div class="header-title-wrapper">
-                <h1>Hato Laguna Brava - <span>Control de Levante</span></h1>
-                <p>Evolución de Peso, Ganancia Diaria y Carga Estacional</p>
+            <div class="header-title-wrapper" style="text-align: center;">
+                <h1 style="margin: 0; font-size: 1.5rem;">Hato Laguna Brava - <span style="color: var(--secondary-color);">Control de Levante</span></h1>
+                <p style="margin: 2px 0 0 0; font-size: 0.85rem; color: #718096;">Evolución de Peso, Ganancia Diaria y Carga Estacional</p>
             </div>
             <!-- Semáforo de Sincronización -->
             <div class="sync-status-wrapper">
                 <div id="sync-semaphore" class="semaphore online"></div>
-                <span id="sync-text" class="sync-text">Sincronizado Local</span>
+                <span id="sync-text" class="sync-text" style="font-size: 0.85rem; font-weight: 500;">Sincronizado Local</span>
             </div>
         </div>
     </header>
 
-    <!-- CONTENEDOR PRINCIPAL Y REJILLA (Estructura de 3 Columnas Maestras) -->
+    <!-- CONTENEDOR PRINCIPAL Y REJILLA (Estructura de Columnas Maestras) -->
     <main class="main-container">
         <div class="menu-grid">
             
@@ -47,7 +73,7 @@
                     <div class="card-icon">📋</div>
                     <h2 class="card-title">Nuevo Registro de Levante</h2>
                 </div>
-                <p class="card-description">Ingrese los datos del pesaje y control periódico evaluado en la sabana.</p>
+                <p class="card-description" style="font-size: 0.85rem; color: #718096; margin-top: 0; margin-bottom: 15px;">Ingrese los datos del pesaje y control periódico evaluado en la sabana.</p>
                 
                 <form id="form-levante" onsubmit="event.preventDefault();">
                     <div class="input-group">
@@ -58,7 +84,7 @@
                     <div class="kpi-container">
                         <div class="input-group">
                             <label for="inputPesoInicial">Peso Inicial Lote (kg)</label>
-                            <input type="number" id="inputPesoInicial" value="269" required>
+                            <input type="number" id="inputPesoInicial" value="269" oninput="calcularMetas()" required>
                         </div>
                         <div class="input-group">
                             <label for="inputPesoMax">Peso Máximo (kg)</label>
@@ -80,7 +106,7 @@
                     <div class="kpi-container">
                         <div class="input-group">
                             <label for="selectEpoca">Época Climática</label>
-                            <select id="selectEpoca" onchange="typeof actualizarSubetapa === 'function' && actualizarSubetapa()" required>
+                            <select id="selectEpoca" onchange="actualizarSubetapa()" required>
                                 <option value="Invierno" selected>Invierno</option>
                                 <option value="Verano">Verano</option>
                             </select>
@@ -88,7 +114,7 @@
                         <div class="input-group">
                             <label for="selectSubetapa">Ciclo Estacional</label>
                             <select id="selectSubetapa" required>
-                                <option value="Invierno - Entrante">Inicio (Entrante)</option>
+                                <option value="Invierno - Entrante" selected>Inicio (Entrante)</option>
                                 <option value="Invierno - Mediados">Mediados</option>
                                 <option value="Invierno - Finales">Finales</option>
                             </select>
@@ -98,11 +124,11 @@
                     <div class="kpi-container">
                         <div class="input-group">
                             <label for="inputFechaProx">Próximo Control</label>
-                            <input type="date" id="inputFechaProx" value="2026-11-18" required>
+                            <input type="date" id="inputFechaProx" value="2026-11-18" onchange="calcularDiasRestantes()" required>
                         </div>
                         <div class="input-group">
                             <label>Días Restantes</label>
-                            <div id="displayDiasRestantes" class="kpi-value" style="font-size: 1.1rem; margin-top: 8px; text-align: left;">60 Días</div>
+                            <div id="displayDiasRestantes" class="kpi-value" style="font-size: 1.1rem; margin-top: 8px; text-align: left;">-- Días</div>
                         </div>
                     </div>
 
@@ -113,14 +139,14 @@
                         </div>
                         <div class="input-group">
                             <label for="inputPesoEsperado">Peso Esperado Salida</label>
-                            <input type="number" id="inputPesoEsperado" value="350" required>
+                            <input type="number" id="inputPesoEsperado" value="350" oninput="calcularMetas()" required>
                         </div>
                     </div>
 
                     <div class="kpi-container">
                         <div class="input-group">
                             <label for="inputTiempoSalida">Tiempo Salida (meses)</label>
-                            <input type="number" step="0.1" id="inputTiempoSalida" value="3.0" required>
+                            <input type="number" step="0.1" id="inputTiempoSalida" value="3.0" oninput="calcularMetas()" required>
                         </div>
                         <div class="input-group">
                             <label for="inputCV">Coef. Variación (%)</label>
@@ -133,42 +159,4 @@
                         <textarea id="inputObservacion" rows="2" required>Evaluación periódica de lote en sabana.</textarea>
                     </div>
 
-                    <button type="button" class="btn" onclick="typeof guardarYProcesar === 'function' && guardarYProcesar()" style="margin-top: 10px;">
-                        <i class="fa-solid fa-floppy-disk"></i> Guardar y Sincronizar
-                    </button>
-                </form>
-            </section>
-
-            <!-- ==========================================
-                 COLUMNA 2: RESUMEN, ANÁLISIS Y PARÁMETROS
-                 ========================================== -->
-            <section class="section-box" style="height: auto;">
-                <div class="card-header">
-                    <div class="card-icon">📊</div>
-                    <h2 class="card-title">Análisis de Levante</h2>
-                </div>
-                
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; background: #f8f9f8; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border-color);">
-                    <span style="font-size: 0.85rem; font-weight: 600; color: var(--text-main);">Lote 1 (Brahman)</span>
-                    <span style="background-color: #f0fdf4; color: var(--secondary-color); padding: 4px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: 700;">
-                        <i class="fa-solid fa-caret-up"></i> Aumento
-                    </span>
-                </div>
-
-                <!-- Bloque de KPIs rápidos adaptados -->
-                <div class="kpi-container" style="grid-template-columns: 1fr; gap: 8px; margin-bottom: 15px;">
-                    <div class="kpi-card" style="display: flex; justify-content: space-between; align-items: center; padding: 10px 15px;">
-                        <label style="margin: 0;">G.P.D. <small>(Ganancia Prom. Diaria)</small></label>
-                        <div class="kpi-value" id="kpiGPD" style="margin: 0; font-size: 1.15rem;">0.750 kg</div>
-                    </div>
-                    <div class="kpi-card" style="display: flex; justify-content: space-between; align-items: center; padding: 10px 15px;">
-                        <label style="margin: 0;">G.P.A. <small>(Ganancia Prom. Animal)</small></label>
-                        <div class="kpi-value" id="kpiGPA" style="margin: 0; font-size: 1.15rem;">45.0 kg</div>
-                    </div>
-                    <div class="kpi-card" style="display: flex; justify-content: space-between; align-items: center; padding: 10px 15px;">
-                        <label style="margin: 0;">Conversión Alimenticia</label>
-                        <div class="kpi-value" style="margin: 0; font-size: 1.15rem;">6.2 kg/kg</div>
-                    </div>
-                </div>
-
-                <!-- Lista Detallada de Parámetros Técnicos Estandarizada -->
+                    <button type="button" class="btn" onclick="guardarYProcesar()">
