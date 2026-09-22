@@ -227,6 +227,17 @@
                         </div>
                     </div>
 
+                    <div class="kpi-container">
+                        <div class="input-group">
+                            <label for="inputDesviacion">Desviación Estándar (σ)</label>
+                            <input type="number" step="0.1" id="inputDesviacion" value="18.2" required>
+                        </div>
+                        <div class="input-group">
+                            <label for="inputCV">Coeficiente de Variación (%)</label>
+                            <input type="number" step="0.1" id="inputCV" value="6.4" required>
+                        </div>
+                    </div>
+
                     <div class="input-group">
                         <label for="select-temporada">Temporada Agroecológica:</label>
                         <select id="select-temporada" required>
@@ -303,18 +314,13 @@
                         <span id="resumenAmplitud" class="kpi-value">60 kg</span>
                     </div>
                     
-                    <!-- NUEVOS BLOQUES ESTADÍSTICOS Y DE ANÁLISIS HISTÓRICO -->
                     <div class="kpi-card-item">
                         <label>Desviación Estándar (σ)</label>
                         <span id="resumenDesviacion" class="kpi-value">± 18.2 kg</span>
                     </div>
-                    <div class="kpi-card-item">
-                        <label>Coeficiente de Variación (CV)</label>
-                        <span id="resumenCV" class="kpi-value">6.4 %</span>
-                    </div>
 
                     <div class="input-group" style="margin-top: 4px;">
-                        <label>Análisis de Datos y Interpretación Histórica</label>
+                        <label>Análisis de Datos e Interpretación Histórica</label>
                         <div class="stats-interpretation">
                             <strong>Diagnóstico Biométrico:</strong> El coeficiente de variación se mantiene por debajo del umbral crítico de heterogeneidad del lote (< 10%), lo que denota alta uniformidad en el desarrollo ponderal de los mautes. Históricamente, en la transición de salida de invierno de los módulos de Apure, este comportamiento refleja una respuesta homogénea al pastoreo y estabilidad en la curva de ganancia diaria, minimizando la competencia en comederos y puntos de potrero.
                         </div>
