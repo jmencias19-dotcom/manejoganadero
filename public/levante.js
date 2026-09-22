@@ -1,6 +1,6 @@
 /**
  * ============================================================================
- * HATO LAGUNA BRAVA - MOTOR MAESTRO DE PESAJE Y GESTIÓN GERENCIAL (v4.1)
+ * HATO LAGUNA BRAVA - MOTOR MAESTRO DE PESAJE Y GESTIÓN GERENCIAL (v4.2)
  * Ubicación: Sector Los Módulos, Mantecal, Estado Apure, Venezuela
  * Administrador / Veterinario: Dr. Juan José Mencías Guzmán
  * ============================================================================
