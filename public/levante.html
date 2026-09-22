@@ -50,16 +50,10 @@
         .card-header { 
             display: flex; 
             align-items: center; 
-            justify-content: space-between; 
+            gap: 10px;
             border-bottom: 1px solid var(--border-color, #e2e8f0); 
             padding-bottom: 10px; 
             margin: 0;
-        }
-
-        .card-header-left {
-            display: flex;
-            align-items: center;
-            gap: 10px;
         }
 
         .card-title { 
@@ -73,25 +67,6 @@
             font-size: 0.85rem;
             color: #666;
             margin: 0;
-        }
-
-        /* Botón de Archivar reubicado de forma segura a la esquina superior derecha */
-        .btn-archive-icon {
-            background: transparent;
-            border: 1px solid #b7094c;
-            color: #b7094c;
-            border-radius: 6px;
-            padding: 6px 10px;
-            font-size: 0.8rem;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            transition: all 0.2s;
-        }
-        .btn-archive-icon:hover {
-            background-color: #b7094c;
-            color: #ffffff;
         }
 
         .input-group { 
@@ -178,14 +153,20 @@
             background-color: var(--text-muted, #52b788); 
         }
 
-        /* Estilo para el botón de deshacer (Salavavidas de historial) */
-        .btn-undo {
+        /* Contenedor del Dúo Dinámico: Deshacer y Rehacer codo a codo */
+        .undo-redo-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .btn-history-control {
             background-color: #e9ecef;
             color: #495057;
             border: 1px solid #ced4da;
-            padding: 8px 12px;
+            padding: 8px 10px;
             border-radius: 6px;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             font-weight: 600;
             cursor: pointer;
             display: flex;
@@ -194,9 +175,43 @@
             gap: 6px;
             transition: background-color 0.2s;
         }
-        .btn-undo:hover {
+        .btn-history-control:hover:not(:disabled) {
             background-color: #dee2e6;
             color: #212529;
+        }
+        .btn-history-control:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Zona de Peligro / Eliminación total al final del reporte */
+        .danger-zone {
+            margin-top: 15px;
+            padding-top: 12px;
+            border-top: 1px dashed #b7094c;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .btn-delete-total {
+            background-color: transparent;
+            color: #b7094c;
+            border: 1px solid #b7094c;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+        .btn-delete-total:hover {
+            background-color: #b7094c;
+            color: #ffffff;
         }
 
         .stats-interpretation {
@@ -239,14 +254,8 @@
             <!-- COLUMNA 1: FORMULARIO DE ENTRADA Y GESTIÓN DE LOTE -->
             <section class="section-box">
                 <div class="card-header">
-                    <div class="card-header-left">
-                        <div class="card-icon">📋</div>
-                        <h2 class="card-title">Registro de Pesaje</h2>
-                    </div>
-                    <!-- Botón de Archivar seguro en la esquina superior derecha -->
-                    <button type="button" id="btnDesincorporarLote" class="btn-archive-icon" title="Archivar o sacar del sistema activo">
-                        <i class="fa-solid fa-box-archive"></i> Archivar
-                    </button>
+                    <div class="card-icon">📋</div>
+                    <h2 class="card-title">Registro de Pesaje</h2>
                 </div>
                 <p class="card-description">Declaración de fechas de control en manga y programación del próximo pesaje.</p>
                 
@@ -327,30 +336,29 @@
                         <textarea id="inputObservaciones" placeholder="Ej. Lote pastando en estero bajando lámina de agua. Se observa buen rompimiento de pelaje, sin ectoparásitos.">Entrada a sabana alta con predominio de pasto pará. Comportamiento activo en comederos y puntos de agua.</textarea>
                     </div>
 
-                    <!-- ESTATUS / ACCIÓN DE GESTIÓN DEL LOTE -->
-                    <div class="input-group" style="display:none;">
-                        <label for="selectEstatus">Estatus Operativo del Lote:</label>
-                        <select id="selectEstatus">
-                            <option value="ACTIVO" selected>Activo en Seguimiento / Bloque de Estudio</option>
-                            <option value="CIERRE_FASE">Cierre de Fase / Cumplió Meta</option>
-                            <option value="DESINCORPORADO_VENTA">Desincorporado por Venta</option>
-                            <option value="DESINCORPORADO_TRASLADO">Desincorporado por Traslado a Comercial</option>
-                        </select>
+                    <div style="display: flex; flex-direction: column; gap: 8px;">
+                        <button type="button" id="btnProcesarPesaje" class="btn-submit">
+                            <i class="fa-solid fa-brain"></i> Registrar y Guardar en Memoria
+                        </button>
+                        
+                        <!-- EL DÚO DINÁMICO: DESHACER Y REHACER (Hermanos de control de historial) -->
+                        <div class="undo-redo-group">
+                            <button type="button" id="btnDeshacerUltimo" class="btn-history-control" title="Deshace el último registro guardado">
+                                <i class="fa-solid fa-rotate-left"></i> Deshacer
+                            </button>
+                            <button type="button" id="btnRehacerUltimo" class="btn-history-control" title="Rehace el registro que acabas de deshacer" disabled>
+                                <i class="fa-solid fa-rotate-right"></i> Rehacer
+                            </button>
+                        </div>
                     </div>
-
-                    <button type="button" id="btnProcesarPesaje" class="btn-submit">
-                        <i class="fa-solid fa-brain"></i> Registrar y Guardar en Memoria
-                    </button>
                 </form>
             </section>
 
             <!-- COLUMNA 2: PANEL DE INDICADORES DE ORO Y BRÚJULA TEMPORAL -->
             <section class="section-box">
                 <div class="card-header">
-                    <div class="card-header-left">
-                        <div class="card-icon">🎯</div>
-                        <h2 class="card-title">Brújula Temporal, GMD e IA</h2>
-                    </div>
+                    <div class="card-icon">🎯</div>
+                    <h2 class="card-title">Brújula Temporal, GMD e IA</h2>
                 </div>
                 <p class="card-description">Monitoreo de cuenta regresiva para el próximo control de manga y diagnóstico experto.</p>
                 
@@ -384,14 +392,16 @@
                         </div>
                     </div>
 
-                    <!-- CONTROL DE HISTORIAL Y SALVAVIDAS (DESHACER ÚLTIMO REGISTRO) -->
-                    <div class="kpi-card-item" style="background-color: #f4f9f6; border: 1px dashed var(--text-muted, #52b788); flex-direction: column; align-items: stretch; gap: 8px;">
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <label style="font-size: 0.8rem; color: #1b4332;"><i class="fa-solid fa-database"></i> Memoria Local:</label>
-                            <span id="resumenConteoHistorial" class="kpi-value" style="font-size: 0.95rem;">12 Pesajes Registrados</span>
-                        </div>
-                        <button type="button" id="btnDeshacerUltimo" class="btn-undo" title="Elimina el último registro guardado por si te equivocaste">
-                            <i class="fa-solid fa-rotate-left"></i> Deshacer Último Pesaje Guardado
+                    <!-- ESTADÍSTICAS Y ZONA DE ELIMINACIÓN TOTAL AL FINAL DEL REPORTE -->
+                    <div class="kpi-card-item" style="background-color: #f4f9f6; border: 1px dashed var(--text-muted, #52b788);">
+                        <label style="font-size: 0.8rem; color: #1b4332;"><i class="fa-solid fa-database"></i> Memoria Local:</label>
+                        <span id="resumenConteoHistorial" class="kpi-value" style="font-size: 0.95rem;">12 Pesajes Registrados</span>
+                    </div>
+
+                    <!-- ZONA SEGURA DE ELIMINACIÓN TOTAL (Al final del reporte del lote) -->
+                    <div class="danger-zone">
+                        <button type="button" id="btnEliminarLoteTotal" class="btn-delete-total" title="Elimina por completo todos los registros e historiales de este lote">
+                            <i class="fa-solid fa-trash-can"></i> Eliminar Lote y Todos sus Pesajes del Sistema
                         </button>
                     </div>
 
@@ -401,22 +411,27 @@
         </div>
     </main>
 
-    <!-- Script de Lógica, GMD Dinámica, Fechas, Alerta Sonora y Deshacer -->
+    <!-- Script de Lógica con Pila Bidireccional (Undo / Redo) -->
     <script>
-        // Inicializar fechas por defecto en los inputs (Fecha actual y +30 días por defecto)
+        // Inicializar fechas por defecto en los inputs
         document.getElementById('inputFechaActual').valueAsDate = new Date();
         let fechaProxDefault = new Date();
         fechaProxDefault.setDate(fechaProxDefault.getDate() + 30);
         document.getElementById('inputFechaProximo').valueAsDate = fechaProxDefault;
 
         let historialLotes = JSON.parse(localStorage.getItem('lb_historial_lotes')) || [];
+        // Pila temporal para el hermanito "Rehacer" (Redo)
+        let papeleraDeshacer = [];
+
         actualizarContadorHistorial();
 
         function actualizarContadorHistorial() {
             document.getElementById('resumenConteoHistorial').innerText = `${historialLotes.length} Pesajes Registrados`;
+            // Activar o desactivar el botón Rehacer según si hay elementos en la papelera temporal
+            document.getElementById('btnRehacerUltimo').disabled = (papeleraDeshacer.length === 0);
         }
 
-        // Función sintetizadora de alerta sonora (pitido de manga sin depender de archivos externos)
+        // Función sintetizadora de alerta sonora
         function reproducirAlertaSonora(tipo) {
             try {
                 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -424,7 +439,7 @@
                 const gainNode = audioCtx.createGain();
                 
                 osc.type = tipo === 'urgente' ? 'sawtooth' : 'sine';
-                osc.frequency.setValueAtTime(tipo === 'urgente' ? 880 : 587.33, audioCtx.currentTime); // Frecuencias de alerta
+                osc.frequency.setValueAtTime(tipo === 'urgente' ? 880 : 587.33, audioCtx.currentTime);
                 
                 gainNode.gain.setValueAtTime(0.15, audioCtx.currentTime);
                 gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.6);
@@ -448,7 +463,6 @@
             let mesesMeta = parseFloat(document.getElementById('inputMesesObjetivo').value) || 1;
             let cv = parseFloat(document.getElementById('inputCV').value) || 0;
 
-            // 1. Cálculo de GMD basada en el historial del lote
             let registrosLote = historialLotes.filter(r => r.lote === loteNombre);
             let gmdCalculada = 0.50; 
 
@@ -471,7 +485,6 @@
 
             document.getElementById('resumenGMD').innerText = `${gmdCalculada.toFixed(2)} kg/día`;
 
-            // 2. Cálculos de Meta de Peso
             let kgsFaltantes = pesoObj - pesoProm;
             if (kgsFaltantes < 0) kgsFaltantes = 0;
 
@@ -482,7 +495,6 @@
             document.getElementById('resumenKgsFaltantes').innerText = `+${kgsFaltantes.toFixed(1)} kg`;
             document.getElementById('resumenTiempoFaltante').innerText = `${mesesFaltantes} meses y ${diasRestantes} días`;
 
-            // 3. Brújula Temporal y Alerta Sonora
             let cardBrujulaBox = document.getElementById('cardBrujulaBox');
             let resumenBrujulaDias = document.getElementById('resumenBrujulaDias');
             
@@ -511,7 +523,6 @@
             return { gmdCalculada, kgsFaltantes };
         }
 
-        // Eventos en vivo para recalcular brújula e indicadores
         ['inputPesoPromedio', 'inputPesoObjetivo', 'inputMesesObjetivo', 'inputLote', 'inputFechaActual', 'inputFechaProximo'].forEach(id => {
             document.getElementById(id).addEventListener('input', calcularIndicadoresDinamicos);
         });
@@ -520,7 +531,7 @@
             calcularIndicadoresDinamicos();
         };
 
-        // Botón Registrar en Memoria
+        // Botón Registrar en Memoria (Limpia la papelera de rehacer al crear un nuevo registro genuino)
         document.getElementById('btnProcesarPesaje').addEventListener('click', function() {
             let loteNombre = document.getElementById('inputLote').value;
             let temporada = document.getElementById('selectTemporada').value;
@@ -545,39 +556,63 @@
                 mesesObjetivo: mesesMeta,
                 gmdCalculada: calculos.gmdCalculada,
                 cvLote: cv,
-                observaciones: observaciones,
-                estatus: 'ACTIVO'
+                observaciones: observaciones
             };
 
             historialLotes.push(registroActual);
             localStorage.setItem('lb_historial_lotes', JSON.stringify(historialLotes));
+            
+            // Cada vez que guardamos un registro nuevo de forma normal, se limpia la papelera de rehacer
+            papeleraDeshacer = [];
+
             actualizarContadorHistorial();
+            calcularIndicadoresDinamicos();
 
             alert("¡Pesaje actual y programación de la brújula guardados correctamente en la memoria!");
         });
 
-        // Salvavidas: Botón de Deshacer último pesaje guardado
+        // Botón Deshacer (Manda el último registro del historial a la papelera temporal)
         document.getElementById('btnDeshacerUltimo').addEventListener('click', function() {
             if (historialLotes.length === 0) {
                 alert("No hay registros en la memoria local para deshacer.");
                 return;
             }
 
-            let ultimo = historialLotes[historialLotes.length - 1];
-            if (confirm(`¿Desea eliminar el último registro guardado del lote "${ultimo.lote}" (${ultimo.fechaActual} - ${ultimo.pesoPromedioLote} kg)?`)) {
-                historialLotes.pop(); // Saca el último elemento
-                localStorage.setItem('lb_historial_lotes', JSON.stringify(historialLotes));
-                actualizarContadorHistorial();
-                calcularIndicadoresDinamicos();
-                alert("¡Se ha deshecho el último registro y restaurado el estado anterior!");
-            }
+            let eliminado = historialLotes.pop(); // Saca del historial activo
+            papeleraDeshacer.push(eliminado);     // Lo guarda en la papelera para poder rehacerlo si fue sin querer
+
+            localStorage.setItem('lb_historial_lotes', JSON.stringify(historialLotes));
+            actualizarContadorHistorial();
+            calcularIndicadoresDinamicos();
+            alert(`Se deshizo el registro del ${eliminado.fechaActual} (${eliminado.pesoPromedioLote} kg). ¡Puedes usar 'Rehacer' si fue un error!`);
         });
 
-        // Botón de Archivar reubicado de forma segura en la esquina superior
-        document.getElementById('btnDesincorporarLote').addEventListener('click', function() {
+        // El hermanito: Botón Rehacer (Devuelve el registro de la papelera temporal al historial activo)
+        document.getElementById('btnRehacerUltimo').addEventListener('click', function() {
+            if (papeleraDeshacer.length === 0) {
+                alert("No hay acciones pendientes para rehacer.");
+                return;
+            }
+
+            let restaurado = papeleraDeshacer.pop(); // Saca de la papelera temporal
+            historialLotes.push(restaurado);         // Lo vuelve a meter al historial oficial
+
+            localStorage.setItem('lb_historial_lotes', JSON.stringify(historialLotes));
+            actualizarContadorHistorial();
+            calcularIndicadoresDinamicos();
+            alert(`¡Se ha rehecho y restaurado el registro del ${restaurado.fechaActual} (${restaurado.pesoPromedioLote} kg)!`);
+        });
+
+        // Botón de Eliminación Total del Lote (Zona Segura al final del panel de reportes)
+        document.getElementById('btnEliminarLoteTotal').addEventListener('click', function() {
             let loteNombre = document.getElementById('inputLote').value;
-            if(confirm(`¿Confirma archivar o desincorporar el bloque "${loteNombre}" del sistema activo?`)) {
-                alert("Lote archivado correctamente del sistema de seguimiento.");
+            if(confirm(`⚠️ ATENCIÓN: ¿Está seguro de ELIMINAR POR COMPLETO todos los pesajes y registros históricos del lote "${loteNombre}" del sistema?\n\nEsta acción no se puede deshacer.`)) {
+                historialLotes = historialLotes.filter(r => r.lote !== loteNombre);
+                localStorage.setItem('lb_historial_lotes', JSON.stringify(historialLotes));
+                papeleraDeshacer = [];
+                actualizarContadorHistorial();
+                calcularIndicadoresDinamicos();
+                alert(`¡El lote "${loteNombre}" y todo su historial han sido eliminados por completo del sistema!`);
             }
         });
     </script>
