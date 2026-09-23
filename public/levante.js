@@ -1,6 +1,6 @@
 /**
  * ============================================================================
- * HATO LAGUNA BRAVA - MOTOR MAESTRO DE PESAJE Y GESTIÓN GERENCIAL (v4.3)
+ * HATO LAGUNA BRAVA - MOTOR MAESTRO DE PESAJE Y GESTIÓN GERENCIAL (v4.4)
  * Ubicación: Sector Los Módulos, Mantecal, Estado Apure, Venezuela
  * Administrador / Veterinario: Dr. Juan José Mencías Guzmán
  * ============================================================================
@@ -16,7 +16,7 @@ const HatoApp = {
         this.vincularEventos();
         this.actualizarContadoresYVistas();
         this.monitorearConexiónRed();
-        console.log("🚀 Sistema Maestro Hato Laguna Brava v4.3 inicializado correctamente.");
+        console.log("🚀 Sistema Maestro Hato Laguna Brava v4.4 inicializado correctamente.");
     },
 
     configurarFechasPorDefecto: function() {
@@ -51,7 +51,8 @@ const HatoApp = {
                     lote: reg.lote,
                     fecha: reg.fechaActual,
                     peso: reg.pesoPromedioLote,
-                    gmd: reg.gmdCalculada
+                    gmd: reg.gmdCalculada,
+                    numAnimales: reg.numAnimales || 1
                 });
             }
         });
@@ -59,7 +60,7 @@ const HatoApp = {
     },
 
     vincularEventos: function() {
-        // Monitoreo completo incluyendo el nuevo inputPesoInicial
+        // Monitoreo completo incluyendo número de animales y peso inicial base del lote
         const inputsMonitoreados = [
             'inputPesoPromedio', 
             'inputPesoObjetivo', 
@@ -68,6 +69,7 @@ const HatoApp = {
             'inputFechaActual', 
             'inputFechaProximo', 
             'inputPesoInicial',
+            'inputNumAnimales',
             'inputCV',
             'inputEdad'
         ];
@@ -107,7 +109,8 @@ const HatoApp = {
         let pesoProm = parseFloat(document.getElementById('inputPesoPromedio')?.value) || 0;
         let pesoObj = parseFloat(document.getElementById('inputPesoObjetivo')?.value) || 0;
         let mesesMeta = parseFloat(document.getElementById('inputMesesObjetivo')?.value) || 1;
-        let pesoInicialInput = parseFloat(document.getElementById('inputPesoInicial')?.value) || 0;
+        let pesoInicialLote = parseFloat(document.getElementById('inputPesoInicial')?.value) || 0;
+        let numAnimales = parseInt(document.getElementById('inputNumAnimales')?.value) || 1;
 
         let historial = this.obtenerHistorial();
         let registrosLote = historial.filter(r => r.lote === loteNombre);
@@ -126,8 +129,8 @@ const HatoApp = {
                 if (gmdCalculada <= 0.01) gmdCalculada = 0.01;
             }
         } 
-        // PRIORIDAD 2: Si no hay historial pero el usuario colocó un Peso Inicial base en la nueva casilla
-        else if (pesoInicialInput > 0 && pesoProm > pesoInicialInput) {
+        // PRIORIDAD 2: Si no hay historial pero el usuario colocó un Peso Inicial base del lote
+        else if (pesoInicialLote > 0 && pesoProm > pesoInicialLote) {
             let kgsMetaInit = pesoObj - pesoProm;
             let diasMetaInit = mesesMeta * 30;
             if (diasMetaInit > 0) gmdCalculada = kgsMetaInit / diasMetaInit;
@@ -140,17 +143,22 @@ const HatoApp = {
         }
 
         const elemGMD = document.getElementById('resumenGMD');
-        if (elemGMD) elemGMD.innerText = `${gmdCalculada.toFixed(2)} kg/día`;
+        if (elemGMD) elemGMD.innerText = `${gmdCalculada.toFixed(2)} kg/día (por animal)`;
 
-        let kgsFaltantes = pesoObj - pesoProm;
-        if (kgsFaltantes < 0) kgsFaltantes = 0;
+        // Cálculo diferenciado: Por animal vs Lote Total
+        let kgsFaltantesPorAnimal = pesoObj - pesoProm;
+        if (kgsFaltantesPorAnimal < 0) kgsFaltantesPorAnimal = 0;
 
-        let diasTotalesFaltantes = gmdCalculada > 0 ? Math.ceil(kgsFaltantes / gmdCalculada) : 0;
+        let kgsFaltantesTotalLote = kgsFaltantesPorAnimal * numAnimales;
+
+        let diasTotalesFaltantes = gmdCalculada > 0 ? Math.ceil(kgsFaltantesPorAnimal / gmdCalculada) : 0;
         let mesesFaltantes = Math.floor(diasTotalesFaltantes / 30);
         let diasRestantes = diasTotalesFaltantes % 30;
 
         const elemKgsF = document.getElementById('resumenKgsFaltantes');
-        if (elemKgsF) elemKgsF.innerText = `+${kgsFaltantes.toFixed(1)} kg`;
+        if (elemKgsF) {
+            elemKgsF.innerHTML = `+${kgsFaltantesPorAnimal.toFixed(1)} kg/cab <br><small style="color: #495057; font-weight: 600;">(Total Lote [${numAnimales} cab]: +${kgsFaltantesTotalLote.toFixed(1)} kg)</small>`;
+        }
 
         const elemTiempoF = document.getElementById('resumenTiempoFaltante');
         if (elemTiempoF) elemTiempoF.innerText = `${mesesFaltantes} meses y ${diasRestantes} días`;
@@ -180,7 +188,7 @@ const HatoApp = {
             }
         }
 
-        return { gmdCalculada, kgsFaltantes };
+        return { gmdCalculada, kgsFaltantesPorAnimal, kgsFaltantesTotalLote };
     },
 
     dispararAlertaManga: function(tipo) {
@@ -234,12 +242,13 @@ const HatoApp = {
         let mesesMeta = parseFloat(document.getElementById('inputMesesObjetivo').value) || 0;
         let cv = parseFloat(document.getElementById('inputCV')?.value) || 0;
         let observaciones = document.getElementById('inputObservaciones')?.value || '';
-        let pesoInicialInput = parseFloat(document.getElementById('inputPesoInicial')?.value) || 0;
+        let pesoInicialLote = parseFloat(document.getElementById('inputPesoInicial')?.value) || 0;
+        let numAnimales = parseInt(document.getElementById('inputNumAnimales')?.value) || 1;
 
         let historial = this.obtenerHistorial();
 
         // Autogeneración de registro base fantasma si el lote es nuevo y se indicó peso inicial
-        if (historial.filter(r => r.lote === loteNombre).length === 0 && pesoInicialInput > 0) {
+        if (historial.filter(r => r.lote === loteNombre).length === 0 && pesoInicialLote > 0) {
             let fechaBaseObj = new Date(fechaActualStr);
             fechaBaseObj.setDate(fechaBaseObj.getDate() - 30); // Base de 30 días previos
             
@@ -249,11 +258,12 @@ const HatoApp = {
                 fechaProximoPesaje: fechaActualStr,
                 lote: loteNombre,
                 temporada: temporada,
-                pesoPromedioLote: pesoInicialInput,
+                pesoPromedioLote: pesoInicialLote,
                 pesoObjetivoLote: pesoObj,
                 mesesObjetivo: mesesMeta,
                 gmdCalculada: 0.50,
                 cvLote: cv,
+                numAnimales: numAnimales,
                 observaciones: 'Registro base inicial autogenerado por el sistema.'
             };
             historial.push(registroBase);
@@ -272,6 +282,7 @@ const HatoApp = {
             mesesObjetivo: mesesMeta,
             gmdCalculada: calculos.gmdCalculada,
             cvLote: cv,
+            numAnimales: numAnimales,
             observaciones: observaciones
         };
 
@@ -369,6 +380,7 @@ const HatoApp = {
                     <td style="border: 1px solid #ccc; padding: 8px; text-align: center; font-weight: bold;">${reg.pesoPromedioLote} kg</td>
                     <td style="border: 1px solid #ccc; padding: 8px; text-align: center; color: #2d6a4f;">${gmdParcial}</td>
                     <td style="border: 1px solid #ccc; padding: 8px; text-align: center;">${reg.cvLote}%</td>
+                    <td style="border: 1px solid #ccc; padding: 8px; text-align: center;">${reg.numAnimales || 'N/D'}</td>
                     <td style="border: 1px solid #ccc; padding: 8px; font-size: 0.85rem;">${reg.observaciones || 'Sin novedad'}</td>
                 </tr>
             `;
@@ -410,6 +422,7 @@ const HatoApp = {
                 <div class="info-card-box">
                     <p><strong>Lote / Bloque Evaluado:</strong> ${loteSeleccionado}</p>
                     <p><strong>Total Controles de Manga Registrados:</strong> ${registrosLote.length}</p>
+                    <p><strong>Animales en el Lote:</strong> ${ultimoReg.numAnimales || 'N/D'} cabezas</p>
                     <p><strong>Peso Inicial del Registro:</strong> ${primerReg.pesoPromedioLote} kg (${primerReg.fechaActual})</p>
                     <p><strong>Peso Actual del Lote:</strong> ${ultimoReg.pesoPromedioLote} kg (${ultimoReg.fechaActual})</p>
                     <p><strong>Meta del Lote:</strong> ${ultimoReg.pesoObjetivoLote} kg (Plazo estimado: ${ultimoReg.mesesObjetivo} meses)</p>
@@ -424,6 +437,7 @@ const HatoApp = {
                             <th>Peso Promedio</th>
                             <th>GMD Período</th>
                             <th>CV (%)</th>
+                            <th>Nº Animales</th>
                             <th>Observaciones Cualitativas de Manga</th>
                         </tr>
                     </thead>
