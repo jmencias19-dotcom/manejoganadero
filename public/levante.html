@@ -308,34 +308,35 @@
                     </div>
 
                     <!-- METAS DEL LOTE Y PUNTO DE PARTIDA -->
-<div class="kpi-container">
-    <div class="input-group">
-        <label for="inputPesoInicial">⚖️ Peso Inicial / Base (kg)</label>
-        <input type="number" step="0.1" id="inputPesoInicial" placeholder="Ej: 220.5" required>
-    </div>
-    <div class="input-group">
-        <label for="inputPesoObjetivo">Peso Meta del Lote (kg)</label>
-        <input type="number" step="0.1" id="inputPesoObjetivo" value="350.0" required>
-    </div>
-</div>
+                    <div class="kpi-container">
+                        <div class="input-group">
+                            <label for="inputPesoInicial">⚖️ Peso Inicial / Base del lote (kg)</label>
+                            <input type="number" step="0.1" id="inputPesoInicial" placeholder="Ej: 220.5" required>
+                        </div>
+                        <div class="input-group">
+                            <label for="inputPesoObjetivo">Peso Meta del Lote (kg)</label>
+                            <input type="number" step="0.1" id="inputPesoObjetivo" value="350.0" required>
+                        </div>
+                    </div>
 
-<div class="kpi-container">
-    <div class="input-group">
-        <label for="inputMesesObjetivo">Meta de Salida (Meses)</label>
-        <input type="number" step="0.5" id="inputMesesObjetivo" value="4.0" required>
-    </div>
-    <div class="input-group">
-        <label for="inputCV">Coeficiente de Variación del Lote (CV %)</label>
-        <input type="number" step="0.1" id="inputCV" value="6.4" required>
-    </div>
-</div>
+                    <div class="kpi-container">
+                        <div class="input-group">
+                            <label for="inputMesesObjetivo">Meta de Salida (Meses)</label>
+                            <input type="number" step="0.5" id="inputMesesObjetivo" value="4.0" required>
+                        </div>
+                        <div class="input-group">
+                            <label for="inputCV">Coeficiente de Variación del Lote (CV %)</label>
+                            <input type="number" step="0.1" id="inputCV" value="6.4" required>
+                        </div>
+                    </div>
 
-<div class="kpi-container">
-    <div class="input-group" style="grid-column: span 2;">
-        <label for="inputEdad">Edad Promedio del Lote (meses)</label>
-        <input type="number" step="0.1" id="inputEdad" value="8.5" required>
-    </div>
-</div>
+                    <div class="kpi-container">
+                        <div class="input-group" style="grid-column: span 2;">
+                            <label for="inputEdad">Edad Promedio del Lote (meses)</label>
+                            <input type="number" step="0.1" id="inputEdad" value="8.5" required>
+                        </div>
+                    </div>
+
                     <!-- BLOQUE DE OBSERVACIONES CUALITATIVAS PARA LA IA -->
                     <div class="input-group">
                         <label for="inputObservaciones">Observaciones Cualitativas de Manga (Contexto para la IA):</label>
@@ -381,9 +382,16 @@
                         <span id="resumenGMD" class="kpi-value" style="color: #2d6a4f;">0.54 kg/día</span>
                     </div>
 
+                    <!-- Kilos Faltantes Promedio por Animal -->
                     <div class="kpi-card-item">
-                        <label>Kg Faltantes para la Meta del Lote</label>
-                        <span id="resumenKgsFaltantes" class="kpi-value">+65.5 kg</span>
+                        <label>Faltante Promedio / Animal</label>
+                        <span id="resumenKgsFaltantesUnitario" class="kpi-value">+65.5 kg</span>
+                    </div>
+
+                    <!-- Kilos Faltantes Totales del Lote -->
+                    <div class="kpi-card-item" style="background-color: #f4f9f6;">
+                        <label>Total Lote (<span id="labelConteoCabezasKpi">9</span> cab)</label>
+                        <span id="resumenKgsFaltantesTotal" class="kpi-value" style="color: #1b4332;">589.5 kg</span>
                     </div>
 
                     <div class="kpi-card-item">
@@ -433,7 +441,6 @@
 
         function actualizarContadorHistorial() {
             document.getElementById('resumenConteoHistorial').innerText = `${historialLotes.length} Pesajes Registrados`;
-            // Activar o desactivar el botón Rehacer según si hay elementos en la papelera temporal
             document.getElementById('btnRehacerUltimo').disabled = (papeleraDeshacer.length === 0);
         }
 
@@ -467,7 +474,11 @@
             let pesoProm = parseFloat(document.getElementById('inputPesoPromedio').value) || 0;
             let pesoObj = parseFloat(document.getElementById('inputPesoObjetivo').value) || 0;
             let mesesMeta = parseFloat(document.getElementById('inputMesesObjetivo').value) || 1;
+            let numAnimales = parseInt(document.getElementById('inputNumAnimales').value) || 1;
             let cv = parseFloat(document.getElementById('inputCV').value) || 0;
+
+            // Actualizar etiqueta del número de animales en el KPI total
+            document.getElementById('labelConteoCabezasKpi').innerText = numAnimales;
 
             let registrosLote = historialLotes.filter(r => r.lote === loteNombre);
             let gmdCalculada = 0.50; 
@@ -491,14 +502,18 @@
 
             document.getElementById('resumenGMD').innerText = `${gmdCalculada.toFixed(2)} kg/día`;
 
-            let kgsFaltantes = pesoObj - pesoProm;
-            if (kgsFaltantes < 0) kgsFaltantes = 0;
+            let kgsFaltantesUnitario = pesoObj - pesoProm;
+            if (kgsFaltantesUnitario < 0) kgsFaltantesUnitario = 0;
 
-            let diasTotales = gmdCalculada > 0 ? (kgsFaltantes / gmdCalculada) : 0;
+            let kgsFaltantesTotalLote = kgsFaltantesUnitario * numAnimales;
+
+            let diasTotales = gmdCalculada > 0 ? (kgsFaltantesUnitario / gmdCalculada) : 0;
             let mesesFaltantes = Math.floor(diasTotales / 30);
             let diasRestantes = Math.round(diasTotales % 30);
 
-            document.getElementById('resumenKgsFaltantes').innerText = `+${kgsFaltantes.toFixed(1)} kg`;
+            // Asignación separada en las dos casillas independientes
+            document.getElementById('resumenKgsFaltantesUnitario').innerText = `+${kgsFaltantesUnitario.toFixed(1)} kg`;
+            document.getElementById('resumenKgsFaltantesTotal').innerText = `${kgsFaltantesTotalLote.toFixed(1)} kg`;
             document.getElementById('resumenTiempoFaltante').innerText = `${mesesFaltantes} meses y ${diasRestantes} días`;
 
             let cardBrujulaBox = document.getElementById('cardBrujulaBox');
@@ -526,10 +541,10 @@
                 }
             }
 
-            return { gmdCalculada, kgsFaltantes };
+            return { gmdCalculada, kgsFaltantesUnitario, kgsFaltantesTotalLote };
         }
 
-        ['inputPesoPromedio', 'inputPesoObjetivo', 'inputMesesObjetivo', 'inputLote', 'inputFechaActual', 'inputFechaProximo'].forEach(id => {
+        ['inputPesoPromedio', 'inputPesoObjetivo', 'inputMesesObjetivo', 'inputLote', 'inputFechaActual', 'inputFechaProximo', 'inputNumAnimales'].forEach(id => {
             document.getElementById(id).addEventListener('input', calcularIndicadoresDinamicos);
         });
 
@@ -537,7 +552,7 @@
             calcularIndicadoresDinamicos();
         };
 
-        // Botón Registrar en Memoria (Limpia la papelera de rehacer al crear un nuevo registro genuino)
+        // Botón Registrar en Memoria
         document.getElementById('btnProcesarPesaje').addEventListener('click', function() {
             let loteNombre = document.getElementById('inputLote').value;
             let temporada = document.getElementById('selectTemporada').value;
@@ -546,6 +561,8 @@
             let pesoProm = parseFloat(document.getElementById('inputPesoPromedio').value) || 0;
             let pesoObj = parseFloat(document.getElementById('inputPesoObjetivo').value) || 0;
             let mesesMeta = parseFloat(document.getElementById('inputMesesObjetivo').value) || 0;
+            let numAnimales = parseInt(document.getElementById('inputNumAnimales').value) || 0;
+            let pesoInicial = parseFloat(document.getElementById('inputPesoInicial').value) || 0;
             let cv = parseFloat(document.getElementById('inputCV').value) || 0;
             let observaciones = document.getElementById('inputObservaciones').value;
 
@@ -558,9 +575,13 @@
                 lote: loteNombre,
                 temporada: temporada,
                 pesoPromedioLote: pesoProm,
+                pesoInicialBase: pesoInicial,
                 pesoObjetivoLote: pesoObj,
                 mesesObjetivo: mesesMeta,
+                numAnimales: numAnimales,
                 gmdCalculada: calculos.gmdCalculada,
+                kgsFaltantesUnitario: calculos.kgsFaltantesUnitario,
+                kgsFaltantesTotal: calculos.kgsFaltantesTotalLote,
                 cvLote: cv,
                 observaciones: observaciones
             };
@@ -568,7 +589,6 @@
             historialLotes.push(registroActual);
             localStorage.setItem('lb_historial_lotes', JSON.stringify(historialLotes));
             
-            // Cada vez que guardamos un registro nuevo de forma normal, se limpia la papelera de rehacer
             papeleraDeshacer = [];
 
             actualizarContadorHistorial();
@@ -577,15 +597,15 @@
             alert("¡Pesaje actual y programación de la brújula guardados correctamente en la memoria!");
         });
 
-        // Botón Deshacer (Manda el último registro del historial a la papelera temporal)
+        // Botón Deshacer
         document.getElementById('btnDeshacerUltimo').addEventListener('click', function() {
             if (historialLotes.length === 0) {
                 alert("No hay registros en la memoria local para deshacer.");
                 return;
             }
 
-            let eliminado = historialLotes.pop(); // Saca del historial activo
-            papeleraDeshacer.push(eliminado);     // Lo guarda en la papelera para poder rehacerlo si fue sin querer
+            let eliminado = historialLotes.pop();
+            papeleraDeshacer.push(eliminado);     
 
             localStorage.setItem('lb_historial_lotes', JSON.stringify(historialLotes));
             actualizarContadorHistorial();
@@ -593,15 +613,15 @@
             alert(`Se deshizo el registro del ${eliminado.fechaActual} (${eliminado.pesoPromedioLote} kg). ¡Puedes usar 'Rehacer' si fue un error!`);
         });
 
-        // El hermanito: Botón Rehacer (Devuelve el registro de la papelera temporal al historial activo)
+        // Botón Rehacer
         document.getElementById('btnRehacerUltimo').addEventListener('click', function() {
             if (papeleraDeshacer.length === 0) {
                 alert("No hay acciones pendientes para rehacer.");
                 return;
             }
 
-            let restaurado = papeleraDeshacer.pop(); // Saca de la papelera temporal
-            historialLotes.push(restaurado);         // Lo vuelve a meter al historial oficial
+            let restaurado = papeleraDeshacer.pop(); 
+            historialLotes.push(restaurado);         
 
             localStorage.setItem('lb_historial_lotes', JSON.stringify(historialLotes));
             actualizarContadorHistorial();
@@ -609,7 +629,7 @@
             alert(`¡Se ha rehecho y restaurado el registro del ${restaurado.fechaActual} (${restaurado.pesoPromedioLote} kg)!`);
         });
 
-        // Botón de Eliminación Total del Lote (Zona Segura al final del panel de reportes)
+        // Botón de Eliminación Total del Lote
         document.getElementById('btnEliminarLoteTotal').addEventListener('click', function() {
             let loteNombre = document.getElementById('inputLote').value;
             if(confirm(`⚠️ ATENCIÓN: ¿Está seguro de ELIMINAR POR COMPLETO todos los pesajes y registros históricos del lote "${loteNombre}" del sistema?\n\nEsta acción no se puede deshacer.`)) {
@@ -621,7 +641,7 @@
                 alert(`¡El lote "${loteNombre}" y todo su historial han sido eliminados por completo del sistema!`);
             }
         });
-    </script> <!-- Cierre correcto del bloque script embebido -->
+    </script>
     
     <!-- Script externo complementario si aplica -->
     <script src="./levante.js"></script>
