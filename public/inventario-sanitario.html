@@ -23,6 +23,105 @@
             padding: 0;
         }
 
+        /* ==========================================================================
+           1. ENCABEZADO MAESTRO
+           ========================================================================== */
+        .main-header {
+            background: var(--header-gradient, linear-gradient(135deg, #1b4332 0%, #2d6a4f 100%));
+            color: #ffffff;
+            padding: 16px 24px;
+            box-shadow: 0 4px 20px rgba(27, 67, 50, 0.25);
+            border-bottom: 3px solid var(--accent-color, #52b788);
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+            box-sizing: border-box;
+        }
+
+        .header-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+        }
+
+        .header-nav .btn-back {
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 8px 12px;
+            border-radius: 6px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: background 0.2s ease;
+        }
+
+        .header-nav .btn-back:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .header-title-wrapper {
+            flex-grow: 1;
+            text-align: center;
+        }
+
+        .header-title-wrapper h1 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin: 2px 0;
+            color: #ffffff;
+            letter-spacing: 0.5px;
+        }
+
+        .header-title-wrapper h1 span {
+            color: var(--accent-color, #52b788);
+        }
+
+        .header-title-wrapper p {
+            font-size: 0.85rem;
+            color: #a3b899;
+            margin: 0;
+            font-weight: 500;
+        }
+
+        /* Semáforo de Sincronización */
+        .sync-status-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 6px 12px;
+            border-radius: 20px;
+        }
+
+        .semaphore {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .semaphore.offline {
+            background-color: #e76f51;
+            box-shadow: 0 0 8px rgba(231, 111, 81, 0.6);
+        }
+
+        .semaphore.online {
+            background-color: #2a9d8f;
+            box-shadow: 0 0 8px rgba(42, 157, 143, 0.6);
+        }
+
+        .sync-text {
+            font-size: 0.75rem;
+            color: #ffffff;
+            font-weight: 600;
+        }
+
+        /* ==========================================================================
+           ESTRUCTURA DE CONTENIDO Y TARJETAS
+           ========================================================================== */
         .main-container { 
             padding: 20px; 
             max-width: 1280px; 
@@ -119,7 +218,7 @@
 </head>
 <body>
 
-    <!-- Contenedor dinámico donde header.js inyectará el encabezado unificado -->
+    <!-- Contenedor dinámico donde header.js inyectará el encabezado maestro unificado -->
     <div id="app-header"></div>
 
     <main class="main-container">
