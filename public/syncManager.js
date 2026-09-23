@@ -1,5 +1,6 @@
 // ==========================================
 // MÓDULO DE SINCRONIZACIÓN OFFLINE (IndexedDB)
+// Hato Laguna Brava
 // ==========================================
 
 const DB_NAME = "HatoLagunaBravaDB";
@@ -16,7 +17,7 @@ export function abrirBaseDatos() {
         request.onupgradeneeded = event => {
             const db = event.target.result;
             if (!db.objectStoreNames.contains(STORE_NAME)) {
-                db.createObjectStore(STORE_NAME, { keyPath: "id" }); // Usamos ID explícito como keyPath
+                db.createObjectStore(STORE_NAME, { keyPath: "id" });
             }
         };
     });
@@ -29,13 +30,17 @@ export async function guardarLocalmente(datosRegistro) {
             const transaction = db.transaction(STORE_NAME, "readwrite");
             const store = transaction.objectStore(STORE_NAME);
             
+            // Garantizar un ID único si el objeto no lo trae
+            const registroId = datosRegistro.id || `reg_${Date.now()}_${Math.random().toString(36.substring(2, 7))}`;
+
             const payload = {
                 ...datosRegistro,
+                id: registroId,
                 timestamp: new Date().toISOString(),
                 sincronizado: false
             };
 
-            const request = store.put(payload); // put inserta o actualiza por ID
+            const request = store.put(payload);
 
             request.onsuccess = () => resolve(true);
             request.onerror = (event) => reject(event.target.error);
@@ -81,7 +86,7 @@ export async function sincronizarConServidor(onEstadoChange) {
         const resultado = await response.json();
 
         if (response.ok && resultado.exito) {
-            // 3. Limpiar almacenamiento local si el servidor confirmó
+            // 3. Limpiar almacenamiento local tras confirmación del servidor
             const clearTx = db.transaction(STORE_NAME, "readwrite");
             const clearStore = clearTx.objectStore(STORE_NAME);
             clearStore.clear();
@@ -98,7 +103,6 @@ export async function sincronizarConServidor(onEstadoChange) {
     }
 }
 
-// Obtener todos los registros guardados localmente para la interfaz
 export async function obtenerDatosLocales() {
     try {
         const db = await abrirBaseDatos();
