@@ -11,6 +11,7 @@ class ControlSanitarioHato {
         this.init();
     }
 
+    const COLLECTION_NAME = "hato_inventario_sanitario";
     init() {
         // Inicializar al cargar el DOM
         document.addEventListener('DOMContentLoaded', () => {
