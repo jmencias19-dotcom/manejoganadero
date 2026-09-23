@@ -1,67 +1,67 @@
 /* ==========================================================================
-   5. EXTENSIÓN CSS: MÓDULO SANITARIO Y HOJA DE VIDA (HATO LAGUNA BRAVA)
+   EXTENSIÓN CSS: MÓDULO SANITARIO Y HOJA DE VIDA (HATO LAGUNA BRAVA)
    ========================================================================== */
 
-/* Contenedor General de la Aplicación */
+/* Contenedor General del Módulo Sanitario */
 .app-container {
-    max-width: 900px;
-    margin: 30px auto;
-    padding: 0 20px;
+    width: 100%;
     display: flex;
     flex-direction: column;
-    gap: 24px;
+    gap: 20px;
 }
 
-/* Sintillo / Encabezado Específico del Módulo */
+/* Sintillo o Sub-Encabezado Específico del Módulo */
 .sintillo {
     background: var(--header-gradient);
     color: #ffffff;
     text-align: center;
-    padding: 22px;
-    border-radius: 16px;
-    border-bottom: 4px solid var(--accent-color);
-    box-shadow: 0 6px 20px rgba(8, 28, 21, 0.25);
+    padding: 18px 20px;
+    border-radius: 12px;
+    border-bottom: 3px solid var(--accent-color);
+    box-shadow: 0 4px 14px rgba(27, 67, 50, 0.15);
+    margin-bottom: 4px;
 }
 
 .sintillo h2 {
-    font-size: 1.5rem;
-    font-weight: 800;
+    font-size: 1.35rem;
+    font-weight: 700;
     color: #ffffff;
     margin: 0;
-    letter-spacing: 0.8px;
+    letter-spacing: 0.5px;
 }
 
 .sintillo p {
-    font-size: 0.88rem;
-    color: #b7e4c7;
-    margin: 6px 0 0 0;
+    font-size: 0.82rem;
+    color: #a3b899;
+    margin: 4px 0 0 0;
     font-weight: 600;
     letter-spacing: 0.5px;
     text-transform: uppercase;
 }
 
-/* Tarjetas Contenedoras del Formulario y Consultas */
+/* Tarjetas Internas de Formularios y Consultas Sanitarias */
 .card-form, .card-consulta {
     background-color: var(--card-bg);
-    border: 1.5px solid var(--border-color);
-    border-top: 5px solid var(--accent-color);
-    border-radius: 16px;
-    padding: 30px;
-    box-shadow: 0 6px 20px rgba(27, 67, 50, 0.06);
+    border: 1px solid var(--border-color);
+    border-top: 4px solid var(--primary-color);
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 4px 14px rgba(27, 67, 50, 0.05);
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
 }
 
 .card-consulta h3 {
     margin-top: 0;
-    margin-bottom: 16px;
-    font-size: 1.2rem;
+    margin-bottom: 14px;
+    font-size: 1.15rem;
     color: var(--primary-color);
     font-weight: 700;
 }
 
-/* Distribución en Filas para Elementos Dobles (Fechas, etc.) */
+/* Distribución en Filas para Elementos Dobles (Fechas, Rangos, etc.) */
 .form-row {
     display: flex;
-    gap: 16px;
+    gap: 12px;
 }
 
 .form-group.half {
@@ -71,11 +71,11 @@
 @media (max-width: 768px) {
     .form-row {
         flex-direction: column;
-        gap: 16px;
+        gap: 12px;
     }
 }
 
-/* Botón de Envío Principal */
+/* Botón de Envío / Registro Sanitario Principal */
 .btn-submit {
     display: inline-flex;
     align-items: center;
@@ -83,74 +83,71 @@
     width: 100%;
     background-color: var(--secondary-color);
     color: #ffffff;
-    padding: 14px 20px;
+    padding: 12px 16px;
     border: none;
-    border-radius: 10px;
+    border-radius: 8px;
     font-weight: 700;
-    font-size: 0.95rem;
+    font-size: 0.92rem;
     text-transform: uppercase;
-    letter-spacing: 0.6px;
+    letter-spacing: 0.5px;
     cursor: pointer;
-    box-shadow: 0 4px 12px rgba(45, 106, 79, 0.25);
-    transition: var(--transition-smooth);
-    margin-top: 6px;
+    box-shadow: 0 2px 6px rgba(45, 106, 79, 0.2);
+    transition: background-color 0.2s ease, transform 0.1s ease;
+    margin-top: 4px;
 }
 
 .btn-submit:hover {
     background-color: var(--primary-color);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(27, 67, 50, 0.35);
+    transform: scale(1.01);
 }
 
-/* Fila de Botones de Acción Secundaria (PDF y Baja de Lote) */
+/* Fila de Botones de Acción Secundaria (Descarga PDF y Baja de Lotes) */
 .btn-action-row {
     display: flex;
-    gap: 14px;
-    margin-top: 6px;
+    gap: 12px;
+    margin-top: 4px;
 }
 
 .btn-pdf {
     flex: 1;
     background-color: #1d3557;
     color: #ffffff;
-    padding: 12px 16px;
+    padding: 12px 14px;
     border: none;
-    border-radius: 10px;
+    border-radius: 8px;
     font-weight: 700;
-    font-size: 0.88rem;
+    font-size: 0.85rem;
     cursor: pointer;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    transition: var(--transition-smooth);
-    box-shadow: 0 4px 10px rgba(29, 53, 87, 0.25);
+    transition: background-color 0.2s ease, transform 0.1s ease;
+    box-shadow: 0 2px 6px rgba(29, 53, 87, 0.2);
 }
 
 .btn-pdf:hover {
     background-color: #14213d;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 14px rgba(29, 53, 87, 0.35);
+    transform: scale(1.01);
 }
 
 .btn-delete-lote {
     flex: 1;
     background-color: #bc6c25;
     color: #ffffff;
-    padding: 12px 16px;
+    padding: 12px 14px;
     border: none;
-    border-radius: 10px;
+    border-radius: 8px;
     font-weight: 700;
-    font-size: 0.88rem;
+    font-size: 0.85rem;
     cursor: pointer;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    transition: var(--transition-smooth);
-    box-shadow: 0 4px 10px rgba(188, 108, 37, 0.25);
+    transition: background-color 0.2s ease, transform 0.1s ease;
+    box-shadow: 0 2px 6px rgba(188, 108, 37, 0.2);
 }
 
 .btn-delete-lote:hover {
     background-color: #9b581b;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 14px rgba(188, 108, 37, 0.35);
+    transform: scale(1.01);
 }
 
 @media (max-width: 600px) {
@@ -159,54 +156,64 @@
     }
 }
 
-/* Lista y Elementos del Buscador de Fármacos */
+/* Lista y Contenedor del Buscador de Fármacos / Inventario Sanitario */
 .farmacos-list {
-    max-height: 320px;
+    max-height: 350px;
     overflow-y: auto;
     display: flex;
     flex-direction: column;
     gap: 10px;
     padding-right: 4px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--secondary-color) #f1f1f1;
 }
 
-/* Estilo de la barra de desplazamiento interna */
 .farmacos-list::-webkit-scrollbar {
     width: 6px;
 }
 
 .farmacos-list::-webkit-scrollbar-track {
-    background: #f1faee;
-    border-radius: 10px;
+    background: #f1f1f1;
+    border-radius: 4px;
 }
 
 .farmacos-list::-webkit-scrollbar-thumb {
-    background: var(--accent-color);
-    border-radius: 10px;
+    background: var(--secondary-color);
+    border-radius: 4px;
 }
 
 .farmaco-item {
-    background-color: #fbfdfc;
+    background-color: #f8f9f8;
     border: 1px solid var(--border-color);
     border-left: 4px solid var(--accent-color);
-    padding: 12px 16px;
-    border-radius: 10px;
-    transition: var(--transition-smooth);
+    padding: 12px 14px;
+    border-radius: 8px;
+    transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
 }
 
 .farmaco-item:hover {
-    background-color: #f1faee;
+    background-color: #f0f7f4;
     border-color: var(--secondary-color);
-    transform: translateX(3px);
+    transform: translateX(2px);
 }
 
 .farmaco-nombre {
-    font-size: 0.95rem;
+    font-size: 0.92rem;
     font-weight: 700;
     color: var(--primary-color);
 }
 
 .farmaco-detalle {
-    font-size: 0.85rem;
+    font-size: 0.82rem;
     color: var(--text-main);
     margin-top: 4px;
+    line-height: 1.4;
+}
+
+/* Adaptabilidad táctil estricta para celulares en campo (< 576px) */
+@media (max-width: 576px) {
+    .btn-submit, .btn-pdf, .btn-delete-lote {
+        padding: 14px 12px !important;
+        font-size: 16px !important;
+    }
 }
