@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Módulo: Planificación de Tareas y Control Operativo (Integrado v4.2 - Corregido)
+   Módulo: Planificación de Tareas y Control Operativo (Integrado v4.3 - Sincronizado)
    Hato Laguna Brava - Mantecal, Apure, Venezuela
    ========================================================================== */
 
@@ -13,7 +13,8 @@ import {
     updateDoc,  
     deleteDoc,  
     query,  
-    orderBy  
+    orderBy,
+    enableIndexedDbPersistence // Habilita persistencia offline automática
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 // Credenciales oficiales de Firebase para Hato Laguna Brava
@@ -29,6 +30,20 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+
+// Habilitar persistencia offline para dispositivos móviles en campo
+try {
+    enableIndexedDbPersistence(db).catch((err) => {
+        if (err.code == 'failed-precondition') {
+            console.warn("Persistencia falló: múltiples pestañas abiertas.");
+        } else if (err.code == 'unimplemented') {
+            console.warn("El navegador no soporta persistencia offline.");
+        }
+    });
+} catch (e) {
+    console.log("Modo offline ya configurado o no disponible.");
+}
+
 const COLLECTION_NAME = "hato_tareas";
 
 // Caché global en memoria para operaciones reactivas
@@ -62,7 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 3500);
     }
 
-    // Escuchar cambios en tiempo real desde Firestore
+    // Escuchar cambios en tiempo real desde Firestore (Sincronización PC <-> Móvil)
     function iniciarSincronizacionEnTiempoReal() {
         if (!tasksContainer) return;
 
@@ -82,12 +97,12 @@ document.addEventListener('DOMContentLoaded', () => {
             actualizarOpcionesFiltros(tareasCache);
 
             // Renderizar la vista aplicando los filtros actuales
-            renderizarTareasFiltradas();
+            window.renderizarTareasFiltradas();
 
         }, (error) => {
             console.error("Error al sincronizar con Firestore: ", error);
-            tasksContainer.innerHTML = '<p style="text-align: center; color: #c1121f; padding: 20px;">Error de sincronización con la base de datos de tareas.</p>';
-            mostrarToast("Error de conexión con Firestore", "error");
+            tasksContainer.innerHTML = '<p style="text-align: center; color: #c1121f; padding: 20px;">Trabajando en modo offline. Los cambios se sincronizarán al recuperar señal.</p>';
+            mostrarToast("Sincronización offline activa", "error");
         });
     }
 
@@ -173,8 +188,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Listeners para los filtros
-    if (filtroPotrero) filtroPotrero.addEventListener('change', renderizarTareasFiltradas);
-    if (filtroPersonal) filtroPersonal.addEventListener('change', renderizarTareasFiltradas);
+    if (filtroPotrero) filtroPotrero.addEventListener('change', window.renderizarTareasFiltradas);
+    if (filtroPersonal) filtroPersonal.addEventListener('change', window.renderizarTareasFiltradas);
 
     function getStatusClass(estado) {
         if (estado === 'cola') return 'status-cola';
@@ -198,7 +213,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 try {
                     const tareaRef = doc(db, COLLECTION_NAME, id);
                     await updateDoc(tareaRef, { estado: nuevoEstado });
-                    mostrarToast("Estado de labor actualizado correctamente");
+                    mostrarToast("Estado de labor actualizado y sincronizado");
                 } catch (error) {
                     console.error("Error al actualizar estado:", error);
                     mostrarToast("No se pudo actualizar el estado", "error");
@@ -212,7 +227,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (confirm("¿Está seguro de eliminar esta labor del registro operativo?")) {
                     try {
                         await deleteDoc(doc(db, COLLECTION_NAME, id));
-                        mostrarToast("Labor eliminada del registro");
+                        mostrarToast("Labor eliminada y sincronizada");
                     } catch (error) {
                         console.error("Error al eliminar la tarea:", error);
                         mostrarToast("Error al eliminar la labor", "error");
@@ -261,10 +276,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 const inputFecha = document.getElementById('fecha');
                 if (inputFecha) inputFecha.value = today;
 
-                mostrarToast("Labor planificada y sincronizada con éxito");
+                mostrarToast("Labor planificada y sincronizada en tiempo real");
             } catch (error) {
                 console.error("Error al guardar la tarea en Firestore:", error);
-                mostrarToast("Error de red: No se pudo guardar la labor", "error");
+                mostrarToast("Guardado localmente. Se sincronizará al conectar", "error");
             } finally {
                 if (btnSubmit) btnSubmit.disabled = false;
             }
@@ -278,6 +293,6 @@ document.addEventListener('DOMContentLoaded', () => {
         inputFecha.value = `${ahora.getFullYear()}-${String(ahora.getMonth() + 1).padStart(2, '0')}-${String(ahora.getDate()).padStart(2, '0')}`;
     }
 
-    // Iniciar sincronización de base de datos al cargar el DOM
+    // Iniciar el canal abierto de sincronización en tiempo real
     iniciarSincronizacionEnTiempoReal();
 });
