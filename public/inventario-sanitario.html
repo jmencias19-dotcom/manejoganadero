@@ -6,75 +6,8 @@
     <title>Control Sanitario - Hato Laguna Brava</title>
     <style>
         /* ==========================================================================
-   MEJORAS EN LA TABLA DE HISTORIAL (Columna de Fármacos Ampliada)
-   ========================================================================== */
-.table-responsive {
-    width: 100%;
-    overflow-x: auto;
-    border-radius: 8px;
-    border: 1px solid var(--border-color);
-    margin-top: 15px;
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-    text-align: left;
-    font-size: 0.85rem;
-    table-layout: auto; /* Permite que las celdas se adapten al contenido importante */
-}
-
-th, td {
-    padding: 12px 14px;
-    border-bottom: 1px solid #dee2e6;
-    color: #343a40;
-    vertical-align: middle;
-}
-
-th {
-    background-color: var(--primary-color);
-    color: #ffffff;
-    font-weight: 600;
-    text-transform: uppercase;
-    font-size: 0.75rem;
-    letter-spacing: 0.5px;
-}
-
-tr:hover td {
-    background-color: #f8f9fa;
-}
-
-/* Distribución de anchos de columna priorizando los Fármacos */
-th:nth-child(1) { width: 11%; } /* Fecha */
-th:nth-child(2) { width: 18%; } /* Lote / Chip */
-th:nth-child(3) { width: 13%; } /* Clasificación */
-th:nth-child(4) { width: 30%; } /* Fármacos Aplicados (Amplia) */
-th:nth-child(5) { width: 11%; } /* Próx. Tratamiento */
-th:nth-child(6) { width: 12%; } /* Observaciones */
-th:nth-child(7) { width: 5%; text-align: center; } /* Acción */
-
-/* Contenedor de las píldoras de fármacos */
-.farmacos-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 4px;
-    max-width: 100%;
-}
-
-.farmaco-pill {
-    display: inline-block;
-    background: #e9f5ed;
-    color: #1b4332;
-    border: 1px solid #b7e4c7;
-    padding: 3px 8px;
-    border-radius: 6px;
-    font-weight: 600;
-    font-size: 0.78rem;
-    line-height: 1.2;
-}
-        /* ==========================================================================
-           VARIABLES DE DISEÑO INSTITUCIONAL (Hato Laguna Brava)
-           ========================================================================== */
+            VARIABLES DE DISEÑO INSTITUCIONAL (Hato Laguna Brava)
+            ========================================================================== */
         :root {
             --primary-color: #1b4332;
             --secondary-color: #2d6a4f;
@@ -99,20 +32,19 @@ th:nth-child(7) { width: 5%; text-align: center; } /* Acción */
             min-height: 100vh;
             display: flex;
             flex-direction: column;
+            overflow-x: hidden;
         }
 
         /* ==========================================================================
-           1. ENCABEZADO MAESTRO
-           ========================================================================== */
+            1. ENCABEZADO MAESTRO
+            ========================================================================== */
         .main-header {
             background: var(--header-gradient);
             color: #ffffff;
-            padding: 16px 24px;
+            padding: 14px 20px;
             box-shadow: 0 4px 20px rgba(27, 67, 50, 0.25);
             border-bottom: 3px solid var(--accent-color);
             width: 100%;
-            position: relative;
-            overflow: hidden;
         }
 
         .header-container {
@@ -121,16 +53,17 @@ th:nth-child(7) { width: 5%; text-align: center; } /* Acción */
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 15px;
+            gap: 10px;
+            flex-wrap: wrap;
         }
 
         .header-nav .btn-back {
             color: #ffffff;
             background: rgba(255, 255, 255, 0.1);
-            padding: 8px 12px;
+            padding: 6px 10px;
             border-radius: 6px;
             text-decoration: none;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             transition: background 0.2s ease;
         }
 
@@ -144,7 +77,7 @@ th:nth-child(7) { width: 5%; text-align: center; } /* Acción */
         }
 
         .header-title-wrapper h1 {
-            font-size: 1.3rem;
+            font-size: 1.15rem;
             font-weight: 700;
             margin: 2px 0;
             color: #ffffff;
@@ -156,7 +89,7 @@ th:nth-child(7) { width: 5%; text-align: center; } /* Acción */
         }
 
         .header-title-wrapper p {
-            font-size: 0.85rem;
+            font-size: 0.78rem;
             color: #a3b899;
             font-weight: 500;
         }
@@ -165,15 +98,15 @@ th:nth-child(7) { width: 5%; text-align: center; } /* Acción */
         .sync-status-wrapper {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
             background: rgba(0, 0, 0, 0.2);
-            padding: 6px 12px;
+            padding: 5px 10px;
             border-radius: 20px;
         }
 
         .semaphore {
-            width: 12px;
-            height: 12px;
+            width: 10px;
+            height: 10px;
             border-radius: 50%;
         }
 
@@ -183,20 +116,20 @@ th:nth-child(7) { width: 5%; text-align: center; } /* Acción */
         }
 
         /* ==========================================================================
-           2. CONTENEDOR PRINCIPAL Y REJILLA
-           ========================================================================== */
+            2. CONTENEDOR PRINCIPAL Y REJILLA RESPONSIVA
+            ========================================================================== */
         .main-container {
             width: 100%;
             max-width: 1440px;
             margin: 0 auto;
-            padding: 30px 20px;
+            padding: 20px 12px;
             flex-grow: 1;
         }
 
         .menu-grid {
             display: grid;
             grid-template-columns: 1fr 2fr;
-            gap: 24px;
+            gap: 20px;
             align-items: start;
         }
 
@@ -207,22 +140,22 @@ th:nth-child(7) { width: 5%; text-align: center; } /* Acción */
         }
 
         /* ==========================================================================
-           3. TARJETAS Y COMPONENTES
-           ========================================================================== */
+            3. TARJETAS Y FORMULARIOS
+            ========================================================================== */
         .section-box {
             background-color: var(--card-bg);
             border: 1px solid var(--border-color);
             border-top: 4px solid var(--primary-color);
-            border-radius: 12px;
-            padding: 24px;
+            border-radius: 10px;
+            padding: 16px;
             box-shadow: 0 4px 14px rgba(27, 67, 50, 0.05);
-            margin-bottom: 24px;
+            margin-bottom: 20px;
         }
 
         .section-box h2 {
             margin-top: 0;
             margin-bottom: 1rem;
-            font-size: 1.15rem;
+            font-size: 1.05rem;
             color: var(--primary-color);
             font-weight: 700;
             display: flex;
@@ -231,34 +164,33 @@ th:nth-child(7) { width: 5%; text-align: center; } /* Acción */
         }
 
         .form-group {
-            margin-bottom: 15px;
+            margin-bottom: 12px;
         }
 
         label {
             display: block;
-            font-size: 0.8rem;
+            font-size: 0.78rem;
             font-weight: 700;
             text-transform: uppercase;
             color: var(--primary-color);
-            margin-bottom: 6px;
+            margin-bottom: 4px;
             letter-spacing: 0.5px;
         }
 
         input, select, textarea {
             width: 100%;
-            padding: 10px 14px;
+            padding: 10px;
             border: 1px solid #ced4da;
-            border-radius: 8px;
-            font-size: 0.9rem;
+            border-radius: 6px;
+            font-size: 16px; /* Previene el zoom automático molesto en iOS */
             color: #212529;
             background-color: #fff;
             transition: border-color 0.2s, box-shadow 0.2s;
         }
 
-        /* Estilo específico para selector múltiple ampliado */
         select[multiple] {
-            height: 160px;
-            padding: 8px;
+            height: 140px;
+            padding: 6px;
             background-color: #fafafa;
         }
 
@@ -269,7 +201,7 @@ th:nth-child(7) { width: 5%; text-align: center; } /* Acción */
         }
 
         select[multiple] option:checked {
-            background: var(--secondary-color) linear-gradient(0deg, var(--secondary-color), var(--secondary-color));
+            background: var(--secondary-color);
             color: white;
             font-weight: 600;
         }
@@ -283,7 +215,7 @@ th:nth-child(7) { width: 5%; text-align: center; } /* Acción */
         .form-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 12px;
+            gap: 10px;
         }
 
         button, .btn {
@@ -292,69 +224,88 @@ th:nth-child(7) { width: 5%; text-align: center; } /* Acción */
             text-align: center;
             background-color: var(--secondary-color);
             color: #ffffff;
-            padding: 12px 16px;
+            padding: 12px;
             border: none;
-            border-radius: 8px;
-            text-decoration: none;
+            border-radius: 6px;
             font-weight: 700;
-            font-size: 0.92rem;
+            font-size: 0.9rem;
             text-transform: uppercase;
             letter-spacing: 0.5px;
             cursor: pointer;
             box-shadow: 0 2px 6px rgba(45, 106, 79, 0.2);
-            transition: background-color 0.2s ease, transform 0.1s ease;
+            transition: background-color 0.2s ease;
         }
 
         button:hover, .btn:hover {
             background-color: var(--primary-color);
-            transform: scale(1.01);
         }
 
         .btn-danger {
             background-color: #e76f51 !important;
-            box-shadow: 0 2px 6px rgba(231, 111, 81, 0.2);
             color: #fff;
             border: none;
-            border-radius: 6px;
+            border-radius: 4px;
             cursor: pointer;
-            transition: background 0.2s;
+            padding: 6px 10px;
         }
 
         .btn-danger:hover {
             background-color: #d90429 !important;
         }
 
-        /* Tabla de Historial */
+        /* ==========================================================================
+            4. TABLA FLUIDA Y RESPONSIVA (Corrección de distorsión móvil)
+            ========================================================================== */
+        .toolbar-flex {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+
+        .search-input {
+            max-width: 100%;
+        }
+
+        @media(min-width: 768px) {
+            .search-input {
+                max-width: 250px;
+            }
+        }
+
         .table-responsive {
             width: 100%;
             overflow-x: auto;
-            border-radius: 8px;
+            -webkit-overflow-scrolling: touch;
+            border-radius: 6px;
             border: 1px solid var(--border-color);
-            margin-top: 15px;
+            margin-top: 10px;
         }
 
         table {
             width: 100%;
+            min-width: 650px; /* Garantiza que no colapse en pantallas chicas y active scroll horizontal limpio */
             border-collapse: collapse;
             text-align: left;
-            font-size: 0.85rem;
+            font-size: 0.82rem;
+        }
+
+        th, td {
+            padding: 10px;
+            border-bottom: 1px solid #dee2e6;
+            color: #343a40;
+            vertical-align: middle;
         }
 
         th {
             background-color: var(--primary-color);
             color: #ffffff;
-            padding: 12px;
             font-weight: 600;
             text-transform: uppercase;
-            font-size: 0.75rem;
+            font-size: 0.72rem;
             letter-spacing: 0.5px;
-        }
-
-        td {
-            padding: 12px;
-            border-bottom: 1px solid #dee2e6;
-            color: #343a40;
-            vertical-align: middle;
         }
 
         tr:hover td {
@@ -363,9 +314,9 @@ th:nth-child(7) { width: 5%; text-align: center; } /* Acción */
 
         .badge {
             display: inline-block;
-            padding: 4px 8px;
-            border-radius: 12px;
-            font-size: 0.7rem;
+            padding: 3px 6px;
+            border-radius: 10px;
+            font-size: 0.68rem;
             font-weight: 700;
             text-transform: uppercase;
         }
@@ -375,124 +326,17 @@ th:nth-child(7) { width: 5%; text-align: center; } /* Acción */
         .badge-correctivo { background: #fee2e2; color: #b91c1c; }
         .badge-rutinario { background: #ecfdf5; color: #047857; }
 
-        .toolbar-flex {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 15px;
-            flex-wrap: wrap;
-        }
-
-        .search-input {
-            max-width: 300px;
-        }
-
         .help-text {
-            font-size: 0.73rem;
+            font-size: 0.72rem;
             color: #666;
             margin-top: 4px;
             font-style: italic;
         }
-        /* ==========================================================================
-   AJUSTES RESPONSIVOS PARA DISPOSITIVOS MÓVILES (Hato Laguna Brava)
-   ========================================================================== */
-
-/* 1. Reset global para evitar desbordamientos */
-* {
-    box-sizing: border-box;
-}
-
-body {
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    overflow-x: hidden; /* Evita el scroll horizontal indeseado en la página */
-}
-
-/* 2. Contenedor principal adaptable */
-.container, .main-content, .card {
-    width: 100%;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 10px;
-}
-
-/* 3. Formularios en una sola columna en celulares */
-form {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-.form-group, .input-row {
-    width: 100%;
-}
-
-input, select, textarea {
-    width: 100%;
-    max-width: 100%;
-    font-size: 16px; /* Evita el zoom automático molesto en iOS al enfocar */
-    padding: 10px;
-    border-radius: 6px;
-    border: 1px solid var(--border-color, #ccc);
-}
-
-/* 4. Tablas adaptables con desplazamiento seguro */
-.table-responsive {
-    width: 100%;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch; /* Desplazamiento fluido en iPhone/Android */
-    margin-bottom: 15px;
-    border-radius: 8px;
-    border: 1px solid #dee2e6;
-}
-
-table {
-    width: 100%;
-    min-width: 600px; /* Asegura que la tabla no se comprima de más */
-    border-collapse: collapse;
-}
-
-th, td {
-    padding: 10px 8px;
-    font-size: 0.8rem;
-}
-
-/* 5. Ajustes específicos para pantallas menores a 768px (Celulares) */
-@media screen and (max-width: 768px) {
-    body {
-        font-size: 14px;
-    }
-
-    /* Reducir espacios en contenedores para aprovechar la pantalla del móvil */
-    .container, .card {
-        padding: 8px;
-        border-radius: 4px;
-    }
-
-    /* Botones grandes y cómodos para toque en campo */
-    button, .btn {
-        width: 100%;
-        padding: 12px;
-        font-size: 1rem;
-        margin-top: 5px;
-    }
-
-    /* Distribución de KPIs o tarjetas de resumen en columna o 2 por fila */
-    .kpi-container, .stats-grid {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 8px;
-    }
-}
     </style>
 </head>
 <body>
 
-    <!-- ==========================================================================
-       CABECERA MAESTRO
-       ========================================================================== -->
+    <!-- CABECERA MAESTRO -->
     <header class="main-header">
         <div class="header-container">
             <div class="header-nav">
@@ -504,14 +348,12 @@ th, td {
             </div>
             <div class="sync-status-wrapper">
                 <div id="syncSemaphore" class="semaphore online"></div>
-                <span class="sync-text" style="font-size: 0.75rem; color: #fff; font-weight: 600;">Sincronizado</span>
+                <span class="sync-text" style="font-size: 0.72rem; color: #fff; font-weight: 600;">Sincronizado</span>
             </div>
         </div>
     </header>
 
-    <!-- ==========================================================================
-       CONTENEDOR PRINCIPAL
-       ========================================================================== -->
+    <!-- CONTENEDOR PRINCIPAL -->
     <main class="main-container">
         <div class="menu-grid">
             
@@ -553,7 +395,6 @@ th, td {
                                     <option value="Vermoc 5% CO">Vermoc 5% CO (Antiparasitario oral)</option>
                                     <option value="Zeramec">Zeramec (Zeranol + Ivermectina)</option>
                                 </optgroup>
-
                                 <optgroup label="Minerales y Vitaminas">
                                     <option value="Bovifos">Bovifos (Modulador con Fósforo)</option>
                                     <option value="Butafosfan">Butafosfan (Estimulante metabólico fósforo)</option>
@@ -569,7 +410,6 @@ th, td {
                                     <option value="Superceba">Superceba (Modulador orgánico / Engorde)</option>
                                     <option value="Vitamina AD3E">Vitamina AD3E (Concentrado liposoluble)</option>
                                 </optgroup>
-
                                 <optgroup label="Antibióticos">
                                     <option value="Diastrept50">Diastrept50 (Estreptomicina soluble)</option>
                                     <option value="Overbiotic">Overbiotic (Oxitetraciclina de larga acción)</option>
@@ -578,43 +418,37 @@ th, td {
                                     <option value="Sigma S.T.S">Sigma S.T.S (Combinación antimicrobiana)</option>
                                     <option value="Tilosina">Tilosina (Macrólido bactericida)</option>
                                 </optgroup>
-
                                 <optgroup label="Anestésicos">
                                     <option value="Atropina">Atropina (Preanestésico / Antídoto)</option>
                                     <option value="Ketamin">Ketamin (Anestésico disociativo)</option>
                                     <option value="Sedanxil">Sedanxil (Sedante - Xilacina)</option>
                                 </optgroup>
-
                                 <optgroup label="Antiinflamatorios">
                                     <option value="Diclovet">Diclovet (Diclofenaco Sódico)</option>
                                     <option value="Fynacol">Fynacol (Flunixin Meglumine)</option>
                                 </optgroup>
-
                                 <optgroup label="Hormonas">
                                     <option value="Dextrogenol">Dextrogenol (Análogo de prostaglandinas)</option>
                                     <option value="Gestar">Gestar (Control reproductivo / Sincronización)</option>
                                     <option value="Oxitocina">Oxitocina (Estimulante uterino y eyección láctea)</option>
                                     <option value="Reprogest">Reprogest (Progestágeno)</option>
                                 </optgroup>
-
                                 <optgroup label="Antisépticos y Curabicheras">
                                     <option value="Lepecid">Lepecid (Larvicida / Curabicheras)</option>
                                     <option value="Penco">Penco (Antiséptico local)</option>
                                     <option value="Yodo">Yodo (Desinfectante local)</option>
                                 </optgroup>
-
                                 <optgroup label="Hemotrópicos">
                                     <option value="Babecide">Babecide (Tratamiento de piroplasmosis)</option>
                                     <option value="Imidover">Imidover (Dipropionato de Imidocarb)</option>
                                 </optgroup>
-
                                 <optgroup label="Soporte y Otros">
                                     <option value="Azul de Metileno">Azul de Metileno (Antiséptico / Cicatrizante)</option>
                                     <option value="Furodex">Furodex (Diurético)</option>
                                     <option value="Ringer Lactato">Ringer Lactato (Solución electrolítica)</option>
                                 </optgroup>
                             </select>
-                            <div class="help-text">Mantenga presionado Ctrl (en PC) o toque varios elementos (en móvil/tablet) para seleccionar más de uno.</div>
+                            <div class="help-text">Mantenga presionado Ctrl (en PC) o toque varios elementos (en móvil) para seleccionar más de uno.</div>
                         </div>
 
                         <div class="form-row">
@@ -664,7 +498,7 @@ th, td {
                             </tbody>
                         </table>
                     </div>
-                    <div id="sinRegistros" style="text-align: center; padding: 30px; color: var(--text-muted); font-size: 0.9rem;">
+                    <div id="sinRegistros" style="text-align: center; padding: 25px; color: var(--text-muted); font-size: 0.85rem;">
                         No hay registros sanitarios almacenados en este dispositivo.
                     </div>
                 </section>
@@ -673,16 +507,12 @@ th, td {
         </div>
     </main>
 
-    <!-- ==========================================================================
-       SCRIPT LÓGICO Y PERSISTENCIA LOCAL
-       ========================================================================== -->
+    <!-- SCRIPT LÓGICO -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // Fecha actual por defecto en el formulario
             document.getElementById('fechaAplicacion').valueAsDate = new Date();
             renderizarHistorial();
 
-            // Evento Guardar Registro
             document.getElementById('formSanitario').addEventListener('submit', (e) => {
                 e.preventDefault();
 
@@ -698,7 +528,7 @@ th, td {
                     id: 'REG-' + Date.now(),
                     loteChip: document.getElementById('loteChip').value.trim(),
                     clasificacion: document.getElementById('clasificacion').value,
-                    farmacos: farmacosSeleccionados, // Almacena array de fármacos seleccionados
+                    farmacos: farmacosSeleccionados,
                     fechaAplicacion: document.getElementById('fechaAplicacion').value,
                     fechaProximo: document.getElementById('fechaProximo').value || 'No programado',
                     observaciones: document.getElementById('observaciones').value.trim() || 'Sin observaciones'
@@ -708,6 +538,12 @@ th, td {
                     let historial = JSON.parse(localStorage.getItem('HL_HistorialSanitario')) || [];
                     historial.unshift(nuevoRegistro);
                     localStorage.setItem('HL_HistorialSanitario', JSON.stringify(historial));
+
+                    // =========================================================================
+                    // NOTA TÉCNICA PARA SINCRONIZACIÓN NUBE:
+                    // Aquí debe agregar la función de escritura a Firestore, por ejemplo:
+                    // db.collection("hato_inventario_sanitario").add(nuevoRegistro)...
+                    // =========================================================================
 
                     alert(`¡Tratamiento guardado correctamente!\nLote/Chip: ${nuevoRegistro.loteChip}\nProductos: ${farmacosSeleccionados.join(', ')}`);
                     document.getElementById('formSanitario').reset();
@@ -719,7 +555,6 @@ th, td {
                 }
             });
 
-            // Buscador Historial
             document.getElementById('buscadorHistorial').addEventListener('input', (e) => {
                 renderizarHistorial(e.target.value.toLowerCase());
             });
@@ -751,9 +586,8 @@ th, td {
                 else if (r.clasificacion === 'Dirigido') badgeClass = 'badge-dirigido';
                 else if (r.clasificacion === 'Correctivo') badgeClass = 'badge-correctivo';
 
-                // Formatear lista de fármacos para la tabla (soporta registros antiguos y nuevos múltiples)
-                const listaFármacos = Array.isArray(r.farmacos) 
-                    ? r.farmacos.map(f => `<span style="display:inline-block; background:#e9f5ed; color:#1b4332; padding:2px 6px; border-radius:4px; font-weight:600; margin:2px 2px;">• ${f}</span>`).join('')
+                const listaFarmacos = Array.isArray(r.farmacos) 
+                    ? r.farmacos.map(f => `<span style="display:inline-block; background:#e9f5ed; color:#1b4332; padding:2px 6px; border-radius:4px; font-weight:600; margin:2px;">• ${f}</span>`).join('')
                     : `<strong>${r.farmacoNombre || 'N/D'}</strong>`;
 
                 return `
@@ -761,11 +595,11 @@ th, td {
                         <td><strong>${r.fechaAplicacion}</strong></td>
                         <td>${r.loteChip}</td>
                         <td><span class="badge ${badgeClass}">${r.clasificacion}</span></td>
-                        <td>${listaFármacos}</td>
+                        <td>${listaFarmacos}</td>
                         <td>${r.fechaProximo}</td>
-                        <td style="max-width: 180px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${r.observaciones}">${r.observaciones}</td>
+                        <td style="max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${r.observaciones}">${r.observaciones}</td>
                         <td style="text-align: center;">
-                            <button onclick="eliminarRegistro('${r.id}')" class="btn-danger" style="padding: 6px 10px; font-size: 0.75rem;" title="Eliminar este registro">🗑️</button>
+                            <button onclick="eliminarRegistro('${r.id}')" class="btn-danger" title="Eliminar registro">🗑️</button>
                         </td>
                     </tr>
                 `;
