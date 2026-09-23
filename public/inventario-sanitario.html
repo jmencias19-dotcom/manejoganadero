@@ -155,7 +155,7 @@
             }
         }
 
-        /* TARJETAS CONTENEDORAS Y FORMULARIO ORDENADO */
+        /* TARJETAS CONTENEDORAS */
         .section-box {
             background-color: var(--card-bg);
             border: 1px solid var(--border-color);
@@ -164,6 +164,7 @@
             padding: 14px 12px;
             box-shadow: 0 2px 8px rgba(27, 67, 50, 0.05);
             width: 100%;
+            overflow: hidden; /* Evita cualquier desbordamiento interno */
         }
 
         .section-box h2 {
@@ -180,6 +181,7 @@
         .form-group {
             margin-bottom: 12px;
             width: 100%;
+            min-width: 0; /* Impide que elementos flexibles se expandan de más */
             display: flex;
             flex-direction: column;
         }
@@ -197,23 +199,33 @@
         input, select, textarea {
             width: 100%;
             max-width: 100%;
-            padding: 10px;
+            padding: 9px 10px;
             border: 1px solid #ced4da;
             border-radius: 6px;
-            font-size: 16px; /* Evita zoom automático en iPhone/Android */
+            font-size: 0.9rem; /* Controlado para que no se vea exageradamente grueso */
             color: #212529;
             background-color: #fff;
         }
 
+        /* Corrección del Select Múltiple (Estilo fino y limpio) */
         select[multiple] {
-            height: 130px;
+            height: 120px;
             background-color: #fafafa;
+            padding: 4px;
+            font-size: 0.85rem;
+        }
+
+        select[multiple] optgroup {
+            font-weight: 700;
+            color: var(--primary-color);
+            font-size: 0.75rem;
             padding: 4px;
         }
 
         select[multiple] option {
-            padding: 6px;
+            padding: 5px 8px;
             border-bottom: 1px solid #eee;
+            font-size: 0.82rem;
         }
 
         select[multiple] option:checked {
@@ -222,10 +234,10 @@
             font-weight: 600;
         }
 
-        /* Fila simétrica y perfectamente alineada para fechas */
+        /* Fila de Fechas con control riguroso minmax para evitar desbordes */
         .form-row {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
             gap: 10px;
             width: 100%;
             margin-bottom: 12px;
@@ -233,6 +245,7 @@
 
         .form-row .form-group {
             margin-bottom: 0;
+            min-width: 0;
         }
 
         button[type="submit"] {
@@ -443,7 +456,7 @@
                             <div class="help-text">Mantenga presionado para selección múltiple.</div>
                         </div>
 
-                        <!-- Fila de Fechas Ordenada -->
+                        <!-- Fila de Fechas con control riguroso minmax -->
                         <div class="form-row">
                             <div class="form-group">
                                 <label for="fechaAplicacion">Aplicación *</label>
