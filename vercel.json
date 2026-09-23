@@ -9,6 +9,15 @@
           "value": "*"
         }
       ]
+    },
+    {
+      "source": "/(.*)\\.(js|css|json|png|jpg|ico)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=0, must-revalidate"
+        }
+      ]
     }
   ],
   "rewrites": [
@@ -16,6 +25,11 @@
     { "source": "/historial-pastoreo", "destination": "/historial-pastoreo.html" },
     { "source": "/planificacion", "destination": "/planificacion.html" },
     { "source": "/combustible", "destination": "/combustible.html" },
-    { "source": "/inventario-sanitario", "destination": "/inventario-sanitario.html" }
+    { "source": "/inventario-sanitario", "destination": "/inventario-sanitario.html" },
+    { "source": "/eventos", "destination": "/eventos.html" },
+    { "source": "/biblioteca", "destination": "/biblioteca-hato.html" },
+    { "source": "/biblioteca-hato", "destination": "/biblioteca-hato.html" },
+    { "source": "/levante", "destination": "/levante.html" },
+    { "source": "/indicadores-gestion", "destination": "/indicadores-gestion.html" }
   ]
 }
