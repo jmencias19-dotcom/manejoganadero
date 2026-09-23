@@ -110,20 +110,9 @@
             border-radius: 50%;
         }
 
-        .semaphore.offline {
-            background-color: #e76f51;
-            box-shadow: 0 0 8px rgba(231, 111, 81, 0.6);
-        }
-
         .semaphore.online {
             background-color: #2a9d8f;
             box-shadow: 0 0 8px rgba(42, 157, 143, 0.6);
-        }
-
-        .sync-text {
-            font-size: 0.75rem;
-            color: #ffffff;
-            font-weight: 600;
         }
 
         /* ==========================================================================
@@ -139,7 +128,7 @@
 
         .menu-grid {
             display: grid;
-            grid-template-columns: 1fr 2fr; /* 1 columna para formulario, 2 para historial/vademécum */
+            grid-template-columns: 1fr 2fr;
             gap: 24px;
             align-items: start;
         }
@@ -153,7 +142,7 @@
         /* ==========================================================================
            3. TARJETAS Y COMPONENTES
            ========================================================================== */
-        .section-box, .card {
+        .section-box {
             background-color: var(--card-bg);
             border: 1px solid var(--border-color);
             border-top: 4px solid var(--primary-color);
@@ -163,7 +152,7 @@
             margin-bottom: 24px;
         }
 
-        .card-title, .section-title, h2 {
+        .section-box h2 {
             margin-top: 0;
             margin-bottom: 1rem;
             font-size: 1.15rem;
@@ -174,7 +163,6 @@
             gap: 8px;
         }
 
-        /* Formularios y Inputs */
         .form-group {
             margin-bottom: 15px;
         }
@@ -212,8 +200,7 @@
             gap: 12px;
         }
 
-        /* Botones de acción */
-        button, .btn, .card-action {
+        button, .btn {
             display: block;
             width: 100%;
             text-align: center;
@@ -232,7 +219,7 @@
             transition: background-color 0.2s ease, transform 0.1s ease;
         }
 
-        button:hover, .btn:hover, .card-action:hover {
+        button:hover, .btn:hover {
             background-color: var(--primary-color);
             transform: scale(1.01);
         }
@@ -296,7 +283,6 @@
         .badge-correctivo { background: #fee2e2; color: #b91c1c; }
         .badge-rutinario { background: #ecfdf5; color: #047857; }
 
-        /* Controles superiores de tabla y búsqueda */
         .toolbar-flex {
             display: flex;
             justify-content: space-between;
@@ -308,28 +294,6 @@
 
         .search-input {
             max-width: 300px;
-        }
-
-        .vademecum-box {
-            max-height: 180px;
-            overflow-y: auto;
-            border: 1px solid #ced4da;
-            border-radius: 8px;
-            padding: 10px;
-            background: #fafafa;
-            font-size: 0.82rem;
-        }
-
-        .vademecum-item {
-            padding: 6px 8px;
-            border-bottom: 1px solid #eee;
-            cursor: pointer;
-            transition: background 0.15s;
-        }
-
-        .vademecum-item:hover {
-            background: #e9ecef;
-            border-radius: 4px;
         }
     </style>
 </head>
@@ -349,7 +313,7 @@
             </div>
             <div class="sync-status-wrapper">
                 <div id="syncSemaphore" class="semaphore online"></div>
-                <span id="syncText" class="sync-text">Sincronizado</span>
+                <span class="sync-text">Sincronizado</span>
             </div>
         </div>
     </header>
@@ -360,9 +324,8 @@
     <main class="main-container">
         <div class="menu-grid">
             
-            <!-- COLUMNA IZQUIERDA: Formulario de Registro & Consulta Vademécum -->
+            <!-- COLUMNA IZQUIERDA: Formulario de Registro -->
             <div>
-                <!-- Formulario de Registro -->
                 <section class="section-box">
                     <h2>💉 Registrar Tratamiento</h2>
                     <form id="formSanitario">
@@ -383,22 +346,85 @@
                             </select>
                         </div>
 
-                        <div class="form-group">
-                            <label for="grupoFarma">Grupo Farmacológico *</label>
-                            <select id="grupoFarma" required>
-                                <option value="" disabled selected>Seleccione grupo...</option>
-                                <option value="Antibióticos">Antibióticos</option>
-                                <option value="Minerales - Vitaminas">Minerales - Vitaminas</option>
-                                <option value="Hormonas">Hormonas</option>
-                                <option value="Vacunas">Vacunas</option>
-                                <option value="Antiinflamatorios">Antiinflamatorios</option>
-                                <option value="Hemotrópicos">Hemotrópicos (Anaplasma/Piro)</option>
-                            </select>
-                        </div>
-
+                        <!-- Fármaco Específico con agrupaciones farmacológicas -->
                         <div class="form-group">
                             <label for="farmacoNombre">Fármaco / Producto Específico *</label>
-                            <input type="text" id="farmacoNombre" required placeholder="Ej. Oxitetraciclina L.A. / Compudose 200">
+                            <select id="farmacoNombre" required>
+                                <option value="" disabled selected>Seleccione el fármaco o producto...</option>
+                                
+                                <optgroup label="Desparasitantes">
+                                    <option value="Abamectina">Abamectina (Endectocida inyectable)</option>
+                                    <option value="Buliver+P">Buliver+P (Ivermectina + Vitaminas)</option>
+                                    <option value="Clozaval">Clozaval (Levamisol + Oxiclozanida)</option>
+                                    <option value="Comisol">Comisol (Fosfato de Levamisol concentrado)</option>
+                                    <option value="Overcox 5%">Overcox 5% (Toltrazuril)</option>
+                                    <option value="Rafocal">Rafocal (Rafoxanida)</option>
+                                    <option value="Ricomax">Ricomax (Ricobendazol al 15%)</option>
+                                    <option value="Tricalcherry">Tricalcherry (Triclabendazole)</option>
+                                    <option value="Vermoc 5% CO">Vermoc 5% CO (Antiparasitario oral)</option>
+                                    <option value="Zeramec">Zeramec (Zeranol + Ivermectina)</option>
+                                </optgroup>
+
+                                <optgroup label="Minerales y Vitaminas">
+                                    <option value="Bovifos">Bovifos (Modulador con Fósforo)</option>
+                                    <option value="Butafosfan">Butafosfan (Estimulante metabólico fósforo)</option>
+                                    <option value="Combecon">Combecon (Complejo B)</option>
+                                    <option value="Cuproho Plus">Cuproho Plus (Cobre mineral inyectable)</option>
+                                    <option value="Eritrogen">Eritrogen (Reconstituyente hematopoyético)</option>
+                                    <option value="Fosfoton">Fosfoton (Fósforo inyectable)</option>
+                                    <option value="Minerfun Plus">Minerfun Plus (Reconstituyente mineral)</option>
+                                    <option value="Neocuprexan">Neocuprexan (Aporte de Cobre)</option>
+                                    <option value="Raket">Raket (Potenciador metabólico)</option>
+                                    <option value="Revimin">Revimin (Complejo vitamínico mineral)</option>
+                                    <option value="Sigma K3">Sigma K3 (Vitamina antihemorrágica)</option>
+                                    <option value="Superceba">Superceba (Modulador orgánico / Engorde)</option>
+                                    <option value="Vitamina AD3E">Vitamina AD3E (Concentrado liposoluble)</option>
+                                </optgroup>
+
+                                <optgroup label="Antibióticos">
+                                    <option value="Diastrept50">Diastrept50 (Estreptomicina soluble)</option>
+                                    <option value="Overbiotic">Overbiotic (Oxitetraciclina de larga acción)</option>
+                                    <option value="Overpen">Overpen (Penicilina compuesta inyectable)</option>
+                                    <option value="Septibron Forte">Septibron Forte (Antibiótico respiratorio)</option>
+                                    <option value="Sigma S.T.S">Sigma S.T.S (Combinación antimicrobiana)</option>
+                                    <option value="Tilosina">Tilosina (Macrólido bactericida)</option>
+                                </optgroup>
+
+                                <optgroup label="Anestésicos">
+                                    <option value="Atropina">Atropina (Preanestésico / Antídoto)</option>
+                                    <option value="Ketamin">Ketamin (Anestésico disociativo)</option>
+                                    <option value="Sedanxil">Sedanxil (Sedante - Xilacina)</option>
+                                </optgroup>
+
+                                <optgroup label="Antiinflamatorios">
+                                    <option value="Diclovet">Diclovet (Diclofenaco Sódico)</option>
+                                    <option value="Fynacol">Fynacol (Flunixin Meglumine)</option>
+                                </optgroup>
+
+                                <optgroup label="Hormonas">
+                                    <option value="Dextrogenol">Dextrogenol (Análogo de prostaglandinas)</option>
+                                    <option value="Gestar">Gestar (Control reproductivo / Sincronización)</option>
+                                    <option value="Oxitocina">Oxitocina (Estimulante uterino y eyección láctea)</option>
+                                    <option value="Reprogest">Reprogest (Progestágeno)</option>
+                                </optgroup>
+
+                                <optgroup label="Antisépticos y Curabicheras">
+                                    <option value="Lepecid">Lepecid (Larvicida / Curabicheras)</option>
+                                    <option value="Penco">Penco (Antiséptico local)</option>
+                                    <option value="Yodo">Yodo (Desinfectante local)</option>
+                                </optgroup>
+
+                                <optgroup label="Hemotrópicos">
+                                    <option value="Babecide">Babecide (Tratamiento de piroplasmosis)</option>
+                                    <option value="Imidover">Imidover (Dipropionato de Imidocarb)</option>
+                                </optgroup>
+
+                                <optgroup label="Soporte y Otros">
+                                    <option value="Azul de Metileno">Azul de Metileno (Antiséptico / Cicatrizante)</option>
+                                    <option value="Furodex">Furodex (Diurético)</option>
+                                    <option value="Ringer Lactato">Ringer Lactato (Solución electrolítica)</option>
+                                </optgroup>
+                            </select>
                         </div>
 
                         <div class="form-row">
@@ -419,17 +445,6 @@
 
                         <button type="submit">💾 Guardar / Sincronizar</button>
                     </form>
-                </section>
-
-                <!-- Consulta de Medicamentos (Vademécum) -->
-                <section class="section-box">
-                    <h2>📖 Consulta de Medicamentos</h2>
-                    <div class="form-group">
-                        <input type="text" id="buscarVademecum" class="search-input" placeholder="Buscar principio activo...">
-                    </div>
-                    <div id="listaVademecum" class="vademecum-box">
-                        <!-- Se llena dinámicamente -->
-                    </div>
                 </section>
             </div>
 
@@ -454,7 +469,7 @@
                                     <th>Fecha</th>
                                     <th>Lote / Chip</th>
                                     <th>Clasificación</th>
-                                    <th>Fármaco / Grupo</th>
+                                    <th>Fármaco Aplicado</th>
                                     <th>Próx. Tratamiento</th>
                                     <th>Observaciones</th>
                                     <th style="text-align: center;">Acción</th>
@@ -478,32 +493,26 @@
        SCRIPT LÓGICO Y PERSISTENCIA LOCAL
        ========================================================================== -->
     <script>
-        // Vademecum de referencia tropical para Hato Laguna Brava
-        const vademecumBase = [
-            { nombre: "Oxitetraciclina L.A. 20%", grupo: "Antibióticos", uso: "Infecciones, anaplasmosis, pododermatitis." },
-            { nombre: "Compudose 200", grupo: "Hormonas", uso: "Implante anabólico promotor de crecimiento en ceba." },
-            { nombre: "Ivermectina 3.15%", grupo: "Hemotrópicos / Antiparasitarios", _uso: "Control prolongado de parásitos internos y externos." },
-            { nombre: "Rafoxanida", grupo: "Antiinflamatorios / Antiparasitarios", uso: "Control de Fasciola hepática y parásitos hematófagos." },
-            { nombre: "Vitamina B12 + Fósforo", grupo: "Minerales - Vitaminas", uso: "Soporte metabólico y recuperación en verano." },
-            { nombre: "Vacuna Triple / Rabia", grupo: "Vacunas", uso: "Inmunización preventiva en rebaño." }
-        ];
-
         document.addEventListener('DOMContentLoaded', () => {
             // Fecha actual por defecto en el formulario
             document.getElementById('fechaAplicacion').valueAsDate = new Date();
-            cargarVademecum(vademecumBase);
             renderizarHistorial();
 
             // Evento Guardar Registro
             document.getElementById('formSanitario').addEventListener('submit', (e) => {
                 e.preventDefault();
 
+                const selectFarmaco = document.getElementById('farmacoNombre');
+                const farmacoSeleccionado = selectFarmaco.value;
+                // Obtener el grupo farmacológico mediante la etiqueta del optgroup padre
+                const grupoAsociado = selectFarmaco.options[selectFarmaco.selectedIndex].parentNode.label || 'General';
+
                 const nuevoRegistro = {
                     id: 'REG-' + Date.now(),
                     loteChip: document.getElementById('loteChip').value.trim(),
                     clasificacion: document.getElementById('clasificacion').value,
-                    grupoFarma: document.getElementById('grupoFarma').value,
-                    farmacoNombre: document.getElementById('farmacoNombre').value.trim(),
+                    grupoFarma: grupoAsociado,
+                    farmacoNombre: farmacoSeleccionado,
                     fechaAplicacion: document.getElementById('fechaAplicacion').value,
                     fechaProximo: document.getElementById('fechaProximo').value || 'No programado',
                     observaciones: document.getElementById('observaciones').value.trim() || 'Sin observaciones'
@@ -514,7 +523,7 @@
                     historial.unshift(nuevoRegistro);
                     localStorage.setItem('HL_HistorialSanitario', JSON.stringify(historial));
 
-                    alert(`¡Tratamiento guardado correctamente!\nLote/Chip: ${nuevoRegistro.loteChip}`);
+                    alert(`¡Tratamiento guardado correctamente!\nLote/Chip: ${nuevoRegistro.loteChip}\nProducto: ${nuevoRegistro.farmacoNombre}`);
                     document.getElementById('formSanitario').reset();
                     document.getElementById('fechaAplicacion').valueAsDate = new Date();
                     renderizarHistorial();
@@ -522,15 +531,6 @@
                     console.error("Error al guardar:", err);
                     alert("Error al intentar guardar el registro localmente.");
                 }
-            });
-
-            // Buscador Vademécum
-            document.getElementById('buscarVademecum').addEventListener('input', (e) => {
-                const query = e.target.value.toLowerCase();
-                const filtrados = vademecumBase.filter(v => 
-                    v.nombre.toLowerCase().includes(query) || v.grupo.toLowerCase().includes(query)
-                );
-                cargarVademecum(filtrados);
             });
 
             // Buscador Historial
@@ -547,20 +547,6 @@
                 }
             });
         });
-
-        function cargarVademecum(lista) {
-            const contenedor = document.getElementById('listaVademecum');
-            if (lista.length === 0) {
-                contenedor.innerHTML = `<div style="padding: 6px; color: #888; font-style: italic;">No se encontraron principios activos.</div>`;
-                return;
-            }
-            contenedor.innerHTML = lista.map(v => `
-                <div class="vademecum-item" onclick="document.getElementById('farmacoNombre').value='${v.nombre}'; document.getElementById('grupoFarma').value='${v.grupo}';">
-                    <strong>${v.nombre}</strong> <span style="color: var(--secondary-color);">(${v.grupo})</span>
-                    <div style="color: #666; font-size: 0.75rem;">${v.uso || v._uso}</div>
-                </div>
-            `).join('');
-        }
 
         function renderizarHistorial(filtro = '') {
             const historial = JSON.parse(localStorage.getItem('HL_HistorialSanitario')) || [];
