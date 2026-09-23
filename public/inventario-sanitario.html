@@ -394,6 +394,98 @@ th:nth-child(7) { width: 5%; text-align: center; } /* Acción */
             margin-top: 4px;
             font-style: italic;
         }
+        /* ==========================================================================
+   AJUSTES RESPONSIVOS PARA DISPOSITIVOS MÓVILES (Hato Laguna Brava)
+   ========================================================================== */
+
+/* 1. Reset global para evitar desbordamientos */
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    overflow-x: hidden; /* Evita el scroll horizontal indeseado en la página */
+}
+
+/* 2. Contenedor principal adaptable */
+.container, .main-content, .card {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 10px;
+}
+
+/* 3. Formularios en una sola columna en celulares */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.form-group, .input-row {
+    width: 100%;
+}
+
+input, select, textarea {
+    width: 100%;
+    max-width: 100%;
+    font-size: 16px; /* Evita el zoom automático molesto en iOS al enfocar */
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid var(--border-color, #ccc);
+}
+
+/* 4. Tablas adaptables con desplazamiento seguro */
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch; /* Desplazamiento fluido en iPhone/Android */
+    margin-bottom: 15px;
+    border-radius: 8px;
+    border: 1px solid #dee2e6;
+}
+
+table {
+    width: 100%;
+    min-width: 600px; /* Asegura que la tabla no se comprima de más */
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 10px 8px;
+    font-size: 0.8rem;
+}
+
+/* 5. Ajustes específicos para pantallas menores a 768px (Celulares) */
+@media screen and (max-width: 768px) {
+    body {
+        font-size: 14px;
+    }
+
+    /* Reducir espacios en contenedores para aprovechar la pantalla del móvil */
+    .container, .card {
+        padding: 8px;
+        border-radius: 4px;
+    }
+
+    /* Botones grandes y cómodos para toque en campo */
+    button, .btn {
+        width: 100%;
+        padding: 12px;
+        font-size: 1rem;
+        margin-top: 5px;
+    }
+
+    /* Distribución de KPIs o tarjetas de resumen en columna o 2 por fila */
+    .kpi-container, .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+    }
+}
     </style>
 </head>
 <body>
