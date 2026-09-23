@@ -1,6 +1,6 @@
 /**
  * ============================================================================
- * HATO LAGUNA BRAVA - MOTOR MAESTRO DE PESAJE Y GESTIÓN GERENCIAL (v4.2)
+ * HATO LAGUNA BRAVA - MOTOR MAESTRO DE PESAJE Y GESTIÓN GERENCIAL (v4.3)
  * Ubicación: Sector Los Módulos, Mantecal, Estado Apure, Venezuela
  * Administrador / Veterinario: Dr. Juan José Mencías Guzmán
  * ============================================================================
@@ -16,7 +16,7 @@ const HatoApp = {
         this.vincularEventos();
         this.actualizarContadoresYVistas();
         this.monitorearConexiónRed();
-        console.log("🚀 Sistema Maestro Hato Laguna Brava inicializado correctamente.");
+        console.log("🚀 Sistema Maestro Hato Laguna Brava v4.3 inicializado correctamente.");
     },
 
     configurarFechasPorDefecto: function() {
@@ -59,7 +59,19 @@ const HatoApp = {
     },
 
     vincularEventos: function() {
-        const inputsMonitoreados = ['inputPesoPromedio', 'inputPesoObjetivo', 'inputMesesObjetivo', 'inputLote', 'inputFechaActual', 'inputFechaProximo'];
+        // Monitoreo completo incluyendo el nuevo inputPesoInicial
+        const inputsMonitoreados = [
+            'inputPesoPromedio', 
+            'inputPesoObjetivo', 
+            'inputMesesObjetivo', 
+            'inputLote', 
+            'inputFechaActual', 
+            'inputFechaProximo', 
+            'inputPesoInicial',
+            'inputCV',
+            'inputEdad'
+        ];
+        
         inputsMonitoreados.forEach(id => {
             const el = document.getElementById(id);
             if (el) {
@@ -95,12 +107,13 @@ const HatoApp = {
         let pesoProm = parseFloat(document.getElementById('inputPesoPromedio')?.value) || 0;
         let pesoObj = parseFloat(document.getElementById('inputPesoObjetivo')?.value) || 0;
         let mesesMeta = parseFloat(document.getElementById('inputMesesObjetivo')?.value) || 1;
+        let pesoInicialInput = parseFloat(document.getElementById('inputPesoInicial')?.value) || 0;
 
         let historial = this.obtenerHistorial();
         let registrosLote = historial.filter(r => r.lote === loteNombre);
         let gmdCalculada = 0.50; 
 
-        // Cálculo robusto de GMD basada en el último pesaje histórico registrado
+        // PRIORIDAD 1: Si hay registros históricos previos en el sistema
         if (registrosLote.length > 0) {
             let ultimoReg = registrosLote[registrosLote.length - 1];
             let fAnterior = new Date(ultimoReg.fechaActual);
@@ -112,7 +125,15 @@ const HatoApp = {
                 gmdCalculada = diffKilos / diasTranscurridos;
                 if (gmdCalculada <= 0.01) gmdCalculada = 0.01;
             }
-        } else {
+        } 
+        // PRIORIDAD 2: Si no hay historial pero el usuario colocó un Peso Inicial base en la nueva casilla
+        else if (pesoInicialInput > 0 && pesoProm > pesoInicialInput) {
+            let kgsMetaInit = pesoObj - pesoProm;
+            let diasMetaInit = mesesMeta * 30;
+            if (diasMetaInit > 0) gmdCalculada = kgsMetaInit / diasMetaInit;
+        } 
+        // PRIORIDAD 3: Estimación por defecto basada en la meta global de salida
+        else {
             let kgsMetaInit = pesoObj - pesoProm;
             let diasMetaInit = mesesMeta * 30;
             if (diasMetaInit > 0) gmdCalculada = kgsMetaInit / diasMetaInit;
@@ -124,7 +145,6 @@ const HatoApp = {
         let kgsFaltantes = pesoObj - pesoProm;
         if (kgsFaltantes < 0) kgsFaltantes = 0;
 
-        // FÓRMULA CORREGIDA: Días totales exactos basados en la GMD real y los kilos pendientes
         let diasTotalesFaltantes = gmdCalculada > 0 ? Math.ceil(kgsFaltantes / gmdCalculada) : 0;
         let mesesFaltantes = Math.floor(diasTotalesFaltantes / 30);
         let diasRestantes = diasTotalesFaltantes % 30;
@@ -206,17 +226,40 @@ const HatoApp = {
 
     registrarPesaje: function() {
         let loteNombre = document.getElementById('inputLote').value;
-        let temporada = document.getElementById('selectTemporada').value;
+        let temporada = document.getElementById('selectTemporada')?.value || 'General';
         let fechaActualStr = document.getElementById('inputFechaActual').value;
         let fechaProximaStr = document.getElementById('inputFechaProximo').value;
         let pesoProm = parseFloat(document.getElementById('inputPesoPromedio').value) || 0;
         let pesoObj = parseFloat(document.getElementById('inputPesoObjetivo').value) || 0;
         let mesesMeta = parseFloat(document.getElementById('inputMesesObjetivo').value) || 0;
-        let cv = parseFloat(document.getElementById('inputCV').value) || 0;
-        let observaciones = document.getElementById('inputObservaciones').value;
+        let cv = parseFloat(document.getElementById('inputCV')?.value) || 0;
+        let observaciones = document.getElementById('inputObservaciones')?.value || '';
+        let pesoInicialInput = parseFloat(document.getElementById('inputPesoInicial')?.value) || 0;
+
+        let historial = this.obtenerHistorial();
+
+        // Autogeneración de registro base fantasma si el lote es nuevo y se indicó peso inicial
+        if (historial.filter(r => r.lote === loteNombre).length === 0 && pesoInicialInput > 0) {
+            let fechaBaseObj = new Date(fechaActualStr);
+            fechaBaseObj.setDate(fechaBaseObj.getDate() - 30); // Base de 30 días previos
+            
+            let registroBase = {
+                timestampRegistro: new Date(Date.now() - 100000).toISOString(),
+                fechaActual: fechaBaseObj.toISOString().split('T')[0],
+                fechaProximoPesaje: fechaActualStr,
+                lote: loteNombre,
+                temporada: temporada,
+                pesoPromedioLote: pesoInicialInput,
+                pesoObjetivoLote: pesoObj,
+                mesesObjetivo: mesesMeta,
+                gmdCalculada: 0.50,
+                cvLote: cv,
+                observaciones: 'Registro base inicial autogenerado por el sistema.'
+            };
+            historial.push(registroBase);
+        }
 
         let calculos = this.calcularIndicadoresDinamicos();
-        let historial = this.obtenerHistorial();
 
         let registroActual = {
             timestampRegistro: new Date().toISOString(),
