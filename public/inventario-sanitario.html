@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Hato Laguna Brava - Control de Levante y Bloques de Estudio</title>
+    <title>Hato Laguna Brava - Inventario Sanitario y Tratamientos</title>
     
-    <!-- Centralizado en tus Estilos Maestros Unificados (v4.1) -->
-    <link rel="stylesheet" href="./potreros.css?v=4.1">
+    <!-- Centralizado en tus Estilos Maestros Unificados -->
+    <link rel="stylesheet" href="./inventario-sanitario.css?v=4.1">
     
-    <!-- CDN oficial de iconos FontAwesome (Corregido) -->
+    <!-- CDN oficial de iconos FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <!-- Manifiesto PWA -->
@@ -69,34 +69,6 @@
             margin: 0;
         }
 
-        .input-group { 
-            display: flex; 
-            flex-direction: column; 
-            gap: 4px;
-        }
-
-        .input-group label { 
-            font-size: 0.8rem; 
-            font-weight: 600; 
-            color: var(--text-main, #1b4332);
-        }
-
-        .input-group input, .input-group select, .input-group textarea { 
-            padding: 8px 12px; 
-            border: 1px solid var(--border-color, #e2e8f0); 
-            border-radius: 6px; 
-            font-size: 0.95rem;
-            background-color: #ffffff;
-            color: var(--text-main, #1b4332);
-        }
-
-        .input-group textarea { resize: vertical; min-height: 70px; }
-
-        .input-group input:focus, .input-group select:focus, .input-group textarea:focus {
-            outline: none;
-            border-color: var(--text-muted, #52b788);
-        }
-
         .kpi-container { 
             display: grid; 
             grid-template-columns: 1fr 1fr; 
@@ -127,60 +99,21 @@
             color: var(--text-main, #1b4332); 
         }
 
-        /* Alertas visuales dinámicas para la Brújula de Pesaje */
-        .cv-alert-optimal { border-left: 4px solid #2d6a4f; background-color: #f4f9f6; }
-        .cv-alert-warning { border-left: 4px solid #d4a373; background-color: #fefae0; }
-        .cv-alert-danger  { border-left: 4px solid #b7094c; background-color: #fdf0ed; }
-
-        .btn-submit { 
-            width: 100%; 
-            padding: 12px; 
-            background-color: var(--text-main, #1b4332); 
-            color: #ffffff; 
-            border: none; 
-            border-radius: 6px; 
-            font-weight: 600; 
-            font-size: 0.95rem;
-            cursor: pointer; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            gap: 8px; 
-            transition: background-color 0.2s;
-        }
-
-        .btn-submit:hover { 
-            background-color: var(--text-muted, #52b788); 
-        }
-
-        .undo-redo-group {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-        }
-
-        .btn-history-control {
-            background-color: #e9ecef;
-            color: #495057;
-            border: 1px solid #ced4da;
-            padding: 8px 10px;
+        .card-action {
+            display: block;
+            padding: 10px;
+            background-color: var(--text-main, #1b4332);
+            color: #ffffff;
             border-radius: 6px;
-            font-size: 0.8rem;
             font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
+            font-size: 0.9rem;
+            text-decoration: none;
+            text-align: center;
             transition: background-color 0.2s;
         }
-        .btn-history-control:hover:not(:disabled) {
-            background-color: #dee2e6;
-            color: #212529;
-        }
-        .btn-history-control:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
+
+        .card-action:hover {
+            background-color: var(--text-muted, #52b788);
         }
     </style>
 </head>
@@ -190,32 +123,32 @@
     <div id="app-header"></div>
 
     <main class="main-container">
-        <!-- Rejilla maestra que fuerza la estandarización tridimensional -->
+        <!-- Rejilla maestra del módulo sanitario -->
         <div class="menu-grid">
             
-            <!-- COLUMNA 1 Y 2: Tabla de Rotación de Potreros -->
+            <!-- COLUMNA 1 Y 2: Tabla de Registro de Tratamientos y Vacunas -->
             <section class="section-box" style="grid-column: span 2; height: auto;">
                 <div class="card-header">
-                    <div class="card-icon"><i class="fa-solid fa-seedling"></i></div>
-                    <h2 class="card-title">Rotación de Potreros y Carga Animal</h2>
+                    <div class="card-icon"><i class="fa-solid fa-syringe"></i></div>
+                    <h2 class="card-title">Registro de Tratamientos, Fármacos y Vacunas</h2>
                 </div>
-                <p class="card-description">Seguimiento cronológico de la entrada y salida de lotes de ganado para garantizar el descanso óptimo de las pasturas en el trópico.</p>
+                <p class="card-description">Aquí gestionarás la aplicación de tratamientos, fármacos y vacunas del hato bajo rigor técnico en el trópico.</p>
                 
                 <div class="table-responsive">
                     <table class="data-table">
                         <thead>
                             <tr>
-                                <th>Fecha Entrada</th>
-                                <th>Potrero</th>
-                                <th>Lote / Rebaño</th>
-                                <th>Cabezas</th>
-                                <th>Fecha Salida</th>
+                                <th>Fecha</th>
+                                <th>Lote / Animal</th>
+                                <th>Fármaco / Vacuna</th>
+                                <th>Dosis / Vía</th>
+                                <th>Responsable</th>
                             </tr>
                         </thead>
-                        <tbody id="tabla-pastoreo-body">
+                        <tbody id="tabla-sanitaria-body">
                             <tr>
                                 <td colspan="5" style="text-align: center; color: var(--text-muted); padding: 20px;">
-                                    Cargando historial de rotaciones locales...
+                                    Cargando registros del inventario sanitario...
                                 </td>
                             </tr>
                         </tbody>
@@ -223,37 +156,37 @@
                 </div>
             </section>
 
-            <!-- COLUMNA 3: Resumen y Acciones Operativas -->
+            <!-- COLUMNA 3: Resumen y Acciones Operativas Sanitarias -->
             <section class="section-box" style="height: auto;">
                 <div class="card-header">
-                    <div class="card-icon"><i class="fa-solid fa-hat-cowboy"></i></div>
-                    <h2 class="card-title">Control de Ocupación</h2>
+                    <div class="card-icon"><i class="fa-solid fa-kit-medical"></i></div>
+                    <h2 class="card-title">Resumen Sanitario</h2>
                 </div>
-                <p class="card-description">Métricas de uso actual del suelo y disponibilidad de forraje en la sabana.</p>
+                <p class="card-description">Indicadores clave de cobertura y bioseguridad en campo.</p>
                 
                 <div class="kpi-container">
                     <div class="kpi-card-item">
-                        <label>Potreros Activos</label>
-                        <div class="kpi-value" id="kpi-potreros-ocupados">0</div>
+                        <label>Aplicaciones (Mes)</label>
+                        <div class="kpi-value" id="kpi-aplicaciones-mes">0</div>
                     </div>
                     <div class="kpi-card-item">
-                        <label>Días Prom. Uso</label>
-                        <div class="kpi-value" id="kpi-dias-pastoreo">0</div>
+                        <label>Lotes Tratados</label>
+                        <div class="kpi-value" id="kpi-lotes-tratados">0</div>
                     </div>
                 </div>
 
                 <div style="display: flex; flex-direction: column; gap: 12px; margin-top: auto; width: 100%;">
-                    <a href="./potreros.html" class="card-action" style="text-decoration: none; text-align: center;">📋 Ver Estado de Potreros</a>
-                    <a href="./index.html" class="card-action" style="background-color: var(--text-muted); text-decoration: none; text-align: center;">⬅ Volver al Inicio</a>
+                    <a href="./inventario-sanitario.html" class="card-action">💉 Gestionar Inventario</a>
+                    <a href="./index.html" class="card-action" style="background-color: var(--text-muted);">⬅ Volver al Inicio</a>
                 </div>
             </section>
 
         </div>
     </main>
 
-    <!-- Scripts del Sistema y Módulos corregidos (en la raíz del proyecto) -->
+    <!-- Scripts del Sistema y Módulos en la raíz -->
     <script type="module" src="./header.js"></script>
     <script type="module" src="./syncManager.js"></script>
-    <script src="./pastoreo.js"></script>
+    <script src="./inventario-sanitario.js"></script>
 </body>
 </html>
