@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Hato Laguna Brava - Módulo de Eventos</title>
+    <title>Hato Laguna Brava - Módulo de Eventos Críticos</title>
     <style>
         :root {
             --primary-color: #1b4332;
@@ -14,9 +14,9 @@
             --border-color: #d8f3dc;
             --text-muted: #495057;
             --bg-body: #f4f9f4;
+            --danger-color: #c1121f;
         }
 
-        /* RESET TOTAL Y AISLAMIENTO MÓVIL */
         *, *:before, *:after {
             box-sizing: border-box;
             margin: 0;
@@ -111,7 +111,7 @@
             width: 8px;
             height: 8px;
             border-radius: 50%;
-            background-color: #e76f51;
+            background-color: var(--danger-color);
         }
 
         .semaphore.online {
@@ -132,7 +132,7 @@
             .header-title-wrapper p { font-size: 0.68rem; }
         }
 
-        /* CONTENEDOR PRINCIPAL */
+        /* CONTENEDOR PRINCIPAL Y GRID */
         .main-container {
             width: 100%;
             max-width: 1440px;
@@ -150,7 +150,7 @@
         @media (min-width: 1024px) {
             .menu-grid {
                 display: grid;
-                grid-template-columns: 1fr 1.8fr;
+                grid-template-columns: 1fr 1.6fr;
                 gap: 20px;
             }
         }
@@ -164,8 +164,6 @@
             padding: 14px 12px;
             box-shadow: 0 2px 8px rgba(27, 67, 50, 0.05);
             width: 100%;
-            max-width: 100%;
-            overflow: hidden;
         }
 
         .section-box h2 {
@@ -182,7 +180,6 @@
         .form-group {
             margin-bottom: 10px;
             width: 100%;
-            max-width: 100%;
             display: flex;
             flex-direction: column;
         }
@@ -199,7 +196,6 @@
 
         input, select, textarea {
             width: 100%;
-            max-width: 100%;
             padding: 8px 10px;
             border: 1px solid #ced4da;
             border-radius: 6px;
@@ -208,30 +204,21 @@
             background-color: #fff;
         }
 
-        /* FILA DE FECHAS ESTRICTA */
         .form-row {
             display: flex;
             justify-content: space-between;
             gap: 4%;
             width: 100%;
-            max-width: 100%;
             margin-bottom: 10px;
         }
 
         .form-row .form-group {
             flex: 0 0 48%;
-            max-width: 48%;
             margin-bottom: 0;
         }
 
-        .form-row input[type="date"] {
-            font-size: 0.75rem;
-            padding: 7px 4px;
-            width: 100%;
-            max-width: 100%;
-        }
-
-        button[type="submit"] {
+        /* BOTONES ESPECIALES */
+        .btn-action {
             display: block;
             width: 100%;
             text-align: center;
@@ -248,12 +235,28 @@
             margin-top: 4px;
         }
 
-        button[type="submit"]:active {
+        .btn-action:active {
             background-color: var(--primary-color);
         }
 
+        .btn-gps {
+            background-color: #1d3557;
+            color: #fff;
+            padding: 7px 10px;
+            font-size: 0.75rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-top: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
         .btn-danger {
-            background-color: #e76f51;
+            background-color: var(--danger-color);
             color: #fff;
             border: none;
             border-radius: 4px;
@@ -262,27 +265,36 @@
             font-size: 0.75rem;
         }
 
-        /* TOAST DE NOTIFICACIÓN */
-        #toast {
-            visibility: hidden;
-            min-width: 220px;
-            background-color: #212529;
-            color: #fff;
-            text-align: center;
-            border-radius: 6px;
-            padding: 10px;
-            position: fixed;
-            z-index: 1000;
-            left: 50%;
-            bottom: 20px;
-            transform: translateX(-50%);
-            border-left: 5px solid var(--accent-color);
-            font-size: 0.8rem;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        /* KPIS / RESUMEN RAPIDO */
+        .kpi-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-bottom: 14px;
         }
-        #toast.show { visibility: visible; }
 
-        /* TABLA ADAPTABLE */
+        .kpi-card {
+            background: #f8f9fa;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 8px;
+            text-align: center;
+        }
+
+        .kpi-card span {
+            display: block;
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            font-weight: 700;
+        }
+
+        .kpi-card strong {
+            font-size: 1.1rem;
+            color: var(--primary-color);
+        }
+
+        /* FILTROS Y TABLA */
         .toolbar-flex {
             display: flex;
             flex-direction: column;
@@ -301,7 +313,6 @@
 
         .table-responsive {
             width: 100%;
-            max-width: 100%;
             overflow-x: auto;
             -webkit-overflow-scrolling: touch;
             border-radius: 6px;
@@ -311,7 +322,7 @@
 
         table {
             width: 100%;
-            min-width: 580px;
+            min-width: 650px;
             border-collapse: collapse;
             text-align: left;
             font-size: 0.78rem;
@@ -334,35 +345,47 @@
 
         .badge {
             display: inline-block;
-            padding: 2px 5px;
+            padding: 2px 6px;
             border-radius: 6px;
             font-size: 0.62rem;
             font-weight: 700;
             text-transform: uppercase;
         }
-        .badge-sanitario { background: #e0f2fe; color: #0369a1; }
+        .badge-mortalidad { background: #fee2e2; color: #b91c1c; }
         .badge-reproductivo { background: #fef3c7; color: #b45309; }
-        .badge-movilizacion { background: #fee2e2; color: #b91c1c; }
-        .badge-general { background: #ecfdf5; color: #047857; }
+        .badge-operativo { background: #e0f2fe; color: #0369a1; }
 
-        .help-text {
-            font-size: 0.62rem;
-            color: #666;
-            margin-top: 2px;
-            font-style: italic;
+        /* TOAST */
+        #toast {
+            visibility: hidden;
+            min-width: 220px;
+            background-color: #212529;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 10px;
+            position: fixed;
+            z-index: 1000;
+            left: 50%;
+            bottom: 20px;
+            transform: translateX(-50%);
+            border-left: 5px solid var(--accent-color);
+            font-size: 0.8rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
         }
+        #toast.show { visibility: visible; }
     </style>
 </head>
 <body>
 
-    <div id="toast"><span id="toast-message">Mensaje del sistema</span></div>
+    <div id="toast"><span id="toast-message">Notificación del sistema</span></div>
 
     <!-- CABECERA -->
     <header class="main-header">
         <div class="header-container">
             <button id="btnVolverMenu" class="btn-back">← Menú</button>
             <div class="header-title-wrapper">
-                <h1>Laguna Brava <span>| Registro de Eventos</span></h1>
+                <h1>Laguna Brava <span>| Eventos Críticos</span></h1>
                 <p>Mantecal · Apure</p>
             </div>
             <div class="sync-status-wrapper">
@@ -379,42 +402,65 @@
             <!-- FORMULARIO DE REGISTRO DE EVENTOS -->
             <div>
                 <section class="section-box">
-                    <h2>📅 Registrar Evento de Finca</h2>
-                    <form id="formEvento">
+                    <h2>🚨 Registrar Evento Crítico</h2>
+                    <form id="eventoForm">
+                        
                         <div class="form-group">
-                            <label for="tituloEvento">Título / Descripción Corta *</label>
-                            <input type="text" id="tituloEvento" required placeholder="Ej. Ingreso de lote novillas / Parto potrero 3">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="tipoEvento">Categoría del Evento *</label>
-                            <select id="tipoEvento" required>
+                            <label for="categoria-evento">Categoría del Evento *</label>
+                            <select id="categoria-evento" required>
                                 <option value="" disabled selected>Seleccione categoría...</option>
-                                <option value="Sanitario">Sanitario</option>
-                                <option value="Reproductivo">Reproductivo</option>
-                                <option value="Movilización">Movilización</option>
-                                <option value="General">General / Operativo</option>
+                                <option value="Mortalidad">Mortalidad</option>
+                                <option value="Aborto">Aborto</option>
+                                <option value="Natimorto">Natimorto</option>
+                                <option value="Consumo">Consumo Interno</option>
+                                <option value="Donacion">Donación</option>
+                                <option value="Traslado">Traslado</option>
                             </select>
                         </div>
 
-                        <!-- Fila de Fechas -->
                         <div class="form-row">
                             <div class="form-group">
-                                <label for="fechaInicio">Fecha Inicio *</label>
-                                <input type="date" id="fechaInicio" required>
+                                <label for="grupo-etario">Grupo Etario *</label>
+                                <input type="text" id="grupo-etario" required placeholder="Ej. Terneros, Vacas, Novillas">
                             </div>
                             <div class="form-group">
-                                <label for="fechaFin">Fecha Fin / Prevista</label>
-                                <input type="date" id="fechaFin">
+                                <label for="chip-numero">Chip / Caravana</label>
+                                <input type="text" id="chip-numero" placeholder="Nº o N/A lote">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="fecha-evento">Fecha del Evento *</label>
+                                <input type="date" id="fecha-evento" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="responsable-evento">Responsable</label>
+                                <input type="text" id="responsable-evento" placeholder="Nombre / Caporal">
                             </div>
                         </div>
 
                         <div class="form-group">
-                            <label for="detallesEvento">Observaciones / Detalles</label>
-                            <textarea id="detallesEvento" rows="3" placeholder="Detalles de la labor, personal a cargo, potrero..."></textarea>
+                            <label for="descripcion-evento">Descripción / Observaciones *</label>
+                            <textarea id="descripcion-evento" rows="3" required placeholder="Causa probable, potrero de origen/destino, detalles..."></textarea>
                         </div>
 
-                        <button type="submit">💾 Guardar y Sincronizar</button>
+                        <!-- CAPTURA GPS -->
+                        <div class="form-group">
+                            <label>Georreferenciación (GPS)</label>
+                            <button type="button" id="btn-capturar-gps" class="btn-gps">📍 Fijar Coordenadas GPS</button>
+                            <span id="gps-info" style="font-size: 0.65rem; color: var(--text-muted); margin-top: 3px; display: block;">GPS no capturado</span>
+                            <input type="hidden" id="gps-lat">
+                            <input type="hidden" id="gps-lng">
+                        </div>
+
+                        <!-- FOTO EVIDENCIA -->
+                        <div class="form-group">
+                            <label for="foto-evento">Adjuntar Evidencia Fotográfica</label>
+                            <input type="file" id="foto-evento" accept="image/*" style="font-size: 0.75rem; padding: 4px;">
+                        </div>
+
+                        <button type="submit" class="btn-action">💾 Registrar y Sincronizar</button>
                     </form>
                 </section>
             </div>
@@ -422,9 +468,39 @@
             <!-- TABLA E HISTORIAL DE EVENTOS -->
             <div>
                 <section class="section-box">
+                    
+                    <!-- KPIS RAPIDOS -->
+                    <div class="kpi-container">
+                        <div class="kpi-card">
+                            <span>Mortalidad</span>
+                            <strong id="kpi-mortalidad">0</strong>
+                        </div>
+                        <div class="kpi-card">
+                            <span>Reproductivos</span>
+                            <strong id="kpi-reproductivos">0</strong>
+                        </div>
+                        <div class="kpi-card">
+                            <span>Movimientos</span>
+                            <strong id="kpi-movimientos">0</strong>
+                        </div>
+                    </div>
+
                     <div class="toolbar-flex">
                         <h2>📋 Historial de Eventos</h2>
-                        <input type="text" id="buscadorEventos" placeholder="🔍 Filtrar eventos..." style="width: 100%;">
+                        <div style="display: flex; gap: 6px; width: 100%; max-width: 320px;">
+                            <select id="filtro-categoria" style="font-size: 0.75rem; padding: 5px;">
+                                <option value="">Todas las Categorías</option>
+                                <option value="Mortalidad">Mortalidad</option>
+                                <option value="Aborto">Aborto</option>
+                                <option value="Natimorto">Natimorto</option>
+                                <option value="Consumo">Consumo</option>
+                                <option value="Donacion">Donación</option>
+                                <option value="Traslado">Traslado</option>
+                            </select>
+                            <select id="filtro-grupo-etario" style="font-size: 0.75rem; padding: 5px;">
+                                <option value="">Todos los Etarios</option>
+                            </select>
+                        </div>
                     </div>
 
                     <div class="table-responsive">
@@ -432,19 +508,19 @@
                             <thead>
                                 <tr>
                                     <th>Fecha</th>
-                                    <th>Título</th>
-                                    <th>Categoría</th>
-                                    <th>Detalles</th>
+                                    <th>Categoría / Etario</th>
+                                    <th>Chip / Descripcion</th>
+                                    <th>Resp. / GPS</th>
                                     <th style="text-align: center;">Acción</th>
                                 </tr>
                             </thead>
                             <tbody id="tablaEventosBody">
-                                <!-- Inyectado dinámicamente -->
+                                <!-- Inyectado dinámicamente por eventos.js -->
                             </tbody>
                         </table>
                     </div>
-                    <div id="sinRegistros" style="text-align: center; padding: 20px; color: var(--text-muted); font-size: 0.8rem;">
-                        No hay eventos registrados.
+                    <div id="sinRegistros" style="text-align: center; padding: 20px; color: var(--text-muted); font-size: 0.8rem; display: none;">
+                        No hay eventos registrados con los filtros seleccionados.
                     </div>
                 </section>
             </div>
@@ -452,175 +528,16 @@
         </div>
     </main>
 
-    <!-- MOTOR DE LÓGICA (FIRESTORE) -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import {  
-            getFirestore,  
-            collection,  
-            addDoc,  
-            onSnapshot,  
-            doc,  
-            deleteDoc,  
-            query,  
-            orderBy,
-            enableIndexedDbPersistence 
-        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyADbn4gV6ROrppvanBM835IRyX3U8wdAnk",
-            authDomain: "hato-laguna-brava.firebaseapp.com",
-            projectId: "hato-laguna-brava",
-            storageBucket: "hato-laguna-brava.firebasestorage.app",
-            messagingSenderId: "1053099733476",
-            appId: "1:1053099733476:web:624514d41b08d1b347d7f1",
-            measurementId: "G-2E517DTZFS"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-
-        try {
-            enableIndexedDbPersistence(db).catch(() => {});
-        } catch (e) {}
-
-        const COLLECTION_NAME = "hato_eventos_finca";
-        let eventosCache = [];
-
-        function mostrarToast(mensaje, tipo = "success") {
-            const toast = document.getElementById('toast');
-            const toastMessage = document.getElementById('toast-message');
-            if (!toast || !toastMessage) return;
-
-            toastMessage.textContent = mensaje;
-            toast.style.borderLeftColor = tipo === "error" ? "#e76f51" : "var(--accent-color)";
-            toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 3500);
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            const fechaInput = document.getElementById('fechaInicio');
-            if (fechaInput) fechaInput.valueAsDate = new Date();
-
-            document.getElementById('btnVolverMenu').addEventListener('click', () => {
-                if (window.history.length > 1) {
-                    window.history.back();
-                } else {
-                    window.location.href = 'index.html';
-                }
-            });
-
-            iniciarSincronizacion();
-
-            document.getElementById('formEvento').addEventListener('submit', async (e) => {
-                e.preventDefault();
-
-                const nuevoEvento = {
-                    titulo: document.getElementById('tituloEvento').value.trim(),
-                    categoria: document.getElementById('tipoEvento').value,
-                    fechaInicio: document.getElementById('fechaInicio').value,
-                    fechaFin: document.getElementById('fechaFin').value || 'N/P',
-                    detalles: document.getElementById('detallesEvento').value.trim() || 'Sin observaciones',
-                    timestamp: Date.now()
-                };
-
-                const btnSubmit = e.target.querySelector('button[type="submit"]');
-                if (btnSubmit) btnSubmit.disabled = true;
-
-                try {
-                    await addDoc(collection(db, COLLECTION_NAME), nuevoEvento);
-                    document.getElementById('formEvento').reset();
-                    if (fechaInput) fechaInput.valueAsDate = new Date();
-                    mostrarToast("Evento guardado y sincronizado");
-                } catch (error) {
-                    console.error("Error al guardar:", error);
-                    mostrarToast("Error de red: No se pudo sincronizar", "error");
-                } finally {
-                    if (btnSubmit) btnSubmit.disabled = false;
-                }
-            });
-
-            document.getElementById('buscadorEventos').addEventListener('input', (e) => {
-                renderizarTabla(e.target.value.toLowerCase());
-            });
+    <!-- MOTOR DE LÓGICA EXTERNO -->
+    <script type="module" src="eventos.js"></script>
+    <script>
+        document.getElementById('btnVolverMenu').addEventListener('click', () => {
+            if (window.history.length > 1) {
+                window.history.back();
+            } else {
+                window.location.href = 'index.html';
+            }
         });
-
-        function iniciarSincronizacion() {
-            const semaphore = document.getElementById('syncSemaphore');
-            const syncText = document.getElementById('syncTextLabel');
-            const q = query(collection(db, COLLECTION_NAME), orderBy("timestamp", "desc"));
-
-            onSnapshot(q, (snapshot) => {
-                eventosCache = [];
-                snapshot.forEach((docSnap) => {
-                    eventosCache.push({
-                        id: docSnap.id,
-                        ...docSnap.data()
-                    });
-                });
-
-                semaphore.classList.add('online');
-                syncText.textContent = "Sincronizado";
-                renderizarTabla();
-            }, (error) => {
-                console.error("Error de sincronización:", error);
-                semaphore.classList.remove('online');
-                syncText.textContent = "Offline";
-                mostrarToast("Trabajando sin conexión a la nube", "error");
-            });
-        }
-
-        window.renderizarTabla = function(filtro = '') {
-            const tbody = document.getElementById('tablaEventosBody');
-            const sinRegistros = document.getElementById('sinRegistros');
-            if (!tbody) return;
-
-            const filtrados = eventosCache.filter(r => {
-                return r.titulo.toLowerCase().includes(filtro) ||
-                       r.categoria.toLowerCase().includes(filtro) ||
-                       r.detalles.toLowerCase().includes(filtro) ||
-                       r.fechaInicio.includes(filtro);
-            });
-
-            if (filtrados.length === 0) {
-                tbody.innerHTML = '';
-                if (sinRegistros) sinRegistros.style.display = 'block';
-                return;
-            }
-
-            if (sinRegistros) sinRegistros.style.display = 'none';
-
-            tbody.innerHTML = filtrados.map(r => {
-                let badgeClass = 'badge-general';
-                if (r.categoria === 'Sanitario') badgeClass = 'badge-sanitario';
-                else if (r.categoria === 'Reproductivo') badgeClass = 'badge-reproductivo';
-                else if (r.categoria === 'Movilización') badgeClass = 'badge-movilizacion';
-
-                return `
-                    <tr>
-                        <td><strong>${r.fechaInicio}</strong></td>
-                        <td>${r.titulo}</td>
-                        <td><span class="badge ${badgeClass}">${r.categoria}</span></td>
-                        <td style="max-width: 140px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${r.detalles}">${r.detalles}</td>
-                        <td style="text-align: center;">
-                            <button type="button" onclick="window.eliminarEvento('${r.id}')" class="btn-danger" title="Eliminar">🗑️</button>
-                        </td>
-                    </tr>
-                `;
-            }).join('');
-        };
-
-        window.eliminarEvento = async function(id) {
-            if (confirm("¿Está seguro de eliminar este evento?")) {
-                try {
-                    await deleteDoc(doc(db, COLLECTION_NAME, id));
-                    mostrarToast("Evento eliminado correctamente");
-                } catch (error) {
-                    console.error("Error al eliminar:", error);
-                    mostrarToast("No se pudo eliminar el evento", "error");
-                }
-            }
-        };
     </script>
 </body>
 </html>
