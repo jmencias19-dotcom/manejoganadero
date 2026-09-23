@@ -3,73 +3,620 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Título del Módulo - Hato Laguna Brava</title>
-    <!-- Ruta relativa unificada y con control de caché activo -->
-    <link rel="stylesheet" href="./potreros.css?v=4.0">
-    <link rel="manifest" href="manifest.json">
-    <!-- Iconos y fuentes -->
-    <link rel="stylesheet" href="https://cloudflare.com">
+    <title>Hato Laguna Brava - Control de Combustible</title>
+    <style>
+        :root {
+            --primary-color: #1b4332;
+            --secondary-color: #2d6a4f;
+            --accent-color: #52b788;
+            --header-gradient: linear-gradient(135deg, #081c15 0%, #1b4332 100%);
+            --card-bg: #ffffff;
+            --border-color: #d8f3dc;
+            --text-muted: #495057;
+            --bg-body: #f4f9f4;
+        }
+
+        /* RESET TOTAL Y AISLAMIENTO MÓVIL */
+        *, *:before, *:after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
+            width: 100%;
+            max-width: 100vw;
+            overflow-x: hidden;
+            background-color: var(--bg-body);
+            color: #212529;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* CABECERA INSTITUCIONAL */
+        .main-header {
+            background: var(--header-gradient);
+            color: #ffffff;
+            padding: 10px 12px;
+            box-shadow: 0 4px 15px rgba(27, 67, 50, 0.3);
+            border-bottom: 3px solid var(--accent-color);
+            width: 100%;
+        }
+
+        .header-container {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 6px;
+        }
+
+        .btn-back {
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.15);
+            padding: 6px 10px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 0.75rem;
+            font-weight: 600;
+            border: 1px solid rgba(255,255,255,0.2);
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .header-title-wrapper {
+            flex-grow: 1;
+            text-align: center;
+            min-width: 0;
+            padding: 0 4px;
+        }
+
+        .header-title-wrapper h1 {
+            font-size: 0.9rem;
+            font-weight: 800;
+            color: #ffffff;
+            text-transform: uppercase;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .header-title-wrapper h1 span {
+            color: var(--accent-color);
+            font-weight: 500;
+            text-transform: none;
+        }
+
+        .header-title-wrapper p {
+            font-size: 0.6rem;
+            color: #a3b899;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        /* SEMÁFORO CLOUD */
+        .sync-status-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 4px 8px;
+            border-radius: 20px;
+            flex-shrink: 0;
+        }
+
+        .semaphore {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: #e76f51;
+        }
+
+        .semaphore.online {
+            background-color: #2a9d8f;
+            box-shadow: 0 0 6px rgba(42, 157, 143, 0.9);
+        }
+
+        .sync-text {
+            font-size: 0.6rem;
+            color: #fff;
+            font-weight: 700;
+            display: none;
+        }
+
+        @media(min-width: 480px) {
+            .sync-text { display: inline; }
+            .header-title-wrapper h1 { font-size: 1.05rem; }
+            .header-title-wrapper p { font-size: 0.68rem; }
+        }
+
+        /* CONTENEDOR PRINCIPAL */
+        .main-container {
+            width: 100%;
+            max-width: 1440px;
+            margin: 0 auto;
+            padding: 10px 8px;
+        }
+
+        .menu-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            width: 100%;
+        }
+
+        @media (min-width: 1024px) {
+            .menu-grid {
+                display: grid;
+                grid-template-columns: 1fr 1.8fr;
+                gap: 20px;
+            }
+        }
+
+        /* TARJETAS CONTENEDORAS */
+        .section-box {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-top: 4px solid var(--primary-color);
+            border-radius: 8px;
+            padding: 14px 12px;
+            box-shadow: 0 2px 8px rgba(27, 67, 50, 0.05);
+            width: 100%;
+            max-width: 100%;
+            overflow: hidden;
+        }
+
+        .section-box h2 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            font-size: 0.95rem;
+            color: var(--primary-color);
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .form-group {
+            margin-bottom: 10px;
+            width: 100%;
+            max-width: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            display: block;
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--primary-color);
+            margin-bottom: 3px;
+            letter-spacing: 0.3px;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            max-width: 100%;
+            padding: 8px 10px;
+            border: 1px solid #ced4da;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            color: #212529;
+            background-color: #fff;
+        }
+
+        /* FILA DE DATOS NUMÉRICOS */
+        .form-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 4%;
+            width: 100%;
+            max-width: 100%;
+            margin-bottom: 10px;
+        }
+
+        .form-row .form-group {
+            flex: 0 0 48%;
+            max-width: 48%;
+            margin-bottom: 0;
+        }
+
+        button[type="submit"] {
+            display: block;
+            width: 100%;
+            text-align: center;
+            background-color: var(--secondary-color);
+            color: #ffffff;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(45, 106, 79, 0.2);
+            margin-top: 4px;
+        }
+
+        button[type="submit"]:active {
+            background-color: var(--primary-color);
+        }
+
+        .btn-danger {
+            background-color: #e76f51;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            padding: 6px 10px;
+            font-size: 0.75rem;
+        }
+
+        /* TOAST DE NOTIFICACIÓN */
+        #toast {
+            visibility: hidden;
+            min-width: 220px;
+            background-color: #212529;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 10px;
+            position: fixed;
+            z-index: 1000;
+            left: 50%;
+            bottom: 20px;
+            transform: translateX(-50%);
+            border-left: 5px solid var(--accent-color);
+            font-size: 0.8rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        #toast.show { visibility: visible; }
+
+        /* TABLA ADAPTABLE */
+        .toolbar-flex {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 10px;
+            width: 100%;
+        }
+
+        @media(min-width: 600px) {
+            .toolbar-flex {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+            }
+        }
+
+        .table-responsive {
+            width: 100%;
+            max-width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            background: #fff;
+        }
+
+        table {
+            width: 100%;
+            min-width: 580px;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.78rem;
+        }
+
+        th, td {
+            padding: 8px;
+            border-bottom: 1px solid #dee2e6;
+            color: #343a40;
+            vertical-align: middle;
+        }
+
+        th {
+            background-color: var(--primary-color);
+            color: #ffffff;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.68rem;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 2px 5px;
+            border-radius: 6px;
+            font-size: 0.62rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .badge-gasoil { background: #e0f2fe; color: #0369a1; }
+        .badge-gasolina { background: #fef3c7; color: #b45309; }
+
+        .help-text {
+            font-size: 0.62rem;
+            color: #666;
+            margin-top: 2px;
+            font-style: italic;
+        }
+    </style>
 </head>
 <body>
-    <!-- Contenedor donde se inyectará automáticamente el encabezado unificado (header.js) -->
-    <div id="app-header"></div>
 
+    <div id="toast"><span id="toast-message">Mensaje del sistema</span></div>
+
+    <!-- CABECERA -->
+    <header class="main-header">
+        <div class="header-container">
+            <button id="btnVolverMenu" class="btn-back">← Menú</button>
+            <div class="header-title-wrapper">
+                <h1>Laguna Brava <span>| Combustible</span></h1>
+                <p>Mantecal · Apure</p>
+            </div>
+            <div class="sync-status-wrapper">
+                <div id="syncSemaphore" class="semaphore"></div>
+                <span id="syncTextLabel" class="sync-text">Cloud</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- CONTENEDOR PRINCIPAL -->
     <main class="main-container">
-        <!-- Rejilla maestra que fuerza la estandarización tridimensional -->
         <div class="menu-grid">
             
-            <!-- COLUMNA 1 Y 2: Historial Principal (Ocupa más espacio en PC para legibilidad) -->
-            <section class="section-box" style="grid-column: span 2; height: auto;">
-                <div class="card-header">
-                    <div class="card-icon">⛽</div>
-                    <h2 class="card-title">Historial de Consumo de Combustible</h2>
-                </div>
-                <p class="card-description">Registros históricos de despacho y consumo de combustible en maquinaria pesada y vehículos del hato.</p>
-                
-                <!-- Contenedor responsive adaptado a pantallas táctiles -->
-                <div class="table-responsive">
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>Fecha</th>
-                                <th>Maquinaria / Vehículo</th>
-                                <th>Litros</th>
-                                <th>Horómetro / Odómetro</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tabla-combustible-body">
-                            <!-- Los datos se cargarán dinámicamente desde combustible.js -->
-                            <tr>
-                                <td colspan="4" style="text-align: center; color: var(--text-muted); padding: 20px;">
-                                    Cargando registros locales...
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </section>
+            <!-- FORMULARIO DE REGISTRO DE COMBUSTIBLE -->
+            <div>
+                <section class="section-box">
+                    <h2>⛽ Registrar Despacho</h2>
+                    <form id="formCombustible">
+                        <div class="form-group">
+                            <label for="equipoVehiculo">Equipo / Vehículo / Planta *</label>
+                            <input type="text" id="equipoVehiculo" required placeholder="Ej. Mazda BT-50 / Planta Starlink / Moto">
+                        </div>
 
-            <!-- COLUMNA 3: Acciones de Navegación Operativa -->
-            <section class="section-box" style="height: auto;">
-                <div class="card-header">
-                    <div class="card-icon">⚙️</div>
-                    <h2 class="card-title">Acciones Disponibles</h2>
-                </div>
-                <p class="card-description">Gestione los flujos de abastecimiento de diésel o gasolina en el campo.</p>
-                
-                <!-- Botones unificados con la clase .card-action de tus estilos maestros -->
-                <div style="display: flex; flex-direction: column; gap: 12px; margin-top: auto;">
-                    <a href="./registro-combustible.html" class="card-action" style="text-decoration: none;">📋 Registrar Despacho</a>
-                    <a href="./index.html" class="card-action" style="background-color: var(--text-muted); text-decoration: none;">⬅ Volver al Inicio</a>
-                </div>
-            </section>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="tipoCombustible">Tipo *</label>
+                                <select id="tipoCombustible" required>
+                                    <option value="" disabled selected>Seleccione...</option>
+                                    <option value="Gasoil">Gasoil</option>
+                                    <option value="Gasolina">Gasolina</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="cantidadLitros">Litros *</label>
+                                <input type="number" step="0.1" id="cantidadLitros" required placeholder="Ej. 50">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="fechaDespacho">Fecha *</label>
+                                <input type="date" id="fechaDespacho" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="horometrajeKilometraje">Horas / Kilómetros</label>
+                                <input type="text" id="horometrajeKilometraje" placeholder="Ej. 45200 km / 120 hrs">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="responsableDespacho">Responsable / Operador</label>
+                            <input type="text" id="responsableDespacho" placeholder="Nombre de quien recibe/despacha">
+                        </div>
+
+                        <button type="submit">💾 Guardar y Sincronizar</button>
+                    </form>
+                </section>
+            </div>
+
+            <!-- TABLA E HISTORIAL DE COMBUSTIBLE -->
+            <div>
+                <section class="section-box">
+                    <div class="toolbar-flex">
+                        <h2>📋 Historial de Despachos</h2>
+                        <input type="text" id="buscadorCombustible" placeholder="🔍 Filtrar registros..." style="width: 100%;">
+                    </div>
+
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Equipo</th>
+                                    <th>Tipo</th>
+                                    <th>Litros</th>
+                                    <th>Medida</th>
+                                    <th>Operador</th>
+                                    <th style="text-align: center;">Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tablaCombustibleBody">
+                                <!-- Inyectado dinámicamente -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="sinRegistros" style="text-align: center; padding: 20px; color: var(--text-muted); font-size: 0.8rem;">
+                        No hay registros de combustible almacenados.
+                    </div>
+                </section>
+            </div>
 
         </div>
     </main>
 
-    <!-- Scripts del Sistema y Módulo -->
-    <script src="./js/header.js"></script>
-    <script src="./js/syncManager.js"></script>
-    <script src="./combustible.js"></script>
+    <!-- MOTOR DE LÓGICA (FIRESTORE) -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import {  
+            getFirestore,  
+            collection,  
+            addDoc,  
+            onSnapshot,  
+            doc,  
+            deleteDoc,  
+            query,  
+            orderBy,
+            enableIndexedDbPersistence 
+        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyADbn4gV6ROrppvanBM835IRyX3U8wdAnk",
+            authDomain: "hato-laguna-brava.firebaseapp.com",
+            projectId: "hato-laguna-brava",
+            storageBucket: "hato-laguna-brava.firebasestorage.app",
+            messagingSenderId: "1053099733476",
+            appId: "1:1053099733476:web:624514d41b08d1b347d7f1",
+            measurementId: "G-2E517DTZFS"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        try {
+            enableIndexedDbPersistence(db).catch(() => {});
+        } catch (e) {}
+
+        const COLLECTION_NAME = "hato_control_combustible";
+        let combustibleCache = [];
+
+        function mostrarToast(mensaje, tipo = "success") {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toast-message');
+            if (!toast || !toastMessage) return;
+
+            toastMessage.textContent = mensaje;
+            toast.style.borderLeftColor = tipo === "error" ? "#e76f51" : "var(--accent-color)";
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3500);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const fechaInput = document.getElementById('fechaDespacho');
+            if (fechaInput) fechaInput.valueAsDate = new Date();
+
+            document.getElementById('btnVolverMenu').addEventListener('click', () => {
+                if (window.history.length > 1) {
+                    window.history.back();
+                } else {
+                    window.location.href = 'index.html';
+                }
+            });
+
+            iniciarSincronizacion();
+
+            document.getElementById('formCombustible').addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                const nuevoDespacho = {
+                    equipo: document.getElementById('equipoVehiculo').value.trim(),
+                    tipo: document.getElementById('tipoCombustible').value,
+                    litros: parseFloat(document.getElementById('cantidadLitros').value) || 0,
+                    fecha: document.getElementById('fechaDespacho').value,
+                    medida: document.getElementById('horometrajeKilometraje').value.trim() || 'S/D',
+                    responsable: document.getElementById('responsableDespacho').value.trim() || 'General',
+                    timestamp: Date.now()
+                };
+
+                const btnSubmit = e.target.querySelector('button[type="submit"]');
+                if (btnSubmit) btnSubmit.disabled = true;
+
+                try {
+                    await addDoc(collection(db, COLLECTION_NAME), nuevoDespacho);
+                    document.getElementById('formCombustible').reset();
+                    if (fechaInput) fechaInput.valueAsDate = new Date();
+                    mostrarToast("Despacho registrado y sincronizado");
+                } catch (error) {
+                    console.error("Error al guardar:", error);
+                    mostrarToast("Error de red: No se pudo sincronizar", "error");
+                } finally {
+                    if (btnSubmit) btnSubmit.disabled = false;
+                }
+            });
+
+            document.getElementById('buscadorCombustible').addEventListener('input', (e) => {
+                renderizarTabla(e.target.value.toLowerCase());
+            });
+        });
+
+        function iniciarSincronizacion() {
+            const semaphore = document.getElementById('syncSemaphore');
+            const syncText = document.getElementById('syncTextLabel');
+            const q = query(collection(db, COLLECTION_NAME), orderBy("timestamp", "desc"));
+
+            onSnapshot(q, (snapshot) => {
+                combustibleCache = [];
+                snapshot.forEach((docSnap) => {
+                    combustibleCache.push({
+                        id: docSnap.id,
+                        ...docSnap.data()
+                    });
+                });
+
+                semaphore.classList.add('online');
+                syncText.textContent = "Sincronizado";
+                renderizarTabla();
+            }, (error) => {
+                console.error("Error de sincronización:", error);
+                semaphore.classList.remove('online');
+                syncText.textContent = "Offline";
+                mostrarToast("Trabajando sin conexión a la nube", "error");
+            });
+        }
+
+        window.renderizarTabla = function(filtro = '') {
+            const tbody = document.getElementById('tablaCombustibleBody');
+            const sinRegistros = document.getElementById('sinRegistros');
+            if (!tbody) return;
+
+            const filtrados = combustibleCache.filter(r => {
+                return r.equipo.toLowerCase().includes(filtro) ||
+                       r.tipo.toLowerCase().includes(filtro) ||
+                       r.responsable.toLowerCase().includes(filtro) ||
+                       r.fecha.includes(filtro);
+            });
+
+            if (filtrados.length === 0) {
+                tbody.innerHTML = '';
+                if (sinRegistros) sinRegistros.style.display = 'block';
+                return;
+            }
+
+            if (sinRegistros) sinRegistros.style.display = 'none';
+
+            tbody.innerHTML = filtrados.map(r => {
+                let badgeClass = r.tipo === 'Gasoil' ? 'badge-gasoil' : 'badge-gasolina';
+
+                return `
+                    <tr>
+                        <td><strong>${r.fecha}</strong></td>
+                        <td>${r.equipo}</td>
+                        <td><span class="badge ${badgeClass}">${r.tipo}</span></td>
+                        <td><strong>${r.litros} L</strong></td>
+                        <td>${r.medida}</td>
+                        <td>${r.responsable}</td>
+                        <td style="text-align: center;">
+                            <button type="button" onclick="window.eliminarCombustible('${r.id}')" class="btn-danger" title="Eliminar">🗑️</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        };
+
+        window.eliminarCombustible = async function(id) {
+            if (confirm("¿Está seguro de eliminar este registro de combustible?")) {
+                try {
+                    await deleteDoc(doc(db, COLLECTION_NAME, id));
+                    mostrarToast("Registro eliminado correctamente");
+                } catch (error) {
+                    console.error("Error al eliminar:", error);
+                    mostrarToast("No se pudo eliminar el registro", "error");
+                }
+            }
+        };
+    </script>
 </body>
 </html>
