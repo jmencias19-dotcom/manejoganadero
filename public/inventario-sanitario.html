@@ -188,6 +188,25 @@
             transition: border-color 0.2s, box-shadow 0.2s;
         }
 
+        /* Estilo específico para selector múltiple ampliado */
+        select[multiple] {
+            height: 160px;
+            padding: 8px;
+            background-color: #fafafa;
+        }
+
+        select[multiple] option {
+            padding: 6px 8px;
+            border-bottom: 1px solid #eee;
+            border-radius: 4px;
+        }
+
+        select[multiple] option:checked {
+            background: var(--secondary-color) linear-gradient(0deg, var(--secondary-color), var(--secondary-color));
+            color: white;
+            font-weight: 600;
+        }
+
         input:focus, select:focus, textarea:focus {
             outline: none;
             border-color: var(--accent-color);
@@ -227,6 +246,11 @@
         .btn-danger {
             background-color: #e76f51 !important;
             box-shadow: 0 2px 6px rgba(231, 111, 81, 0.2);
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s;
         }
 
         .btn-danger:hover {
@@ -263,6 +287,7 @@
             padding: 12px;
             border-bottom: 1px solid #dee2e6;
             color: #343a40;
+            vertical-align: middle;
         }
 
         tr:hover td {
@@ -295,6 +320,13 @@
         .search-input {
             max-width: 300px;
         }
+
+        .help-text {
+            font-size: 0.73rem;
+            color: #666;
+            margin-top: 4px;
+            font-style: italic;
+        }
     </style>
 </head>
 <body>
@@ -313,7 +345,7 @@
             </div>
             <div class="sync-status-wrapper">
                 <div id="syncSemaphore" class="semaphore online"></div>
-                <span class="sync-text">Sincronizado</span>
+                <span class="sync-text" style="font-size: 0.75rem; color: #fff; font-weight: 600;">Sincronizado</span>
             </div>
         </div>
     </header>
@@ -346,12 +378,10 @@
                             </select>
                         </div>
 
-                        <!-- Fármaco Específico con agrupaciones farmacológicas -->
+                        <!-- Selector Múltiple de Fármacos / Productos -->
                         <div class="form-group">
-                            <label for="farmacoNombre">Fármaco / Producto Específico *</label>
-                            <select id="farmacoNombre" required>
-                                <option value="" disabled selected>Seleccione el fármaco o producto...</option>
-                                
+                            <label for="farmacosSelect">Fármaco / Producto Específico *</label>
+                            <select id="farmacosSelect" multiple required>
                                 <optgroup label="Desparasitantes">
                                     <option value="Abamectina">Abamectina (Endectocida inyectable)</option>
                                     <option value="Buliver+P">Buliver+P (Ivermectina + Vitaminas)</option>
@@ -425,6 +455,7 @@
                                     <option value="Ringer Lactato">Ringer Lactato (Solución electrolítica)</option>
                                 </optgroup>
                             </select>
+                            <div class="help-text">Mantenga presionado Ctrl (en PC) o toque varios elementos (en móvil/tablet) para seleccionar más de uno.</div>
                         </div>
 
                         <div class="form-row">
@@ -453,13 +484,7 @@
                 <section class="section-box">
                     <div class="toolbar-flex">
                         <h2>📋 Historial Médico y Registros</h2>
-                        <button id="btnBorrarHistorial" class="btn-danger" style="width: auto; padding: 8px 14px; font-size: 0.8rem;">
-                            🗑️ Borrar Todo el Historial
-                        </button>
-                    </div>
-
-                    <div class="form-group">
-                        <input type="text" id="buscadorHistorial" placeholder="Filtrar por lote, fármaco, síntoma..." class="search-input">
+                        <input type="text" id="buscadorHistorial" placeholder="Filtrar por lote, fármaco..." class="search-input">
                     </div>
 
                     <div class="table-responsive">
@@ -469,7 +494,7 @@
                                     <th>Fecha</th>
                                     <th>Lote / Chip</th>
                                     <th>Clasificación</th>
-                                    <th>Fármaco Aplicado</th>
+                                    <th>Fármacos Aplicados</th>
                                     <th>Próx. Tratamiento</th>
                                     <th>Observaciones</th>
                                     <th style="text-align: center;">Acción</th>
@@ -502,17 +527,19 @@
             document.getElementById('formSanitario').addEventListener('submit', (e) => {
                 e.preventDefault();
 
-                const selectFarmaco = document.getElementById('farmacoNombre');
-                const farmacoSeleccionado = selectFarmaco.value;
-                // Obtener el grupo farmacológico mediante la etiqueta del optgroup padre
-                const grupoAsociado = selectFarmaco.options[selectFarmaco.selectedIndex].parentNode.label || 'General';
+                const selectFarmacos = document.getElementById('farmacosSelect');
+                const farmacosSeleccionados = Array.from(selectFarmacos.selectedOptions).map(opt => opt.value);
+
+                if (farmacosSeleccionados.length === 0) {
+                    alert('Por favor, seleccione al menos un fármaco o producto.');
+                    return;
+                }
 
                 const nuevoRegistro = {
                     id: 'REG-' + Date.now(),
                     loteChip: document.getElementById('loteChip').value.trim(),
                     clasificacion: document.getElementById('clasificacion').value,
-                    grupoFarma: grupoAsociado,
-                    farmacoNombre: farmacoSeleccionado,
+                    farmacos: farmacosSeleccionados, // Almacena array de fármacos seleccionados
                     fechaAplicacion: document.getElementById('fechaAplicacion').value,
                     fechaProximo: document.getElementById('fechaProximo').value || 'No programado',
                     observaciones: document.getElementById('observaciones').value.trim() || 'Sin observaciones'
@@ -523,7 +550,7 @@
                     historial.unshift(nuevoRegistro);
                     localStorage.setItem('HL_HistorialSanitario', JSON.stringify(historial));
 
-                    alert(`¡Tratamiento guardado correctamente!\nLote/Chip: ${nuevoRegistro.loteChip}\nProducto: ${nuevoRegistro.farmacoNombre}`);
+                    alert(`¡Tratamiento guardado correctamente!\nLote/Chip: ${nuevoRegistro.loteChip}\nProductos: ${farmacosSeleccionados.join(', ')}`);
                     document.getElementById('formSanitario').reset();
                     document.getElementById('fechaAplicacion').valueAsDate = new Date();
                     renderizarHistorial();
@@ -537,15 +564,6 @@
             document.getElementById('buscadorHistorial').addEventListener('input', (e) => {
                 renderizarHistorial(e.target.value.toLowerCase());
             });
-
-            // Borrar Todo el Historial
-            document.getElementById('btnBorrarHistorial').addEventListener('click', () => {
-                if (confirm('¿Está seguro de eliminar TODO el historial médico almacenado? Esta acción es irreversible.')) {
-                    localStorage.removeItem('HL_HistorialSanitario');
-                    renderizarHistorial();
-                    alert('Historial borrado con éxito.');
-                }
-            });
         });
 
         function renderizarHistorial(filtro = '') {
@@ -553,13 +571,13 @@
             const tbody = document.getElementById('tablaHistorialBody');
             const sinRegistros = document.getElementById('sinRegistros');
 
-            const filtrados = historial.filter(r => 
-                r.loteChip.toLowerCase().includes(filtro) ||
-                r.farmacoNombre.toLowerCase().includes(filtro) ||
-                r.clasificacion.toLowerCase().includes(filtro) ||
-                r.grupoFarma.toLowerCase().includes(filtro) ||
-                r.observaciones.toLowerCase().includes(filtro)
-            );
+            const filtrados = historial.filter(r => {
+                const farmacosStr = Array.isArray(r.farmacos) ? r.farmacos.join(', ') : (r.farmacoNombre || '');
+                return r.loteChip.toLowerCase().includes(filtro) ||
+                       farmacosStr.toLowerCase().includes(filtro) ||
+                       r.clasificacion.toLowerCase().includes(filtro) ||
+                       r.observaciones.toLowerCase().includes(filtro);
+            });
 
             if (filtrados.length === 0) {
                 tbody.innerHTML = '';
@@ -574,19 +592,21 @@
                 else if (r.clasificacion === 'Dirigido') badgeClass = 'badge-dirigido';
                 else if (r.clasificacion === 'Correctivo') badgeClass = 'badge-correctivo';
 
+                // Formatear lista de fármacos para la tabla (soporta registros antiguos y nuevos múltiples)
+                const listaFármacos = Array.isArray(r.farmacos) 
+                    ? r.farmacos.map(f => `<span style="display:inline-block; background:#e9f5ed; color:#1b4332; padding:2px 6px; border-radius:4px; font-weight:600; margin:2px 2px;">• ${f}</span>`).join('')
+                    : `<strong>${r.farmacoNombre || 'N/D'}</strong>`;
+
                 return `
                     <tr>
                         <td><strong>${r.fechaAplicacion}</strong></td>
                         <td>${r.loteChip}</td>
                         <td><span class="badge ${badgeClass}">${r.clasificacion}</span></td>
-                        <td>
-                            <strong>${r.farmacoNombre}</strong>
-                            <div style="font-size: 0.72rem; color: #666;">${r.grupoFarma}</div>
-                        </td>
+                        <td>${listaFármacos}</td>
                         <td>${r.fechaProximo}</td>
-                        <td style="max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${r.observaciones}">${r.observaciones}</td>
+                        <td style="max-width: 180px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${r.observaciones}">${r.observaciones}</td>
                         <td style="text-align: center;">
-                            <button onclick="eliminarRegistro('${r.id}')" class="btn-danger" style="padding: 4px 8px; font-size: 0.75rem; width: auto; display: inline-block;">✕</button>
+                            <button onclick="eliminarRegistro('${r.id}')" class="btn-danger" style="padding: 6px 10px; font-size: 0.75rem;" title="Eliminar este registro">🗑️</button>
                         </td>
                     </tr>
                 `;
@@ -594,7 +614,7 @@
         }
 
         function eliminarRegistro(id) {
-            if (confirm('¿Desea eliminar este registro sanitario específico?')) {
+            if (confirm('¿Desea eliminar este registro sanitario específico del historial?')) {
                 let historial = JSON.parse(localStorage.getItem('HL_HistorialSanitario')) || [];
                 historial = historial.filter(r => r.id !== id);
                 localStorage.setItem('HL_HistorialSanitario', JSON.stringify(historial));
