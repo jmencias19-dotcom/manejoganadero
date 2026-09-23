@@ -307,29 +307,35 @@
                         </div>
                     </div>
 
-                    <!-- METAS DEL LOTE: KILOGRAMOS Y MESES DE SALIDA -->
-                    <div class="kpi-container">
-                        <div class="input-group">
-                            <label for="inputPesoObjetivo">Peso Meta del Lote (kg)</label>
-                            <input type="number" step="0.1" id="inputPesoObjetivo" value="350.0" required>
-                        </div>
-                        <div class="input-group">
-                            <label for="inputMesesObjetivo">Meta de Salida (Meses)</label>
-                            <input type="number" step="0.5" id="inputMesesObjetivo" value="4.0" required>
-                        </div>
-                    </div>
+                    <!-- METAS DEL LOTE Y PUNTO DE PARTIDA -->
+<div class="kpi-container">
+    <div class="input-group">
+        <label for="inputPesoInicial">⚖️ Peso Inicial / Base (kg)</label>
+        <input type="number" step="0.1" id="inputPesoInicial" placeholder="Ej: 220.5" required>
+    </div>
+    <div class="input-group">
+        <label for="inputPesoObjetivo">Peso Meta del Lote (kg)</label>
+        <input type="number" step="0.1" id="inputPesoObjetivo" value="350.0" required>
+    </div>
+</div>
 
-                    <div class="kpi-container">
-                        <div class="input-group">
-                            <label for="inputCV">Coeficiente de Variación del Lote (CV %)</label>
-                            <input type="number" step="0.1" id="inputCV" value="6.4" required>
-                        </div>
-                        <div class="input-group">
-                            <label for="inputEdad">Edad Promedio del Lote (meses)</label>
-                            <input type="number" step="0.1" id="inputEdad" value="8.5" required>
-                        </div>
-                    </div>
+<div class="kpi-container">
+    <div class="input-group">
+        <label for="inputMesesObjetivo">Meta de Salida (Meses)</label>
+        <input type="number" step="0.5" id="inputMesesObjetivo" value="4.0" required>
+    </div>
+    <div class="input-group">
+        <label for="inputCV">Coeficiente de Variación del Lote (CV %)</label>
+        <input type="number" step="0.1" id="inputCV" value="6.4" required>
+    </div>
+</div>
 
+<div class="kpi-container">
+    <div class="input-group" style="grid-column: span 2;">
+        <label for="inputEdad">Edad Promedio del Lote (meses)</label>
+        <input type="number" step="0.1" id="inputEdad" value="8.5" required>
+    </div>
+</div>
                     <!-- BLOQUE DE OBSERVACIONES CUALITATIVAS PARA LA IA -->
                     <div class="input-group">
                         <label for="inputObservaciones">Observaciones Cualitativas de Manga (Contexto para la IA):</label>
