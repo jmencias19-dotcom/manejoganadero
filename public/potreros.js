@@ -1,11 +1,13 @@
 /* ==========================================================================
-   Módulo Principal: Gestión de Potreros, Carga Animal y Memoria Indefinida
-   Hato Laguna Brava - Apure, Venezuela
+   Módulo Principal: Gestión de Potreros, Carga Animal y Memoria Indefinida (v4.4)
+   Hato Laguna Brava - Mantecal, Apure, Venezuela
    ========================================================================== */
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import {  
-    getFirestore,  
+    initializeFirestore,  
+    persistentLocalCache, 
+    persistentMultipleTabManager,
     collection,  
     addDoc,  
     onSnapshot,  
@@ -27,7 +29,13 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+
+// Inicialización optimizada con caché persistente y soporte multi-pestaña para campo
+const db = initializeFirestore(app, {
+    localCache: persistentLocalCache({
+        tabManager: persistentMultipleTabManager()
+    })
+});
 
 // Colecciones de Firestore
 const COL_LOTES_ACTIVOS = "lotes_activos_potreros_hl";
@@ -86,20 +94,17 @@ function inicializarFormularioYFiltros() {
     const selectPotrero = document.getElementById('select-potrero');
     const filtroPotrero = document.getElementById('filtro-potrero');
     const form = document.getElementById('potreroForm');
-    const btnRehacer = document.getElementById('btnRehacer'); // Selector del botón de restablecer
+    const btnRehacer = document.getElementById('btnRehacer');
 
-    // Poblar dinámicamente los selectores de categorías según la especie seleccionada
     if (selectEspecie && selectCategoria) {
         selectEspecie.addEventListener('change', actualizarCategorias);
-        actualizarCategorias(); // Carga inicial por defecto
+        actualizarCategorias();
     }
 
-    // Clonar opciones del potrero para el filtro superior de visualización
     if (selectPotrero && filtroPotrero) {
         filtroPotrero.innerHTML = '<option value="">Todos los Potreros</option>' + selectPotrero.innerHTML;
     }
 
-    // Evento de envío del formulario (Con la lógica unificada de éxito, audio y toast)
     if (form) {
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -107,7 +112,6 @@ function inicializarFormularioYFiltros() {
         });
     }
 
-    // Evento del botón Rehacer / Restablecer campos
     if (btnRehacer) {
         btnRehacer.addEventListener('click', () => {
             if (form) form.reset();
@@ -123,7 +127,6 @@ function inicializarFormularioYFiltros() {
         });
     }
 
-    // Listener para actualizar el Asistente Forrajero al cambiar parámetros
     const inputsCalculo = ['select-potrero', 'select-especie', 'select-categoria', 'cantidad-cabezas'];
     inputsCalculo.forEach(id => {
         const el = document.getElementById(id);
@@ -149,9 +152,6 @@ function actualizarCategorias() {
     });
 }
 
-/**
- * Obtiene el factor UGM de la categoría seleccionada actualmente
- */
 function obtenerFactorUgmSeleccionado() {
     const selectCategoria = document.getElementById('select-categoria');
     if (!selectCategoria || selectCategoria.selectedIndex <= 0) return 1.0;
@@ -159,9 +159,6 @@ function obtenerFactorUgmSeleccionado() {
     return parseFloat(selectedOption.dataset.factor) || 1.0;
 }
 
-/**
- * Calcula de forma preliminar el impacto de carga antes de enviar
- */
 function calcularImpactoForrajeroPreliminar() {
     const selectPotrero = document.getElementById('select-potrero');
     const selectCategoria = document.getElementById('select-categoria');
@@ -209,9 +206,6 @@ function calcularImpactoForrajeroPreliminar() {
     `;
 }
 
-/**
- * Guarda la asignación activa en Firestore, emite alertas y limpia el formulario
- */
 async function registrarAsignacionPotrero() {
     try {
         const selectPotrero = document.getElementById('select-potrero');
@@ -259,11 +253,10 @@ async function registrarAsignacionPotrero() {
 
         await addDoc(collection(db, COL_LOTES_ACTIVOS), nuevoLote);
         
-        // === APLICANDO LA MISMA LÓGICA DE FEEDBACK Y ALARMA ===
         if (typeof emitirAlarmaOperativa === 'function') {
-            emitirAlarmaOperativa('success'); // Emite tono operativo de éxito en campo
+            emitirAlarmaOperativa('success');
         }
-        mostrarToast("💾 Carga animal registrada y sincronizada con éxito."); // Notificación flotante optimizada
+        mostrarToast("💾 Carga animal registrada y sincronizada con éxito.");
         
         document.getElementById('potreroForm').reset();
         actualizarCategorias();
@@ -282,9 +275,6 @@ async function registrarAsignacionPotrero() {
     }
 }
 
-/**
- * Sincroniza en tiempo real los lotes activos y actualiza los KPIs globales.
- */
 function sincronizarLotesActivos() {
     const contenedor = document.getElementById('potreros-container');
     const kpiCabezas = document.getElementById('kpi-total-cabezas');
@@ -344,6 +334,7 @@ function sincronizarLotesActivos() {
             else if (lote.estadoCarga === "critico") claseEstado = "status-critico";
 
             const nombreCatDisplay = lote.nombreCategoria || lote.categoria.replace(/_/g, ' ');
+            const loteJsonSeguro = encodeURIComponent(JSON.stringify(lote));
 
             htmlTarjetas += `
                 <div class="potrero-card-item" data-id="${lote.id}">
@@ -364,7 +355,7 @@ function sincronizarLotesActivos() {
                             <option value="moderado" ${lote.estadoCarga === 'moderado' ? 'selected' : ''}>🟡 Moderado</option>
                             <option value="critico" ${lote.estadoCarga === 'critico' ? 'selected' : ''}>🔴 Crítico</option>
                         </select>
-                        <button class="btn-delete" onclick="window.vaciarYArchivarPotrero('${lote.id}', '${lote.potrero}', ${encodeURIComponent(JSON.stringify(lote))})" title="Vaciar potrero y enviar al historial indefinido">
+                        <button class="btn-delete" onclick="window.vaciarYArchivarPotrero('${lote.id}', '${lote.potrero}', '${loteJsonSeguro}')" title="Vaciar potrero y enviar al historial indefinido">
                             <i class="fa-solid fa-person-walking-arrow-right"></i> Vaciar
                         </button>
                     </div>
@@ -382,9 +373,6 @@ function sincronizarLotesActivos() {
     });
 }
 
-/**
- * Función global para vaciar un potrero y archivar con los datos reales del lote
- */
 window.vaciarYArchivarPotrero = async function(idLote, nombrePotrero, datosLoteEncoded) {
     if (!confirm(`¿Confirma el vaciado del potrero "${nombrePotrero}"? Esto registrará el ciclo de forma indefinida para las rutas de pastoreo.`)) {
         return;
@@ -401,9 +389,6 @@ window.vaciarYArchivarPotrero = async function(idLote, nombrePotrero, datosLoteE
     }
 };
 
-/**
- * Función exportable que archiva de forma permanente el récord del ciclo en Firestore.
- */
 export async function archivarCicloAlVaciarse(potreroNombre, datosLoteActivo) {
     try {
         const fechaVaciadoReal = new Date().toISOString().split('T')[0];
@@ -452,9 +437,6 @@ function mostrarToast(mensaje, esError = false) {
     }, 3500);
 }
 
-/**
- * Sincroniza la memoria indefinida y alimenta el sistema predictivo de rutas.
- */
 function sincronizarHistorialIndefinido() {
     const contenedorMatriz = document.getElementById('matriz-historial-container');
     const panelRecomendaciones = document.getElementById('ai-recomendacion-rutas');
