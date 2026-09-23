@@ -1,6 +1,6 @@
 /**
  * ============================================================================
- * HATO LAGUNA BRAVA - MOTOR MAESTRO DE PESAJE Y GESTIÓN GERENCIAL (v4.4)
+ * HATO LAGUNA BRAVA - MOTOR MAESTRO DE PESAJE Y GESTIÓN GERENCIAL (v4.5)
  * Ubicación: Sector Los Módulos, Mantecal, Estado Apure, Venezuela
  * Administrador / Veterinario: Dr. Juan José Mencías Guzmán
  * ============================================================================
@@ -16,7 +16,7 @@ const HatoApp = {
         this.vincularEventos();
         this.actualizarContadoresYVistas();
         this.monitorearConexiónRed();
-        console.log("🚀 Sistema Maestro Hato Laguna Brava v4.4 inicializado correctamente.");
+        console.log("🚀 Sistema Maestro Hato Laguna Brava v4.5 inicializado correctamente.");
     },
 
     configurarFechasPorDefecto: function() {
@@ -67,7 +67,7 @@ const HatoApp = {
             'inputLote', 
             'inputFechaActual', 
             'inputFechaProximo', 
-            'inputPesoInicial', // Corresponde al Peso Inicial del Lote / Base
+            'inputPesoInicial', // Campo: ⚖️ Peso Inicial / Base del lote (kg)
             'inputNumAnimales',
             'inputCV',
             'inputEdad'
@@ -108,7 +108,7 @@ const HatoApp = {
         let pesoProm = parseFloat(document.getElementById('inputPesoPromedio')?.value) || 0;
         let pesoObj = parseFloat(document.getElementById('inputPesoObjetivo')?.value) || 0;
         let mesesMeta = parseFloat(document.getElementById('inputMesesObjetivo')?.value) || 1;
-        let pesoInicialLote = parseFloat(document.getElementById('inputPesoInicial')?.value) || 0; // Peso Inicial del Lote / Base
+        let pesoInicialLote = parseFloat(document.getElementById('inputPesoInicial')?.value) || 0; 
         let numAnimales = parseInt(document.getElementById('inputNumAnimales')?.value) || 1;
 
         let historial = this.obtenerHistorial();
@@ -128,7 +128,7 @@ const HatoApp = {
                 if (gmdCalculada <= 0.01) gmdCalculada = 0.01;
             }
         } 
-        // PRIORIDAD 2: Sin historial, usando Peso Inicial del Lote / Base
+        // PRIORIDAD 2: Sin historial, usando ⚖️ Peso Inicial / Base del lote (kg)
         else if (pesoInicialLote > 0 && pesoProm > pesoInicialLote) {
             let kgsMetaInit = pesoObj - pesoProm;
             let diasMetaInit = mesesMeta * 30;
@@ -144,7 +144,7 @@ const HatoApp = {
         const elemGMD = document.getElementById('resumenGMD');
         if (elemGMD) elemGMD.innerText = `${gmdCalculada.toFixed(2)} kg/día (por animal)`;
 
-        // Cálculos diferenciados de Kilos Faltantes
+        // Cálculos exactos: Faltante promedio / animal vs Faltante total del lote
         let kgsFaltantesPorAnimal = pesoObj - pesoProm;
         if (kgsFaltantesPorAnimal < 0) kgsFaltantesPorAnimal = 0;
 
@@ -154,15 +154,15 @@ const HatoApp = {
         let mesesFaltantes = Math.floor(diasTotalesFaltantes / 30);
         let diasRestantes = diasTotalesFaltantes % 30;
 
-        // Actualización en interfaz con separación clara del compañero per cápita y total
+        // Estructura visual clara e independiente para la interfaz
         const elemKgsF = document.getElementById('resumenKgsFaltantes');
         if (elemKgsF) {
             elemKgsF.innerHTML = `
-                <div style="font-size: 1.1rem; font-weight: bold; color: #1b4332;">
-                    +${kgsFaltantesPorAnimal.toFixed(1)} kg <span style="font-size: 0.85rem; font-weight: normal;">(Faltante promedio / animal)</span>
+                <div style="font-size: 1.05rem; font-weight: bold; color: #1b4332; margin-bottom: 4px;">
+                    Faltante promedio / animal: +${kgsFaltantesPorAnimal.toFixed(1)} kg
                 </div>
-                <div style="font-size: 0.9rem; color: #495057; margin-top: 4px; font-weight: 600;">
-                    Total Lote [${numAnimales} cab]: +${kgsFaltantesTotalLote.toFixed(1)} kg faltantes
+                <div style="font-size: 0.95rem; font-weight: bold; color: #2d6a4f; border-top: 1px dashed #b7e4c7; padding-top: 4px;">
+                    Kg Faltantes para la Meta del Lote [${numAnimales} cab]: +${kgsFaltantesTotalLote.toFixed(1)} kg
                 </div>
             `;
         }
@@ -249,12 +249,12 @@ const HatoApp = {
         let mesesMeta = parseFloat(document.getElementById('inputMesesObjetivo').value) || 0;
         let cv = parseFloat(document.getElementById('inputCV')?.value) || 0;
         let observaciones = document.getElementById('inputObservaciones')?.value || '';
-        let pesoInicialLote = parseFloat(document.getElementById('inputPesoInicial')?.value) || 0; // Peso Inicial del Lote / Base
+        let pesoInicialLote = parseFloat(document.getElementById('inputPesoInicial')?.value) || 0; 
         let numAnimales = parseInt(document.getElementById('inputNumAnimales')?.value) || 1;
 
         let historial = this.obtenerHistorial();
 
-        // Autogeneración de registro base fantasma si el lote es nuevo y se indicó el peso inicial base
+        // Autogeneración de registro base fantasma usando ⚖️ Peso Inicial / Base del lote (kg)
         if (historial.filter(r => r.lote === loteNombre).length === 0 && pesoInicialLote > 0) {
             let fechaBaseObj = new Date(fechaActualStr);
             fechaBaseObj.setDate(fechaBaseObj.getDate() - 30);
@@ -271,7 +271,7 @@ const HatoApp = {
                 gmdCalculada: 0.50,
                 cvLote: cv,
                 numAnimales: numAnimales,
-                observaciones: 'Registro base inicial (Peso Inicial del Lote / Base) autogenerado por el sistema.'
+                observaciones: 'Registro base inicial (⚖️ Peso Inicial / Base del lote) autogenerado por el sistema.'
             };
             historial.push(registroBase);
         }
@@ -430,7 +430,7 @@ const HatoApp = {
                     <p><strong>Lote / Bloque Evaluado:</strong> ${loteSeleccionado}</p>
                     <p><strong>Total Controles de Manga Registrados:</strong> ${registrosLote.length}</p>
                     <p><strong>Animales en el Lote:</strong> ${ultimoReg.numAnimales || 'N/D'} cabezas</p>
-                    <p><strong>Peso Inicial del Lote / Base:</strong> ${primerReg.pesoPromedioLote} kg (${primerReg.fechaActual})</p>
+                    <p><strong>⚖️ Peso Inicial / Base del lote:</strong> ${primerReg.pesoPromedioLote} kg (${primerReg.fechaActual})</p>
                     <p><strong>Peso Actual del Lote:</strong> ${ultimoReg.pesoPromedioLote} kg (${ultimoReg.fechaActual})</p>
                     <p><strong>Meta del Lote:</strong> ${ultimoReg.pesoObjetivoLote} kg (Plazo estimado: ${ultimoReg.mesesObjetivo} meses)</p>
                 </div>
