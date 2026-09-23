@@ -136,9 +136,10 @@ class ControlSanitarioHato {
             else if (r.clasificacion === 'Dirigido') badgeClass = 'badge-dirigido';
             else if (r.clasificacion === 'Correctivo') badgeClass = 'badge-correctivo';
 
-            const listaFármacos = Array.isArray(r.farmacos) 
-                ? r.farmacos.map(f => `<span style="display:inline-block; background:#e9f5ed; color:#1b4332; padding:2px 6px; border-radius:4px; font-weight:600; margin:2px 2px; font-size:0.8rem;">• ${f}</span>`).join('')
-                : `<strong>${r.farmacoNombre || 'N/D'}</strong>`;
+           // Dentro de renderizarHistorial() en su script:
+const listaFármacos = Array.isArray(r.farmacos) 
+    ? `<div class="farmacos-container">` + r.farmacos.map(f => `<span class="farmaco-pill">• ${f}</span>`).join('') + `</div>`
+    : `<strong>${r.farmacoNombre || 'N/D'}</strong>`;
 
             return `
                 <tr>
