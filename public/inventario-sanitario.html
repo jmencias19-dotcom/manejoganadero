@@ -16,7 +16,7 @@
             --bg-body: #f4f9f4;
         }
 
-        /* BLINDAJE MÓVIL ABSOLUTO (Evita cualquier desplazamiento horizontal) */
+        /* RESET Y BLINDAJE MÓVIL ESTRICTO */
         *, *:before, *:after {
             box-sizing: border-box;
             margin: 0;
@@ -26,8 +26,6 @@
         html, body {
             width: 100%;
             height: 100%;
-            margin: 0;
-            padding: 0;
             overflow-x: hidden;
             background-color: var(--bg-body);
             color: #212529;
@@ -35,7 +33,7 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* CABECERA INSTITUCIONAL COMPACTA */
+        /* CABECERA INSTITUCIONAL */
         .main-header {
             background: var(--header-gradient);
             color: #ffffff;
@@ -71,7 +69,7 @@
         .header-title-wrapper {
             flex-grow: 1;
             text-align: center;
-            min-width: 0; /* Vital para que el texto truncate bien en móvil */
+            min-width: 0;
             padding: 0 4px;
         }
 
@@ -134,13 +132,12 @@
             .header-title-wrapper p { font-size: 0.68rem; }
         }
 
-        /* CONTENEDOR PRINCIPAL FLUIDO CON MÁRGENES ESTRICTOS EN CELULARES */
+        /* CONTENEDOR PRINCIPAL */
         .main-container {
             width: 100%;
             max-width: 1440px;
             margin: 0 auto;
             padding: 10px 8px;
-            box-sizing: border-box;
         }
 
         .menu-grid {
@@ -158,22 +155,21 @@
             }
         }
 
-        /* TARJETAS CONTENEDORAS */
+        /* TARJETAS CONTENEDORAS Y FORMULARIO ORDENADO */
         .section-box {
             background-color: var(--card-bg);
             border: 1px solid var(--border-color);
             border-top: 4px solid var(--primary-color);
             border-radius: 8px;
-            padding: 12px 10px;
+            padding: 14px 12px;
             box-shadow: 0 2px 8px rgba(27, 67, 50, 0.05);
             width: 100%;
-            box-sizing: border-box;
         }
 
         .section-box h2 {
             margin-top: 0;
-            margin-bottom: 10px;
-            font-size: 0.92rem;
+            margin-bottom: 12px;
+            font-size: 0.95rem;
             color: var(--primary-color);
             font-weight: 700;
             display: flex;
@@ -182,8 +178,10 @@
         }
 
         .form-group {
-            margin-bottom: 10px;
+            margin-bottom: 12px;
             width: 100%;
+            display: flex;
+            flex-direction: column;
         }
 
         label {
@@ -192,7 +190,8 @@
             font-weight: 700;
             text-transform: uppercase;
             color: var(--primary-color);
-            margin-bottom: 3px;
+            margin-bottom: 4px;
+            letter-spacing: 0.3px;
         }
 
         input, select, textarea {
@@ -201,10 +200,9 @@
             padding: 10px;
             border: 1px solid #ced4da;
             border-radius: 6px;
-            font-size: 16px; /* Evita zoom automático en móviles */
+            font-size: 16px; /* Evita zoom automático en iPhone/Android */
             color: #212529;
             background-color: #fff;
-            box-sizing: border-box;
         }
 
         select[multiple] {
@@ -224,11 +222,17 @@
             font-weight: 600;
         }
 
+        /* Fila simétrica y perfectamente alineada para fechas */
         .form-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 8px;
+            gap: 10px;
             width: 100%;
+            margin-bottom: 12px;
+        }
+
+        .form-row .form-group {
+            margin-bottom: 0;
         }
 
         button[type="submit"] {
@@ -245,7 +249,7 @@
             text-transform: uppercase;
             cursor: pointer;
             box-shadow: 0 2px 5px rgba(45, 106, 79, 0.2);
-            margin-top: 6px;
+            margin-top: 4px;
         }
 
         button[type="submit"]:active {
@@ -282,7 +286,7 @@
         }
         #toast.show { visibility: visible; }
 
-        /* TABLA ADAPTABLE CON SCROLL MÓVIL AISLADO */
+        /* TABLA ADAPTABLE */
         .toolbar-flex {
             display: flex;
             flex-direction: column;
@@ -439,6 +443,7 @@
                             <div class="help-text">Mantenga presionado para selección múltiple.</div>
                         </div>
 
+                        <!-- Fila de Fechas Ordenada -->
                         <div class="form-row">
                             <div class="form-group">
                                 <label for="fechaAplicacion">Aplicación *</label>
