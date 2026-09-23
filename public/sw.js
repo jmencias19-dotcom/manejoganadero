@@ -1,9 +1,9 @@
 /* ==========================================================================
-   SERVICE WORKER OFICIAL (v5.1) - HATO LAGUNA BRAVA
+   SERVICE WORKER OFICIAL (v5.2) - HATO LAGUNA BRAVA
    Soporte Offline Robusto y Corrección de Redirecciones de Vercel
    ========================================================================== */
 
-const CACHE_NAME = 'laguna-brava-v5.1';
+const CACHE_NAME = 'laguna-brava-v5.2';
 
 const ASSETS_TO_CACHE = [
     './',
@@ -15,6 +15,7 @@ const ASSETS_TO_CACHE = [
     './inventario-sanitario.html',
     './combustible.html',
     './indicadores-gestion.html',
+    './biblioteca.html',
     './potreros.css?v=4.0',
     './icon-192.png',
     './icon-512.png',
@@ -41,7 +42,7 @@ self.addEventListener('install', (event) => {
     self.skipWaiting();
 });
 
-// 2. Activación y Limpieza de Cachés Obsoletas
+// 2. Activación y Limpieza de Cachés Obsoletas (Purgará la v5.1 automáticamente)
 self.addEventListener('activate', (event) => {
     event.waitUntil(
         caches.keys().then((cacheNames) => {
@@ -93,7 +94,6 @@ self.addEventListener('fetch', (event) => {
                     return networkResponse;
                 })
                 .catch(async () => {
-                    // Buscar en caché y limpiar la respuesta para evitar bloqueos offline
                     const cached = await caches.match(event.request);
                     if (cached) return limpiarRespuestaRedireccion(cached);
                     
