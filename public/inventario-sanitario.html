@@ -8,7 +8,7 @@
     <!-- Centralizado en tus Estilos Maestros Unificados (v4.1) -->
     <link rel="stylesheet" href="./potreros.css?v=4.1">
     
-    <!-- CDN oficial de iconos FontAwesome -->
+    <!-- CDN oficial de iconos FontAwesome (Corregido) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <!-- Manifiesto PWA -->
@@ -153,7 +153,6 @@
             background-color: var(--text-muted, #52b788); 
         }
 
-        /* Contenedor del Dúo Dinámico: Deshacer y Rehacer codo a codo */
         .undo-redo-group {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -194,15 +193,14 @@
         <!-- Rejilla maestra que fuerza la estandarización tridimensional -->
         <div class="menu-grid">
             
-            <!-- COLUMNA 1 Y 2: Tabla de Rotación de Potreros (Mayor espacio para lectura técnica) -->
+            <!-- COLUMNA 1 Y 2: Tabla de Rotación de Potreros -->
             <section class="section-box" style="grid-column: span 2; height: auto;">
                 <div class="card-header">
-                    <div class="card-icon">🌱</div>
+                    <div class="card-icon"><i class="fa-solid fa-seedling"></i></div>
                     <h2 class="card-title">Rotación de Potreros y Carga Animal</h2>
                 </div>
                 <p class="card-description">Seguimiento cronológico de la entrada y salida de lotes de ganado para garantizar el descanso óptimo de las pasturas en el trópico.</p>
                 
-                <!-- Tabla adaptativa integrada con tus estilos de datos -->
                 <div class="table-responsive">
                     <table class="data-table">
                         <thead>
@@ -215,7 +213,6 @@
                             </tr>
                         </thead>
                         <tbody id="tabla-pastoreo-body">
-                            <!-- Los datos se cargarán dinámicamente desde pastoreo.js -->
                             <tr>
                                 <td colspan="5" style="text-align: center; color: var(--text-muted); padding: 20px;">
                                     Cargando historial de rotaciones locales...
@@ -229,12 +226,11 @@
             <!-- COLUMNA 3: Resumen y Acciones Operativas -->
             <section class="section-box" style="height: auto;">
                 <div class="card-header">
-                    <div class="card-icon">🤠</div>
+                    <div class="card-icon"><i class="fa-solid fa-hat-cowboy"></i></div>
                     <h2 class="card-title">Control de Ocupación</h2>
                 </div>
                 <p class="card-description">Métricas de uso actual del suelo y disponibilidad de forraje en la sabana.</p>
                 
-                <!-- Indicadores rápidos integrados -->
                 <div class="kpi-container">
                     <div class="kpi-card-item">
                         <label>Potreros Activos</label>
@@ -246,7 +242,6 @@
                     </div>
                 </div>
 
-                <!-- Botonera unificada con la clase .card-action de tus estilos maestros -->
                 <div style="display: flex; flex-direction: column; gap: 12px; margin-top: auto; width: 100%;">
                     <a href="./potreros.html" class="card-action" style="text-decoration: none; text-align: center;">📋 Ver Estado de Potreros</a>
                     <a href="./index.html" class="card-action" style="background-color: var(--text-muted); text-decoration: none; text-align: center;">⬅ Volver al Inicio</a>
@@ -257,8 +252,8 @@
     </main>
 
     <!-- Scripts del Sistema y Módulos -->
-    <script src="./js/header.js"></script>
-    <script src="./js/syncManager.js"></script>
+    <script type="module" src="./js/header.js"></script>
+    <script type="module" src="./js/syncManager.js"></script>
     <script src="./pastoreo.js"></script>
 </body>
 </html>
