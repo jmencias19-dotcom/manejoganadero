@@ -2,290 +2,221 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Hato Laguna Brava - Inventario Sanitario y Tratamientos</title>
-    
-    <!-- Centralizado en tus Estilos Maestros Unificados -->
-    <link rel="stylesheet" href="./inventario-sanitario.css?v=4.1">
-    
-    <!-- CDN oficial de iconos FontAwesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Manifiesto PWA -->
-    <link rel="manifest" href="manifest.json">
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Protocolo Sanitario - Hato Laguna Brava</title>
     <style>
+        :root {
+            --primary-color: #1e3a8a;
+            --secondary-color: #3b82f6;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+        }
         body {
-            background-color: var(--bg-main, #fafdfb);
-            color: var(--text-main, #1b4332);
-            font-family: system-ui, -apple-system, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
             margin: 0;
-            padding: 0;
+            padding: 10px;
         }
-
-        /* ==========================================================================
-           1. ENCABEZADO MAESTRO
-           ========================================================================== */
-        .main-header {
-            background: var(--header-gradient, linear-gradient(135deg, #1b4332 0%, #2d6a4f 100%));
-            color: #ffffff;
-            padding: 16px 24px;
-            box-shadow: 0 4px 20px rgba(27, 67, 50, 0.25);
-            border-bottom: 3px solid var(--accent-color, #52b788);
-            width: 100%;
-            position: relative;
-            overflow: hidden;
-            box-sizing: border-box;
-        }
-
-        .header-container {
-            max-width: 1280px;
+        .app-container {
+            max-width: 600px;
             margin: 0 auto;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 15px;
         }
-
-        .header-nav .btn-back {
-            color: #ffffff;
-            background: rgba(255, 255, 255, 0.1);
-            padding: 8px 12px;
-            border-radius: 6px;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            transition: background 0.2s ease;
-        }
-
-        .header-nav .btn-back:hover {
-            background: rgba(255, 255, 255, 0.2);
-        }
-
-        .header-title-wrapper {
-            flex-grow: 1;
+        .header-sintillo {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 12px 16px;
+            border-radius: 8px;
             text-align: center;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
-
-        .header-title-wrapper h1 {
-            font-size: 1.3rem;
-            font-weight: 700;
-            margin: 2px 0;
-            color: #ffffff;
+        .header-sintillo h2 {
+            margin: 0;
+            font-size: 1.1rem;
             letter-spacing: 0.5px;
         }
-
-        .header-title-wrapper h1 span {
-            color: var(--accent-color, #52b788);
-        }
-
-        .header-title-wrapper p {
+        .header-sintillo p {
+            margin: 4px 0 0;
             font-size: 0.85rem;
-            color: #a3b899;
-            margin: 0;
-            font-weight: 500;
+            opacity: 0.9;
         }
-
-        /* Semáforo de Sincronización */
-        .sync-status-wrapper {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            background: rgba(0, 0, 0, 0.2);
-            padding: 6px 12px;
-            border-radius: 20px;
+        .section-title {
+            font-size: 1rem;
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--secondary-color);
+            padding-bottom: 4px;
+            margin: 16px 0 8px;
+            text-transform: uppercase;
         }
-
-        .semaphore {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-        }
-
-        .semaphore.offline {
-            background-color: #e76f51;
-            box-shadow: 0 0 8px rgba(231, 111, 81, 0.6);
-        }
-
-        .semaphore.online {
-            background-color: #2a9d8f;
-            box-shadow: 0 0 8px rgba(42, 157, 143, 0.6);
-        }
-
-        .sync-text {
-            font-size: 0.75rem;
-            color: #ffffff;
-            font-weight: 600;
-        }
-
-        /* ==========================================================================
-           ESTRUCTURA DE CONTENIDO Y TARJETAS
-           ========================================================================== */
-        .main-container { 
-            padding: 20px; 
-            max-width: 1280px; 
-            margin: 0 auto; 
-        }
-
-        .menu-grid { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); 
-            gap: 20px; 
-        }
-
-        .section-box {
-            background-color: var(--card-bg, #ffffff);
-            border: 1px solid var(--border-color, #e2e8f0);
-            border-radius: 8px;
-            padding: 20px;
-            box-shadow: 0 2px 4px rgba(27, 67, 50, 0.02);
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
-            margin-bottom: 12px;
-        }
-
-        .card-header { 
-            display: flex; 
-            align-items: center; 
-            gap: 10px;
-            border-bottom: 1px solid var(--border-color, #e2e8f0); 
-            padding-bottom: 10px; 
-            margin: 0;
-        }
-
-        .card-title { 
-            font-size: 1.2rem; 
-            font-weight: 700;
-            margin: 0; 
-            color: var(--text-main, #1b4332); 
-        }
-
-        .card-description {
-            font-size: 0.85rem;
-            color: #666;
-            margin: 0;
-        }
-
-        .kpi-container { 
-            display: grid; 
-            grid-template-columns: 1fr 1fr; 
-            gap: 12px; 
-        }
-
-        .kpi-card-item {
-            background-color: var(--card-bg, #ffffff);
-            border: 1px solid var(--border-color, #e2e8f0);
-            border-radius: 8px;
-            padding: 12px 14px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 4px rgba(27, 67, 50, 0.02);
-        }
-
-        .kpi-card-item label {
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: var(--text-main, #1b4332);
-            margin: 0;
-        }
-
-        .kpi-value { 
-            font-weight: 700; 
-            font-size: 1.15rem;
-            color: var(--text-main, #1b4332); 
-        }
-
-        .card-action {
-            display: block;
-            padding: 10px;
-            background-color: var(--text-main, #1b4332);
-            color: #ffffff;
+        .card-mes {
+            background: var(--card-bg);
             border-radius: 6px;
-            font-weight: 600;
-            font-size: 0.9rem;
-            text-decoration: none;
-            text-align: center;
-            transition: background-color 0.2s;
+            padding: 10px 12px;
+            margin-bottom: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            border: 1px solid var(--border-color);
         }
-
-        .card-action:hover {
-            background-color: var(--text-muted, #52b788);
+        .card-mes h4 {
+            margin: 0 0 6px;
+            font-size: 0.9rem;
+            color: var(--secondary-color);
+        }
+        table.compact-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.8rem;
+        }
+        table.compact-table th, table.compact-table td {
+            padding: 4px 6px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+        table.compact-table th {
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+        table.compact-table tr:last-child td {
+            border-bottom: none;
+        }
+        .obs-box {
+            background: #fffbeb;
+            border-left: 3px solid #f59e0b;
+            padding: 8px;
+            font-size: 0.75rem;
+            color: #92400e;
+            border-radius: 4px;
+            margin-top: 12px;
         }
     </style>
 </head>
 <body>
 
-    <!-- Contenedor dinámico donde header.js inyectará el encabezado maestro unificado -->
-    <div id="app-header"></div>
+<div class="app-container">
+    <!-- Sintillo Principal -->
+    <div class="header-sintillo">
+        <h2>HATO LAGUNA BRAVA</h2>
+        <p>PROTOCOLO MENSUAL DE TRATAMIENTOS (2025-2026)</p>
+    </div>
 
-    <main class="main-container">
-        <!-- Rejilla maestra del módulo sanitario -->
-        <div class="menu-grid">
-            
-            <!-- COLUMNA 1 Y 2: Tabla de Registro de Tratamientos y Vacunas -->
-            <section class="section-box" style="grid-column: span 2; height: auto;">
-                <div class="card-header">
-                    <div class="card-icon"><i class="fa-solid fa-syringe"></i></div>
-                    <h2 class="card-title">Registro de Tratamientos, Fármacos y Vacunas</h2>
-                </div>
-                <p class="card-description">Aquí gestionarás la aplicación de tratamientos, fármacos y vacunas del hato bajo rigor técnico en el trópico.</p>
-                
-                <div class="table-responsive">
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>Fecha</th>
-                                <th>Lote / Animal</th>
-                                <th>Fármaco / Vacuna</th>
-                                <th>Dosis / Vía</th>
-                                <th>Responsable</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tabla-sanitaria-body">
-                            <tr>
-                                <td colspan="5" style="text-align: center; color: var(--text-muted); padding: 20px;">
-                                    Cargando registros del inventario sanitario...
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </section>
+    <!-- SECCIÓN BECERROS -->
+    <div class="section-title">Becerros</div>
 
-            <!-- COLUMNA 3: Resumen y Acciones Operativas Sanitarias -->
-            <section class="section-box" style="height: auto;">
-                <div class="card-header">
-                    <div class="card-icon"><i class="fa-solid fa-kit-medical"></i></div>
-                    <h2 class="card-title">Resumen Sanitario</h2>
-                </div>
-                <p class="card-description">Indicadores clave de cobertura y bioseguridad en campo.</p>
-                
-                <div class="kpi-container">
-                    <div class="kpi-card-item">
-                        <label>Aplicaciones (Mes)</label>
-                        <div class="kpi-value" id="kpi-aplicaciones-mes">0</div>
-                    </div>
-                    <div class="kpi-card-item">
-                        <label>Lotes Tratados</label>
-                        <div class="kpi-value" id="kpi-lotes-tratados">0</div>
-                    </div>
-                </div>
+    <div class="card-mes">
+        <h4>Mes 1</h4>
+        <table class="compact-table">
+            <tr><th>Producto</th><th>Dosis</th><th>Vía</th></tr>
+            <tr><td>Vidromec[cite: 1]</td><td>1 ml/50 kg PV[cite: 1]</td><td>Intramuscular[cite: 1]</td></tr>
+            <tr><td>Overcox[cite: 1]</td><td>3 ml/10 kg pv[cite: 1]</td><td>Oral[cite: 1]</td></tr>
+            <tr><td>Revimin[cite: 1]</td><td>5 ml[cite: 1]</td><td>Intramuscular[cite: 1]</td></tr>
+            <tr><td>Neocuprexan[cite: 1]</td><td>1 ml/50 kg PV[cite: 1]</td><td>Subcutánea[cite: 1]</td></tr>
+        </table>
+    </div>
 
-                <div style="display: flex; flex-direction: column; gap: 12px; margin-top: auto; width: 100%;">
-                    <a href="./inventario-sanitario.html" class="card-action">💉 Gestionar Inventario</a>
-                    <a href="./index.html" class="card-action" style="background-color: var(--text-muted);">⬅ Volver al Inicio</a>
-                </div>
-            </section>
+    <div class="card-mes">
+        <h4>Mes 2</h4>
+        <table class="compact-table">
+            <tr><th>Producto</th><th>Dosis</th><th>Vía</th></tr>
+            <tr><td>Revimin[cite: 1]</td><td>5 ml[cite: 1]</td><td>Intramuscular[cite: 1]</td></tr>
+            <tr><td>Ricomax[cite: 1]</td><td>1 ml/40 kg PV[cite: 1]</td><td>Subcutánea[cite: 1]</td></tr>
+            <tr><td>AD3E[cite: 1]</td><td>3 ml[cite: 1]</td><td>Intramuscular[cite: 1]</td></tr>
+        </table>
+    </div>
 
-        </div>
-    </main>
+    <div class="card-mes">
+        <h4>Mes 3</h4>
+        <table class="compact-table">
+            <tr><th>Producto</th><th>Dosis</th><th>Vía</th></tr>
+            <tr><td>vidromec</td><td>1 ml/50 kg PV</td><td>Intramuscular</td></tr>
+            <tr><td>vidromec</td><td>1 ml/50 kg PV</td><td>Intramuscular</td></tr>
+            <tr><td>Revimin[cite: 1]</td><td>5 ml[cite: 1]</td><td>Intramuscular[cite: 1]</td></tr>
+        </table>
+    </div>
 
-    <!-- Scripts del Sistema y Módulos en la raíz -->
-    <script type="module" src="./header.js"></script>
-    <script type="module" src="./syncManager.js"></script>
-    <script src="./inventario-sanitario.js"></script>
+    <div class="card-mes">
+        <h4>Mes 4</h4>
+        <table class="compact-table">
+            <tr><th>Producto</th><th>Dosis</th><th>Vía</th></tr>
+            <tr><td>Revimin[cite: 1]</td><td>5 ml[cite: 1]</td><td>Intramuscular[cite: 1]</td></tr>
+            <tr><td>Ricomax[cite: 1]</td><td>1 ml/40 kg PV[cite: 1]</td><td>Subcutánea[cite: 1]</td></tr>
+            <tr><td>AD3E[cite: 1]</td><td>3 ml[cite: 1]</td><td>Intramuscular[cite: 1]</td></tr>
+        </table>
+    </div>
+
+    <div class="card-mes">
+        <h4>Mes 5</h4>
+        <table class="compact-table">
+            <tr><th>Producto</th><th>Dosis</th><th>Vía</th></tr>
+            <tr><td>Neocuprexan[cite: 1]</td><td>1 ml/50 kg PV[cite: 1]</td><td>Subcutánea[cite: 1]</td></tr>
+            <tr><td>Vidromec[cite: 1]</td><td>1 ml/50 kg PV[cite: 1]</td><td>Intramuscular[cite: 1]</td></tr>
+            <tr><td>Revimin[cite: 1]</td><td>5 ml[cite: 1]</td><td>Intramuscular[cite: 1]</td></tr>
+        </table>
+    </div>
+
+
+    <!-- SECCIÓN BUCERROS -->
+    <div class="section-title">Bucerros</div>
+
+    <div class="card-mes">
+        <h4>Mes 1</h4>
+        <table class="compact-table">
+            <tr><th>Producto</th><th>Dosis</th><th>Vía</th></tr>
+            <tr><td>Vidromec[cite: 2]</td><td>1 ml/50 kg PV[cite: 2]</td><td>Intramuscular[cite: 2]</td></tr>
+            <tr><td>Overcox[cite: 2]</td><td>3 ml/10 kg pv[cite: 2]</td><td>Oral[cite: 2]</td></tr>
+            <tr><td>Raket[cite: 2]</td><td>1 ml/100 kg PV[cite: 2]</td><td>Intramuscular[cite: 2]</td></tr>
+            <tr><td>Neocuprexan[cite: 2]</td><td>1 ml/50 kg PV[cite: 2]</td><td>Subcutánea[cite: 2]</td></tr>
+        </table>
+    </div>
+
+    <div class="card-mes">
+        <h4>Mes 2</h4>
+        <table class="compact-table">
+            <tr><th>Producto</th><th>Dosis</th><th>Vía</th></tr>
+            <tr><td>Raket[cite: 2]</td><td>1 ml/100 kg pv[cite: 2]</td><td>Intramuscular[cite: 2]</td></tr>
+            <tr><td>Closaval[cite: 2]</td><td>2,5 ml/10 kg PV[cite: 2]</td><td>Oral[cite: 2]</td></tr>
+            <tr><td>Babeside[cite: 2]</td><td>5 ml/100 kg pv[cite: 2]</td><td>Intramuscular[cite: 2]</td></tr>
+        </table>
+    </div>
+
+    <div class="card-mes">
+        <h4>Mes 3</h4>
+        <table class="compact-table">
+            <tr><th>Producto</th><th>Dosis</th><th>Vía</th></tr>
+            <tr><td>vidromec</td><td>1 ml/100 kg pv</td><td>Intramuscular</td></tr>
+            <tr><td>ricomax</td><td>1 ml/40 kg PV</td><td>Subcutánea</td></tr>
+            <tr><td>AD3E</td><td>3 ml</td><td>Intramuscular</td></tr>
+        </table>
+    </div>
+
+    <div class="card-mes">
+        <h4>Mes 4</h4>
+        <table class="compact-table">
+            <tr><th>Producto</th><th>Dosis</th><th>Vía</th></tr>
+            <tr><td>Neocuprexan[cite: 2]</td><td>1 ml/50 kg PV[cite: 2]</td><td>Subcutánea[cite: 2]</td></tr>
+            <tr><td>Vidromec[cite: 2]</td><td>1 ml/50 kg PV[cite: 2]</td><td>Intramuscular[cite: 2]</td></tr>
+            <tr><td>Babeside[cite: 2]</td><td>5 ml/100 kg pv[cite: 2]</td><td>Intramuscular[cite: 2]</td></tr>
+        </table>
+    </div>
+
+    <div class="card-mes">
+        <h4>Mes 5</h4>
+        <table class="compact-table">
+            <tr><th>Producto</th><th>Dosis</th><th>Vía</th></tr>
+            <tr><td>Raket[cite: 2]</td><td>1 ml/100 kg pv[cite: 2]</td><td>Intramuscular[cite: 2]</td></tr>
+            <tr><td>Closaval[cite: 2]</td><td>2,5 ml/10 kg PV[cite: 2]</td><td>Oral[cite: 2]</td></tr>
+            <tr><td>Babeside[cite: 2]</td><td>5 ml/100 kg pv[cite: 2]</td><td>Intramuscular[cite: 2]</td></tr>
+        </table>
+    </div>
+
+    <!-- Observación General -->
+    <div class="obs-box">
+        <strong>Observación:</strong> De ser necesario aplicar tylosina en cualquiera de las etapas según el caso o algún otro medicamento adicional de ser requerido[cite: 1, 2].
+    </div>
+
+</div>
+
 </body>
 </html>
