@@ -1,146 +1,208 @@
 /**
- * Módulo de Inventario Sanitario y Hoja de Vida - Hato Laguna Brava
- * Automatización de registros clínicos, trazabilidad y control de lotes.
+ * ============================================================================
+ * SISTEMA DE GESTIÓN SANITARIA - HATO LAGUNA BRAVA
+ * Módulo de Lógica y Persistencia de Datos (JavaScript)
+ * ============================================================================
  */
 
-class InventarioSanitarioHL {
+class ControlSanitarioHato {
     constructor() {
-        this.storageKey = 'hl_inventario_sanitario';
-        this.lotesKey = 'hl_lotes_activos';
+        this.STORAGE_KEY = 'HL_HistorialSanitario';
         this.init();
     }
 
     init() {
-        this.cargarDatosIniciales();
-        this.vincularEventos();
+        // Inicializar al cargar el DOM
+        document.addEventListener('DOMContentLoaded', () => {
+            this.configurarFechasPorDefecto();
+            this.registrarEventos();
+            this.renderizarHistorial();
+            this.verificarEstadoRed();
+        });
+
+        // Escuchar cambios de conectividad en tiempo real (Semáforo)
+        window.addEventListener('online', () => this.actualizarEstadoConectividad(true));
+        window.addEventListener('offline', () => this.actualizarEstadoConectividad(false));
     }
 
-    cargarDatosIniciales() {
-        // Inicializar almacenamiento local si no existe
-        if (!localStorage.getItem(this.storageKey)) {
-            localStorage.setItem(this.storageKey, JSON.stringify([]));
-        }
-        if (!localStorage.getItem(this.lotesKey)) {
-            localStorage.setItem(this.lotesKey, JSON.stringify([]));
+    configurarFechasPorDefecto() {
+        const inputFecha = document.getElementById('fechaAplicacion');
+        if (inputFecha && !inputFecha.value) {
+            inputFecha.valueAsDate = new Date();
         }
     }
 
-    vincularEventos() {
+    registrarEventos() {
+        // Evento de envío del formulario
         const form = document.getElementById('formSanitario');
-        const btnPDF = document.getElementById('btnGenerarPDF');
-        const btnEliminarLote = document.getElementById('btnEliminarLote');
-
         if (form) {
-            form.addEventListener('submit', (e) => {
-                e.preventDefault();
-                this.registrarTratamiento();
-            });
+            form.addEventListener('submit', (e) => this.guardarTratamiento(e));
         }
 
-        if (btnPDF) {
-            btnPDF.addEventListener('click', () => {
-                this.generarPDFHistorial();
-            });
-        }
-
-        if (btnEliminarLote) {
-            btnEliminarLote.addEventListener('click', () => {
-                this.darDeBajaLote();
+        // Evento de búsqueda / filtrado en tiempo real
+        const inputBuscador = document.getElementById('buscadorHistorial');
+        if (inputBuscador) {
+            inputBuscador.addEventListener('input', (e) => {
+                this.renderizarHistorial(e.target.value.toLowerCase());
             });
         }
     }
 
-    obtenerRegistros() {
-        return JSON.parse(localStorage.getItem(this.storageKey)) || [];
-    }
+    /**
+     * Captura los datos del formulario, valida selección múltiple y almacena localmente.
+     */
+    guardarTratamiento(e) {
+        e.preventDefault();
 
-    guardarRegistros(registros) {
-        localStorage.setItem(this.storageKey, JSON.stringify(registros));
-    }
+        const selectFarmacos = document.getElementById('farmacosSelect');
+        const farmacosSeleccionados = Array.from(selectFarmacos.selectedOptions).map(opt => opt.value);
 
-    registrarTratamiento() {
-        const destino = document.getElementById('destino').value.trim();
-        const cantidadAnimales = parseInt(document.getElementById('cantidadAnimales').value, 10);
-        const tipoProtocolo = document.getElementById('tipoProtocolo').value;
-        const tratamiento = document.getElementById('tratamiento').value;
-        const fechaTratamiento = document.getElementById('fechaTratamiento').value;
-        const proximoTratamiento = document.getElementById('proximoTratamiento').value;
-        const observaciones = document.getElementById('observaciones').value.trim();
-
-        if (!destino || !cantidadAnimales || !tipoProtocolo || !tratamiento || !fechaTratamiento) {
-            alert('Por favor, complete todos los campos obligatorios para guardar la hoja de vida.');
+        if (farmacosSeleccionados.length === 0) {
+            alert('Atención: Debe seleccionar al menos un fármaco o producto aplicado.');
             return;
         }
 
         const nuevoRegistro = {
-            id: 'REG-' + Date.now(),
-            destino: destino.toUpperCase(),
-            cantidadAnimales,
-            tipoProtocolo,
-            tratamiento,
-            fechaTratamiento,
-            proximoTratamiento: proximoTratamiento || 'No programado',
-            observaciones: observaciones || 'Sin observaciones adicionales',
-            timestamp: new Date().toISOString()
+            id: 'HL-SAN-' + Date.now(),
+            loteChip: document.getElementById('loteChip').value.trim(),
+            clasificacion: document.getElementById('clasificacion').value,
+            farmacos: farmacosSeleccionados,
+            fechaAplicacion: document.getElementById('fechaAplicacion').value,
+            fechaProximo: document.getElementById('fechaProximo').value || 'No programado',
+            observaciones: document.getElementById('observaciones').value.trim() || 'Sin observaciones',
+            timestampSincronizacion: null // Para futura cola de sync con Firebase/Supabase
         };
 
-        const registros = this.obtenerRegistros();
-        registros.push(nuevoRegistro);
-        this.guardarRegistros(registros);
+        try {
+            let historial = this.obtenerHistorialLocal();
+            historial.unshift(nuevoRegistro); // Añadir al inicio para ver lo más reciente
+            localStorage.setItem(this.STORAGE_KEY, JSON.stringify(historial));
 
-        alert(`¡Registro guardado con éxito en la Hoja de Vida de "${destino}"!\nTotal de animales tratados: ${cantidadAnimales}`);
-        document.getElementById('formSanitario').reset();
-    }
-
-    generarPDFHistorial() {
-        const destino = document.getElementById('destino').value.trim().toUpperCase();
-        
-        if (!destino) {
-            alert('Debe especificar el lote o animal en el campo correspondiente para generar su PDF histórico.');
-            return;
-        }
-
-        const registros = this.obtenerRegistros();
-        const historialFiltrado = registros.filter(r => r.destino === destino);
-
-        if (historialFiltrado.length === 0) {
-            alert(`No se encontraron registros sanitarios previos para el lote o animal: ${destino}`);
-            return;
-        }
-
-        // Estructura base para el reporte histórico indefinido
-        console.info(`Generando reporte PDF de hoja de vida para: ${destino}`, historialFiltrado);
-        alert(`Generando PDF de registro histórico indefinido (Hoja de Vida) para [${destino}]. Se han compilado ${historialFiltrado.length} eventos sanitarios.`);
-    }
-
-    darDeBajaLote() {
-        const destino = document.getElementById('destino').value.trim().toUpperCase();
-
-        if (!destino) {
-            alert('Escriba el nombre del lote o animal que sale del hato para proceder con la baja.');
-            return;
-        }
-
-        const confirmacion = confirm(`¿Está totalmente seguro de dar de baja al lote/animal "${destino}"? Esta acción retirará el grupo del hato activo y archivará su historial sanitario.`);
-        
-        if (confirmacion) {
-            let registros = this.obtenerRegistros();
-            // Marcar como inactivos o archivar registros asociados
-            const registrosActualizados = registros.map(r => {
-                if (r.destino === destino) {
-                    return { ...r, estado: 'BAJA_DEL_HATO', fechaBaja: new Date().toISOString() };
-                }
-                return r;
-            });
-
-            this.guardarRegistros(registrosActualizados);
-            alert(`El lote o animal "${destino}" ha sido dado de baja correctamente del sistema activo del Hato Laguna Brava.`);
+            // Feedback visual rápido y limpieza de formulario
+            alert(`¡Registro guardado con éxito en el dispositivo!\nLote/Chip: ${nuevoRegistro.loteChip}\nFármacos: ${farmacosSeleccionados.join(', ')}`);
+            
             document.getElementById('formSanitario').reset();
+            this.configurarFechasPorDefecto();
+            this.renderizarHistorial();
+
+            // Intentar sincronización en background si hay red
+            this.intentarSincronizacionRemota(nuevoRegistro);
+
+        } catch (err) {
+            console.error("Error crítico al guardar en localStorage:", err);
+            alert("Error: No se pudo almacenar el registro en la memoria local del dispositivo.");
         }
+    }
+
+    obtenerHistorialLocal() {
+        try {
+            return JSON.parse(localStorage.getItem(this.STORAGE_KEY)) || [];
+        } catch (err) {
+            console.error("Error al leer el almacenamiento local:", err);
+            return [];
+        }
+    }
+
+    /**
+     * Renderiza la tabla de historial aplicando filtros de búsqueda.
+     */
+    renderizarHistorial(filtro = '') {
+        const historial = this.obtenerHistorialLocal();
+        const tbody = document.getElementById('tablaHistorialBody');
+        const sinRegistros = document.getElementById('sinRegistros');
+
+        if (!tbody) return;
+
+        const filtrados = historial.filter(r => {
+            const farmacosStr = Array.isArray(r.farmacos) ? r.farmacos.join(', ') : (r.farmacoNombre || '');
+            return r.loteChip.toLowerCase().includes(filtro) ||
+                   farmacosStr.toLowerCase().includes(filtro) ||
+                   r.clasificacion.toLowerCase().includes(filtro) ||
+                   r.observaciones.toLowerCase().includes(filtro) ||
+                   r.fechaAplicacion.includes(filtro);
+        });
+
+        if (filtrados.length === 0) {
+            tbody.innerHTML = '';
+            if (sinRegistros) sinRegistros.style.display = 'block';
+            return;
+        }
+
+        if (sinRegistros) sinRegistros.style.display = 'none';
+
+        tbody.innerHTML = filtrados.map(r => {
+            let badgeClass = 'badge-rutinario';
+            if (r.clasificacion === 'Generalizado') badgeClass = 'badge-generalizado';
+            else if (r.clasificacion === 'Dirigido') badgeClass = 'badge-dirigido';
+            else if (r.clasificacion === 'Correctivo') badgeClass = 'badge-correctivo';
+
+            const listaFármacos = Array.isArray(r.farmacos) 
+                ? r.farmacos.map(f => `<span style="display:inline-block; background:#e9f5ed; color:#1b4332; padding:2px 6px; border-radius:4px; font-weight:600; margin:2px 2px; font-size:0.8rem;">• ${f}</span>`).join('')
+                : `<strong>${r.farmacoNombre || 'N/D'}</strong>`;
+
+            return `
+                <tr>
+                    <td><strong>${r.fechaAplicacion}</strong></td>
+                    <td>${r.loteChip}</td>
+                    <td><span class="badge ${badgeClass}">${r.clasificacion}</span></td>
+                    <td>${listaFármacos}</td>
+                    <td>${r.fechaProximo}</td>
+                    <td style="max-width: 180px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${r.observaciones}">${r.observaciones}</td>
+                    <td style="text-align: center;">
+                        <button type="button" onclick="window.appSanitario.eliminarRegistro('${r.id}')" class="btn-danger" style="padding: 6px 10px; font-size: 0.75rem; width: auto; display: inline-block;" title="Eliminar este registro">🗑️</button>
+                    </td>
+                </tr>
+            `;
+        }).join('');
+    }
+
+    /**
+     * Elimina un registro específico por su ID único.
+     */
+    eliminarRegistro(id) {
+        if (confirm('¿Está seguro de eliminar este registro sanitario del historial local?')) {
+            let historial = this.obtenerHistorialLocal();
+            historial = historial.filter(r => r.id !== id);
+            localStorage.setItem(this.STORAGE_KEY, JSON.stringify(historial));
+            
+            const inputBuscador = document.getElementById('buscadorHistorial');
+            const filtroActual = inputBuscador ? inputBuscador.value.toLowerCase() : '';
+            this.renderizarHistorial(filtroActual);
+        }
+    }
+
+    verificarEstadoRed() {
+        this.actualizarEstadoConectividad(navigator.onLine);
+    }
+
+    actualizarEstadoConectividad(isOnline) {
+        const semaphore = document.getElementById('syncSemaphore');
+        const syncText = document.querySelector('.sync-text');
+
+        if (!semaphore || !syncText) return;
+
+        if (isOnline) {
+            semaphore.className = 'semaphore online';
+            syncText.textContent = 'Sincronizado';
+        } else {
+            semaphore.className = 'semaphore offline'; // Puedes definir un color ámbar/rojo en CSS para offline
+            semaphore.style.backgroundColor = '#e76f51';
+            syncText.textContent = 'Modo Offline (Local)';
+        }
+    }
+
+    /**
+     * Gancho preparado para conectar con Firebase, Supabase o tu backend al recuperar red.
+     */
+    intentarSincronizacionRemota(registro) {
+        if (!navigator.onLine) {
+            console.trans?.('Dispositivo offline. El registro queda guardado localmente en Hato Laguna Brava.');
+            return;
+        }
+        // Lógica futura de envío remoto asíncrono (Fetch API / WebSocket)
+        console.log("Conectado a la red: Sincronizando registro con servidor...", registro);
     }
 }
 
-// Inicialización automática del módulo al cargar el DOM
-document.addEventListener('DOMContentLoaded', () => {
-    window.inventarioSanitarioHL = new InventarioSanitarioHL();
-});
+// Instanciar la aplicación globalmente para control de eventos en la tabla
+window.appSanitario = new ControlSanitarioHato();
