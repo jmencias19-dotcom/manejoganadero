@@ -3,393 +3,618 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manejo Ganadero HL - Registro Sanitario, Historial y Hoja de Vida</title>
-    <!-- Enlace a la hoja de estilos externa -->
-    <link rel="stylesheet" href="inventario-sanitario.css">
+    <title>Control Sanitario - Hato Laguna Brava</title>
+    <style>
+        /* ==========================================================================
+           VARIABLES DE DISEÑO INSTITUCIONAL (Hato Laguna Brava)
+           ========================================================================== */
+        :root {
+            --primary-color: #1b4332;
+            --secondary-color: #2d6a4f;
+            --accent-color: #52b788;
+            --header-gradient: linear-gradient(135deg, #081c15 0%, #1b4332 100%);
+            --card-bg: #ffffff;
+            --border-color: #d8f3dc;
+            --text-muted: #495057;
+            --bg-body: #f4f9f4;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-body);
+            color: #212529;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ==========================================================================
+           1. ENCABEZADO MAESTRO
+           ========================================================================== */
+        .main-header {
+            background: var(--header-gradient);
+            color: #ffffff;
+            padding: 16px 24px;
+            box-shadow: 0 4px 20px rgba(27, 67, 50, 0.25);
+            border-bottom: 3px solid var(--accent-color);
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+        }
+
+        .header-nav .btn-back {
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 8px 12px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 0.85rem;
+            transition: background 0.2s ease;
+        }
+
+        .header-nav .btn-back:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .header-title-wrapper {
+            flex-grow: 1;
+            text-align: center;
+        }
+
+        .header-title-wrapper h1 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin: 2px 0;
+            color: #ffffff;
+            letter-spacing: 0.5px;
+        }
+
+        .header-title-wrapper h1 span {
+            color: var(--accent-color);
+        }
+
+        .header-title-wrapper p {
+            font-size: 0.85rem;
+            color: #a3b899;
+            font-weight: 500;
+        }
+
+        /* Semáforo de Sincronización */
+        .sync-status-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 6px 12px;
+            border-radius: 20px;
+        }
+
+        .semaphore {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .semaphore.offline {
+            background-color: #e76f51;
+            box-shadow: 0 0 8px rgba(231, 111, 81, 0.6);
+        }
+
+        .semaphore.online {
+            background-color: #2a9d8f;
+            box-shadow: 0 0 8px rgba(42, 157, 143, 0.6);
+        }
+
+        .sync-text {
+            font-size: 0.75rem;
+            color: #ffffff;
+            font-weight: 600;
+        }
+
+        /* ==========================================================================
+           2. CONTENEDOR PRINCIPAL Y REJILLA
+           ========================================================================== */
+        .main-container {
+            width: 100%;
+            max-width: 1440px;
+            margin: 0 auto;
+            padding: 30px 20px;
+            flex-grow: 1;
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr; /* 1 columna para formulario, 2 para historial/vademécum */
+            gap: 24px;
+            align-items: start;
+        }
+
+        @media (max-width: 1024px) {
+            .menu-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ==========================================================================
+           3. TARJETAS Y COMPONENTES
+           ========================================================================== */
+        .section-box, .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-top: 4px solid var(--primary-color);
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 14px rgba(27, 67, 50, 0.05);
+            margin-bottom: 24px;
+        }
+
+        .card-title, .section-title, h2 {
+            margin-top: 0;
+            margin-bottom: 1rem;
+            font-size: 1.15rem;
+            color: var(--primary-color);
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Formularios y Inputs */
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--primary-color);
+            margin-bottom: 6px;
+            letter-spacing: 0.5px;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid #ced4da;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            color: #212529;
+            background-color: #fff;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(82, 183, 136, 0.15);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        /* Botones de acción */
+        button, .btn, .card-action {
+            display: block;
+            width: 100%;
+            text-align: center;
+            background-color: var(--secondary-color);
+            color: #ffffff;
+            padding: 12px 16px;
+            border: none;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.92rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(45, 106, 79, 0.2);
+            transition: background-color 0.2s ease, transform 0.1s ease;
+        }
+
+        button:hover, .btn:hover, .card-action:hover {
+            background-color: var(--primary-color);
+            transform: scale(1.01);
+        }
+
+        .btn-danger {
+            background-color: #e76f51 !important;
+            box-shadow: 0 2px 6px rgba(231, 111, 81, 0.2);
+        }
+
+        .btn-danger:hover {
+            background-color: #d90429 !important;
+        }
+
+        /* Tabla de Historial */
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            margin-top: 15px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.85rem;
+        }
+
+        th {
+            background-color: var(--primary-color);
+            color: #ffffff;
+            padding: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.5px;
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #dee2e6;
+            color: #343a40;
+        }
+
+        tr:hover td {
+            background-color: #f8f9fa;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .badge-generalizado { background: #e0f2fe; color: #0369a1; }
+        .badge-dirigido { background: #fef3c7; color: #b45309; }
+        .badge-correctivo { background: #fee2e2; color: #b91c1c; }
+        .badge-rutinario { background: #ecfdf5; color: #047857; }
+
+        /* Controles superiores de tabla y búsqueda */
+        .toolbar-flex {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .search-input {
+            max-width: 300px;
+        }
+
+        .vademecum-box {
+            max-height: 180px;
+            overflow-y: auto;
+            border: 1px solid #ced4da;
+            border-radius: 8px;
+            padding: 10px;
+            background: #fafafa;
+            font-size: 0.82rem;
+        }
+
+        .vademecum-item {
+            padding: 6px 8px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        .vademecum-item:hover {
+            background: #e9ecef;
+            border-radius: 4px;
+        }
+    </style>
 </head>
 <body>
 
-<div class="app-container">
-    
-    <!-- Sintillo / Encabezado -->
-    <div class="sintillo">
-        <h2>HATO LAGUNA BRAVA</h2>
-        <p>REGISTRO SANITARIO, HOJA DE VIDA Y HISTORIAL</p>
-    </div>
-
-    <!-- Formulario Principal -->
-    <div class="card-form">
-        <form id="formSanitario">
-            
-            <!-- Destino: Lote / Grupo / Individual -->
-            <div class="form-group">
-                <label for="destino">Lote / Grupo / Animal (Hoja de Vida)</label>
-                <input type="text" id="destino" placeholder="Ej: Vacas pñ1, Bucerros Ordeño, Animal ID-402" required>
+    <!-- ==========================================================================
+       CABECERA MAESTRO
+       ========================================================================== -->
+    <header class="main-header">
+        <div class="header-container">
+            <div class="header-nav">
+                <a href="#" class="btn-back">← Menú</a>
             </div>
-
-            <!-- Cantidad de Animales Tratados -->
-            <div class="form-group">
-                <label for="cantidadAnimales">Cantidad de Animales Tratados</label>
-                <input type="number" id="cantidadAnimales" min="1" placeholder="Ej: 49" required>
+            <div class="header-title-wrapper">
+                <h1>Hato Laguna Brava <span>| Control Sanitario</span></h1>
+                <p>Mantecal, Estado Apure, Venezuela</p>
             </div>
-
-            <!-- Tipo de Protocolo -->
-            <div class="form-group">
-                <label for="tipoProtocolo">Tipo de Protocolo</label>
-                <select id="tipoProtocolo" required>
-                    <option value="">Seleccione protocolo...</option>
-                    <option value="Mensual">Mensual (programa regular)</option>
-                    <option value="Dirigido">Dirigido (caso clínico-control)</option>
-                    <option value="Grupal">Grupal (rutina-control)</option>
-                </select>
-            </div>
-
-            <!-- Tratamiento / Producto (Listado oficial del Hato) -->
-            <div class="form-group">
-                <label for="tratamiento">Tratamiento / Producto</label>
-                <select id="tratamiento" required>
-                    <option value="">Seleccione fármaco o insumo...</option>
-                    
-                    <optgroup label="Desparasitantes">
-                        <option value="CLOZAVAL">Clozaval (Levamisol + Oxiclozanida)</option>
-                        <option value="OVERCOX_5%">Overcox 5% (Toltrazuril)</option>
-                        <option value="RAFOCAL">Rafocal (Rafoxanida)</option>
-                        <option value="BULIVER_P">Buliver+P (Ivermectina + Vitaminas)</option>
-                        <option value="COMISOL">Comisol (Fosfato de Levamisol concentrado)</option>
-                        <option value="TRICALCHERRY">Tricalcherry (Triclabendazole)</option>
-                        <option value="ZERAMEC">Zeramec (Zeranol + Ivermectina)</option>
-                        <option value="VERMOC_5_CO">Vermoc 5% CO (Antiparasitario oral)</option>
-                        <option value="RICOMAX">Ricomax (Ricobendazol al 15%)</option>
-                        <option value="ABAMECTINA">Abamectina (Endectocida inyectable)</option>
-                    </optgroup>
-
-                    <optgroup label="Minerales y Vitaminas">
-                        <option value="BOVIFOS">Bovifos (Modulador con Fósforo)</option>
-                        <option value="RAKET">Raket (Potenciador metabólico)</option>
-                        <option value="SUPERCEBA">Superceba (Modulador orgánico / Engorde)</option>
-                        <option value="MINERFUN_PLUS">Minerfun Plus (Reconstituyente mineral)</option>
-                        <option value="NEOCUPREXAN">Neocuprexan (Aporte de Cobre)</option>
-                        <option value="REVIMIN">Revimin (Complejo vitamínico mineral)</option>
-                        <option value="COMBECON">Combecon (Complejo B)</option>
-                        <option value="FOSFOTON">Fosfoton (Fósforo inyectable)</option>
-                        <option value="ERITROGEN">Eritrogen (Reconstituyente hematopoyético)</option>
-                        <option value="BUTAFOSFAN">Butafosfan (Estimulante metabólico fósforo)</option>
-                        <option value="SIGMA_K3">Sigma K3 (Vitamina antihemorrágica)</option>
-                        <option value="VITAMINA_AD3E">Vitamina AD3E (Concentrado liposoluble)</option>
-                        <option value="CUPROHO_PLUS">Cuproho Plus (Cobre mineral inyectable)</option>
-                    </optgroup>
-
-                    <optgroup label="Antibióticos">
-                        <option value="TILOSINA">Tilosina (Macrólido bactericida)</option>
-                        <option value="OVERBIOTIC">Overbiotic (Oxitetraciclina de larga acción)</option>
-                        <option value="SEPTIBRON_FORTE">Septibron Forte (Antibiótico respiratorio)</option>
-                        <option value="SIGMA_STS">Sigma S.T.S (Combinación antimicrobiana)</option>
-                        <option value="DIASTREPT50">Diastrept50 (Estreptomicina soluble)</option>
-                        <option value="OVERPEN">Overpen (Penicilina compuesta inyectable)</option>
-                    </optgroup>
-
-                    <optgroup label="Anéstesicos">
-                        <option value="KETAMIN">Ketamin (Anestésico disociativo)</option>
-                        <option value="SEDANXIL">Sedanxil (Sedante - Xilacina)</option>
-                        <option value="ATROPINA">Atropina (Preanestésico / Antídoto)</option>
-                    </optgroup>
-
-                    <optgroup label="Antiinflamatorios">
-                        <option value="FYNACOL">Fynacol (Flunixin Meglumine)</option>
-                        <option value="DICLOVET">Diclovet (Diclofenaco Sódico)</option>
-                    </optgroup>
-
-                    <optgroup label="Hormonas">
-                        <option value="GESTAR">Gestar (Control reproductivo / Sincronización)</option>
-                        <option value="REPROGEST">Reprogest (Progestágeno)</option>
-                        <option value="OXITOCINA">Oxitocina (Estimulante uterino y eyección láctea)</option>
-                        <option value="DEXTROGENOL">Dextrogenol (Análogo de prostaglandinas)</option>
-                    </optgroup>
-
-                    <optgroup label="Antisépticos">
-                        <option value="LEPECID">Lepecid (Larvicida / Curabicheras)</option>
-                        <option value="PENCO">Penco (Antiséptico local)</option>
-                        <option value="YODO">Yodo (Desinfectante local)</option>
-                    </optgroup>
-
-                    <optgroup label="Hemotrópicos">
-                        <option value="IMIDOVER">Imidover (Dipropionato de Imidocarb)</option>
-                        <option value="BABECIDE">Babecide (Tratamiento de piroplasmosis)</option>
-                    </optgroup>
-
-                    <optgroup label="Otros">
-                        <option value="RINGER_LACTATO">Ringer Lactato (Solución electrolítica)</option>
-                        <option value="FURODEX">Furodex (Diurético)</option>
-                        <option value="AZUL_DE_METILENO">Azul de Metileno (Antiséptico / Cicatrizante)</option>
-                    </optgroup>
-                </select>
-            </div>
-
-            <!-- Fechas -->
-            <div class="form-row">
-                <div class="form-group half">
-                    <label for="fechaTratamiento">Fecha de Tratamiento</label>
-                    <input type="date" id="fechaTratamiento" required>
-                </div>
-                <div class="form-group half">
-                    <label for="proximoTratamiento">Próximo Tratamiento</label>
-                    <input type="date" id="proximoTratamiento">
-                </div>
-            </div>
-
-            <!-- Casilla de Observaciones -->
-            <div class="form-group">
-                <label for="observaciones">Observaciones / Historial</label>
-                <textarea id="observaciones" placeholder="Detalles clínicos, condición corporal, dosificación especial..."></textarea>
-            </div>
-
-            <button type="submit" class="btn-submit">Guardar en Hoja de Vida / Sincronizar</button>
-            
-            <!-- Botones para Descarga PDF Histórico Indefinido y Baja de Lotes -->
-            <div class="btn-action-row">
-                <button type="button" class="btn-pdf" id="btnGenerarPDF">Descargar PDF Historial</button>
-                <button type="button" class="btn-delete-lote" id="btnEliminarLote">Dar de Baja / Eliminar Lote</button>
-            </div>
-        </form>
-    </div>
-
-    <!-- Área de Consulta de Fármacos y Descripción -->
-    <div class="card-consulta">
-        <h3>Consulta Rápida de Fármacos</h3>
-        <div class="form-group search-box" style="margin-bottom: 8px;">
-            <input type="text" id="buscadorFarmaco" placeholder="Escriba para buscar fármaco o principio activo...">
-        </div>
-        <div class="farmacos-list" id="listaConsulta">
-            <div class="farmaco-item" data-nombre="clozaval levamisol oxiclozanida">
-                <div class="farmaco-nombre">Clozaval <span style="font-weight:normal; color:var(--text-muted);">(Desparasitantes)</span></div>
-                <div class="farmaco-detalle">Dosis: 2,5 ml/10 kg pv | Vía: Oral | Princ. Activo: Levamisol + Oxiclozanida[cite: 1]</div>
-            </div>
-            <div class="farmaco-item" data-nombre="overcox toltrazuril">
-                <div class="farmaco-nombre">Overcox 5% <span style="font-weight:normal; color:var(--text-muted);">(Desparasitantes)</span></div>
-                <div class="farmaco-detalle">Dosis: 3 ml/10 kg pv | Vía: Oral | Princ. Activo: Toltrazuril[cite: 1]</div>
-            </div>
-            <div class="farmaco-item" data-nombre="rafocal rafoxanida">
-                <div class="farmaco-nombre">Rafocal <span style="font-weight:normal; color:var(--text-muted);">(Desparasitantes)</span></div>
-                <div class="farmaco-detalle">Dosis: 1 ml/50 kg pv | Vía: SC | Princ. Activo: Rafoxanida[cite: 1]</div>
-            </div>
-            <div class="farmaco-item" data-nombre="buliver ivermectina vitaminas">
-                <div class="farmaco-nombre">Buliver+P <span style="font-weight:normal; color:var(--text-muted);">(Desparasitantes)</span></div>
-                <div class="farmaco-detalle">Dosis: 1 ml/50 kg pv | Vía: IM | Princ. Activo: Ivermectina + Vitaminas[cite: 1]</div>
-            </div>
-            <div class="farmaco-item" data-nombre="comisol levamisol">
-                <div class="farmaco-nombre">Comisol <span style="font-weight:normal; color:var(--text-muted);">(Desparasitantes)</span></div>
-                <div class="farmaco-detalle">Dosis: 1 ml/50 kg pv | Vía: SC | Princ. Activo: Fosfato de Levamisol concentrado[cite: 1]</div>
-            </div>
-            <div class="farmaco-item" data-nombre="tricalcherry triclabendazole">
-                <div class="farmaco-nombre">Tricalcherry <span style="font-weight:normal; color:var(--text-muted);">(Desparasitantes)</span></div>
-                <div class="farmaco-detalle">Dosis: 6 ml/50 kg pv | Vía: Oral | Princ. Activo: Triclabendazole[cite: 1]</div>
-            </div>
-            <div class="farmaco-item" data-nombre="zeramec zeranol ivermectina">
-                <div class="farmaco-nombre">Zeramec <span style="font-weight:normal; color:var(--text-muted);">(Desparasitantes)</span></div>
-                <div class="farmaco-detalle">Dosis: 1 ml/50 kg pv | Vía: SC | Princ. Activo: Zeranol + Ivermectina[cite: 1]</div>
-            </div>
-            <div class="farmaco-item" data-nombre="vermoc antiparasitario oral">
-                <div class="farmaco-nombre">Vermoc 5% CO <span style="font-weight:normal; color:var(--text-muted);">(Desparasitantes)</span></div>
-                <div class="farmaco-detalle">Dosis: 5 ml/100 kg pv | Vía: Oral | Princ. Activo: Antiparasitario oral[cite: 1]</div>
-            </div>
-            <div class="farmaco-item" data-nombre="ricomax ricobendazol">
-                <div class="farmaco-nombre">Ricomax <span style="font-weight:normal; color:var(--text-muted);">(Desparasitantes)</span></div>
-                <div class="farmaco-detalle">Dosis: 1 ml/40 kg pv | Vía: SC-IM | Princ. Activo: Ricobendazol al 15%[cite: 1]</div>
-            </div>
-            <div class="farmaco-item" data-nombre="abamectina endectocida">
-                <div class="farmaco-nombre">Abamectina <span style="font-weight:normal; color:var(--text-muted);">(Desparasitantes)</span></div>
-                <div class="farmaco-detalle">Dosis: Según etiqueta | Vía: SC | Princ. Activo: Endectocida inyectable standard[cite: 1]</div>
-            </div>
-            <div class="farmaco-item" data-nombre="bovifos fosforo">
-                <div class="farmaco-nombre">Bovifos <span style="font-weight:normal; color:var(--text-muted);">(Minerales y Vitaminas)</span></div>
-                <div class="farmaco-detalle">Dosis: 1 ml/50 kg pv | Vía: IM | Princ. Activo: Modulador orgánico con Fósforo[cite: 1]</div>
-            </div>
-            <div class="farmaco-item" data-nombre="raket metabolico">
-                <div class="farmaco-nombre">Raket <span style="font-weight:normal; color:var(--text-muted);">(Minerales y Vitaminas)</span></div>
-                <div class="farmaco-detalle">Dosis: 1 ml/100 kg pv | Vía: IM | Princ. Activo: Potenciador metabólico[cite: 1]</div>
-            </div>
-            <div class="farmaco-item" data-nombre="superceba engorde">
-                <div class="farmaco-nombre">Superceba <span style="font-weight:normal; color:var(--text-muted);">(Minerales y Vitaminas)</span></div>
-                <div class="farmaco-detalle">Dosis: 1 ml/50 kg pv | Vía: IM | Princ. Activo: Modulador orgánico / Engorde[cite: 1]</div>
-            </div>
-            <div class="farmaco-item" data-nombre="minerfun mineral">
-                <div class="farmaco-nombre">Minerfun Plus <span style="font-weight:normal; color:var(--text-muted);">(Minerales y Vitaminas)</span></div>
-                <div class="farmaco-detalle">Dosis: 2 ml/100 kg pv | Vía: IM | Princ. Activo: Reconstituyente mineral[cite: 1]</div>
-            </div>
-            <div class="farmaco-item" data-nombre="neocuprexan cobre">
-                <div class="farmaco-nombre">Neocuprexan <span style="font-weight:normal; color:var(--text-muted);">(Minerales y Vitaminas)</span></div>
-                <div class="farmaco-detalle">Dosis: 1 ml/50 kg pv | Vía: SC | Princ. Activo: Aporte de Cobre[cite: 1]</div>
-            </div>
-            <div class="farmaco-item" data-nombre="revimin vitaminico mineral">
-                <div class="farmaco-nombre">Revimin <span style="font-weight:normal; color:var(--text-muted);">(Minerales y Vitaminas)</span></div>
-                <div class="farmaco-detalle">Dosis: 5 ml/50-200 kg pv | Vía: IM-SC | Princ. Activo: Complejo vitamínico mineral[cite: 1]</div>
-            </div>
-            <div class="farmaco-item" data-nombre="combecon complejo b">
-                <div class="farmaco-nombre">Combecon <span style="font-weight:normal; color:var(--text-muted);">(Minerales y Vitaminas)</span></div>
-                <div class="farmaco-detalle">Dosis: 5 ml totales | Vía: IM-IV | Princ. Activo: Complejo B[cite: 1]</div>
-            </div>
-            <div class="farmaco-item" data-nombre="fosfoton fosforo">
-                <div class="farmaco-nombre">Fosfoton <span style="font-weight:normal; color:var(--text-muted);">(Minerales y Vitaminas)</span></div>
-                <div class="farmaco-detalle">Dosis: 5 a 25 ml totales | Vía: IM-SC | Princ. Activo: Fósforo inyectable[cite: 1]</div>
-            </div>
-            <div class="farmaco-item" data-nombre="eritrogen hematopoyetico">
-                <div class="farmaco-nombre">Eritrogen <span style="font-weight:normal; color:var(--text-muted);">(Minerales y Vitaminas)</span></div>
-                <div class="farmaco-detalle">Dosis: 5 a 25 ml totales | Vía: IM-SC-IV | Princ. Activo: Reconstituyente hematopoyético[cite: 1]</div>
-            </div>
-            <div class="farmaco-item" data-nombre="butafosfan estimulante">
-                <div class="farmaco-nombre">Butafosfan <span style="font-weight:normal; color:var(--text-muted);">(Minerales y Vitaminas)</span></div>
-                <div class="farmaco-detalle">Dosis: 5 a 25 ml totales | Vía: IM-SC-IV | Princ. Activo: Estimulante metabólico fósforo[cite: 1]</div>
-            </div>
-            <div class="farmaco-item" data-nombre="sigma k3 vitamina antihemorragica">
-                <div class="farmaco-nombre">Sigma K3 <span style="font-weight:normal; color:var(--text-muted);">(Minerales y Vitaminas)</span></div>
-                <div class="farmaco-detalle">Dosis: 10 ml totales | Vía: SC-IM | Princ. Activo: Vitamina antihemorrágica[cite: 1]</div>
-            </div>
-            <div class="farmaco-item" data-nombre="vitamina ad3e liposoluble">
-                <div class="farmaco-nombre">Vitamina AD3E <span style="font-weight:normal; color:var(--text-muted);">(Minerales y Vitaminas)</span></div>
-                <div class="farmaco-detalle">Dosis: Según etiqueta | Vía: IM | Princ. Activo: Concentrado vitamínico liposoluble[cite: 1]</div>
-            </div>
-            <div class="farmaco-item" data-nombre="cuproho cobre inyectable">
-                <div class="farmaco-nombre">Cuproho Plus <span style="font-weight:normal; color:var(--text-muted);">(Minerales y Vitaminas)</span></div>
-                <div class="farmaco-detalle">Dosis: Según etiqueta | Vía: SC/IM | Princ. Activo: Cobre mineral inyectable[cite: 1]</div>
-            </div>
-            <div class="farmaco-item" data-nombre="tilosina macrolido">
-                <div class="farmaco-nombre">Tilosina <span style="font-weight:normal; color:var(--text-muted);">(Antibióticos)</span></div>
-                <div class="farmaco-detalle">Dosis: 1 - 2 ml / 50 kg pv | Vía: IM | Princ. Activo: Macrólido bactericida[cite: 1]</div>
-            </div>
-            <div class="farmaco-item" data-nombre="overbiotic oxitetraciclina">
-                <div class="farmaco-nombre">Overbiotic <span style="font-weight:normal; color:var(--text-muted);">(Antibióticos)</span></div>
-                <div class="farmaco-detalle">Dosis: 1 ml / 10 kg pv | Vía: IM - SC | Princ. Activo: Oxitetraciclina de larga acción[cite: 1]</div>
-            </div>
-            <div class="farmaco-item" data-nombre="septibron respiratorio">
-                <div class="farmaco-nombre">Septibron Forte <span style="font-weight:normal; color:var(--text-muted);">(Antibióticos)</span></div>
-                <div class="farmaco-detalle">Dosis: 1 ml / 15 kg pv | Vía: SC | Princ. Activo: Antibiótico respiratorio[cite: 1]</div>
-            </div>
-            <div class="farmaco-item" data-nombre="sigma sts antimicrobiana">
-                <div class="farmaco-nombre">Sigma S.T.S <span style="font-weight:normal; color:var(--text-muted);">(Antibióticos)</span></div>
-                <div class="farmaco-detalle">Dosis: 15 - 30 ml totales | Vía: IM - IV - SC | Princ. Activo: Combinación antimicrobiana[cite: 1]</div>
-            </div>
-            <div class="farmaco-item" data-nombre="diastrept streptomicina">
-                <div class="farmaco-nombre">Diastrept50 <span style="font-weight:normal; color:var(--text-muted);">(Antibióticos)</span></div>
-                <div class="farmaco-detalle">Dosis: 1 ml / 10 kg pv | Vía: IM | Princ. Activo: Estreptomicina soluble[cite: 1]</div>
-            </div>
-            <div class="farmaco-item" data-nombre="overpen penicilina">
-                <div class="farmaco-nombre">Overpen <span style="font-weight:normal; color:var(--text-muted);">(Antibióticos)</span></div>
-                <div class="farmaco-detalle">Dosis: 1 ml / 10 kg pv | Vía: IM - SC | Princ. Activo: Penicilina compuesta inyectable[cite: 1]</div>
-            </div>
-            <div class="farmaco-item" data-nombre="ketamin anestesico">
-                <div class="farmaco-nombre">Ketamin <span style="font-weight:normal; color:var(--text-muted);">(Anéstesicos)</span></div>
-                <div class="farmaco-detalle">Dosis: Según protocolo | Vía: A determinar | Princ. Activo: Anestésico disociativo[cite: 1]</div>
-            </div>
-            <div class="farmaco-item" data-nombre="sedanxil xilacina sedante">
-                <div class="farmaco-nombre">Sedanxil <span style="font-weight:normal; color:var(--text-muted);">(Anéstesicos)</span></div>
-                <div class="farmaco-detalle">Dosis: Según nivel | Vía: A determinar | Princ. Activo: Sedante (Xilacina)[cite: 1]</div>
-            </div>
-            <div class="farmaco-item" data-nombre="atropina preanestesico">
-                <div class="farmaco-nombre">Atropina <span style="font-weight:normal; color:var(--text-muted);">(Anéstesicos)</span></div>
-                <div class="farmaco-detalle">Dosis: Según indicación | Vía: A determinar | Princ. Activo: Preanestésico / Antídoto[cite: 1]</div>
-            </div>
-            <div class="farmaco-item" data-nombre="fynacol flunixin">
-                <div class="farmaco-nombre">Fynacol <span style="font-weight:normal; color:var(--text-muted);">(Antiinflamatorios)</span></div>
-                <div class="farmaco-detalle">Dosis: 2 ml / 45 kg pv | Vía: IM - IV - SC | Princ. Activo: Flunixin Meglumine[cite: 1]</div>
-            </div>
-            <div class="farmaco-item" data-nombre="diclovet diclofenaco">
-                <div class="farmaco-nombre">Diclovet <span style="font-weight:normal; color:var(--text-muted);">(Antiinflamatorios)</span></div>
-                <div class="farmaco-detalle">Dosis: 1 ml / 15 kg pv | Vía: IM | Princ. Activo: Diclofenaco Sódico[cite: 1]</div>
-            </div>
-            <div class="farmaco-item" data-nombre="gestar hormonal sincronizacion">
-                <div class="farmaco-nombre">Gestar <span style="font-weight:normal; color:var(--text-muted);">(Hormonas)</span></div>
-                <div class="farmaco-detalle">Dosis: Variable según objetivo | Vía: IM (Ev, SC) | Princ. Activo: Análogo hormonal reproductivo[cite: 1]</div>
-            </div>
-            <div class="farmaco-item" data-nombre="reprogest progestageno">
-                <div class="farmaco-nombre">Reprogest <span style="font-weight:normal; color:var(--text-muted);">(Hormonas)</span></div>
-                <div class="farmaco-detalle">Dosis: Según protocolo | Vía: A determinar | Princ. Activo: Progestágeno[cite: 1]</div>
-            </div>
-            <div class="farmaco-item" data-nombre="oxitocina eyeccion lactea">
-                <div class="farmaco-nombre">Oxitocina <span style="font-weight:normal; color:var(--text-muted);">(Hormonas)</span></div>
-                <div class="farmaco-detalle">Dosis: Según caso | Vía: A determinar | Princ. Activo: Estimulante uterino y eyección láctea[cite: 1]</div>
-            </div>
-            <div class="farmaco-item" data-nombre="dextrogenol prostaglandinas">
-                <div class="farmaco-nombre">Dextrogenol <span style="font-weight:normal; color:var(--text-muted);">(Hormonas)</span></div>
-                <div class="farmaco-detalle">Dosis: Según protocolo | Vía: A determinar | Princ. Activo: Análogo de prostaglandinas[cite: 1]</div>
-            </div>
-            <div class="farmaco-item" data-nombre="lepecid curabicheras larvicida">
-                <div class="farmaco-nombre">Lepecid <span style="font-weight:normal; color:var(--text-muted);">(Antisépticos)</span></div>
-                <div class="farmaco-detalle">Dosis: Aplicación directa | Vía: Tópica | Princ. Activo: Larvicida/Curabicheras[cite: 1]</div>
-            </div>
-            <div class="farmaco-item" data-nombre="penco antiseptico">
-                <div class="farmaco-nombre">Penco <span style="font-weight:normal; color:var(--text-muted);">(Antisépticos)</span></div>
-                <div class="farmaco-detalle">Dosis: Aplicación directa | Vía: Tópica | Princ. Activo: Antiséptico local[cite: 1]</div>
-            </div>
-            <div class="farmaco-item" data-nombre="yodo desinfectante">
-                <div class="farmaco-nombre">Yodo <span style="font-weight:normal; color:var(--text-muted);">(Antisépticos)</span></div>
-                <div class="farmaco-detalle">Dosis: Aplicación directa | Vía: Tópica | Princ. Activo: Desinfectante local[cite: 1]</div>
-            </div>
-            <div class="farmaco-item" data-nombre="imidover imidocarb hemotropico">
-                <div class="farmaco-nombre">Imidover <span style="font-weight:normal; color:var(--text-muted);">(Hemotrópicos)</span></div>
-                <div class="farmaco-detalle">Dosis: 2,5 ml/100 kg pv | Vía: SC-IM | Princ. Activo: Dipropionato de Imidocarb[cite: 1]</div>
-            </div>
-            <div class="farmaco-item" data-nombre="babecide piroplasmosis">
-                <div class="farmaco-nombre">Babecide <span style="font-weight:normal; color:var(--text-muted);">(Hemotrópicos)</span></div>
-                <div class="farmaco-detalle">Dosis: 5 ml/100 kg pv | Vía: IV profunda | Princ. Activo: Tratamiento de piroplasmosis[cite: 1]</div>
-            </div>
-            <div class="farmaco-item" data-nombre="ringer lactato solucion hidratante">
-                <div class="farmaco-nombre">Ringer Lactato <span style="font-weight:normal; color:var(--text-muted);">(Otros)</span></div>
-                <div class="farmaco-detalle">Dosis: 500 ml totales | Vía: IV | Princ. Activo: Solución electrolítica hidratante[cite: 1]</div>
-            </div>
-            <div class="farmaco-item" data-nombre="furodex diuretico">
-                <div class="farmaco-nombre">Furodex <span style="font-weight:normal; color:var(--text-muted);">(Otros)</span></div>
-                <div class="farmaco-detalle">Dosis: 2 ml/20 kg pv | Vía: IM | Princ. Activo: Diurético[cite: 1]</div>
-            </div>
-            <div class="farmaco-item" data-nombre="azul de metileno cicatrizante">
-                <div class="farmaco-nombre">Azul de Metileno <span style="font-weight:normal; color:var(--text-muted);">(Otros)</span></div>
-                <div class="farmaco-detalle">Dosis: Aplicación directa | Vía: Tópica | Princ. Activo: Antiséptico/Cicatrizante[cite: 1]</div>
+            <div class="sync-status-wrapper">
+                <div id="syncSemaphore" class="semaphore online"></div>
+                <span id="syncText" class="sync-text">Sincronizado</span>
             </div>
         </div>
-    </div>
+    </header>
 
-</div>
+    <!-- ==========================================================================
+       CONTENEDOR PRINCIPAL
+       ========================================================================== -->
+    <main class="main-container">
+        <div class="menu-grid">
+            
+            <!-- COLUMNA IZQUIERDA: Formulario de Registro & Consulta Vademécum -->
+            <div>
+                <!-- Formulario de Registro -->
+                <section class="section-box">
+                    <h2>💉 Registrar Tratamiento</h2>
+                    <form id="formSanitario">
+                        
+                        <div class="form-group">
+                            <label for="loteChip">Lote / Categoría / Chip *</label>
+                            <input type="text" id="loteChip" required placeholder="Ej. Lote 04 - Cebú / Chip #9821">
+                        </div>
 
-<!-- Script de Automatización Funcional -->
-<script>
-    // Filtrado en tiempo real para consulta de fármacos
-    document.getElementById('buscadorFarmaco').addEventListener('input', function() {
-        const filtro = this.value.toLowerCase().trim();
-        const items = document.querySelectorAll('.farmaco-item');
-        
-        items.forEach(item => {
-            const texto = item.getAttribute('data-nombre');
-            if (texto.includes(filtro)) {
-                item.style.display = 'block';
-            } else {
-                item.style.display = 'none';
-            }
+                        <div class="form-group">
+                            <label for="clasificacion">Clasificación del Tratamiento *</label>
+                            <select id="clasificacion" required>
+                                <option value="" disabled selected>Seleccione clasificación...</option>
+                                <option value="Generalizado">Generalizado</option>
+                                <option value="Dirigido">Dirigido</option>
+                                <option value="Correctivo">Correctivo</option>
+                                <option value="Rutinario">Rutinario</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="grupoFarma">Grupo Farmacológico *</label>
+                            <select id="grupoFarma" required>
+                                <option value="" disabled selected>Seleccione grupo...</option>
+                                <option value="Antibióticos">Antibióticos</option>
+                                <option value="Minerales - Vitaminas">Minerales - Vitaminas</option>
+                                <option value="Hormonas">Hormonas</option>
+                                <option value="Vacunas">Vacunas</option>
+                                <option value="Antiinflamatorios">Antiinflamatorios</option>
+                                <option value="Hemotrópicos">Hemotrópicos (Anaplasma/Piro)</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="farmacoNombre">Fármaco / Producto Específico *</label>
+                            <input type="text" id="farmacoNombre" required placeholder="Ej. Oxitetraciclina L.A. / Compudose 200">
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="fechaAplicacion">Aplicación *</label>
+                                <input type="date" id="fechaAplicacion" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="fechaProximo">Próx. Dosis</label>
+                                <input type="date" id="fechaProximo">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="observaciones">Área de Observación / Dosis</label>
+                            <textarea id="observaciones" rows="2" placeholder="Dosis por animal, vía (IM/SC), condición corporal..."></textarea>
+                        </div>
+
+                        <button type="submit">💾 Guardar / Sincronizar</button>
+                    </form>
+                </section>
+
+                <!-- Consulta de Medicamentos (Vademécum) -->
+                <section class="section-box">
+                    <h2>📖 Consulta de Medicamentos</h2>
+                    <div class="form-group">
+                        <input type="text" id="buscarVademecum" class="search-input" placeholder="Buscar principio activo...">
+                    </div>
+                    <div id="listaVademecum" class="vademecum-box">
+                        <!-- Se llena dinámicamente -->
+                    </div>
+                </section>
+            </div>
+
+            <!-- COLUMNA DERECHA: Resumen de Historial Médico -->
+            <div>
+                <section class="section-box">
+                    <div class="toolbar-flex">
+                        <h2>📋 Historial Médico y Registros</h2>
+                        <button id="btnBorrarHistorial" class="btn-danger" style="width: auto; padding: 8px 14px; font-size: 0.8rem;">
+                            🗑️ Borrar Todo el Historial
+                        </button>
+                    </div>
+
+                    <div class="form-group">
+                        <input type="text" id="buscadorHistorial" placeholder="Filtrar por lote, fármaco, síntoma..." class="search-input">
+                    </div>
+
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Lote / Chip</th>
+                                    <th>Clasificación</th>
+                                    <th>Fármaco / Grupo</th>
+                                    <th>Próx. Tratamiento</th>
+                                    <th>Observaciones</th>
+                                    <th style="text-align: center;">Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tablaHistorialBody">
+                                <!-- Filas inyectadas por JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="sinRegistros" style="text-align: center; padding: 30px; color: var(--text-muted); font-size: 0.9rem;">
+                        No hay registros sanitarios almacenados en este dispositivo.
+                    </div>
+                </section>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- ==========================================================================
+       SCRIPT LÓGICO Y PERSISTENCIA LOCAL
+       ========================================================================== -->
+    <script>
+        // Vademecum de referencia tropical para Hato Laguna Brava
+        const vademecumBase = [
+            { nombre: "Oxitetraciclina L.A. 20%", grupo: "Antibióticos", uso: "Infecciones, anaplasmosis, pododermatitis." },
+            { nombre: "Compudose 200", grupo: "Hormonas", uso: "Implante anabólico promotor de crecimiento en ceba." },
+            { nombre: "Ivermectina 3.15%", grupo: "Hemotrópicos / Antiparasitarios", _uso: "Control prolongado de parásitos internos y externos." },
+            { nombre: "Rafoxanida", grupo: "Antiinflamatorios / Antiparasitarios", uso: "Control de Fasciola hepática y parásitos hematófagos." },
+            { nombre: "Vitamina B12 + Fósforo", grupo: "Minerales - Vitaminas", uso: "Soporte metabólico y recuperación en verano." },
+            { nombre: "Vacuna Triple / Rabia", grupo: "Vacunas", uso: "Inmunización preventiva en rebaño." }
+        ];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Fecha actual por defecto en el formulario
+            document.getElementById('fechaAplicacion').valueAsDate = new Date();
+            cargarVademecum(vademecumBase);
+            renderizarHistorial();
+
+            // Evento Guardar Registro
+            document.getElementById('formSanitario').addEventListener('submit', (e) => {
+                e.preventDefault();
+
+                const nuevoRegistro = {
+                    id: 'REG-' + Date.now(),
+                    loteChip: document.getElementById('loteChip').value.trim(),
+                    clasificacion: document.getElementById('clasificacion').value,
+                    grupoFarma: document.getElementById('grupoFarma').value,
+                    farmacoNombre: document.getElementById('farmacoNombre').value.trim(),
+                    fechaAplicacion: document.getElementById('fechaAplicacion').value,
+                    fechaProximo: document.getElementById('fechaProximo').value || 'No programado',
+                    observaciones: document.getElementById('observaciones').value.trim() || 'Sin observaciones'
+                };
+
+                try {
+                    let historial = JSON.parse(localStorage.getItem('HL_HistorialSanitario')) || [];
+                    historial.unshift(nuevoRegistro);
+                    localStorage.setItem('HL_HistorialSanitario', JSON.stringify(historial));
+
+                    alert(`¡Tratamiento guardado correctamente!\nLote/Chip: ${nuevoRegistro.loteChip}`);
+                    document.getElementById('formSanitario').reset();
+                    document.getElementById('fechaAplicacion').valueAsDate = new Date();
+                    renderizarHistorial();
+                } catch (err) {
+                    console.error("Error al guardar:", err);
+                    alert("Error al intentar guardar el registro localmente.");
+                }
+            });
+
+            // Buscador Vademécum
+            document.getElementById('buscarVademecum').addEventListener('input', (e) => {
+                const query = e.target.value.toLowerCase();
+                const filtrados = vademecumBase.filter(v => 
+                    v.nombre.toLowerCase().includes(query) || v.grupo.toLowerCase().includes(query)
+                );
+                cargarVademecum(filtrados);
+            });
+
+            // Buscador Historial
+            document.getElementById('buscadorHistorial').addEventListener('input', (e) => {
+                renderizarHistorial(e.target.value.toLowerCase());
+            });
+
+            // Borrar Todo el Historial
+            document.getElementById('btnBorrarHistorial').addEventListener('click', () => {
+                if (confirm('¿Está seguro de eliminar TODO el historial médico almacenado? Esta acción es irreversible.')) {
+                    localStorage.removeItem('HL_HistorialSanitario');
+                    renderizarHistorial();
+                    alert('Historial borrado con éxito.');
+                }
+            });
         });
-    });
 
-    // Simulación y lógica para la descarga del PDF de historial indefinido
-    document.getElementById('btnGenerarPDF').addEventListener('click', function() {
-        const destino = document.getElementById('destino').value.trim();
-        if(!destino) {
-            alert('Por favor, especifique o seleccione el lote/animal para generar el reporte histórico en PDF.');
-            return;
+        function cargarVademecum(lista) {
+            const contenedor = document.getElementById('listaVademecum');
+            if (lista.length === 0) {
+                contenedor.innerHTML = `<div style="padding: 6px; color: #888; font-style: italic;">No se encontraron principios activos.</div>`;
+                return;
+            }
+            contenedor.innerHTML = lista.map(v => `
+                <div class="vademecum-item" onclick="document.getElementById('farmacoNombre').value='${v.nombre}'; document.getElementById('grupoFarma').value='${v.grupo}';">
+                    <strong>${v.nombre}</strong> <span style="color: var(--secondary-color);">(${v.grupo})</span>
+                    <div style="color: #666; font-size: 0.75rem;">${v.uso || v._uso}</div>
+                </div>
+            `).join('');
         }
-        alert('Generando PDF de registro histórico indefinido (Hoja de Vida) para: ' + destino + '...\nEl archivo se descargará automáticamente.');
-    });
 
-    // Simulación y lógica para dar de baja / eliminar lote que sale del hato
-    document.getElementById('btnEliminarLote').addEventListener('click', function() {
-        const destino = document.getElementById('destino').value.trim();
-        if(!destino) {
-            alert('Indique el nombre del lote o animal que desea dar de baja.');
-            return;
-        }
-        const confirmacion = confirm('¿Está seguro de dar de baja y retirar del hato activo al lote/animal: "' + destino + '"? Esta acción archivará su hoja de vida definitivamente.');
-        if (confirmacion) {
-            alert('El lote/animal "' + destino + '" ha sido dado de baja correctamente y archivado del sistema activo.');
-            document.getElementById('formSanitario').reset();
-        }
-    });
-</script>
+        function renderizarHistorial(filtro = '') {
+            const historial = JSON.parse(localStorage.getItem('HL_HistorialSanitario')) || [];
+            const tbody = document.getElementById('tablaHistorialBody');
+            const sinRegistros = document.getElementById('sinRegistros');
 
+            const filtrados = historial.filter(r => 
+                r.loteChip.toLowerCase().includes(filtro) ||
+                r.farmacoNombre.toLowerCase().includes(filtro) ||
+                r.clasificacion.toLowerCase().includes(filtro) ||
+                r.grupoFarma.toLowerCase().includes(filtro) ||
+                r.observaciones.toLowerCase().includes(filtro)
+            );
+
+            if (filtrados.length === 0) {
+                tbody.innerHTML = '';
+                sinRegistros.style.display = 'block';
+                return;
+            }
+
+            sinRegistros.style.display = 'none';
+            tbody.innerHTML = filtrados.map(r => {
+                let badgeClass = 'badge-rutinario';
+                if (r.clasificacion === 'Generalizado') badgeClass = 'badge-generalizado';
+                else if (r.clasificacion === 'Dirigido') badgeClass = 'badge-dirigido';
+                else if (r.clasificacion === 'Correctivo') badgeClass = 'badge-correctivo';
+
+                return `
+                    <tr>
+                        <td><strong>${r.fechaAplicacion}</strong></td>
+                        <td>${r.loteChip}</td>
+                        <td><span class="badge ${badgeClass}">${r.clasificacion}</span></td>
+                        <td>
+                            <strong>${r.farmacoNombre}</strong>
+                            <div style="font-size: 0.72rem; color: #666;">${r.grupoFarma}</div>
+                        </td>
+                        <td>${r.fechaProximo}</td>
+                        <td style="max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${r.observaciones}">${r.observaciones}</td>
+                        <td style="text-align: center;">
+                            <button onclick="eliminarRegistro('${r.id}')" class="btn-danger" style="padding: 4px 8px; font-size: 0.75rem; width: auto; display: inline-block;">✕</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function eliminarRegistro(id) {
+            if (confirm('¿Desea eliminar este registro sanitario específico?')) {
+                let historial = JSON.parse(localStorage.getItem('HL_HistorialSanitario')) || [];
+                historial = historial.filter(r => r.id !== id);
+                localStorage.setItem('HL_HistorialSanitario', JSON.stringify(historial));
+                renderizarHistorial(document.getElementById('buscadorHistorial').value.toLowerCase());
+            }
+        }
+    </script>
 </body>
 </html>
