@@ -4,11 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Control Sanitario - Hato Laguna Brava</title>
-    
-    <!-- SDKs de Firebase (Compat) -->
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-
     <style>
         :root {
             --primary-color: #1b4332;
@@ -37,7 +32,7 @@
             overflow-x: hidden;
         }
 
-        /* ENCABEZADO */
+        /* ENCABEZADO MAESTRO */
         .main-header {
             background: var(--header-gradient);
             color: #ffffff;
@@ -53,27 +48,19 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 8px;
+            gap: 10px;
         }
 
         .btn-back {
             color: #ffffff;
             background: rgba(255, 255, 255, 0.15);
-            padding: 8px 12px;
+            padding: 7px 12px;
             border-radius: 6px;
             text-decoration: none;
             font-size: 0.8rem;
             font-weight: 600;
             border: 1px solid rgba(255,255,255,0.2);
-            transition: background 0.2s;
             cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .btn-back:active {
-            background: rgba(255, 255, 255, 0.3);
         }
 
         .header-title-wrapper {
@@ -82,7 +69,7 @@
         }
 
         .header-title-wrapper h1 {
-            font-size: 0.95rem;
+            font-size: 1rem;
             font-weight: 700;
             margin: 0;
             color: #ffffff;
@@ -93,50 +80,44 @@
         }
 
         .header-title-wrapper p {
-            font-size: 0.68rem;
+            font-size: 0.7rem;
             color: #a3b899;
         }
 
-        /* Semáforo de Conexión Nube */
+        /* SEMÁFORO DE SINCRONIZACIÓN */
         .sync-status-wrapper {
             display: flex;
             align-items: center;
-            gap: 5px;
+            gap: 6px;
             background: rgba(0, 0, 0, 0.25);
-            padding: 4px 8px;
+            padding: 5px 10px;
             border-radius: 20px;
         }
 
         .semaphore {
-            width: 8px;
-            height: 8px;
+            width: 10px;
+            height: 10px;
             border-radius: 50%;
-            background-color: #e76f51; /* Rojo por defecto hasta conectar */
+            background-color: #e76f51;
         }
 
         .semaphore.online {
             background-color: #2a9d8f;
-            box-shadow: 0 0 6px rgba(42, 157, 143, 0.8);
+            box-shadow: 0 0 8px rgba(42, 157, 143, 0.8);
         }
 
         .sync-text {
-            font-size: 0.65rem;
+            font-size: 0.7rem;
             color: #fff;
             font-weight: 600;
-            display: none;
         }
 
-        @media(min-width: 600px) {
-            .sync-text { display: inline; }
-            .header-title-wrapper h1 { font-size: 1.15rem; }
-        }
-
-        /* CONTENEDOR PRINCIPAL */
+        /* CONTENEDOR PRINCIPAL Y REJILLA */
         .main-container {
             width: 100%;
             max-width: 1440px;
             margin: 0 auto;
-            padding: 12px;
+            padding: 16px;
             flex-grow: 1;
         }
 
@@ -157,15 +138,15 @@
             background-color: var(--card-bg);
             border: 1px solid var(--border-color);
             border-top: 4px solid var(--primary-color);
-            border-radius: 8px;
-            padding: 14px;
-            box-shadow: 0 2px 8px rgba(27, 67, 50, 0.04);
+            border-radius: 10px;
+            padding: 16px;
+            box-shadow: 0 2px 10px rgba(27, 67, 50, 0.05);
         }
 
         .section-box h2 {
             margin-top: 0;
             margin-bottom: 12px;
-            font-size: 0.98rem;
+            font-size: 1rem;
             color: var(--primary-color);
             font-weight: 700;
             display: flex;
@@ -174,7 +155,7 @@
         }
 
         .form-group {
-            margin-bottom: 10px;
+            margin-bottom: 12px;
         }
 
         label {
@@ -183,21 +164,21 @@
             font-weight: 700;
             text-transform: uppercase;
             color: var(--primary-color);
-            margin-bottom: 3px;
+            margin-bottom: 4px;
         }
 
         input, select, textarea {
             width: 100%;
-            padding: 9px;
+            padding: 10px;
             border: 1px solid #ced4da;
             border-radius: 6px;
-            font-size: 16px; /* Evita zoom automático en Safari/iOS */
+            font-size: 16px; /* Evita zoom automático en móviles */
             color: #212529;
             background-color: #fff;
         }
 
         select[multiple] {
-            height: 120px;
+            height: 140px;
             background-color: #fafafa;
         }
 
@@ -212,36 +193,30 @@
             font-weight: 600;
         }
 
-        input:focus, select:focus, textarea:focus {
-            outline: none;
-            border-color: var(--accent-color);
-            box-shadow: 0 0 0 3px rgba(82, 183, 136, 0.15);
-        }
-
         .form-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 8px;
+            gap: 10px;
         }
 
-        button[type="submit"], .btn-main {
+        button[type="submit"] {
             display: block;
             width: 100%;
             text-align: center;
             background-color: var(--secondary-color);
             color: #ffffff;
-            padding: 11px;
+            padding: 12px;
             border: none;
             border-radius: 6px;
             font-weight: 700;
-            font-size: 0.85rem;
+            font-size: 0.9rem;
             text-transform: uppercase;
             cursor: pointer;
             box-shadow: 0 2px 5px rgba(45, 106, 79, 0.2);
-            margin-top: 6px;
+            margin-top: 8px;
         }
 
-        button[type="submit"]:active {
+        button[type="submit"]:hover {
             background-color: var(--primary-color);
         }
 
@@ -255,12 +230,32 @@
             font-size: 0.8rem;
         }
 
-        /* TABLA MÓVIL ADAPTABLE */
+        /* TOAST DE NOTIFICACIÓN FLOTANTE */
+        #toast {
+            visibility: hidden;
+            min-width: 250px;
+            background-color: #212529;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 12px;
+            position: fixed;
+            zIndex: 1000;
+            left: 50%;
+            bottom: 30px;
+            transform: translateX(-50%);
+            border-left: 5px solid var(--accent-color);
+            font-size: 0.85rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        #toast.show { visibility: visible; }
+
+        /* TABLA ADAPTABLE */
         .toolbar-flex {
             display: flex;
             flex-direction: column;
-            gap: 8px;
-            margin-bottom: 10px;
+            gap: 10px;
+            margin-bottom: 12px;
         }
 
         @media(min-width: 600px) {
@@ -281,14 +276,14 @@
 
         table {
             width: 100%;
-            min-width: 600px;
+            min-width: 650px;
             border-collapse: collapse;
             text-align: left;
-            font-size: 0.78rem;
+            font-size: 0.8rem;
         }
 
         th, td {
-            padding: 8px 10px;
+            padding: 10px;
             border-bottom: 1px solid #dee2e6;
             color: #343a40;
             vertical-align: middle;
@@ -299,14 +294,14 @@
             color: #ffffff;
             font-weight: 600;
             text-transform: uppercase;
-            font-size: 0.7rem;
+            font-size: 0.72rem;
         }
 
         .badge {
             display: inline-block;
-            padding: 2px 5px;
+            padding: 3px 6px;
             border-radius: 8px;
-            font-size: 0.65rem;
+            font-size: 0.68rem;
             font-weight: 700;
             text-transform: uppercase;
         }
@@ -316,7 +311,7 @@
         .badge-rutinario { background: #ecfdf5; color: #047857; }
 
         .help-text {
-            font-size: 0.68rem;
+            font-size: 0.7rem;
             color: #666;
             margin-top: 3px;
             font-style: italic;
@@ -325,23 +320,25 @@
 </head>
 <body>
 
+    <!-- TOAST DE NOTIFICACIÓN -->
+    <div id="toast"><span id="toast-message">Mensaje del sistema</span></div>
+
     <!-- CABECERA -->
     <header class="main-header">
         <div class="header-container">
-            <!-- Botón Menú corregido con redirección dinámica -->
             <button id="btnVolverMenu" class="btn-back">← Menú</button>
             <div class="header-title-wrapper">
-                <h1>Hato Laguna Brava <span>| Sanitario</span></h1>
-                <p>Mantecal, Apure</p>
+                <h1>Hato Laguna Brava <span>| Control Sanitario</span></h1>
+                <p>Mantecal, Apure, Venezuela</p>
             </div>
             <div class="sync-status-wrapper">
                 <div id="syncSemaphore" class="semaphore"></div>
-                <span id="syncTextLabel" class="sync-text">Desconectado</span>
+                <span id="syncTextLabel" class="sync-text">Conectando...</span>
             </div>
         </div>
     </header>
 
-    <!-- CONTENEDOR -->
+    <!-- CONTENEDOR PRINCIPAL -->
     <main class="main-container">
         <div class="menu-grid">
             
@@ -356,9 +353,9 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="clasificacion">Clasificación *</label>
+                            <label for="clasificacion">Clasificación del Tratamiento *</label>
                             <select id="clasificacion" required>
-                                <option value="" disabled selected>Seleccione...</option>
+                                <option value="" disabled selected>Seleccione clasificación...</option>
                                 <option value="Generalizado">Generalizado</option>
                                 <option value="Dirigido">Dirigido</option>
                                 <option value="Correctivo">Correctivo</option>
@@ -367,7 +364,7 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="farmacosSelect">Fármaco / Producto *</label>
+                            <label for="farmacosSelect">Fármaco / Producto Específico *</label>
                             <select id="farmacosSelect" multiple required>
                                 <optgroup label="Desparasitantes">
                                     <option value="Abamectina">Abamectina</option>
@@ -396,7 +393,7 @@
                                     <option value="Superceba">Superceba</option>
                                     <option value="Vitamina AD3E">Vitamina AD3E</option>
                                 </optgroup>
-                                <optgroup label="Antibióticos y otros">
+                                <optgroup label="Antibióticos y Clínicos">
                                     <option value="Diastrept50">Diastrept50</option>
                                     <option value="Overbiotic">Overbiotic</option>
                                     <option value="Overpen">Overpen</option>
@@ -405,7 +402,7 @@
                                     <option value="Imidover">Imidover</option>
                                 </optgroup>
                             </select>
-                            <div class="help-text">Mantén presionados varios ítems para selección múltiple.</div>
+                            <div class="help-text">Mantenga presionado para seleccionar múltiples opciones.</div>
                         </div>
 
                         <div class="form-row">
@@ -420,7 +417,7 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="observaciones">Observación / Dosis</label>
+                            <label for="observaciones">Área de Observación / Dosis</label>
                             <textarea id="observaciones" rows="2" placeholder="Dosis, vía (IM/SC)..."></textarea>
                         </div>
 
@@ -429,11 +426,11 @@
                 </section>
             </div>
 
-            <!-- TABLA / HISTORIAL -->
+            <!-- TABLA E HISTORIAL -->
             <div>
                 <section class="section-box">
                     <div class="toolbar-flex">
-                        <h2>📋 Historial Sanitario</h2>
+                        <h2>📋 Historial Médico y Registros</h2>
                         <input type="text" id="buscadorHistorial" placeholder="🔍 Filtrar registros..." style="max-width: 100%;">
                     </div>
 
@@ -444,19 +441,19 @@
                                     <th>Fecha</th>
                                     <th>Lote / Chip</th>
                                     <th>Clasificación</th>
-                                    <th>Productos</th>
+                                    <th>Fármacos Aplicados</th>
                                     <th>Próx.</th>
-                                    <th>Obs.</th>
+                                    <th>Observaciones</th>
                                     <th style="text-align: center;">Acción</th>
                                 </tr>
                             </thead>
                             <tbody id="tablaHistorialBody">
-                                <!-- Inyectado por JS -->
+                                <!-- Inyectado dinámicamente -->
                             </tbody>
                         </table>
                     </div>
-                    <div id="sinRegistros" style="text-align: center; padding: 20px; color: var(--text-muted); font-size: 0.8rem;">
-                        Cargando registros...
+                    <div id="sinRegistros" style="text-align: center; padding: 25px; color: var(--text-muted); font-size: 0.85rem;">
+                        No hay registros sanitarios almacenados.
                     </div>
                 </section>
             </div>
@@ -464,30 +461,59 @@
         </div>
     </main>
 
-    <!-- SCRIPT DE CONEXIÓN Y LÓGICA -->
-    <script>
-        // Configuración de Firebase unificada con su app principal
+    <!-- MOTOR DE LÓGICA (Modelo unificado con los otros contenedores) -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import {  
+            getFirestore,  
+            collection,  
+            addDoc,  
+            onSnapshot,  
+            doc,  
+            deleteDoc,  
+            query,  
+            orderBy,
+            enableIndexedDbPersistence 
+        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
         const firebaseConfig = {
-            apiKey: "AIzaSyD-TUS-CREDENCIALES-REALES",
-            authDomain: "hatolagunabrava.firebaseapp.com",
-            projectId: "hatolagunabrava",
-            storageBucket: "hatolagunabrava.appspot.com",
-            messagingSenderId: "123456789",
-            appId: "1:123:web:abc"
+            apiKey: "AIzaSyADbn4gV6ROrppvanBM835IRyX3U8wdAnk",
+            authDomain: "hato-laguna-brava.firebaseapp.com",
+            projectId: "hato-laguna-brava",
+            storageBucket: "hato-laguna-brava.firebasestorage.app",
+            messagingSenderId: "1053099733476",
+            appId: "1:1053099733476:web:624514d41b08d1b347d7f1",
+            measurementId: "G-2E517DTZFS"
         };
 
-        if (!firebase.apps.length) {
-            firebase.initializeApp(firebaseConfig);
-        }
-        const db = firebase.firestore();
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Habilitar persistencia offline idéntica a los otros módulos
+        try {
+            enableIndexedDbPersistence(db).catch(() => {});
+        } catch (e) {}
+
         const COLLECTION_NAME = "hato_control_sanitario";
+        let registrosCache = [];
+
+        function mostrarToast(mensaje, tipo = "success") {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toast-message');
+            if (!toast || !toastMessage) return;
+
+            toastMessage.textContent = mensaje;
+            toast.style.borderLeftColor = tipo === "error" ? "#e76f51" : "var(--accent-color)";
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3500);
+        }
 
         document.addEventListener('DOMContentLoaded', () => {
-            document.getElementById('fechaAplicacion').valueAsDate = new Date();
+            const fechaInput = document.getElementById('fechaAplicacion');
+            if (fechaInput) fechaInput.valueAsDate = new Date();
 
-            // 1. Corrección del botón de menú (permite volver al index o menú principal según su estructura)
+            // Botón menú operativo
             document.getElementById('btnVolverMenu').addEventListener('click', () => {
-                // Intenta regresar en el historial o redirige al index general de la mini app
                 if (window.history.length > 1) {
                     window.history.back();
                 } else {
@@ -495,10 +521,10 @@
                 }
             });
 
-            // 2. Cargar datos en tiempo real desde Firestore (con respaldo local offline)
-            cargarDatosRemotosYLocks();
+            // Sincronización en tiempo real idéntica al modelo de tareas
+            iniciarSincronizacion();
 
-            // 3. Manejo del formulario
+            // Guardado del formulario
             document.getElementById('formSanitario').addEventListener('submit', async (e) => {
                 e.preventDefault();
 
@@ -506,95 +532,98 @@
                 const farmacosSeleccionados = Array.from(selectFarmacos.selectedOptions).map(opt => opt.value);
 
                 if (farmacosSeleccionados.length === 0) {
-                    alert('Seleccione al menos un fármaco.');
+                    mostrarToast("Seleccione al menos un fármaco", "error");
                     return;
                 }
 
                 const nuevoRegistro = {
-                    id: 'SAN-' + Date.now(),
                     loteChip: document.getElementById('loteChip').value.trim(),
                     clasificacion: document.getElementById('clasificacion').value,
                     farmacos: farmacosSeleccionados,
                     fechaAplicacion: document.getElementById('fechaAplicacion').value,
-                    fechaProximo: document.getElementById('fechaProximo').value || 'No prog.',
+                    fechaProximo: document.getElementById('fechaProximo').value || 'No programado',
                     observaciones: document.getElementById('observaciones').value.trim() || 'Sin observaciones',
-                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                    timestamp: Date.now()
                 };
 
+                const btnSubmit = e.target.querySelector('button[type="submit"]');
+                if (btnSubmit) btnSubmit.disabled = true;
+
                 try {
-                    // Guardar en Firestore directamente
-                    await db.collection(COLLECTION_NAME).doc(nuevoRegistro.id).set(nuevoRegistro);
-                    alert('¡Tratamiento sincronizado con la nube exitosamente!');
+                    await addDoc(collection(db, COLLECTION_NAME), nuevoRegistro);
                     document.getElementById('formSanitario').reset();
-                    document.getElementById('fechaAplicacion').valueAsDate = new Date();
+                    if (fechaInput) fechaInput.valueAsDate = new Date();
+                    mostrarToast("Tratamiento guardado y sincronizado");
                 } catch (error) {
-                    console.error("Error al sincronizar con Firebase:", error);
-                    // Fallback a LocalStorage si está offline
-                    let localCache = JSON.parse(localStorage.getItem(COLLECTION_NAME)) || [];
-                    localCache.unshift(nuevoRegistro);
-                    localStorage.setItem(COLLECTION_NAME, JSON.stringify(localCache));
-                    alert('Sin conexión a la nube. Guardado localmente en el dispositivo.');
-                    renderizarTabla(localCache);
+                    console.error("Error al guardar en Firestore:", error);
+                    mostrarToast("Error de red: No se pudo sincronizar", "error");
+                } finally {
+                    if (btnSubmit) btnSubmit.disabled = false;
                 }
             });
 
+            // Buscador reactivo
             document.getElementById('buscadorHistorial').addEventListener('input', (e) => {
-                const filtro = e.target.value.toLowerCase();
-                const cached = JSON.parse(localStorage.getItem(COLLECTION_NAME)) || [];
-                const filtrados = cached.filter(r => 
-                    r.loteChip.toLowerCase().includes(filtro) || 
-                    r.farmacos.join(', ').toLowerCase().includes(filtro) ||
-                    r.clasificacion.toLowerCase().includes(filtro)
-                );
-                renderizarTabla(filtrados);
+                renderizarTabla(e.target.value.toLowerCase());
             });
         });
 
-        function cargarDatosRemotosYLocks() {
+        function iniciarSincronizacion() {
             const semaphore = document.getElementById('syncSemaphore');
             const syncText = document.getElementById('syncTextLabel');
+            const q = query(collection(db, COLLECTION_NAME), orderBy("timestamp", "desc"));
 
-            db.collection(COLLECTION_NAME).orderBy('fechaAplicacion', 'desc').onSnapshot((snapshot) => {
-                let registros = [];
-                snapshot.forEach(doc => {
-                    registros.push(doc.data());
+            onSnapshot(q, (snapshot) => {
+                registrosCache = [];
+                snapshot.forEach((docSnap) => {
+                    registrosCache.push({
+                        id: docSnap.id,
+                        ...docSnap.data()
+                    });
                 });
 
-                // Actualizar caché local y semáforo en verde
-                localStorage.setItem(COLLECTION_NAME, JSON.stringify(registros));
-                renderizarTabla(registros);
-                
                 semaphore.classList.add('online');
-                syncText.innerText = "Sincronizado";
+                syncText.textContent = "Sincronizado";
+                renderizarTabla();
             }, (error) => {
-                console.warn("Modo offline activado:", error);
+                console.error("Error de sincronización:", error);
                 semaphore.classList.remove('online');
-                syncText.innerText = "Modo Local";
-                
-                // Cargar desde caché local si falla la red
-                const localCache = JSON.parse(localStorage.getItem(COLLECTION_NAME)) || [];
-                renderizarTabla(localCache);
+                syncText.textContent = "Modo Offline";
+                mostrarToast("Trabajando sin conexión a la nube", "error");
             });
         }
 
-        function renderizarTabla(registros) {
+        window.renderizarTabla = function(filtro = '') {
             const tbody = document.getElementById('tablaHistorialBody');
             const sinRegistros = document.getElementById('sinRegistros');
+            if (!tbody) return;
 
-            if (!registros || registros.length === 0) {
+            const filtrados = registrosCache.filter(r => {
+                const farmacosStr = Array.isArray(r.farmacos) ? r.farmacos.join(', ') : '';
+                return r.loteChip.toLowerCase().includes(filtro) ||
+                       farmacosStr.toLowerCase().includes(filtro) ||
+                       r.clasificacion.toLowerCase().includes(filtro) ||
+                       r.observaciones.toLowerCase().includes(filtro) ||
+                       r.fechaAplicacion.includes(filtro);
+            });
+
+            if (filtrados.length === 0) {
                 tbody.innerHTML = '';
-                sinRegistros.style.display = 'block';
+                if (sinRegistros) sinRegistros.style.display = 'block';
                 return;
             }
 
-            sinRegistros.style.display = 'none';
-            tbody.innerHTML = registros.map(r => {
+            if (sinRegistros) sinRegistros.style.display = 'none';
+
+            tbody.innerHTML = filtrados.map(r => {
                 let badgeClass = 'badge-rutinario';
                 if (r.clasificacion === 'Generalizado') badgeClass = 'badge-generalizado';
                 else if (r.clasificacion === 'Dirigido') badgeClass = 'badge-dirigido';
                 else if (r.clasificacion === 'Correctivo') badgeClass = 'badge-correctivo';
 
-                const lista = Array.isArray(r.farmacos) ? r.farmacos.join(', ') : r.farmacos;
+                const lista = Array.isArray(r.farmacos) 
+                    ? r.farmacos.map(f => `<span style="display:inline-block; background:#e9f5ed; color:#1b4332; padding:2px 6px; border-radius:4px; font-weight:600; margin:2px;">• ${f}</span>`).join('')
+                    : 'N/D';
 
                 return `
                     <tr>
@@ -603,28 +632,26 @@
                         <td><span class="badge ${badgeClass}">${r.clasificacion}</span></td>
                         <td>${lista}</td>
                         <td>${r.fechaProximo}</td>
-                        <td style="max-width: 120px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${r.observaciones}">${r.observaciones}</td>
+                        <td style="max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${r.observaciones}">${r.observaciones}</td>
                         <td style="text-align: center;">
-                            <button onclick="eliminarRegistro('${r.id}')" class="btn-danger">🗑️</button>
+                            <button type="button" onclick="window.eliminarRegistroSanitario('${r.id}')" class="btn-danger" title="Eliminar">🗑️</button>
                         </td>
                     </tr>
                 `;
             }).join('');
-        }
+        };
 
-        async function eliminarRegistro(id) {
-            if (confirm('¿Desea eliminar este registro sanitario?')) {
+        window.eliminarRegistroSanitario = async function(id) {
+            if (confirm("¿Está seguro de eliminar este registro sanitario?")) {
                 try {
-                    await db.collection(COLLECTION_NAME).doc(id).delete();
-                } catch (e) {
-                    // Si falla la red, borra de local
-                    let localCache = JSON.parse(localStorage.getItem(COLLECTION_NAME)) || [];
-                    localCache = localCache.filter(r => r.id !== id);
-                    localStorage.setItem(COLLECTION_NAME, JSON.stringify(localCache));
-                    renderizarTabla(localCache);
+                    await deleteDoc(doc(db, COLLECTION_NAME, id));
+                    mostrarToast("Registro eliminado correctamente");
+                } catch (error) {
+                    console.error("Error al eliminar:", error);
+                    mostrarToast("No se pudo eliminar el registro", "error");
                 }
             }
-        }
+        };
     </script>
 </body>
 </html>
