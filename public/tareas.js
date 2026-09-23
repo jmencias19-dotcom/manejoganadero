@@ -1,11 +1,13 @@
 /* ==========================================================================
-   Módulo: Planificación de Tareas y Control Operativo (Integrado v4.3 - Sincronizado)
+   Módulo: Planificación de Tareas y Control Operativo (Integrado v4.4 - Sincronizado)
    Hato Laguna Brava - Mantecal, Apure, Venezuela
    ========================================================================== */
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import {  
-    getFirestore,  
+    initializeFirestore,  
+    persistentLocalCache, 
+    persistentMultipleTabManager,
     collection,  
     addDoc,  
     onSnapshot,  
@@ -13,8 +15,7 @@ import {
     updateDoc,  
     deleteDoc,  
     query,  
-    orderBy,
-    enableIndexedDbPersistence // Habilita persistencia offline automática
+    orderBy
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 // Credenciales oficiales de Firebase para Hato Laguna Brava
@@ -29,20 +30,13 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
 
-// Habilitar persistencia offline para dispositivos móviles en campo
-try {
-    enableIndexedDbPersistence(db).catch((err) => {
-        if (err.code == 'failed-precondition') {
-            console.warn("Persistencia falló: múltiples pestañas abiertas.");
-        } else if (err.code == 'unimplemented') {
-            console.warn("El navegador no soporta persistencia offline.");
-        }
-    });
-} catch (e) {
-    console.log("Modo offline ya configurado o no disponible.");
-}
+// Inicialización de Firestore optimizada con persistencia offline robusta y multi-pestaña automática
+const db = initializeFirestore(app, {
+    localCache: persistentLocalCache({
+        tabManager: persistentMultipleTabManager()
+    })
+});
 
 const COLLECTION_NAME = "hato_tareas";
 
