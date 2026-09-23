@@ -6,6 +6,73 @@
     <title>Control Sanitario - Hato Laguna Brava</title>
     <style>
         /* ==========================================================================
+   MEJORAS EN LA TABLA DE HISTORIAL (Columna de Fármacos Ampliada)
+   ========================================================================== */
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    margin-top: 15px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    font-size: 0.85rem;
+    table-layout: auto; /* Permite que las celdas se adapten al contenido importante */
+}
+
+th, td {
+    padding: 12px 14px;
+    border-bottom: 1px solid #dee2e6;
+    color: #343a40;
+    vertical-align: middle;
+}
+
+th {
+    background-color: var(--primary-color);
+    color: #ffffff;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.5px;
+}
+
+tr:hover td {
+    background-color: #f8f9fa;
+}
+
+/* Distribución de anchos de columna priorizando los Fármacos */
+th:nth-child(1) { width: 11%; } /* Fecha */
+th:nth-child(2) { width: 18%; } /* Lote / Chip */
+th:nth-child(3) { width: 13%; } /* Clasificación */
+th:nth-child(4) { width: 30%; } /* Fármacos Aplicados (Amplia) */
+th:nth-child(5) { width: 11%; } /* Próx. Tratamiento */
+th:nth-child(6) { width: 12%; } /* Observaciones */
+th:nth-child(7) { width: 5%; text-align: center; } /* Acción */
+
+/* Contenedor de las píldoras de fármacos */
+.farmacos-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    max-width: 100%;
+}
+
+.farmaco-pill {
+    display: inline-block;
+    background: #e9f5ed;
+    color: #1b4332;
+    border: 1px solid #b7e4c7;
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.78rem;
+    line-height: 1.2;
+}
+        /* ==========================================================================
            VARIABLES DE DISEÑO INSTITUCIONAL (Hato Laguna Brava)
            ========================================================================== */
         :root {
