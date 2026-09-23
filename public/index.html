@@ -4,9 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Sistema de Gestión Ganadera - Hato Laguna Brava</title>
-    <!-- CONEXIÓN EXCLUSIVA AL DISEÑO MAESTRO UNIFICADO -->
-    <!-- Se añade una etiqueta de versión para forzar al navegador a borrar el caché viejo -->
-<link rel="stylesheet" href="./potreros.css?v=4.2">
+    
+    <!-- HOJAS DE ESTILO OFICIALES -->
+    <link rel="stylesheet" href="./potreros.css?v=4.2">
+    <!-- Si creaste un archivo CSS independiente para el módulo, descomenta la siguiente línea: -->
+    <!-- <link rel="stylesheet" href="./inventario-sanitario.css?v=1.0"> -->
 
     <link rel="manifest" href="manifest.json">
 </head>
@@ -30,7 +32,7 @@
             <!-- Título Central con Siluetas de Ganado y Crédito Técnico -->
             <div class="header-title-wrapper">
                 <div class="animal-silhouettes-top" aria-hidden="true" style="display: flex; justify-content: center; gap: 8px; margin-bottom: 4px; color: var(--accent-color);">
-                    <!-- Silueta Vaca Cebú/Brahman -->
+                    <!-- Silueta Vaca Cebú -->
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="animal-icon" fill="currentColor" style="width: 24px; height: 24px;">
                         <path d="M4 8h2V6h2v2h8V6h2v2h2v4h-1v6h-2v-2H7v2H5v-6H4V8zm3 2v2h10v-2H7z"/>
                     </svg>
@@ -62,7 +64,7 @@
         </div>
     </header>    
 
-    <!-- Contenedor Principal (Hereda la Grid Limpia y Compacta de potreros.css) -->
+    <!-- Contenedor Principal (Grid Limpia) -->
     <main class="main-container panel-principal">
         <div class="menu-grid">
             
@@ -197,10 +199,10 @@
                 <a href="indicadores-gestion.html" class="card-action">Acceder a Indicadores</a>
             </article>
 
-        </div> <!-- Cierre de menu-grid -->
-    </main> <!-- Cierre de main-container panel-principal -->
+        </div>
+    </main>
 
-    <!-- Habilitación del PWA Service Worker de Fondo -->
+    <!-- Scripts de Funcionalidad y Service Worker PWA -->
     <script type="module">
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
@@ -211,6 +213,6 @@
         }
     </script>
     <script type="module" src="app.js"></script>
-<script type="module" src="formTareas.js"></script>
+    <script type="module" src="formTareas.js"></script>
 </body>
 </html>
