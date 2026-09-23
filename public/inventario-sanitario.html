@@ -2,12 +2,14 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Control Sanitario - Hato Laguna Brava</title>
+    
+    <!-- SDKs de Firebase (Compat) -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
     <style>
-        /* ==========================================================================
-            VARIABLES DE DISEÑO INSTITUCIONAL (Hato Laguna Brava)
-            ========================================================================== */
         :root {
             --primary-color: #1b4332;
             --secondary-color: #2d6a4f;
@@ -35,14 +37,12 @@
             overflow-x: hidden;
         }
 
-        /* ==========================================================================
-            1. ENCABEZADO MAESTRO
-            ========================================================================== */
+        /* ENCABEZADO */
         .main-header {
             background: var(--header-gradient);
             color: #ffffff;
-            padding: 14px 20px;
-            box-shadow: 0 4px 20px rgba(27, 67, 50, 0.25);
+            padding: 12px 16px;
+            box-shadow: 0 4px 15px rgba(27, 67, 50, 0.2);
             border-bottom: 3px solid var(--accent-color);
             width: 100%;
         }
@@ -53,22 +53,27 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 10px;
-            flex-wrap: wrap;
+            gap: 8px;
         }
 
-        .header-nav .btn-back {
+        .btn-back {
             color: #ffffff;
-            background: rgba(255, 255, 255, 0.1);
-            padding: 6px 10px;
+            background: rgba(255, 255, 255, 0.15);
+            padding: 8px 12px;
             border-radius: 6px;
             text-decoration: none;
             font-size: 0.8rem;
-            transition: background 0.2s ease;
+            font-weight: 600;
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: background 0.2s;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
         }
 
-        .header-nav .btn-back:hover {
-            background: rgba(255, 255, 255, 0.2);
+        .btn-back:active {
+            background: rgba(255, 255, 255, 0.3);
         }
 
         .header-title-wrapper {
@@ -77,11 +82,10 @@
         }
 
         .header-title-wrapper h1 {
-            font-size: 1.15rem;
+            font-size: 0.95rem;
             font-weight: 700;
-            margin: 2px 0;
+            margin: 0;
             color: #ffffff;
-            letter-spacing: 0.5px;
         }
 
         .header-title-wrapper h1 span {
@@ -89,115 +93,117 @@
         }
 
         .header-title-wrapper p {
-            font-size: 0.78rem;
+            font-size: 0.68rem;
             color: #a3b899;
-            font-weight: 500;
         }
 
-        /* Semáforo de Sincronización */
+        /* Semáforo de Conexión Nube */
         .sync-status-wrapper {
             display: flex;
             align-items: center;
-            gap: 6px;
-            background: rgba(0, 0, 0, 0.2);
-            padding: 5px 10px;
+            gap: 5px;
+            background: rgba(0, 0, 0, 0.25);
+            padding: 4px 8px;
             border-radius: 20px;
         }
 
         .semaphore {
-            width: 10px;
-            height: 10px;
+            width: 8px;
+            height: 8px;
             border-radius: 50%;
+            background-color: #e76f51; /* Rojo por defecto hasta conectar */
         }
 
         .semaphore.online {
             background-color: #2a9d8f;
-            box-shadow: 0 0 8px rgba(42, 157, 143, 0.6);
+            box-shadow: 0 0 6px rgba(42, 157, 143, 0.8);
         }
 
-        /* ==========================================================================
-            2. CONTENEDOR PRINCIPAL Y REJILLA RESPONSIVA
-            ========================================================================== */
+        .sync-text {
+            font-size: 0.65rem;
+            color: #fff;
+            font-weight: 600;
+            display: none;
+        }
+
+        @media(min-width: 600px) {
+            .sync-text { display: inline; }
+            .header-title-wrapper h1 { font-size: 1.15rem; }
+        }
+
+        /* CONTENEDOR PRINCIPAL */
         .main-container {
             width: 100%;
             max-width: 1440px;
             margin: 0 auto;
-            padding: 20px 12px;
+            padding: 12px;
             flex-grow: 1;
         }
 
         .menu-grid {
             display: grid;
-            grid-template-columns: 1fr 2fr;
-            gap: 20px;
-            align-items: start;
+            grid-template-columns: 1fr;
+            gap: 16px;
         }
 
-        @media (max-width: 1024px) {
+        @media (min-width: 1024px) {
             .menu-grid {
-                grid-template-columns: 1fr;
+                grid-template-columns: 1fr 2fr;
+                gap: 20px;
             }
         }
 
-        /* ==========================================================================
-            3. TARJETAS Y FORMULARIOS
-            ========================================================================== */
         .section-box {
             background-color: var(--card-bg);
             border: 1px solid var(--border-color);
             border-top: 4px solid var(--primary-color);
-            border-radius: 10px;
-            padding: 16px;
-            box-shadow: 0 4px 14px rgba(27, 67, 50, 0.05);
-            margin-bottom: 20px;
+            border-radius: 8px;
+            padding: 14px;
+            box-shadow: 0 2px 8px rgba(27, 67, 50, 0.04);
         }
 
         .section-box h2 {
             margin-top: 0;
-            margin-bottom: 1rem;
-            font-size: 1.05rem;
+            margin-bottom: 12px;
+            font-size: 0.98rem;
             color: var(--primary-color);
             font-weight: 700;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
         }
 
         .form-group {
-            margin-bottom: 12px;
+            margin-bottom: 10px;
         }
 
         label {
             display: block;
-            font-size: 0.78rem;
+            font-size: 0.75rem;
             font-weight: 700;
             text-transform: uppercase;
             color: var(--primary-color);
-            margin-bottom: 4px;
-            letter-spacing: 0.5px;
+            margin-bottom: 3px;
         }
 
         input, select, textarea {
             width: 100%;
-            padding: 10px;
+            padding: 9px;
             border: 1px solid #ced4da;
             border-radius: 6px;
-            font-size: 16px; /* Previene el zoom automático molesto en iOS */
+            font-size: 16px; /* Evita zoom automático en Safari/iOS */
             color: #212529;
             background-color: #fff;
-            transition: border-color 0.2s, box-shadow 0.2s;
         }
 
         select[multiple] {
-            height: 140px;
-            padding: 6px;
+            height: 120px;
             background-color: #fafafa;
         }
 
         select[multiple] option {
-            padding: 6px 8px;
+            padding: 6px;
             border-bottom: 1px solid #eee;
-            border-radius: 4px;
         }
 
         select[multiple] option:checked {
@@ -215,63 +221,53 @@
         .form-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 10px;
+            gap: 8px;
         }
 
-        button, .btn {
+        button[type="submit"], .btn-main {
             display: block;
             width: 100%;
             text-align: center;
             background-color: var(--secondary-color);
             color: #ffffff;
-            padding: 12px;
+            padding: 11px;
             border: none;
             border-radius: 6px;
             font-weight: 700;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
             cursor: pointer;
-            box-shadow: 0 2px 6px rgba(45, 106, 79, 0.2);
-            transition: background-color 0.2s ease;
+            box-shadow: 0 2px 5px rgba(45, 106, 79, 0.2);
+            margin-top: 6px;
         }
 
-        button:hover, .btn:hover {
+        button[type="submit"]:active {
             background-color: var(--primary-color);
         }
 
         .btn-danger {
-            background-color: #e76f51 !important;
+            background-color: #e76f51;
             color: #fff;
             border: none;
             border-radius: 4px;
             cursor: pointer;
             padding: 6px 10px;
+            font-size: 0.8rem;
         }
 
-        .btn-danger:hover {
-            background-color: #d90429 !important;
-        }
-
-        /* ==========================================================================
-            4. TABLA FLUIDA Y RESPONSIVA (Corrección de distorsión móvil)
-            ========================================================================== */
+        /* TABLA MÓVIL ADAPTABLE */
         .toolbar-flex {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 12px;
-            flex-wrap: wrap;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 10px;
         }
 
-        .search-input {
-            max-width: 100%;
-        }
-
-        @media(min-width: 768px) {
-            .search-input {
-                max-width: 250px;
+        @media(min-width: 600px) {
+            .toolbar-flex {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
             }
         }
 
@@ -281,19 +277,18 @@
             -webkit-overflow-scrolling: touch;
             border-radius: 6px;
             border: 1px solid var(--border-color);
-            margin-top: 10px;
         }
 
         table {
             width: 100%;
-            min-width: 650px; /* Garantiza que no colapse en pantallas chicas y active scroll horizontal limpio */
+            min-width: 600px;
             border-collapse: collapse;
             text-align: left;
-            font-size: 0.82rem;
+            font-size: 0.78rem;
         }
 
         th, td {
-            padding: 10px;
+            padding: 8px 10px;
             border-bottom: 1px solid #dee2e6;
             color: #343a40;
             vertical-align: middle;
@@ -304,74 +299,66 @@
             color: #ffffff;
             font-weight: 600;
             text-transform: uppercase;
-            font-size: 0.72rem;
-            letter-spacing: 0.5px;
-        }
-
-        tr:hover td {
-            background-color: #f8f9fa;
+            font-size: 0.7rem;
         }
 
         .badge {
             display: inline-block;
-            padding: 3px 6px;
-            border-radius: 10px;
-            font-size: 0.68rem;
+            padding: 2px 5px;
+            border-radius: 8px;
+            font-size: 0.65rem;
             font-weight: 700;
             text-transform: uppercase;
         }
-
         .badge-generalizado { background: #e0f2fe; color: #0369a1; }
         .badge-dirigido { background: #fef3c7; color: #b45309; }
         .badge-correctivo { background: #fee2e2; color: #b91c1c; }
         .badge-rutinario { background: #ecfdf5; color: #047857; }
 
         .help-text {
-            font-size: 0.72rem;
+            font-size: 0.68rem;
             color: #666;
-            margin-top: 4px;
+            margin-top: 3px;
             font-style: italic;
         }
     </style>
 </head>
 <body>
 
-    <!-- CABECERA MAESTRO -->
+    <!-- CABECERA -->
     <header class="main-header">
         <div class="header-container">
-            <div class="header-nav">
-                <a href="#" class="btn-back">← Menú</a>
-            </div>
+            <!-- Botón Menú corregido con redirección dinámica -->
+            <button id="btnVolverMenu" class="btn-back">← Menú</button>
             <div class="header-title-wrapper">
-                <h1>Hato Laguna Brava <span>| Control Sanitario</span></h1>
-                <p>Mantecal, Estado Apure, Venezuela</p>
+                <h1>Hato Laguna Brava <span>| Sanitario</span></h1>
+                <p>Mantecal, Apure</p>
             </div>
             <div class="sync-status-wrapper">
-                <div id="syncSemaphore" class="semaphore online"></div>
-                <span class="sync-text" style="font-size: 0.72rem; color: #fff; font-weight: 600;">Sincronizado</span>
+                <div id="syncSemaphore" class="semaphore"></div>
+                <span id="syncTextLabel" class="sync-text">Desconectado</span>
             </div>
         </div>
     </header>
 
-    <!-- CONTENEDOR PRINCIPAL -->
+    <!-- CONTENEDOR -->
     <main class="main-container">
         <div class="menu-grid">
             
-            <!-- COLUMNA IZQUIERDA: Formulario de Registro -->
+            <!-- FORMULARIO -->
             <div>
                 <section class="section-box">
                     <h2>💉 Registrar Tratamiento</h2>
                     <form id="formSanitario">
-                        
                         <div class="form-group">
                             <label for="loteChip">Lote / Categoría / Chip *</label>
                             <input type="text" id="loteChip" required placeholder="Ej. Lote 04 - Cebú / Chip #9821">
                         </div>
 
                         <div class="form-group">
-                            <label for="clasificacion">Clasificación del Tratamiento *</label>
+                            <label for="clasificacion">Clasificación *</label>
                             <select id="clasificacion" required>
-                                <option value="" disabled selected>Seleccione clasificación...</option>
+                                <option value="" disabled selected>Seleccione...</option>
                                 <option value="Generalizado">Generalizado</option>
                                 <option value="Dirigido">Dirigido</option>
                                 <option value="Correctivo">Correctivo</option>
@@ -379,76 +366,46 @@
                             </select>
                         </div>
 
-                        <!-- Selector Múltiple de Fármacos / Productos -->
                         <div class="form-group">
-                            <label for="farmacosSelect">Fármaco / Producto Específico *</label>
+                            <label for="farmacosSelect">Fármaco / Producto *</label>
                             <select id="farmacosSelect" multiple required>
                                 <optgroup label="Desparasitantes">
-                                    <option value="Abamectina">Abamectina (Endectocida inyectable)</option>
-                                    <option value="Buliver+P">Buliver+P (Ivermectina + Vitaminas)</option>
-                                    <option value="Clozaval">Clozaval (Levamisol + Oxiclozanida)</option>
-                                    <option value="Comisol">Comisol (Fosfato de Levamisol concentrado)</option>
-                                    <option value="Overcox 5%">Overcox 5% (Toltrazuril)</option>
-                                    <option value="Rafocal">Rafocal (Rafoxanida)</option>
-                                    <option value="Ricomax">Ricomax (Ricobendazol al 15%)</option>
-                                    <option value="Tricalcherry">Tricalcherry (Triclabendazole)</option>
-                                    <option value="Vermoc 5% CO">Vermoc 5% CO (Antiparasitario oral)</option>
-                                    <option value="Zeramec">Zeramec (Zeranol + Ivermectina)</option>
+                                    <option value="Abamectina">Abamectina</option>
+                                    <option value="Buliver+P">Buliver+P</option>
+                                    <option value="Clozaval">Clozaval</option>
+                                    <option value="Comisol">Comisol</option>
+                                    <option value="Overcox 5%">Overcox 5%</option>
+                                    <option value="Rafocal">Rafocal</option>
+                                    <option value="Ricomax">Ricomax</option>
+                                    <option value="Tricalcherry">Tricalcherry</option>
+                                    <option value="Vermoc 5% CO">Vermoc 5% CO</option>
+                                    <option value="Zeramec">Zeramec</option>
                                 </optgroup>
                                 <optgroup label="Minerales y Vitaminas">
-                                    <option value="Bovifos">Bovifos (Modulador con Fósforo)</option>
-                                    <option value="Butafosfan">Butafosfan (Estimulante metabólico fósforo)</option>
-                                    <option value="Combecon">Combecon (Complejo B)</option>
-                                    <option value="Cuproho Plus">Cuproho Plus (Cobre mineral inyectable)</option>
-                                    <option value="Eritrogen">Eritrogen (Reconstituyente hematopoyético)</option>
-                                    <option value="Fosfoton">Fosfoton (Fósforo inyectable)</option>
-                                    <option value="Minerfun Plus">Minerfun Plus (Reconstituyente mineral)</option>
-                                    <option value="Neocuprexan">Neocuprexan (Aporte de Cobre)</option>
-                                    <option value="Raket">Raket (Potenciador metabólico)</option>
-                                    <option value="Revimin">Revimin (Complejo vitamínico mineral)</option>
-                                    <option value="Sigma K3">Sigma K3 (Vitamina antihemorrágica)</option>
-                                    <option value="Superceba">Superceba (Modulador orgánico / Engorde)</option>
-                                    <option value="Vitamina AD3E">Vitamina AD3E (Concentrado liposoluble)</option>
+                                    <option value="Bovifos">Bovifos</option>
+                                    <option value="Butafosfan">Butafosfan</option>
+                                    <option value="Combecon">Combecon</option>
+                                    <option value="Cuproho Plus">Cuproho Plus</option>
+                                    <option value="Eritrogen">Eritrogen</option>
+                                    <option value="Fosfoton">Fosfoton</option>
+                                    <option value="Minerfun Plus">Minerfun Plus</option>
+                                    <option value="Neocuprexan">Neocuprexan</option>
+                                    <option value="Raket">Raket</option>
+                                    <option value="Revimin">Revimin</option>
+                                    <option value="Sigma K3">Sigma K3</option>
+                                    <option value="Superceba">Superceba</option>
+                                    <option value="Vitamina AD3E">Vitamina AD3E</option>
                                 </optgroup>
-                                <optgroup label="Antibióticos">
-                                    <option value="Diastrept50">Diastrept50 (Estreptomicina soluble)</option>
-                                    <option value="Overbiotic">Overbiotic (Oxitetraciclina de larga acción)</option>
-                                    <option value="Overpen">Overpen (Penicilina compuesta inyectable)</option>
-                                    <option value="Septibron Forte">Septibron Forte (Antibiótico respiratorio)</option>
-                                    <option value="Sigma S.T.S">Sigma S.T.S (Combinación antimicrobiana)</option>
-                                    <option value="Tilosina">Tilosina (Macrólido bactericida)</option>
-                                </optgroup>
-                                <optgroup label="Anestésicos">
-                                    <option value="Atropina">Atropina (Preanestésico / Antídoto)</option>
-                                    <option value="Ketamin">Ketamin (Anestésico disociativo)</option>
-                                    <option value="Sedanxil">Sedanxil (Sedante - Xilacina)</option>
-                                </optgroup>
-                                <optgroup label="Antiinflamatorios">
-                                    <option value="Diclovet">Diclovet (Diclofenaco Sódico)</option>
-                                    <option value="Fynacol">Fynacol (Flunixin Meglumine)</option>
-                                </optgroup>
-                                <optgroup label="Hormonas">
-                                    <option value="Dextrogenol">Dextrogenol (Análogo de prostaglandinas)</option>
-                                    <option value="Gestar">Gestar (Control reproductivo / Sincronización)</option>
-                                    <option value="Oxitocina">Oxitocina (Estimulante uterino y eyección láctea)</option>
-                                    <option value="Reprogest">Reprogest (Progestágeno)</option>
-                                </optgroup>
-                                <optgroup label="Antisépticos y Curabicheras">
-                                    <option value="Lepecid">Lepecid (Larvicida / Curabicheras)</option>
-                                    <option value="Penco">Penco (Antiséptico local)</option>
-                                    <option value="Yodo">Yodo (Desinfectante local)</option>
-                                </optgroup>
-                                <optgroup label="Hemotrópicos">
-                                    <option value="Babecide">Babecide (Tratamiento de piroplasmosis)</option>
-                                    <option value="Imidover">Imidover (Dipropionato de Imidocarb)</option>
-                                </optgroup>
-                                <optgroup label="Soporte y Otros">
-                                    <option value="Azul de Metileno">Azul de Metileno (Antiséptico / Cicatrizante)</option>
-                                    <option value="Furodex">Furodex (Diurético)</option>
-                                    <option value="Ringer Lactato">Ringer Lactato (Solución electrolítica)</option>
+                                <optgroup label="Antibióticos y otros">
+                                    <option value="Diastrept50">Diastrept50</option>
+                                    <option value="Overbiotic">Overbiotic</option>
+                                    <option value="Overpen">Overpen</option>
+                                    <option value="Tilosina">Tilosina</option>
+                                    <option value="Lepecid">Lepecid</option>
+                                    <option value="Imidover">Imidover</option>
                                 </optgroup>
                             </select>
-                            <div class="help-text">Mantenga presionado Ctrl (en PC) o toque varios elementos (en móvil) para seleccionar más de uno.</div>
+                            <div class="help-text">Mantén presionados varios ítems para selección múltiple.</div>
                         </div>
 
                         <div class="form-row">
@@ -463,21 +420,21 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="observaciones">Área de Observación / Dosis</label>
-                            <textarea id="observaciones" rows="2" placeholder="Dosis por animal, vía (IM/SC), condición corporal..."></textarea>
+                            <label for="observaciones">Observación / Dosis</label>
+                            <textarea id="observaciones" rows="2" placeholder="Dosis, vía (IM/SC)..."></textarea>
                         </div>
 
-                        <button type="submit">💾 Guardar / Sincronizar</button>
+                        <button type="submit">💾 Guardar y Sincronizar</button>
                     </form>
                 </section>
             </div>
 
-            <!-- COLUMNA DERECHA: Resumen de Historial Médico -->
+            <!-- TABLA / HISTORIAL -->
             <div>
                 <section class="section-box">
                     <div class="toolbar-flex">
-                        <h2>📋 Historial Médico y Registros</h2>
-                        <input type="text" id="buscadorHistorial" placeholder="Filtrar por lote, fármaco..." class="search-input">
+                        <h2>📋 Historial Sanitario</h2>
+                        <input type="text" id="buscadorHistorial" placeholder="🔍 Filtrar registros..." style="max-width: 100%;">
                     </div>
 
                     <div class="table-responsive">
@@ -487,19 +444,19 @@
                                     <th>Fecha</th>
                                     <th>Lote / Chip</th>
                                     <th>Clasificación</th>
-                                    <th>Fármacos Aplicados</th>
-                                    <th>Próx. Tratamiento</th>
-                                    <th>Observaciones</th>
+                                    <th>Productos</th>
+                                    <th>Próx.</th>
+                                    <th>Obs.</th>
                                     <th style="text-align: center;">Acción</th>
                                 </tr>
                             </thead>
                             <tbody id="tablaHistorialBody">
-                                <!-- Filas inyectadas por JS -->
+                                <!-- Inyectado por JS -->
                             </tbody>
                         </table>
                     </div>
-                    <div id="sinRegistros" style="text-align: center; padding: 25px; color: var(--text-muted); font-size: 0.85rem;">
-                        No hay registros sanitarios almacenados en este dispositivo.
+                    <div id="sinRegistros" style="text-align: center; padding: 20px; color: var(--text-muted); font-size: 0.8rem;">
+                        Cargando registros...
                     </div>
                 </section>
             </div>
@@ -507,111 +464,165 @@
         </div>
     </main>
 
-    <!-- SCRIPT LÓGICO -->
+    <!-- SCRIPT DE CONEXIÓN Y LÓGICA -->
     <script>
+        // Configuración de Firebase unificada con su app principal
+        const firebaseConfig = {
+            apiKey: "AIzaSyD-TUS-CREDENCIALES-REALES",
+            authDomain: "hatolagunabrava.firebaseapp.com",
+            projectId: "hatolagunabrava",
+            storageBucket: "hatolagunabrava.appspot.com",
+            messagingSenderId: "123456789",
+            appId: "1:123:web:abc"
+        };
+
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const db = firebase.firestore();
+        const COLLECTION_NAME = "hato_control_sanitario";
+
         document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('fechaAplicacion').valueAsDate = new Date();
-            renderizarHistorial();
 
-            document.getElementById('formSanitario').addEventListener('submit', (e) => {
+            // 1. Corrección del botón de menú (permite volver al index o menú principal según su estructura)
+            document.getElementById('btnVolverMenu').addEventListener('click', () => {
+                // Intenta regresar en el historial o redirige al index general de la mini app
+                if (window.history.length > 1) {
+                    window.history.back();
+                } else {
+                    window.location.href = 'index.html';
+                }
+            });
+
+            // 2. Cargar datos en tiempo real desde Firestore (con respaldo local offline)
+            cargarDatosRemotosYLocks();
+
+            // 3. Manejo del formulario
+            document.getElementById('formSanitario').addEventListener('submit', async (e) => {
                 e.preventDefault();
 
                 const selectFarmacos = document.getElementById('farmacosSelect');
                 const farmacosSeleccionados = Array.from(selectFarmacos.selectedOptions).map(opt => opt.value);
 
                 if (farmacosSeleccionados.length === 0) {
-                    alert('Por favor, seleccione al menos un fármaco o producto.');
+                    alert('Seleccione al menos un fármaco.');
                     return;
                 }
 
                 const nuevoRegistro = {
-                    id: 'REG-' + Date.now(),
+                    id: 'SAN-' + Date.now(),
                     loteChip: document.getElementById('loteChip').value.trim(),
                     clasificacion: document.getElementById('clasificacion').value,
                     farmacos: farmacosSeleccionados,
                     fechaAplicacion: document.getElementById('fechaAplicacion').value,
-                    fechaProximo: document.getElementById('fechaProximo').value || 'No programado',
-                    observaciones: document.getElementById('observaciones').value.trim() || 'Sin observaciones'
+                    fechaProximo: document.getElementById('fechaProximo').value || 'No prog.',
+                    observaciones: document.getElementById('observaciones').value.trim() || 'Sin observaciones',
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
                 };
 
                 try {
-                    let historial = JSON.parse(localStorage.getItem('HL_HistorialSanitario')) || [];
-                    historial.unshift(nuevoRegistro);
-                    localStorage.setItem('HL_HistorialSanitario', JSON.stringify(historial));
-
-                    // =========================================================================
-                    // NOTA TÉCNICA PARA SINCRONIZACIÓN NUBE:
-                    // Aquí debe agregar la función de escritura a Firestore, por ejemplo:
-                    // db.collection("hato_inventario_sanitario").add(nuevoRegistro)...
-                    // =========================================================================
-
-                    alert(`¡Tratamiento guardado correctamente!\nLote/Chip: ${nuevoRegistro.loteChip}\nProductos: ${farmacosSeleccionados.join(', ')}`);
+                    // Guardar en Firestore directamente
+                    await db.collection(COLLECTION_NAME).doc(nuevoRegistro.id).set(nuevoRegistro);
+                    alert('¡Tratamiento sincronizado con la nube exitosamente!');
                     document.getElementById('formSanitario').reset();
                     document.getElementById('fechaAplicacion').valueAsDate = new Date();
-                    renderizarHistorial();
-                } catch (err) {
-                    console.error("Error al guardar:", err);
-                    alert("Error al intentar guardar el registro localmente.");
+                } catch (error) {
+                    console.error("Error al sincronizar con Firebase:", error);
+                    // Fallback a LocalStorage si está offline
+                    let localCache = JSON.parse(localStorage.getItem(COLLECTION_NAME)) || [];
+                    localCache.unshift(nuevoRegistro);
+                    localStorage.setItem(COLLECTION_NAME, JSON.stringify(localCache));
+                    alert('Sin conexión a la nube. Guardado localmente en el dispositivo.');
+                    renderizarTabla(localCache);
                 }
             });
 
             document.getElementById('buscadorHistorial').addEventListener('input', (e) => {
-                renderizarHistorial(e.target.value.toLowerCase());
+                const filtro = e.target.value.toLowerCase();
+                const cached = JSON.parse(localStorage.getItem(COLLECTION_NAME)) || [];
+                const filtrados = cached.filter(r => 
+                    r.loteChip.toLowerCase().includes(filtro) || 
+                    r.farmacos.join(', ').toLowerCase().includes(filtro) ||
+                    r.clasificacion.toLowerCase().includes(filtro)
+                );
+                renderizarTabla(filtrados);
             });
         });
 
-        function renderizarHistorial(filtro = '') {
-            const historial = JSON.parse(localStorage.getItem('HL_HistorialSanitario')) || [];
+        function cargarDatosRemotosYLocks() {
+            const semaphore = document.getElementById('syncSemaphore');
+            const syncText = document.getElementById('syncTextLabel');
+
+            db.collection(COLLECTION_NAME).orderBy('fechaAplicacion', 'desc').onSnapshot((snapshot) => {
+                let registros = [];
+                snapshot.forEach(doc => {
+                    registros.push(doc.data());
+                });
+
+                // Actualizar caché local y semáforo en verde
+                localStorage.setItem(COLLECTION_NAME, JSON.stringify(registros));
+                renderizarTabla(registros);
+                
+                semaphore.classList.add('online');
+                syncText.innerText = "Sincronizado";
+            }, (error) => {
+                console.warn("Modo offline activado:", error);
+                semaphore.classList.remove('online');
+                syncText.innerText = "Modo Local";
+                
+                // Cargar desde caché local si falla la red
+                const localCache = JSON.parse(localStorage.getItem(COLLECTION_NAME)) || [];
+                renderizarTabla(localCache);
+            });
+        }
+
+        function renderizarTabla(registros) {
             const tbody = document.getElementById('tablaHistorialBody');
             const sinRegistros = document.getElementById('sinRegistros');
 
-            const filtrados = historial.filter(r => {
-                const farmacosStr = Array.isArray(r.farmacos) ? r.farmacos.join(', ') : (r.farmacoNombre || '');
-                return r.loteChip.toLowerCase().includes(filtro) ||
-                       farmacosStr.toLowerCase().includes(filtro) ||
-                       r.clasificacion.toLowerCase().includes(filtro) ||
-                       r.observaciones.toLowerCase().includes(filtro);
-            });
-
-            if (filtrados.length === 0) {
+            if (!registros || registros.length === 0) {
                 tbody.innerHTML = '';
                 sinRegistros.style.display = 'block';
                 return;
             }
 
             sinRegistros.style.display = 'none';
-            tbody.innerHTML = filtrados.map(r => {
+            tbody.innerHTML = registros.map(r => {
                 let badgeClass = 'badge-rutinario';
                 if (r.clasificacion === 'Generalizado') badgeClass = 'badge-generalizado';
                 else if (r.clasificacion === 'Dirigido') badgeClass = 'badge-dirigido';
                 else if (r.clasificacion === 'Correctivo') badgeClass = 'badge-correctivo';
 
-                const listaFarmacos = Array.isArray(r.farmacos) 
-                    ? r.farmacos.map(f => `<span style="display:inline-block; background:#e9f5ed; color:#1b4332; padding:2px 6px; border-radius:4px; font-weight:600; margin:2px;">• ${f}</span>`).join('')
-                    : `<strong>${r.farmacoNombre || 'N/D'}</strong>`;
+                const lista = Array.isArray(r.farmacos) ? r.farmacos.join(', ') : r.farmacos;
 
                 return `
                     <tr>
                         <td><strong>${r.fechaAplicacion}</strong></td>
                         <td>${r.loteChip}</td>
                         <td><span class="badge ${badgeClass}">${r.clasificacion}</span></td>
-                        <td>${listaFarmacos}</td>
+                        <td>${lista}</td>
                         <td>${r.fechaProximo}</td>
-                        <td style="max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${r.observaciones}">${r.observaciones}</td>
+                        <td style="max-width: 120px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${r.observaciones}">${r.observaciones}</td>
                         <td style="text-align: center;">
-                            <button onclick="eliminarRegistro('${r.id}')" class="btn-danger" title="Eliminar registro">🗑️</button>
+                            <button onclick="eliminarRegistro('${r.id}')" class="btn-danger">🗑️</button>
                         </td>
                     </tr>
                 `;
             }).join('');
         }
 
-        function eliminarRegistro(id) {
-            if (confirm('¿Desea eliminar este registro sanitario específico del historial?')) {
-                let historial = JSON.parse(localStorage.getItem('HL_HistorialSanitario')) || [];
-                historial = historial.filter(r => r.id !== id);
-                localStorage.setItem('HL_HistorialSanitario', JSON.stringify(historial));
-                renderizarHistorial(document.getElementById('buscadorHistorial').value.toLowerCase());
+        async function eliminarRegistro(id) {
+            if (confirm('¿Desea eliminar este registro sanitario?')) {
+                try {
+                    await db.collection(COLLECTION_NAME).doc(id).delete();
+                } catch (e) {
+                    // Si falla la red, borra de local
+                    let localCache = JSON.parse(localStorage.getItem(COLLECTION_NAME)) || [];
+                    localCache = localCache.filter(r => r.id !== id);
+                    localStorage.setItem(COLLECTION_NAME, JSON.stringify(localCache));
+                    renderizarTabla(localCache);
+                }
             }
         }
     </script>
