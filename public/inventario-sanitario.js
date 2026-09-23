@@ -207,3 +207,70 @@ const listaFármacos = Array.isArray(r.farmacos)
 
 // Instanciar la aplicación globalmente para control de eventos en la tabla
 window.appSanitario = new ControlSanitarioHato();
+
+/**
+ * ============================================================================
+ * SISTEMA DE ALERTAS Y RECORDATORIOS (Sonido + Vibración)
+ * ============================================================================
+ */
+function verificarAlarmasTratamientos() {
+    const historial = JSON.parse(localStorage.getItem('HL_HistorialSanitario')) || [];
+    const hoyStr = new Date().toISOString().split('T')[0]; // Formato YYYY-MM-DD
+
+    let tratamientosHoy = historial.filter(r => r.fechaProximo === hoyStr);
+
+    if (tratamientosHoy.length > 0) {
+        // Disparar Alarma Sonora y Vibrante
+        dispararAlertaActiva(tratamientosHoy.length);
+    }
+}
+
+function dispararAlertaActiva(cantidad) {
+    // 1. Vibración fuerte en dispositivos móviles (Patrón de pulso fuerte: 3 pitidos largos)
+    if ("vibrate" in navigator) {
+        navigator.vibrate([500, 200, 500, 200, 800]);
+    }
+
+    // 2. Alarma Sonora Sintética (Generada por Web Audio API sin archivos externos)
+    try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        
+        // Generar 3 tonos de alerta fuertes y sucesivos
+        for (let i = 0; i < 3; i++) {
+            let osc = audioCtx.createOscillator();
+            let gain = audioCtx.createGain();
+
+            osc.type = 'square'; // Onda cuadrada para mayor volumen y estridencia
+            osc.frequency.setValueAtTime(880, audioCtx.currentTime + (i * 0.4)); // Tono alto
+
+            gain.gain.setValueAtTime(0.5, audioCtx.currentTime + (i * 0.4));
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + (i * 0.4) + 0.3);
+
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            osc.start(audioCtx.currentTime + (i * 0.4));
+            osc.stop(audioCtx.currentTime + (i * 0.4) + 0.3);
+        }
+    } catch (e) {
+        console.log("Audio Context bloqueado por políticas del navegador hasta interacción del usuario.");
+    }
+
+    // 3. Notificación Visual Emergente en Pantalla
+    if (Notification.permission === "granted") {
+        new Notification("⚠️ ¡Alerta Sanitaria en Hato Laguna Brava!", {
+            body: `Tiene ${cantidad} tratamiento(s) programado(s) para el día de hoy.`,
+            icon: ""
+        });
+    }
+}
+
+// Solicitar permisos de notificación al cargar la app
+document.addEventListener('DOMContentLoaded', () => {
+    if ("Notification" in window && Notification.permission !== "granted") {
+        Notification.requestPermission();
+    }
+    
+    // Ejecutar verificación de alarmas al abrir la aplicación
+    verificarAlarmasTratamientos();
+});
