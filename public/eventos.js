@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Módulo: Registro y Control de Eventos Críticos (Versión Oficial 3.0 Integrada)
+   Módulo: Registro y Control de Eventos Críticos (Versión Compatible HTML)
    Hato Laguna Brava - Mantecal, Apure, Venezuela
    ========================================================================== */
 
@@ -29,36 +29,35 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 
-// Inicialización moderna con caché persistente integrada (Soporte offline total para campo)
+// Inicialización moderna con caché persistente (Soporte offline total en campo)
 const db = initializeFirestore(app, {
     localCache: persistentLocalCache()
 });
 
 const COLLECTION_NAME = "hato_eventos";
 
-// Caché global en memoria para filtros reactivos y bloques mensuales
+// Caché global en memoria para filtros reactivos
 let eventosCache = [];
 let imagenBase64Actual = "";
 
 document.addEventListener('DOMContentLoaded', () => {
     const eventoForm = document.getElementById('eventoForm');
-    const eventosContainer = document.getElementById('eventos-container');
+    const tablaEventosBody = document.getElementById('tablaEventosBody');
+    const sinRegistros = document.getElementById('sinRegistros');
     const inputFoto = document.getElementById('foto-evento');
     
-    // Contadores de KPIs e Indicadores Mensuales Independientes
+    // Contadores de KPIs según tu HTML
     const kpiMortalidad = document.getElementById('kpi-mortalidad');
-    const kpiAbortos = document.getElementById('kpi-abortos');         // Específico para Abortos
-    const kpiNatimortos = document.getElementById('kpi-natimortos');   // Específico para Natimortos
-    const kpiNatalidad = document.getElementById('kpi-natalidad');     // Específico para Natalidad
-    const kpiConsumo = document.getElementById('kpi-consumo');         // Específico para Consumo Interno
-    const kpiTraslados = document.getElementById('kpi-traslados');     // Específico para Traslados
-    const kpiDonaciones = document.getElementById('kpi-donaciones');   // Específico para Donaciones
+    const kpiReproductivos = document.getElementById('kpi-reproductivos'); // Abortos y Natimortos
+    const kpiMovimientos = document.getElementById('kpi-movimientos');     // Consumo, Donación, Traslado
 
-    // Elementos de Filtro Reactivo y Búsqueda
+    // Elementos de Filtro Reactivo
     const filtroCategoria = document.getElementById('filtro-categoria');
     const filtroGrupoEtario = document.getElementById('filtro-grupo-etario');
-    const filtroMes = document.getElementById('filtro-mes'); // Bloque mensual (YYYY-MM)
-    const inputBusquedaChip = document.getElementById('busqueda-chip'); // Búsqueda rápida por Chip/Caravana
+
+    // Semáforo Cloud UI
+    const syncSemaphore = document.getElementById('syncSemaphore');
+    const syncTextLabel = document.getElementById('syncTextLabel');
 
     // Función auxiliar para notificaciones Toast
     function mostrarToast(mensaje, tipo = "success") {
@@ -67,7 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!toast || !toastMessage) return;
 
         toastMessage.textContent = mensaje;
-        toast.style.borderLeftColor = tipo === "error" ? "#c1121f" : "var(--accent-color, #2d6a4f)";
+        toast.style.borderLeftColor = tipo === "error" ? "#c1121f" : "var(--accent-color, #52b788)";
         toast.classList.add('show');
 
         setTimeout(() => {
@@ -75,7 +74,39 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 3500);
     }
 
-    // Procesar imagen subida a Base64 (Validando obligatoriedad por categoría crítica/operativa)
+    // Manejo de Geolocalización GPS en campo
+    const btnCapturarGps = document.getElementById('btn-capturar-gps');
+    const gpsInfo = document.getElementById('gps-info');
+    const gpsLat = document.getElementById('gps-lat');
+    const gpsLng = document.getElementById('gps-lng');
+
+    if (btnCapturarGps) {
+        btnCapturarGps.addEventListener('click', () => {
+            if (!navigator.geolocation) {
+                mostrarToast("La geolocalización no está soportada en este dispositivo", "error");
+                return;
+            }
+            gpsInfo.textContent = "Obteniendo coordenadas GPS...";
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const lat = position.coords.latitude.toFixed(6);
+                    const lng = position.coords.longitude.toFixed(6);
+                    gpsLat.value = lat;
+                    gpsLng.value = lng;
+                    gpsInfo.textContent = `Lat: ${lat}, Lng: ${lng}`;
+                    mostrarToast("Coordenadas GPS fijadas con éxito");
+                },
+                (error) => {
+                    console.error("Error GPS:", error);
+                    gpsInfo.textContent = "Error al obtener GPS (verifique permisos)";
+                    mostrarToast("No se pudo capturar la posición GPS", "error");
+                },
+                { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+            );
+        });
+    }
+
+    // Procesar imagen subida a Base64
     if (inputFoto) {
         inputFoto.addEventListener('change', (e) => {
             const file = e.target.files[0];
@@ -95,7 +126,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Sincronización en tiempo real con Firestore
     function iniciarSincronizacionEventos() {
-        if (!eventosContainer) return;
+        if (!tablaEventosBody) return;
 
         const q = query(collection(db, COLLECTION_NAME), orderBy("fecha", "desc"));
         
@@ -103,148 +134,135 @@ document.addEventListener('DOMContentLoaded', () => {
             eventosCache = [];  
             
             snapshot.forEach((docSnap) => {
-                const data = docSnap.data();
-                // Extracción automática del bloque mensual (YYYY-MM)
-                const mesAnio = data.fecha ? data.fecha.substring(0, 7) : "Sin mes";
-                
                 eventosCache.push({
                     id: docSnap.id,
-                    mesAnio,
-                    ...data
+                    ...docSnap.data()
                 });
             });
 
-            actualizarOpcionesFiltrosEventos(eventosCache);
+            // Actualizar semáforo a online
+            if (syncSemaphore) syncSemaphore.classList.add('online');
+            if (syncTextLabel) syncTextLabel.textContent = "Cloud Sincronizado";
+
+            actualizarOpcionesFiltroEtarios(eventosCache);
             window.renderizarEventosFiltrados();
 
         }, (error) => {
             console.error("Error al sincronizar eventos:", error);
-            eventosContainer.innerHTML = '<p style="text-align: center; color: #c1121f; padding: 20px;">Modo offline activo. Los registros se almacenan de forma local y se sincronizarán al recuperar señal.</p>';
-            mostrarToast("Sincronización offline activa", "error");
+            if (syncSemaphore) syncSemaphore.classList.remove('online');
+            if (syncTextLabel) syncTextLabel.textContent = "Modo Offline";
+            mostrarToast("Trabajando en modo offline (datos locales)", "error");
+            
+            // Renderizar con caché local disponible
+            window.renderizarEventosFiltrados();
         });
     }
 
-    // Renderizado dinámico y filtrado universal de eventos
+    // Renderizado dinámico y filtrado en la Tabla HTML
     window.renderizarEventosFiltrados = function() {
-        if (!eventosContainer) return;
+        if (!tablaEventosBody) return;
 
         const catSeleccionada = filtroCategoria ? filtroCategoria.value.toLowerCase() : '';
         const etarioSeleccionado = filtroGrupoEtario ? filtroGrupoEtario.value.toLowerCase() : '';
-        const mesSeleccionado = filtroMes ? filtroMes.value : '';
-        const textoChip = inputBusquedaChip ? inputBusquedaChip.value.toLowerCase().trim() : '';
 
         const eventosFiltrados = eventosCache.filter(ev => {
             const coincideCat = !catSeleccionada || (ev.categoria && ev.categoria.toLowerCase() === catSeleccionada);
             const coincideEtario = !etarioSeleccionado || (ev.grupoEtario && ev.grupoEtario.toLowerCase().includes(etarioSeleccionado));
-            const coincideMes = !mesSeleccionado || (ev.mesAnio === mesSeleccionado);
-            const coincideChip = !textoChip || (ev.chipNumero && ev.chipNumero.toLowerCase().includes(textoChip));
-            
-            return coincideCat && coincideEtario && coincideMes && coincideChip;
+            return coincideCat && coincideEtario;
         });
 
-        eventosContainer.innerHTML = '';
+        tablaEventosBody.innerHTML = '';
 
         if (eventosFiltrados.length === 0) {
-            eventosContainer.innerHTML = '<p style="text-align: center; color: var(--text-muted); font-size: 0.9rem; padding: 20px;">No hay eventos registrados que coincidan con los criterios de búsqueda.</p>';
-            actualizarContadoresDashboard({ mortalidad: 0, aborto: 0, natimorto: 0, natalidad: 0, consumo: 0, traslado: 0, donacion: 0 });
+            if (sinRegistros) sinRegistros.style.display = 'block';
+            actualizarContadoresDashboard({ mortalidad: 0, reproductivos: 0, movimientos: 0 });
             return;
         }
 
-        // Acumuladores independientes para cada categoría del hato
-        let contadores = {
-            mortalidad: 0,
-            aborto: 0,
-            natimorto: 0,
-            natalidad: 0,
-            consumo: 0,
-            traslado: 0,
-            donacion: 0
-        };
+        if (sinRegistros) sinRegistros.style.display = 'none';
+
+        let conteoMortalidad = 0;
+        let conteoReproductivos = 0; // Abortos + Natimortos
+        let conteoMovimientos = 0;     // Consumo + Donacion + Traslado
 
         eventosFiltrados.forEach(ev => {
             const catLower = (ev.categoria || '').toLowerCase();
             
-            if (catLower === 'mortalidad') contadores.mortalidad++;
-            else if (catLower === 'aborto') contadores.aborto++;
-            else if (catLower === 'natimorto') contadores.natimorto++;
-            else if (catLower === 'natalidad') contadores.natalidad++;
-            else if (catLower === 'consumo') contadores.consumo++;
-            else if (catLower === 'traslado') contadores.traslado++;
-            else if (catLower === 'donacion') contadores.donacion++;
+            if (catLower === 'mortalidad') conteoMortalidad++;
+            else if (catLower === 'aborto' || catLower === 'natimorto') conteoReproductivos++;
+            else if (catLower === 'consumo' || catLower === 'donacion' || catLower === 'traslado') conteoMovimientos++;
 
-            const div = document.createElement('div');
-            div.className = 'task-card-item';
-            div.innerHTML = `
-                <div class="task-card-row">
-                    <span class="task-card-date"><i class="fa-regular fa-calendar"></i> ${ev.fecha || 'Sin fecha'}</span>
-                    <span class="task-card-meta"><b>Categoría:</b> <span style="text-transform: uppercase; color: var(--accent-color);">${ev.categoria || 'N/D'}</span></span>
-                </div>
-                <div class="task-card-labor" style="font-size: 1rem; margin: 6px 0;"><b>Grupo Etario:</b> ${ev.grupoEtario || 'N/D'} | <b>Caravana/Chip:</b> ${ev.chipNumero || 'N/A'}</div>
-                <div class="task-card-meta"><i class="fa-solid fa-clipboard-user"></i> <b>Descripción:</b> ${ev.descripcion || 'Sin descripción'}</div>
-                <div class="task-card-meta"><i class="fa-solid fa-user-tie"></i> <b>Responsable:</b> ${ev.responsable || 'General'}</div>
-                
-                ${ev.fotoBase64 ? `
-                    <div style="margin-top: 8px;">
-                        <img src="${ev.fotoBase64}" alt="Evidencia de evento" style="max-width: 100%; height: 120px; object-fit: cover; border-radius: 6px; border: 1px solid var(--border-color);" />
-                    </div>
-                ` : ''}
-                
-                <div class="task-card-actions" style="margin-top: 10px; justify-content: flex-end;">
-                    <button class="btn-delete" data-id="${ev.id}" title="Eliminar registro"><i class="fa-solid fa-trash-can"></i> Eliminar</button>
-                </div>
+            // Asignar color de badge institucional según tipo
+            let badgeClass = 'badge-operativo';
+            if (catLower === 'mortalidad') badgeClass = 'badge-mortalidad';
+            else if (catLower === 'aborto' || catLower === 'natimorto') badgeClass = 'badge-reproductivo';
+
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td><div style="font-weight: 600;">${ev.fecha || 'N/D'}</div></td>
+                <td>
+                    <span class="badge ${badgeClass}">${ev.categoria || 'N/D'}</span><br>
+                    <span style="font-size: 0.72rem; color: var(--text-muted);">${ev.grupoEtario || 'N/D'}</span>
+                </td>
+                <td>
+                    <div style="font-weight: 600;">Chip: ${ev.chipNumero || 'N/A'}</div>
+                    <div style="font-size: 0.73rem; color: #495057; max-width: 220px; white-space: normal;">${ev.descripcion || ''}</div>
+                    ${ev.fotoBase64 ? `<div style="margin-top: 4px;"><a href="${ev.fotoBase64}" target="_blank" style="font-size: 0.65rem; color: var(--secondary-color);">Ver Foto Evidencia</a></div>` : ''}
+                </td>
+                <td>
+                    <div style="font-size: 0.72rem;"><b>Resp:</b> ${ev.responsable || 'General'}</div>
+                    ${ev.lat && ev.lng ? `<div style="font-size: 0.62rem; color: #1d3557;"><i class="fa-solid fa-location-dot"></i> ${ev.lat},${ev.lng}</div>` : '<div style="font-size: 0.62rem; color: #adb5bd;">Sin GPS</div>'}
+                </td>
+                <td style="text-align: center;">
+                    <button class="btn-danger btn-delete" data-id="${ev.id}" title="Eliminar registro">Eliminar</button>
+                </td>
             `;
-            eventosContainer.appendChild(div);
+            tablaEventosBody.appendChild(tr);
         });
 
-        actualizarContadoresDashboard(contadores);
+        actualizarContadoresDashboard({
+            mortalidad: conteoMortalidad,
+            reproductivos: conteoReproductivos,
+            movimientos: conteoMovimientos
+        });
+
         vincularEventosEliminacion();
     };
 
-    // Poblar dinámicamente selectores de filtros (Grupos etarios y Bloques mensuales YYYY-MM)
-    function actualizarOpcionesFiltrosEventos(data) {
-        if (filtroGrupoEtario && filtroGrupoEtario.options.length <= 1) {
-            const etariosUnicos = [...new Set(data.map(e => e.grupoEtario).filter(Boolean))].sort();
-            etariosUnicos.forEach(et => {
-                const opt = document.createElement('option');
-                opt.value = et;
-                opt.textContent = et;
-                filtroGrupoEtario.appendChild(opt);
-            });
-        }
-
-        if (filtroMes && filtroMes.options.length <= 1) {
-            const mesesUnicos = [...new Set(data.map(e => e.mesAnio).filter(Boolean))].sort().reverse();
-            mesesUnicos.forEach(mes => {
-                const opt = document.createElement('option');
-                opt.value = mes;
-                opt.textContent = `Bloque Mensual: ${mes}`;
-                filtroMes.appendChild(opt);
-            });
-        }
+    // Poblar dinámicamente selectores de grupos etarios
+    function actualizarOpcionesFiltroEtarios(data) {
+        if (!filtroGrupoEtario) return;
+        const valorActual = filtroGrupoEtario.value;
+        
+        // Mantener opción por defecto
+        filtroGrupoEtario.innerHTML = '<option value="">Todos los Etarios</option>';
+        
+        const etariosUnicos = [...new Set(data.map(e => e.grupoEtario).filter(Boolean))].sort();
+        etariosUnicos.forEach(et => {
+            const opt = document.createElement('option');
+            opt.value = et;
+            opt.textContent = et;
+            if (et === valorActual) opt.selected = true;
+            filtroGrupoEtario.appendChild(opt);
+        });
     }
 
     // Event listeners para filtros reactivos
     if (filtroCategoria) filtroCategoria.addEventListener('change', window.renderizarEventosFiltrados);
     if (filtroGrupoEtario) filtroGrupoEtario.addEventListener('change', window.renderizarEventosFiltrados);
-    if (filtroMes) filtroMes.addEventListener('change', window.renderizarEventosFiltrados);
-    if (inputBusquedaChip) inputBusquedaChip.addEventListener('input', window.renderizarEventosFiltrados);
 
-    // Actualizar los acumuladores independientes en la interfaz del panel
+    // Actualizar los KPIs en la interfaz
     function actualizarContadoresDashboard(c) {
         if (kpiMortalidad) kpiMortalidad.textContent = c.mortalidad;
-        if (kpiAbortos) kpiAbortos.textContent = c.aborto;
-        if (kpiNatimortos) kpiNatimortos.textContent = c.natimorto;
-        if (kpiNatalidad) kpiNatalidad.textContent = c.natalidad;
-        if (kpiConsumo) kpiConsumo.textContent = c.consumo;
-        if (kpiTraslados) kpiTraslados.textContent = c.traslado;
-        if (kpiDonaciones) kpiDonaciones.textContent = c.donacion;
+        if (kpiReproductivos) kpiReproductivos.textContent = c.reproductivos;
+        if (kpiMovimientos) kpiMovimientos.textContent = c.movimientos;
     }
 
     function vincularEventosEliminacion() {
         document.querySelectorAll('.btn-delete').forEach(btn => {
             btn.addEventListener('click', async (e) => {
                 const id = e.currentTarget.dataset.id;
-                if (confirm("¿Está seguro de eliminar este evento crítico del registro histórico del hato?")) {
+                if (confirm("¿Está seguro de eliminar este evento crítico del registro del hato?")) {
                     try {
                         await deleteDoc(doc(db, COLLECTION_NAME, id));
                         mostrarToast("Registro eliminado correctamente");
@@ -267,18 +285,14 @@ document.addEventListener('DOMContentLoaded', () => {
             const grupoEtario = document.getElementById('grupo-etario')?.value.trim();
             const chipNumero = document.getElementById('chip-numero')?.value.trim() || 'N/A';
             const fecha = document.getElementById('fecha-evento')?.value;
-            const descripcion = document.getElementById('descripcion-evento')?.value.trim();
             const responsable = document.getElementById('responsable-evento')?.value.trim() || 'General';
+            const descripcion = document.getElementById('descripcion-evento')?.value.trim();
+            
+            const lat = gpsLat ? gpsLat.value : '';
+            const lng = gpsLng ? gpsLng.value : '';
 
             if (!categoria || !grupoEtario || !fecha || !descripcion) {
-                mostrarToast("Complete los campos obligatorios del evento", "error");
-                return;
-            }
-
-            // Validación de fotografía obligatoria para operaciones críticas y de salida
-            const categoriasFotoObligatoria = ["consumo", "mortalidad", "traslado", "donacion"];
-            if (categoriasFotoObligatoria.includes(categoria.toLowerCase()) && !imagenBase64Actual) {
-                mostrarToast(`La evidencia fotográfica es obligatoria para la categoría: ${categoria}`, "error");
+                mostrarToast("Complete los campos obligatorios (*)", "error");
                 return;
             }
 
@@ -290,8 +304,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 grupoEtario,
                 chipNumero,
                 fecha,
-                descripcion,
                 responsable,
+                descripcion,
+                lat,
+                lng,
                 fotoBase64: imagenBase64Actual,
                 timestamp: Date.now()
             };
@@ -300,6 +316,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 await addDoc(collection(db, COLLECTION_NAME), nuevoEvento);
                 eventoForm.reset();
                 imagenBase64Actual = "";
+                if (gpsLat) gpsLat.value = '';
+                if (gpsLng) gpsLng.value = '';
+                if (gpsInfo) gpsInfo.textContent = "GPS no capturado";
                 
                 // Restablecer fecha por defecto a hoy
                 const ahora = new Date();
@@ -307,7 +326,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const inputFecha = document.getElementById('fecha-evento');
                 if (inputFecha) inputFecha.value = today;
 
-                mostrarToast("💾 Evento crítico registrado e integrado con éxito");
+                mostrarToast("💾 Evento crítico registrado y sincronizado con éxito");
             } catch (error) {
                 console.error("Error al guardar evento:", error);
                 mostrarToast("Guardado localmente. Se sincronizará al conectar", "error");
