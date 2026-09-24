@@ -44,6 +44,31 @@ const COLLECTION_NAME = "hato_eventos";
 let eventosCache = [];
 let imagenBase64Actual = "";
 
+// Función global blindada para abrir evidencias Base64 sin restricciones de WebViews/Telegram
+window.verEvidencia = function(base64Data) {
+    try {
+        const arr = base64Data.split(',');
+        const mime = arr[0].match(/:(.*?);/)[1];
+        const bstr = atob(arr[1]);
+        let n = bstr.length;
+        const u8arr = new Uint8Array(n);
+        while (n--) {
+            u8arr[n] = bstr.charCodeAt(n);
+        }
+        const blob = new Blob([u8arr], { type: mime });
+        const blobUrl = URL.createObjectURL(blob);
+        window.open(blobUrl, '_blank');
+    } catch (e) {
+        console.error("Error al abrir evidencia:", e);
+        // Si la función mostrarToast está disponible en el ámbito, la usamos; de lo contrario, fallback a alert
+        if (typeof mostrarToast === 'function') {
+            mostrarToast("No se pudo renderizar la imagen en este dispositivo", "error");
+        } else {
+            alert("No se pudo renderizar la imagen en este dispositivo");
+        }
+    }
+};
+
 document.addEventListener('DOMContentLoaded', () => {
     const eventoForm = document.getElementById('eventoForm');
     const tablaEventosBody = document.getElementById('tablaEventosBody');
@@ -228,7 +253,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <td>
                     <div style="font-weight: 600;">Chip: ${ev.chipNumero || 'N/A'}</div>
                     <div style="font-size: 0.73rem; color: #495057; max-width: 220px; white-space: normal;">${ev.descripcion || ''}</div>
-                    ${ev.fotoBase64 ? `<div style="margin-top: 4px;"><a href="${ev.fotoBase64}" target="_blank" style="font-size: 0.65rem; color: var(--secondary-color);">Ver Foto Evidencia</a></div>` : ''}
+                    ${ev.fotoBase64 ? `<div style="margin-top: 4px;"><a href="javascript:void(0);" onclick="window.verEvidencia('${ev.fotoBase64}')" style="font-size: 0.65rem; color: var(--secondary-color); text-decoration: underline; cursor: pointer;">Ver Foto Evidencia</a></div>` : ''}
                 </td>
                 <td>
                     <div style="font-size: 0.72rem;"><b>Resp:</b> ${ev.responsable || 'General'}</div>
