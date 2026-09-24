@@ -3,246 +3,423 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Hato Laguna Brava - Control de Levante y Bloques de Estudio</title>
-    
-    <!-- Centralizado en tus Estilos Maestros Unificados (v4.1) -->
-    <link rel="stylesheet" href="./potreros.css?v=4.1">
-    
-    <!-- CDN oficial de iconos FontAwesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Manifiesto PWA -->
-    <link rel="manifest" href="manifest.json">
-    
+    <title>Hato Laguna Brava - Módulo de Eventos Críticos</title>
     <style>
-        body {
-            background-color: var(--bg-main, #fafdfb);
-            color: var(--text-main, #1b4332);
-            font-family: system-ui, -apple-system, sans-serif;
+        :root {
+            --primary-color: #1b4332;
+            --secondary-color: #2d6a4f;
+            --accent-color: #52b788;
+            --header-gradient: linear-gradient(135deg, #081c15 0%, #1b4332 100%);
+            --card-bg: #ffffff;
+            --border-color: #d8f3dc;
+            --text-muted: #495057;
+            --bg-body: #f4f9f4;
+            --danger-color: #c1121f;
+        }
+
+        *, *:before, *:after {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
         }
 
-        .main-container { 
-            padding: 20px; 
-            max-width: 1280px; 
-            margin: 0 auto; 
+        html, body {
+            width: 100%;
+            max-width: 100vw;
+            overflow-x: hidden;
+            background-color: var(--bg-body);
+            color: #212529;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            -webkit-tap-highlight-color: transparent;
         }
 
-        .menu-grid { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); 
-            gap: 20px; 
+        /* CABECERA INSTITUCIONAL */
+        .main-header {
+            background: var(--header-gradient);
+            color: #ffffff;
+            padding: 10px 12px;
+            box-shadow: 0 4px 15px rgba(27, 67, 50, 0.3);
+            border-bottom: 3px solid var(--accent-color);
+            width: 100%;
+        }
+
+        .header-container {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 6px;
+        }
+
+        .btn-back {
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.15);
+            padding: 6px 10px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 0.75rem;
+            font-weight: 600;
+            border: 1px solid rgba(255,255,255,0.2);
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .header-title-wrapper {
+            flex-grow: 1;
+            text-align: center;
+            min-width: 0;
+            padding: 0 4px;
+        }
+
+        .header-title-wrapper h1 {
+            font-size: 0.9rem;
+            font-weight: 800;
+            color: #ffffff;
+            text-transform: uppercase;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .header-title-wrapper h1 span {
+            color: var(--accent-color);
+            font-weight: 500;
+            text-transform: none;
+        }
+
+        .header-title-wrapper p {
+            font-size: 0.6rem;
+            color: #a3b899;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .sync-status-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 4px 8px;
+            border-radius: 20px;
+            flex-shrink: 0;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .semaphore {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: #ffb703;
+            box-shadow: 0 0 6px #ffb703;
+        }
+        .semaphore.online {
+            background-color: var(--accent-color);
+            box-shadow: 0 0 6px var(--accent-color);
+        }
+
+        .sync-text {
+            font-size: 0.6rem;
+            color: #fff;
+            font-weight: 700;
+        }
+
+        @media(max-width: 480px) {
+            .sync-text { display: none; }
+            .header-title-wrapper h1 { font-size: 0.8rem; }
+        }
+
+        /* CONTENEDOR PRINCIPAL Y GRID */
+        .main-container {
+            width: 100%;
+            max-width: 1440px;
+            margin: 0 auto;
+            padding: 10px 8px;
+        }
+
+        .menu-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            width: 100%;
+        }
+
+        @media (min-width: 1024px) {
+            .menu-grid {
+                display: grid;
+                grid-template-columns: 1fr 1.6fr;
+                gap: 20px;
+            }
         }
 
         .section-box {
-            background-color: var(--card-bg, #ffffff);
-            border: 1px solid var(--border-color, #e2e8f0);
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-top: 4px solid var(--primary-color);
             border-radius: 8px;
-            padding: 20px;
-            box-shadow: 0 2px 4px rgba(27, 67, 50, 0.02);
+            padding: 14px 12px;
+            box-shadow: 0 2px 8px rgba(27, 67, 50, 0.05);
+            width: 100%;
+        }
+
+        .section-box h2 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            font-size: 0.95rem;
+            color: var(--primary-color);
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .form-group {
+            margin-bottom: 10px;
+            width: 100%;
             display: flex;
             flex-direction: column;
-            gap: 14px;
-            margin-bottom: 12px;
         }
 
-        .card-header { 
-            display: flex; 
-            align-items: center; 
-            gap: 10px;
-            border-bottom: 1px solid var(--border-color, #e2e8f0); 
-            padding-bottom: 10px; 
-            margin: 0;
-        }
-
-        .card-title { 
-            font-size: 1.2rem; 
+        label {
+            display: block;
+            font-size: 0.72rem;
             font-weight: 700;
-            margin: 0; 
-            color: var(--text-main, #1b4332); 
+            text-transform: uppercase;
+            color: var(--primary-color);
+            margin-bottom: 3px;
+            letter-spacing: 0.3px;
         }
 
-        .card-description {
+        input, select, textarea {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid #ced4da;
+            border-radius: 6px;
             font-size: 0.85rem;
-            color: #666;
-            margin: 0;
+            color: #212529;
+            background-color: #fff;
         }
 
-        .input-group { 
-            display: flex; 
-            flex-direction: column; 
-            gap: 4px;
-        }
-
-        .input-group label { 
-            font-size: 0.8rem; 
-            font-weight: 600; 
-            color: var(--text-main, #1b4332);
-        }
-
-        .input-group input, .input-group select, .input-group textarea { 
-            padding: 8px 12px; 
-            border: 1px solid var(--border-color, #e2e8f0); 
-            border-radius: 6px; 
-            font-size: 0.95rem;
-            background-color: #ffffff;
-            color: var(--text-main, #1b4332);
-        }
-
-        .input-group textarea { resize: vertical; min-height: 70px; }
-
-        .input-group input:focus, .input-group select:focus, .input-group textarea:focus {
-            outline: none;
-            border-color: var(--text-muted, #52b788);
-        }
-
-        .kpi-container { 
-            display: grid; 
-            grid-template-columns: 1fr 1fr; 
-            gap: 12px; 
-        }
-
-        .kpi-card-item {
-            background-color: var(--card-bg, #ffffff);
-            border: 1px solid var(--border-color, #e2e8f0);
-            border-radius: 8px;
-            padding: 12px 14px;
+        .form-row {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 4px rgba(27, 67, 50, 0.02);
+            gap: 4%;
+            width: 100%;
+            margin-bottom: 10px;
         }
 
-        .kpi-card-item label {
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: var(--text-main, #1b4332);
-            margin: 0;
+        .form-row .form-group {
+            flex: 0 0 48%;
+            margin-bottom: 0;
         }
 
-        .kpi-value { 
-            font-weight: 700; 
-            font-size: 1.15rem;
-            color: var(--text-main, #1b4332); 
-        }
-
-        /* Alertas visuales dinámicas para la Brújula de Pesaje */
-        .cv-alert-optimal { border-left: 4px solid #2d6a4f; background-color: #f4f9f6; }
-        .cv-alert-warning { border-left: 4px solid #d4a373; background-color: #fefae0; }
-        .cv-alert-danger  { border-left: 4px solid #b7094c; background-color: #fdf0ed; }
-
-        .btn-submit { 
-            width: 100%; 
-            padding: 12px; 
-            background-color: var(--text-main, #1b4332); 
-            color: #ffffff; 
-            border: none; 
-            border-radius: 6px; 
-            font-weight: 600; 
-            font-size: 0.95rem;
-            cursor: pointer; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            gap: 8px; 
-            transition: background-color 0.2s;
-        }
-
-        .btn-submit:hover { 
-            background-color: var(--text-muted, #52b788); 
-        }
-
-        /* Contenedor del Dúo Dinámico: Deshacer y Rehacer codo a codo */
-        .undo-redo-group {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-        }
-
-        .btn-history-control {
-            background-color: #e9ecef;
-            color: #495057;
-            border: 1px solid #ced4da;
-            padding: 8px 10px;
+        .btn-action {
+            display: block;
+            width: 100%;
+            text-align: center;
+            background-color: var(--secondary-color);
+            color: #ffffff;
+            padding: 12px;
+            border: none;
             border-radius: 6px;
-            font-size: 0.8rem;
-            font-weight: 600;
+            font-weight: 700;
+            font-size: 0.85rem;
+            text-transform: uppercase;
             cursor: pointer;
+            box-shadow: 0 2px 5px rgba(45, 106, 79, 0.2);
+            margin-top: 4px;
+        }
+
+        .btn-action:active {
+            background-color: var(--primary-color);
+        }
+
+        .btn-print {
+            background-color: #3a86ff;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 6px 12px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            cursor: pointer;
+            text-transform: uppercase;
             display: flex;
             align-items: center;
-            justify-content: center;
-            gap: 6px;
-            transition: background-color 0.2s;
+            gap: 4px;
         }
-        .btn-history-control:hover:not(:disabled) {
-            background-color: #dee2e6;
-            color: #212529;
-        }
-        .btn-history-control:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
+        .btn-print:hover { background-color: #2667cc; }
+
+        .btn-danger {
+            background-color: var(--danger-color);
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            padding: 6px 10px;
+            font-size: 0.75rem;
         }
 
-        /* Zona de Peligro / Eliminación total al final del reporte */
-        .danger-zone {
-            margin-top: 15px;
-            padding-top: 12px;
-            border-top: 1px dashed #b7094c;
+        .kpi-container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 6px;
+            margin-bottom: 14px;
+        }
+
+        @media(max-width: 768px) {
+            .kpi-container {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .kpi-card {
+            background: #f8f9fa;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 6px 4px;
+            text-align: center;
+        }
+
+        .kpi-card span {
+            display: block;
+            font-size: 0.55rem;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            font-weight: 700;
+        }
+
+        .kpi-card strong {
+            font-size: 1rem;
+            color: var(--primary-color);
+        }
+
+        .toolbar-flex {
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap: 8px;
+            margin-bottom: 10px;
+            width: 100%;
         }
 
-        .btn-delete-total {
-            background-color: transparent;
-            color: #b7094c;
-            border: 1px solid #b7094c;
-            padding: 8px 12px;
+        .filters-wrapper {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 6px;
+            width: 100%;
+        }
+
+        @media(min-width: 768px) {
+            .toolbar-flex {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+            }
+            .filters-wrapper {
+                display: flex;
+                flex-wrap: wrap;
+                width: auto;
+                gap: 6px;
+            }
+        }
+
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
             border-radius: 6px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            transition: all 0.2s;
-        }
-        .btn-delete-total:hover {
-            background-color: #b7094c;
-            color: #ffffff;
+            border: 1px solid var(--border-color);
+            background: #fff;
         }
 
-        .stats-interpretation {
-            font-size: 0.85rem;
-            line-height: 1.4;
-            color: #333;
-            background-color: #f4f9f6;
-            padding: 10px 12px;
-            border-left: 4px solid var(--text-muted, #52b788);
-            border-radius: 4px;
-            margin-top: 4px;
+        table {
+            width: 100%;
+            min-width: 650px;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.78rem;
+        }
+
+        th, td {
+            padding: 8px;
+            border-bottom: 1px solid #dee2e6;
+            color: #343a40;
+            vertical-align: middle;
+        }
+
+        th {
+            background-color: var(--primary-color);
+            color: #ffffff;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.68rem;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 6px;
+            font-size: 0.62rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .badge-mortalidad, .badge-aborto, .badge-natimorto { background: #fee2e2; color: #b91c1c; }
+        .badge-natalidad { background: #d1fae5; color: #065f46; }
+        .badge-consumo, .badge-donacion, .badge-traslado { background: #e0f2fe; color: #0369a1; }
+
+        /* TOAST */
+        #toast {
+            visibility: hidden;
+            min-width: 220px;
+            background-color: #212529;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 10px;
+            position: fixed;
+            z-index: 1000;
+            left: 50%;
+            bottom: 20px;
+            transform: translateX(-50%);
+            border-left: 5px solid var(--accent-color);
+            font-size: 0.8rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        #toast.show { visibility: visible; }
+
+        /* IMPRESIÓN */
+        @media print {
+            body { background: white !important; color: black !important; font-size: 11pt; }
+            form, .btn-back, .btn-action, .btn-danger, .btn-print, .filters-wrapper, .sync-status-wrapper, #busqueda-chip, #filtro-mes, #filtro-categoria, .menu-grid > div:first-child { display: none !important; }
+            .menu-grid { display: block !important; }
+            .section-box { border: none !important; box-shadow: none !important; padding: 0 !important; margin: 0 !important; }
+            .main-header { background: none !important; color: black !important; border-bottom: 2px solid black !important; box-shadow: none !important; padding: 5px 0 10px 0 !important; margin-bottom: 15px; }
+            .header-title-wrapper h1 { color: black !important; font-size: 16pt !important; }
+            .header-title-wrapper h1 span { color: black !important; }
+            .header-title-wrapper p { color: #555 !important; }
+            .table-responsive { overflow: visible !important; border: none !important; }
+            table { width: 100% !important; min-width: auto !important; border-collapse: collapse !important; }
+            th, td { border: 1px solid #333 !important; padding: 6px 8px !important; color: black !important; }
+            th { background-color: #e2e8f0 !important; color: black !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
         }
     </style>
 </head>
 <body>
 
-    <!-- ENCABEZADO MAESTRO -->
+    <div id="toast"><span id="toast-message">Notificación del sistema</span></div>
+
+    <!-- CABECERA -->
     <header class="main-header">
         <div class="header-container">
-            <nav class="header-nav">
-                <a href="./index.html" class="btn-back" style="text-decoration: none;">
-                    <i class="fa-solid fa-arrow-left"></i> Volver al Panel
-                </a>
-            </nav>
+            <button id="btnVolverMenu" class="btn-back" onclick="history.back()">← Menú</button>
             <div class="header-title-wrapper">
-                <h1>Hato Laguna Brava - <span>Bloques de Estudio & Control</span></h1>
-                <p>Brújula Temporal, GMD Dinámica y Alertas de Manga</p>
+                <h1>Hato Laguna Brava <span>| Eventos Críticos</span></h1>
+                <p>Mantecal · Apure</p>
             </div>
-            <div class="sync-status-wrapper">
-                <div id="sync-semaphore" class="semaphore online"></div>
-                <span id="sync-text" class="sync-text">Sincronizado Local</span>
+            <div class="sync-status-wrapper" title="Estado de conexión Cloud">
+                <div id="syncSemaphore" class="semaphore"></div>
+                <span id="syncTextLabel" class="sync-text">Conectando...</span>
             </div>
         </div>
     </header>
@@ -251,399 +428,356 @@
     <main class="main-container">
         <div class="menu-grid">
             
-            <!-- COLUMNA 1: FORMULARIO DE ENTRADA Y GESTIÓN DE LOTE -->
-            <section class="section-box">
-                <div class="card-header">
-                    <div class="card-icon">📋</div>
-                    <h2 class="card-title">Registro de Pesaje</h2>
-                </div>
-                <p class="card-description">Declaración de fechas de control en manga y programación del próximo pesaje.</p>
-                
-                <form id="form-levante" onsubmit="event.preventDefault();" style="display: flex; flex-direction: column; gap: 12px;">
-                    
-                    <div class="input-group">
-                        <label for="inputLote">Lote / Bloque de Estudio (Fase y Tratamiento)</label>
-                        <input type="text" id="inputLote" value="Bloque 1 - Mautes Cebú (Suplementación + Compudose)" required>
-                    </div>
-
-                    <!-- SELECTOR DE TEMPORADA AGROECOLÓGICA DE APURE -->
-                    <div class="input-group">
-                        <label for="selectTemporada">Temporada Agroecológica:</label>
-                        <select id="selectTemporada" required>
-                            <option value="" disabled>-- Seleccione Época Climática --</option>
-                            <optgroup label="Invierno (Lluvias)">
-                                <option value="INVIERNO_ENTRADA">Invierno - Entrada (Mayo / Junio)</option>
-                                <option value="INVIERNO_MEDIADOS">Invierno - Mediados (Julio / Agosto)</option>
-                                <option value="INVIERNO_SALIDA" selected>Invierno - Salida (Septiembre / Octubre)</option>
-                            </optgroup>
-                            <optgroup label="Verano (Sequía)">
-                                <option value="VERANO_ENTRADA">Verano - Entrada (Noviembre / Diciembre)</option>
-                                <option value="VERANO_MEDIADOS">Verano - Mediados (Enero / Febrero)</option>
-                                <option value="VERANO_SALIDA">Verano - Salida (Marzo / Abril)</option>
-                            </optgroup>
-                        </select>
-                    </div>
-
-                    <!-- DECLARACIÓN DE FECHAS (ACTUAL Y PRÓXIMO PESAJE) -->
-                    <div class="kpi-container">
-                        <div class="input-group">
-                            <label for="inputFechaActual">Fecha del Pesaje Actual</label>
-                            <input type="date" id="inputFechaActual" required>
-                        </div>
-                        <div class="input-group">
-                            <label for="inputFechaProximo">Fecha del Próximo Pesaje</label>
-                            <input type="date" id="inputFechaProximo" required>
-                        </div>
-                    </div>
-
-                    <div class="kpi-container">
-                        <div class="input-group">
-                            <label for="inputPesoPromedio">Peso Promedio Actual del Lote (kg)</label>
-                            <input type="number" step="0.1" id="inputPesoPromedio" value="284.5" required>
-                        </div>
-                        <div class="input-group">
-                            <label for="inputNumAnimales">Nº Animales en el Lote</label>
-                            <input type="number" id="inputNumAnimales" value="9" required>
-                        </div>
-                    </div>
-
-                    <!-- METAS DEL LOTE Y PUNTO DE PARTIDA -->
-                    <div class="kpi-container">
-                        <div class="input-group">
-                            <label for="inputPesoInicial">⚖️ Peso Inicial / Base del lote (kg)</label>
-                            <input type="number" step="0.1" id="inputPesoInicial" placeholder="Ej: 220.5" required>
-                        </div>
-                        <div class="input-group">
-                            <label for="inputPesoObjetivo">Peso Meta del Lote (kg)</label>
-                            <input type="number" step="0.1" id="inputPesoObjetivo" value="350.0" required>
-                        </div>
-                    </div>
-
-                    <div class="kpi-container">
-                        <div class="input-group">
-                            <label for="inputMesesObjetivo">Meta de Salida (Meses)</label>
-                            <input type="number" step="0.5" id="inputMesesObjetivo" value="4.0" required>
-                        </div>
-                        <div class="input-group">
-                            <label for="inputCV">Coeficiente de Variación del Lote (CV %)</label>
-                            <input type="number" step="0.1" id="inputCV" value="6.4" required>
-                        </div>
-                    </div>
-
-                    <div class="kpi-container">
-                        <div class="input-group" style="grid-column: span 2;">
-                            <label for="inputEdad">Edad Promedio del Lote (meses)</label>
-                            <input type="number" step="0.1" id="inputEdad" value="8.5" required>
-                        </div>
-                    </div>
-
-                    <!-- BLOQUE DE OBSERVACIONES CUALITATIVAS PARA LA IA -->
-                    <div class="input-group">
-                        <label for="inputObservaciones">Observaciones Cualitativas de Manga (Contexto para la IA):</label>
-                        <textarea id="inputObservaciones" placeholder="Ej. Lote pastando en estero bajando lámina de agua. Se observa buen rompimiento de pelaje, sin ectoparásitos.">Entrada a sabana alta con predominio de pasto pará. Comportamiento activo en comederos y puntos de agua.</textarea>
-                    </div>
-
-                    <div style="display: flex; flex-direction: column; gap: 8px;">
-                        <button type="button" id="btnProcesarPesaje" class="btn-submit">
-                            <i class="fa-solid fa-brain"></i> Registrar y Guardar en Memoria
-                        </button>
+            <!-- FORMULARIO -->
+            <div>
+                <section class="section-box">
+                    <h2>🚨 Registrar Evento Crítico</h2>
+                    <form id="eventoForm">
                         
-                        <!-- EL DÚO DINÁMICO: DESHACER Y REHACER (Hermanos de control de historial) -->
-                        <div class="undo-redo-group">
-                            <button type="button" id="btnDeshacerUltimo" class="btn-history-control" title="Deshace el último registro guardado">
-                                <i class="fa-solid fa-rotate-left"></i> Deshacer
-                            </button>
-                            <button type="button" id="btnRehacerUltimo" class="btn-history-control" title="Rehace el registro que acabas de deshacer" disabled>
-                                <i class="fa-solid fa-rotate-right"></i> Rehacer
-                            </button>
+                        <div class="form-group">
+                            <label for="categoria-evento">Categoría del Evento *</label>
+                            <select id="categoria-evento" required>
+                                <option value="" disabled selected>Seleccione categoría...</option>
+                                <option value="Mortalidad">Mortalidad</option>
+                                <option value="Aborto">Aborto</option>
+                                <option value="Natimorto">Natimorto</option>
+                                <option value="Natalidad">Natalidad</option>
+                                <option value="Consumo">Consumo Interno</option>
+                                <option value="Donacion">Donación</option>
+                                <option value="Traslado">Traslado</option>
+                            </select>
                         </div>
-                    </div>
-                </form>
-            </section>
 
-            <!-- COLUMNA 2: PANEL DE INDICADORES DE ORO Y BRÚJULA TEMPORAL -->
-            <section class="section-box">
-                <div class="card-header">
-                    <div class="card-icon">🎯</div>
-                    <h2 class="card-title">Brújula Temporal, GMD e IA</h2>
-                </div>
-                <p class="card-description">Monitoreo de cuenta regresiva para el próximo control de manga y diagnóstico experto.</p>
-                
-                <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 5px;">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="grupo-etario">Grupo Etario *</label>
+                                <input type="text" id="grupo-etario" required placeholder="Ej. Terneros, Vacas">
+                            </div>
+                            <div class="form-group">
+                                <label for="chip-numero">Chip / Caravana</label>
+                                <input type="text" id="chip-numero" placeholder="Nº o N/A lote">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="fecha-evento">Fecha del Evento *</label>
+                                <input type="date" id="fecha-evento" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="responsable-evento">Responsable</label>
+                                <input type="text" id="responsable-evento" placeholder="Nombre / Caporal">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="descripcion-evento">Descripción / Observaciones *</label>
+                            <textarea id="descripcion-evento" rows="3" required placeholder="Causa probable, potrero de origen/destino, detalles..."></textarea>
+                        </div>
+
+                        <!-- FOTO Y GPS -->
+                        <div class="form-group">
+                            <label for="foto-evento">Adjuntar Evidencia Fotográfica</label>
+                            <input type="file" id="foto-evento" accept="image/*" style="font-size: 0.75rem; padding: 4px;">
+                            <span style="font-size: 0.62rem; color: var(--text-muted); margin-top: 2px;">Extracción EXIF o captura satelital GPS automática.</span>
+                        </div>
+
+                        <button type="submit" class="btn-action">💾 Registrar y Sincronizar</button>
+                    </form>
+                </section>
+            </div>
+
+            <!-- TABLA E HISTORIAL -->
+            <div>
+                <section class="section-box">
                     
-                    <!-- ALERTA VISUAL Y SONORA DE LA BRÚJULA -->
-                    <div id="cardBrujulaBox" class="kpi-card-item cv-alert-optimal">
-                        <label><i class="fa-solid fa-bell"></i> Estado de la Brújula de Pesaje</label>
-                        <span id="resumenBrujulaDias" class="kpi-value">En fecha (Faltan 30 días)</span>
+                    <div class="kpi-container">
+                        <div class="kpi-card"><span>Mortalidad</span><strong id="kpi-mortalidad">0</strong></div>
+                        <div class="kpi-card"><span>Abortos</span><strong id="kpi-abortos">0</strong></div>
+                        <div class="kpi-card"><span>Natimortos</span><strong id="kpi-natimortos">0</strong></div>
+                        <div class="kpi-card"><span>Natalidad</span><strong id="kpi-natalidad">0</strong></div>
+                        <div class="kpi-card"><span>Consumo Int.</span><strong id="kpi-consumo">0</strong></div>
+                        <div class="kpi-card"><span>Traslados</span><strong id="kpi-traslados">0</strong></div>
+                        <div class="kpi-card"><span>Donaciones</span><strong id="kpi-donaciones">0</strong></div>
                     </div>
 
-                    <div class="kpi-card-item">
-                        <label>GMD Calculada (Entre Fechas de Pesaje)</label>
-                        <span id="resumenGMD" class="kpi-value" style="color: #2d6a4f;">0.54 kg/día</span>
-                    </div>
-
-                    <!-- Kilos Faltantes Promedio por Animal -->
-                    <div class="kpi-card-item">
-                        <label>Faltante Promedio / Animal</label>
-                        <span id="resumenKgsFaltantesUnitario" class="kpi-value">+65.5 kg</span>
-                    </div>
-
-                    <!-- Kilos Faltantes Totales del Lote -->
-                    <div class="kpi-card-item" style="background-color: #f4f9f6;">
-                        <label>Total Lote (<span id="labelConteoCabezasKpi">9</span> cab)</label>
-                        <span id="resumenKgsFaltantesTotal" class="kpi-value" style="color: #1b4332;">589.5 kg</span>
-                    </div>
-
-                    <div class="kpi-card-item">
-                        <label>Tiempo Faltante Estimado (según GMD)</label>
-                        <span id="resumenTiempoFaltante" class="kpi-value">4 meses y 5 días</span>
-                    </div>
-
-                    <div class="input-group" style="margin-top: 4px;">
-                        <label>Diagnóstico Estacional y Memoria de IA</label>
-                        <div id="statsInterpretacion" class="stats-interpretation">
-                            <strong>Análisis Integrado (Clima + Fechas + Numérico):</strong> Época registrada: <em>Invierno - Salida</em>. La brújula temporal monitorea el intervalo hacia el próximo pesaje programado para asegurar que el balance de ganancia en los esteros de Apure marche sin desviaciones.
+                    <div class="toolbar-flex">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <h2>📋 Historial</h2>
+                            <button type="button" class="btn-print" onclick="window.print()" title="Imprimir o Exportar PDF">
+                                🖨️ Imprimir
+                            </button>
+                        </div>
+                        <div class="filters-wrapper">
+                            <input type="text" id="busqueda-chip" placeholder="Buscar Chip..." style="font-size: 0.75rem; padding: 5px; width: 130px;">
+                            <select id="filtro-mes" style="font-size: 0.75rem; padding: 5px; width: 110px;">
+                                <option value="">Mes (Todos)</option>
+                            </select>
+                            <select id="filtro-categoria" style="font-size: 0.75rem; padding: 5px; width: 110px;">
+                                <option value="">Categorías</option>
+                                <option value="Mortalidad">Mortalidad</option>
+                                <option value="Aborto">Aborto</option>
+                                <option value="Natimorto">Natimorto</option>
+                                <option value="Natalidad">Natalidad</option>
+                                <option value="Consumo">Consumo</option>
+                                <option value="Donacion">Donación</option>
+                                <option value="Traslado">Traslado</option>
+                            </select>
                         </div>
                     </div>
 
-                    <!-- ESTADÍSTICAS Y ZONA DE ELIMINACIÓN TOTAL AL FINAL DEL REPORTE -->
-                    <div class="kpi-card-item" style="background-color: #f4f9f6; border: 1px dashed var(--text-muted, #52b788);">
-                        <label style="font-size: 0.8rem; color: #1b4332;"><i class="fa-solid fa-database"></i> Memoria Local:</label>
-                        <span id="resumenConteoHistorial" class="kpi-value" style="font-size: 0.95rem;">12 Pesajes Registrados</span>
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Categoría / Etario</th>
+                                    <th>Chip / Descripcion</th>
+                                    <th>Resp. / GPS</th>
+                                    <th style="text-align: center;">Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tablaEventosBody">
+                                <!-- Inyectado dinámicamente -->
+                            </tbody>
+                        </table>
                     </div>
 
-                    <!-- ZONA SEGURA DE ELIMINACIÓN TOTAL (Al final del reporte del lote) -->
-                    <div class="danger-zone">
-                        <button type="button" id="btnEliminarLoteTotal" class="btn-delete-total" title="Elimina por completo todos los registros e historiales de este lote">
-                            <i class="fa-solid fa-trash-can"></i> Eliminar Lote y Todos sus Pesajes del Sistema
-                        </button>
-                    </div>
-
-                </div>
-            </section>
+                </section>
+            </div>
 
         </div>
     </main>
 
-    <!-- Script de Lógica con Pila Bidireccional (Undo / Redo) -->
+    <!-- SCRIPTS DE FIREBASE Y EXIF -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/exif-js"></script>
     <script>
-        // Inicializar fechas por defecto en los inputs
-        document.getElementById('inputFechaActual').valueAsDate = new Date();
-        let fechaProxDefault = new Date();
-        fechaProxDefault.setDate(fechaProxDefault.getDate() + 30);
-        document.getElementById('inputFechaProximo').valueAsDate = fechaProxDefault;
-
-        let historialLotes = JSON.parse(localStorage.getItem('lb_historial_lotes')) || [];
-        // Pila temporal para el hermanito "Rehacer" (Redo)
-        let papeleraDeshacer = [];
-
-        actualizarContadorHistorial();
-
-        function actualizarContadorHistorial() {
-            document.getElementById('resumenConteoHistorial').innerText = `${historialLotes.length} Pesajes Registrados`;
-            document.getElementById('btnRehacerUltimo').disabled = (papeleraDeshacer.length === 0);
-        }
-
-        // Función sintetizadora de alerta sonora
-        function reproducirAlertaSonora(tipo) {
-            try {
-                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                const osc = audioCtx.createOscillator();
-                const gainNode = audioCtx.createGain();
-                
-                osc.type = tipo === 'urgente' ? 'sawtooth' : 'sine';
-                osc.frequency.setValueAtTime(tipo === 'urgente' ? 880 : 587.33, audioCtx.currentTime);
-                
-                gainNode.gain.setValueAtTime(0.15, audioCtx.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.6);
-                
-                osc.connect(gainNode);
-                gainNode.connect(audioCtx.destination);
-                
-                osc.start();
-                osc.stop(audioCtx.currentTime + 0.6);
-            } catch(e) {
-                console.log("Audio no soportado o bloqueado por políticas del navegador", e);
-            }
-        }
-
-        function calcularIndicadoresDinamicos() {
-            let loteNombre = document.getElementById('inputLote').value;
-            let fechaActualStr = document.getElementById('inputFechaActual').value;
-            let fechaProximaStr = document.getElementById('inputFechaProximo').value;
-            let pesoProm = parseFloat(document.getElementById('inputPesoPromedio').value) || 0;
-            let pesoObj = parseFloat(document.getElementById('inputPesoObjetivo').value) || 0;
-            let mesesMeta = parseFloat(document.getElementById('inputMesesObjetivo').value) || 1;
-            let numAnimales = parseInt(document.getElementById('inputNumAnimales').value) || 1;
-            let cv = parseFloat(document.getElementById('inputCV').value) || 0;
-
-            // Actualizar etiqueta del número de animales en el KPI total
-            document.getElementById('labelConteoCabezasKpi').innerText = numAnimales;
-
-            let registrosLote = historialLotes.filter(r => r.lote === loteNombre);
-            let gmdCalculada = 0.50; 
-
-            if (registrosLote.length > 0) {
-                let ultimoReg = registrosLote[registrosLote.length - 1];
-                let fAnterior = new Date(ultimoReg.fechaActual || ultimoReg.fecha);
-                let fActual = new Date(fechaActualStr);
-                let diasTranscurridos = Math.round((fActual - fAnterior) / (1000 * 60 * 60 * 24));
-
-                if (diasTranscurridos > 0) {
-                    let diffKilos = pesoProm - ultimoReg.pesoPromedioLote;
-                    gmdCalculada = diffKilos / diasTranscurridos;
-                    if (gmdCalculada < 0) gmdCalculada = 0.01;
-                }
-            } else {
-                let kgsMetaInit = pesoObj - pesoProm;
-                let diasMetaInit = mesesMeta * 30;
-                if(diasMetaInit > 0) gmdCalculada = kgsMetaInit / diasMetaInit;
-            }
-
-            document.getElementById('resumenGMD').innerText = `${gmdCalculada.toFixed(2)} kg/día`;
-
-            let kgsFaltantesUnitario = pesoObj - pesoProm;
-            if (kgsFaltantesUnitario < 0) kgsFaltantesUnitario = 0;
-
-            let kgsFaltantesTotalLote = kgsFaltantesUnitario * numAnimales;
-
-            let diasTotales = gmdCalculada > 0 ? (kgsFaltantesUnitario / gmdCalculada) : 0;
-            let mesesFaltantes = Math.floor(diasTotales / 30);
-            let diasRestantes = Math.round(diasTotales % 30);
-
-            // Asignación separada en las dos casillas independientes
-            document.getElementById('resumenKgsFaltantesUnitario').innerText = `+${kgsFaltantesUnitario.toFixed(1)} kg`;
-            document.getElementById('resumenKgsFaltantesTotal').innerText = `${kgsFaltantesTotalLote.toFixed(1)} kg`;
-            document.getElementById('resumenTiempoFaltante').innerText = `${mesesFaltantes} meses y ${diasRestantes} días`;
-
-            let cardBrujulaBox = document.getElementById('cardBrujulaBox');
-            let resumenBrujulaDias = document.getElementById('resumenBrujulaDias');
-            
-            if (fechaProximaStr) {
-                let hoy = new Date();
-                hoy.setHours(0,0,0,0);
-                let fProxima = new Date(fechaProximaStr + 'T00:00:00');
-                let diffDiasProximo = Math.round((fProxima - hoy) / (1000 * 60 * 60 * 24));
-
-                cardBrujulaBox.className = "kpi-card-item";
-
-                if (diffDiasProximo < 0) {
-                    cardBrujulaBox.classList.add('cv-alert-danger');
-                    resumenBrujulaDias.innerText = `¡VENCIDO por ${Math.abs(diffDiasProximo)} días!`;
-                    reproducirAlertaSonora('urgente');
-                } else if (diffDiasProximo <= 3) {
-                    cardBrujulaBox.classList.add('cv-alert-warning');
-                    resumenBrujulaDias.innerText = `¡Inminente! (Faltan ${diffDiasProximo} días)`;
-                    reproducirAlertaSonora('suave');
-                } else {
-                    cardBrujulaBox.classList.add('cv-alert-optimal');
-                    resumenBrujulaDias.innerText = `En fecha (Faltan ${diffDiasProximo} días)`;
-                }
-            }
-
-            return { gmdCalculada, kgsFaltantesUnitario, kgsFaltantesTotalLote };
-        }
-
-        ['inputPesoPromedio', 'inputPesoObjetivo', 'inputMesesObjetivo', 'inputLote', 'inputFechaActual', 'inputFechaProximo', 'inputNumAnimales'].forEach(id => {
-            document.getElementById(id).addEventListener('input', calcularIndicadoresDinamicos);
-        });
-
-        window.onload = function() {
-            calcularIndicadoresDinamicos();
+        const firebaseConfig = {
+            databaseURL: "https://hato-laguna-brava-default-rtdb.firebaseio.com/"
         };
+        firebase.initializeApp(firebaseConfig);
+        const dbRef = firebase.database().ref('eventos_criticos');
 
-        // Botón Registrar en Memoria
-        document.getElementById('btnProcesarPesaje').addEventListener('click', function() {
-            let loteNombre = document.getElementById('inputLote').value;
-            let temporada = document.getElementById('selectTemporada').value;
-            let fechaActualStr = document.getElementById('inputFechaActual').value;
-            let fechaProximaStr = document.getElementById('inputFechaProximo').value;
-            let pesoProm = parseFloat(document.getElementById('inputPesoPromedio').value) || 0;
-            let pesoObj = parseFloat(document.getElementById('inputPesoObjetivo').value) || 0;
-            let mesesMeta = parseFloat(document.getElementById('inputMesesObjetivo').value) || 0;
-            let numAnimales = parseInt(document.getElementById('inputNumAnimales').value) || 0;
-            let pesoInicial = parseFloat(document.getElementById('inputPesoInicial').value) || 0;
-            let cv = parseFloat(document.getElementById('inputCV').value) || 0;
-            let observaciones = document.getElementById('inputObservaciones').value;
+        document.addEventListener('DOMContentLoaded', () => {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('fecha-evento').value = today;
 
-            let calculos = calcularIndicadoresDinamicos();
+            const form = document.getElementById('eventoForm');
+            const tablaBody = document.getElementById('tablaEventosBody');
+            const inputBusqueda = document.getElementById('busqueda-chip');
+            const filtroMes = document.getElementById('filtro-mes');
+            const filtroCategoria = document.getElementById('filtro-categoria');
+            
+            const kpiMortalidad = document.getElementById('kpi-mortalidad');
+            const kpiAbortos = document.getElementById('kpi-abortos');
+            const kpiNatimortos = document.getElementById('kpi-natimortos');
+            const kpiNatalidad = document.getElementById('kpi-natalidad');
+            const kpiConsumo = document.getElementById('kpi-consumo');
+            const kpiTraslados = document.getElementById('kpi-traslados');
+            const kpiDonaciones = document.getElementById('kpi-donaciones');
 
-            let registroActual = {
-                timestampRegistro: new Date().toISOString(),
-                fechaActual: fechaActualStr,
-                fechaProximoPesaje: fechaProximaStr,
-                lote: loteNombre,
-                temporada: temporada,
-                pesoPromedioLote: pesoProm,
-                pesoInicialBase: pesoInicial,
-                pesoObjetivoLote: pesoObj,
-                mesesObjetivo: mesesMeta,
-                numAnimales: numAnimales,
-                gmdCalculada: calculos.gmdCalculada,
-                kgsFaltantesUnitario: calculos.kgsFaltantesUnitario,
-                kgsFaltantesTotal: calculos.kgsFaltantesTotalLote,
-                cvLote: cv,
-                observaciones: observaciones
+            let eventosCache = [];
+            let gpsDataCaptured = "N/A";
+
+            // Indicador de conexión en tiempo real
+            const semaphoreEl = document.getElementById('syncSemaphore');
+            const syncTextEl = document.getElementById('syncTextLabel');
+            
+            firebase.database().ref('.info/connected').on('value', function(snap) {
+                if (snap.val() === true) {
+                    semaphoreEl.className = "semaphore online";
+                    syncTextEl.innerText = "Cloud Sincronizado";
+                } else {
+                    semaphoreEl.className = "semaphore";
+                    syncTextEl.innerText = "Sin Conexión (Offline)";
+                }
+            });
+
+            // Captura de GPS mediante EXIF o geolocalización de respaldo
+            document.getElementById('foto-evento').addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (!file) {
+                    gpsDataCaptured = "N/A";
+                    return;
+                }
+
+                EXIF.getData(file, function() {
+                    const lat = EXIF.getTag(this, "GPSLatitude");
+                    const latRef = EXIF.getTag(this, "GPSLatitudeRef");
+                    const lon = EXIF.getTag(this, "GPSLongitude");
+                    const lonRef = EXIF.getTag(this, "GPSLongitudeRef");
+
+                    if (lat && lon && latRef && lonRef) {
+                        const convertDMSToDD = (dms, ref) => {
+                            let dd = dms[0] + dms[1]/60 + dms[2]/3600;
+                            if (ref === "S" || ref === "W") dd = -dd;
+                            return dd;
+                        };
+                        const latitude = convertDMSToDD(lat, latRef).toFixed(6);
+                        const longitude = convertDMSToDD(lon, lonRef).toFixed(6);
+                        gpsDataCaptured = `${latitude}, ${longitude}`;
+                        mostrarToast("📍 GPS extraído de la foto con éxito");
+                    } else {
+                        if (navigator.geolocation) {
+                            navigator.geolocation.getCurrentPosition(
+                                (position) => {
+                                    gpsDataCaptured = `${position.coords.latitude.toFixed(6)}, ${position.coords.longitude.toFixed(6)}`;
+                                    mostrarToast("📍 GPS obtenido por dispositivo");
+                                },
+                                () => {
+                                    gpsDataCaptured = "N/A (Sin permiso GPS)";
+                                },
+                                { timeout: 10000, enableHighAccuracy: true }
+                            );
+                        } else {
+                            gpsDataCaptured = "N/A";
+                        }
+                    }
+                });
+            });
+
+            function mostrarToast(mensaje) {
+                const toast = document.getElementById('toast');
+                document.getElementById('toast-message').innerText = mensaje;
+                toast.className = "show";
+                setTimeout(() => { toast.className = toast.className.replace("show", ""); }, 3000);
+            }
+
+            function actualizarFiltroMeses() {
+                const mesesSet = new Set();
+                eventosCache.forEach(ev => {
+                    if (ev.fecha) mesesSet.add(ev.fecha.substring(0, 7));
+                });
+
+                const mesSeleccionadoActual = filtroMes.value;
+                filtroMes.innerHTML = '<option value="">Mes (Todos)</option>';
+                
+                Array.from(mesesSet).sort().reverse().forEach(m => {
+                    const option = document.createElement('option');
+                    option.value = m;
+                    const [anio, mes] = m.split('-');
+                    const fechaObj = new Date(anio, mes - 1, 1);
+                    option.textContent = fechaObj.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
+                    filtroMes.appendChild(option);
+                });
+                filtroMes.value = mesSeleccionadoActual;
+            }
+
+            function renderizarApp() {
+                const textoBusqueda = inputBusqueda.value.toLowerCase().trim();
+                const mesFiltro = filtroMes.value;
+                const catFiltro = filtroCategoria.value;
+
+                tablaBody.innerHTML = '';
+
+                let counts = { Mortalidad: 0, Aborto: 0, Natimorto: 0, Natalidad: 0, Consumo: 0, Traslado: 0, Donacion: 0 };
+                eventosCache.forEach(ev => {
+                    if (counts.hasOwnProperty(ev.categoria)) counts[ev.categoria]++;
+                });
+
+                kpiMortalidad.innerText = counts.Mortalidad;
+                kpiAbortos.innerText = counts.Aborto;
+                kpiNatimortos.innerText = counts.Natimorto;
+                kpiNatalidad.innerText = counts.Natalidad;
+                kpiConsumo.innerText = counts.Consumo;
+                kpiTraslados.innerText = counts.Traslado;
+                kpiDonaciones.innerText = counts.Donacion;
+
+                const eventosFiltrados = eventosCache.filter(ev => {
+                    const coincideChip = (ev.chip && ev.chip.toLowerCase().includes(textoBusqueda)) || ev.descripcion.toLowerCase().includes(textoBusqueda);
+                    const coincideMes = mesFiltro === "" || (ev.fecha && ev.fecha.startsWith(mesFiltro));
+                    const coincideCat = catFiltro === "" || ev.categoria === catFiltro;
+                    return coincideChip && coincideMes && coincideCat;
+                });
+
+                if (eventosFiltrados.length === 0) {
+                    tablaBody.innerHTML = `<tr><td colspan="5" style="text-align:center; color: var(--text-muted); padding: 15px;">No se encontraron registros activos.</td></tr>`;
+                    return;
+                }
+
+                eventosFiltrados.forEach((ev) => {
+                    const tr = document.createElement('tr');
+                    const badgeClass = `badge badge-${ev.categoria.toLowerCase()}`;
+                    
+                    tr.innerHTML = `
+                        <td><strong>${ev.fecha}</strong></td>
+                        <td>
+                            <span class="${badgeClass}">${ev.categoria}</span><br>
+                            <span style="font-size:0.68rem; color:var(--text-muted);">${ev.etario}</span>
+                        </td>
+                        <td>
+                            <strong>Chip:</strong> ${ev.chip || 'N/A'}<br>
+                            <span style="font-size:0.7rem;">${ev.descripcion}</span>
+                        </td>
+                        <td>
+                            <span style="font-size:0.68rem; font-weight:600;">${ev.responsable || 'N/A'}</span><br>
+                            <span style="font-size:0.6rem; color: var(--text-muted);">📍 ${ev.gps || 'N/A'}</span>
+                        </td>
+                        <td style="text-align: center;">
+                            <button class="btn-danger" onclick="eliminarEvento('${ev.firebaseKey}')">🗑️</button>
+                        </td>
+                    `;
+                    tablaBody.appendChild(tr);
+                });
+            }
+
+            dbRef.on('value', (snapshot) => {
+                const data = snapshot.val();
+                eventosCache = [];
+                if (data) {
+                    Object.keys(data).forEach(key => {
+                        eventosCache.push({ firebaseKey: key, ...data[key] });
+                    });
+                    eventosCache.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+                }
+                actualizarFiltroMeses();
+                renderizarApp();
+            });
+
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+
+                const nuevoEvento = {
+                    categoria: document.getElementById('categoria-evento').value,
+                    etario: document.getElementById('grupo-etario').value.trim(),
+                    chip: document.getElementById('chip-numero').value.trim().toUpperCase(),
+                    fecha: document.getElementById('fecha-evento').value,
+                    responsable: document.getElementById('responsable-evento').value.trim(),
+                    descripcion: document.getElementById('descripcion-evento').value.trim(),
+                    gps: gpsDataCaptured
+                };
+
+                dbRef.push(nuevoEvento)
+                    .then(() => {
+                        form.reset();
+                        document.getElementById('fecha-evento').value = today;
+                        gpsDataCaptured = "N/A";
+                        document.getElementById('foto-evento').value = "";
+                        mostrarToast("💾 Sincronizado en la nube con éxito");
+                    })
+                    .catch((err) => {
+                        mostrarToast("⚠️ Error al sincronizar: Verifique conexión");
+                    });
+            });
+
+            window.eliminarEvento = function(firebaseKey) {
+                if (confirm('¿Está seguro de eliminar este registro crítico de la nube?')) {
+                    dbRef.child(firebaseKey).remove()
+                        .then(() => {
+                            mostrarToast("🗑️ Registro eliminado correctamente");
+                        })
+                        .catch(() => {
+                            mostrarToast("⚠️ Error al intentar eliminar");
+                        });
+                }
             };
 
-            historialLotes.push(registroActual);
-            localStorage.setItem('lb_historial_lotes', JSON.stringify(historialLotes));
-            
-            papeleraDeshacer = [];
-
-            actualizarContadorHistorial();
-            calcularIndicadoresDinamicos();
-
-            alert("¡Pesaje actual y programación de la brújula guardados correctamente en la memoria!");
-        });
-
-        // Botón Deshacer
-        document.getElementById('btnDeshacerUltimo').addEventListener('click', function() {
-            if (historialLotes.length === 0) {
-                alert("No hay registros en la memoria local para deshacer.");
-                return;
-            }
-
-            let eliminado = historialLotes.pop();
-            papeleraDeshacer.push(eliminado);     
-
-            localStorage.setItem('lb_historial_lotes', JSON.stringify(historialLotes));
-            actualizarContadorHistorial();
-            calcularIndicadoresDinamicos();
-            alert(`Se deshizo el registro del ${eliminado.fechaActual} (${eliminado.pesoPromedioLote} kg). ¡Puedes usar 'Rehacer' si fue un error!`);
-        });
-
-        // Botón Rehacer
-        document.getElementById('btnRehacerUltimo').addEventListener('click', function() {
-            if (papeleraDeshacer.length === 0) {
-                alert("No hay acciones pendientes para rehacer.");
-                return;
-            }
-
-            let restaurado = papeleraDeshacer.pop(); 
-            historialLotes.push(restaurado);         
-
-            localStorage.setItem('lb_historial_lotes', JSON.stringify(historialLotes));
-            actualizarContadorHistorial();
-            calcularIndicadoresDinamicos();
-            alert(`¡Se ha rehecho y restaurado el registro del ${restaurado.fechaActual} (${restaurado.pesoPromedioLote} kg)!`);
-        });
-
-        // Botón de Eliminación Total del Lote
-        document.getElementById('btnEliminarLoteTotal').addEventListener('click', function() {
-            let loteNombre = document.getElementById('inputLote').value;
-            if(confirm(`⚠️ ATENCIÓN: ¿Está seguro de ELIMINAR POR COMPLETO todos los pesajes y registros históricos del lote "${loteNombre}" del sistema?\n\nEsta acción no se puede deshacer.`)) {
-                historialLotes = historialLotes.filter(r => r.lote !== loteNombre);
-                localStorage.setItem('lb_historial_lotes', JSON.stringify(historialLotes));
-                papeleraDeshacer = [];
-                actualizarContadorHistorial();
-                calcularIndicadoresDinamicos();
-                alert(`¡El lote "${loteNombre}" y todo su historial han sido eliminados por completo del sistema!`);
-            }
+            inputBusqueda.addEventListener('input', renderizarApp);
+            filtroMes.addEventListener('change', renderizarApp);
+            filtroCategoria.addEventListener('change', renderizarApp);
         });
     </script>
-    
-    <!-- Script externo complementario si aplica -->
-    <script src="./levante.js"></script>
 </body>
 </html>
