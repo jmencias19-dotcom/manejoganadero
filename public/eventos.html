@@ -96,7 +96,6 @@
             text-transform: uppercase;
         }
 
-        /* INDICADOR DE ESTADO SUTIL EN CABECERA */
         .sync-status-wrapper {
             display: flex;
             align-items: center;
@@ -112,6 +111,10 @@
             width: 8px;
             height: 8px;
             border-radius: 50%;
+            background-color: #ffb703; /* Amarillo inicial buscando conexión */
+            box-shadow: 0 0 6px #ffb703;
+        }
+        .semaphore.online {
             background-color: var(--accent-color);
             box-shadow: 0 0 6px var(--accent-color);
         }
@@ -150,7 +153,6 @@
             }
         }
 
-        /* TARJETAS CONTENEDORAS */
         .section-box {
             background-color: var(--card-bg);
             border: 1px solid var(--border-color);
@@ -212,7 +214,6 @@
             margin-bottom: 0;
         }
 
-        /* BOTONES ESPECIALES */
         .btn-action {
             display: block;
             width: 100%;
@@ -260,7 +261,6 @@
             font-size: 0.75rem;
         }
 
-        /* KPIS / RESUMEN RAPIDO */
         .kpi-container {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -295,7 +295,6 @@
             color: var(--primary-color);
         }
 
-        /* FILTROS Y BARRA DE BÚSQUEDA */
         .toolbar-flex {
             display: flex;
             flex-direction: column;
@@ -389,73 +388,20 @@
         }
         #toast.show { visibility: visible; }
 
-        /* ÁREA Y FORMATO DE IMPRESIÓN */
+        /* IMPRESIÓN */
         @media print {
-            body {
-                background: white !important;
-                color: black !important;
-                font-size: 11pt;
-            }
-            form, 
-            .btn-back,
-            .btn-action,
-            .btn-danger,
-            .btn-print,
-            .filters-wrapper,
-            .sync-status-wrapper,
-            #busqueda-chip,
-            #filtro-mes,
-            #filtro-categoria,
-            .menu-grid > div:first-child {
-                display: none !important;
-            }
-            .menu-grid {
-                display: block !important;
-            }
-            .section-box {
-                border: none !important;
-                box-shadow: none !important;
-                padding: 0 !important;
-                margin: 0 !important;
-            }
-            .main-header {
-                background: none !important;
-                color: black !important;
-                border-bottom: 2px solid black !important;
-                box-shadow: none !important;
-                padding: 5px 0 10px 0 !important;
-                margin-bottom: 15px;
-            }
-            .header-title-wrapper h1 {
-                color: black !important;
-                font-size: 16pt !important;
-            }
-            .header-title-wrapper h1 span {
-                color: black !important;
-            }
-            .header-title-wrapper p {
-                color: #555 !important;
-            }
-            .table-responsive {
-                overflow: visible !important;
-                border: none !important;
-            }
-            table {
-                width: 100% !important;
-                min-width: auto !important;
-                border-collapse: collapse !important;
-            }
-            th, td {
-                border: 1px solid #333 !important;
-                padding: 6px 8px !important;
-                color: black !important;
-            }
-            th {
-                background-color: #e2e8f0 !important;
-                color: black !important;
-                -webkit-print-color-adjust: exact;
-                print-color-adjust: exact;
-            }
+            body { background: white !important; color: black !important; font-size: 11pt; }
+            form, .btn-back, .btn-action, .btn-danger, .btn-print, .filters-wrapper, .sync-status-wrapper, #busqueda-chip, #filtro-mes, #filtro-categoria, .menu-grid > div:first-child { display: none !important; }
+            .menu-grid { display: block !important; }
+            .section-box { border: none !important; box-shadow: none !important; padding: 0 !important; margin: 0 !important; }
+            .main-header { background: none !important; color: black !important; border-bottom: 2px solid black !important; box-shadow: none !important; padding: 5px 0 10px 0 !important; margin-bottom: 15px; }
+            .header-title-wrapper h1 { color: black !important; font-size: 16pt !important; }
+            .header-title-wrapper h1 span { color: black !important; }
+            .header-title-wrapper p { color: #555 !important; }
+            .table-responsive { overflow: visible !important; border: none !important; }
+            table { width: 100% !important; min-width: auto !important; border-collapse: collapse !important; }
+            th, td { border: 1px solid #333 !important; padding: 6px 8px !important; color: black !important; }
+            th { background-color: #e2e8f0 !important; color: black !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
         }
     </style>
 </head>
@@ -471,9 +417,9 @@
                 <h1>Laguna Brava <span>| Eventos Críticos</span></h1>
                 <p>Mantecal · Apure</p>
             </div>
-            <div class="sync-status-wrapper" title="Sincronización automática activa">
+            <div class="sync-status-wrapper" title="Estado de conexión Cloud">
                 <div id="syncSemaphore" class="semaphore"></div>
-                <span class="sync-text">Cloud Sincronizado</span>
+                <span id="syncTextLabel" class="sync-text">Conectando...</span>
             </div>
         </div>
     </header>
@@ -482,7 +428,7 @@
     <main class="main-container">
         <div class="menu-grid">
             
-            <!-- FORMULARIO DE REGISTRO DE EVENTOS -->
+            <!-- FORMULARIO -->
             <div>
                 <section class="section-box">
                     <h2>🚨 Registrar Evento Crítico</h2>
@@ -529,11 +475,11 @@
                             <textarea id="descripcion-evento" rows="3" required placeholder="Causa probable, potrero de origen/destino, detalles..."></textarea>
                         </div>
 
-                        <!-- EVIDENCIA FOTOGRÁFICA -->
+                        <!-- FOTO Y GPS -->
                         <div class="form-group">
                             <label for="foto-evento">Adjuntar Evidencia Fotográfica</label>
                             <input type="file" id="foto-evento" accept="image/*" style="font-size: 0.75rem; padding: 4px;">
-                            <span style="font-size: 0.62rem; color: var(--text-muted); margin-top: 2px;">Extracción automática de coordenadas GPS de la foto.</span>
+                            <span style="font-size: 0.62rem; color: var(--text-muted); margin-top: 2px;">Extracción EXIF o captura satelital GPS automática.</span>
                         </div>
 
                         <button type="submit" class="btn-action">💾 Registrar y Sincronizar</button>
@@ -541,43 +487,20 @@
                 </section>
             </div>
 
-            <!-- TABLA E HISTORIAL DE EVENTOS -->
+            <!-- TABLA E HISTORIAL -->
             <div>
                 <section class="section-box">
                     
-                    <!-- KPIS INDEPENDIENTES Y DETALLADOS -->
                     <div class="kpi-container">
-                        <div class="kpi-card">
-                            <span>Mortalidad</span>
-                            <strong id="kpi-mortalidad">0</strong>
-                        </div>
-                        <div class="kpi-card">
-                            <span>Abortos</span>
-                            <strong id="kpi-abortos">0</strong>
-                        </div>
-                        <div class="kpi-card">
-                            <span>Natimortos</span>
-                            <strong id="kpi-natimortos">0</strong>
-                        </div>
-                        <div class="kpi-card">
-                            <span>Natalidad</span>
-                            <strong id="kpi-natalidad">0</strong>
-                        </div>
-                        <div class="kpi-card">
-                            <span>Consumo Int.</span>
-                            <strong id="kpi-consumo">0</strong>
-                        </div>
-                        <div class="kpi-card">
-                            <span>Traslados</span>
-                            <strong id="kpi-traslados">0</strong>
-                        </div>
-                        <div class="kpi-card">
-                            <span>Donaciones</span>
-                            <strong id="kpi-donaciones">0</strong>
-                        </div>
+                        <div class="kpi-card"><span>Mortalidad</span><strong id="kpi-mortalidad">0</strong></div>
+                        <div class="kpi-card"><span>Abortos</span><strong id="kpi-abortos">0</strong></div>
+                        <div class="kpi-card"><span>Natimortos</span><strong id="kpi-natimortos">0</strong></div>
+                        <div class="kpi-card"><span>Natalidad</span><strong id="kpi-natalidad">0</strong></div>
+                        <div class="kpi-card"><span>Consumo Int.</span><strong id="kpi-consumo">0</strong></div>
+                        <div class="kpi-card"><span>Traslados</span><strong id="kpi-traslados">0</strong></div>
+                        <div class="kpi-card"><span>Donaciones</span><strong id="kpi-donaciones">0</strong></div>
                     </div>
 
-                    <!-- BARRA DE HERRAMIENTAS, FILTROS Y BOTÓN IMPRESIÓN -->
                     <div class="toolbar-flex">
                         <div style="display: flex; align-items: center; gap: 8px;">
                             <h2>📋 Historial</h2>
@@ -626,10 +549,17 @@
         </div>
     </main>
 
-    <!-- INCLUSIÓN DE LIBRERÍA EXIF-JS -->
+    <!-- SCRIPTS DE FIREBASE (Realtime Database Cloud Sync) Y EXIF -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/exif-js"></script>
     <script>
-        const STORAGE_KEY = 'laguna_brava_eventos_criticos';
+        // Configuración de base de datos en nube en tiempo real (Laguna Brava Cloud)
+        const firebaseConfig = {
+            databaseURL: "https://hato-laguna-brava-default-rtdb.firebaseio.com/"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const dbRef = firebase.database().ref('eventos_criticos');
 
         document.addEventListener('DOMContentLoaded', () => {
             const today = new Date().toISOString().split('T')[0];
@@ -649,10 +579,23 @@
             const kpiTraslados = document.getElementById('kpi-traslados');
             const kpiDonaciones = document.getElementById('kpi-donaciones');
 
-            let eventos = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+            let eventosCache = [];
             let gpsDataCaptured = "N/A";
 
-            // Capturar metadatos EXIF (GPS)
+            // Indicador de conexión en tiempo real
+            const semaphoreEl = document.getElementById('syncSemaphore');
+            const syncTextEl = document.getElementById('syncTextLabel');
+            firebase.database().ref('.info/connected').on('value', function(snap) {
+                if (snap.val() === true) {
+                    semaphoreEl.className = "semaphore online";
+                    syncTextEl.innerText = "Cloud Sincronizado";
+                } else {
+                    semaphoreEl.className = "semaphore";
+                    syncTextEl.innerText = "Sin Conexión (Offline)";
+                }
+            });
+
+            // Lógica dual para captura de GPS (EXIF de foto + Geolocalización API como respaldo)
             document.getElementById('foto-evento').addEventListener('change', function(e) {
                 const file = e.target.files[0];
                 if (!file) {
@@ -675,9 +618,23 @@
                         const latitude = convertDMSToDD(lat, latRef).toFixed(6);
                         const longitude = convertDMSToDD(lon, lonRef).toFixed(6);
                         gpsDataCaptured = `${latitude}, ${longitude}`;
-                        mostrarToast("Coordenadas GPS extraídas de la foto");
+                        mostrarToast("📍 GPS extraído de la foto con éxito");
                     } else {
-                        gpsDataCaptured = "Sin GPS en EXIF";
+                        // Respaldo automático: Obtener geolocalización actual del dispositivo si la foto no trae EXIF
+                        if (navigator.geolocation) {
+                            navigator.geolocation.getCurrentPosition(
+                                (position) => {
+                                    gpsDataCaptured = `${position.coords.latitude.toFixed(6)}, ${position.coords.longitude.toFixed(6)}`;
+                                    mostrarToast("📍 GPS obtenido por ubicación del dispositivo");
+                                },
+                                (error) => {
+                                    gpsDataCaptured = "N/A (Sin permiso GPS)";
+                                },
+                                { timeout: 10000, enableHighAccuracy: true }
+                            );
+                        } else {
+                            gpsDataCaptured = "N/A";
+                        }
                     }
                 });
             });
@@ -691,7 +648,7 @@
 
             function actualizarFiltroMeses() {
                 const mesesSet = new Set();
-                eventos.forEach(ev => {
+                eventosCache.forEach(ev => {
                     if (ev.fecha) mesesSet.add(ev.fecha.substring(0, 7));
                 });
 
@@ -710,7 +667,6 @@
             }
 
             function renderizarApp() {
-                eventos = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
                 const textoBusqueda = inputBusqueda.value.toLowerCase().trim();
                 const mesFiltro = filtroMes.value;
                 const catFiltro = filtroCategoria.value;
@@ -718,7 +674,7 @@
                 tablaBody.innerHTML = '';
 
                 let counts = { Mortalidad: 0, Aborto: 0, Natimorto: 0, Natalidad: 0, Consumo: 0, Traslado: 0, Donacion: 0 };
-                eventos.forEach(ev => {
+                eventosCache.forEach(ev => {
                     if (counts.hasOwnProperty(ev.categoria)) counts[ev.categoria]++;
                 });
 
@@ -730,7 +686,7 @@
                 kpiTraslados.innerText = counts.Traslado;
                 kpiDonaciones.innerText = counts.Donacion;
 
-                const eventosFiltrados = eventos.filter(ev => {
+                const eventosFiltrados = eventosCache.filter(ev => {
                     const coincideChip = (ev.chip && ev.chip.toLowerCase().includes(textoBusqueda)) || ev.descripcion.toLowerCase().includes(textoBusqueda);
                     const coincideMes = mesFiltro === "" || (ev.fecha && ev.fecha.startsWith(mesFiltro));
                     const coincideCat = catFiltro === "" || ev.categoria === catFiltro;
@@ -758,22 +714,36 @@
                         </td>
                         <td>
                             <span style="font-size:0.68rem; font-weight:600;">${ev.responsable || 'N/A'}</span><br>
-                            <span style="font-size:0.6rem; color: var(--text-muted);">📍 ${ev.gps}</span>
+                            <span style="font-size:0.6rem; color: var(--text-muted);">📍 ${ev.gps || 'N/A'}</span>
                         </td>
                         <td style="text-align: center;">
-                            <button class="btn-danger" onclick="eliminarEvento('${ev.id}')">🗑️</button>
+                            <button class="btn-danger" onclick="eliminarEvento('${ev.firebaseKey}')">🗑️</button>
                         </td>
                     `;
                     tablaBody.appendChild(tr);
                 });
             }
 
-            // ACCIÓN CENTRALIZADA EN EL BOTÓN DE REGISTRAR
+            // ESCUCHA EN TIEMPO REAL DESDE LA NUBE FIREBASE
+            dbRef.on('value', (snapshot) => {
+                const data = snapshot.val();
+                eventosCache = [];
+                if (data) {
+                    Object.keys(data).forEach(key => {
+                        eventosCache.push({ firebaseKey: key, ...data[key] });
+                    });
+                    // Ordenar por fecha descendente
+                    eventosCache.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+                }
+                actualizarFiltroMeses();
+                renderizarApp();
+            });
+
+            // REGISTRAR Y SINCRONIZAR A LA NUBE EN UN SOLO TOQUE
             form.addEventListener('submit', (e) => {
                 e.preventDefault();
 
                 const nuevoEvento = {
-                    id: 'EV-' + Date.now(),
                     categoria: document.getElementById('categoria-evento').value,
                     etario: document.getElementById('grupo-etario').value,
                     chip: document.getElementById('chip-numero').value.trim(),
@@ -783,45 +753,35 @@
                     gps: gpsDataCaptured
                 };
 
-                eventos.unshift(nuevoEvento);
-                
-                // Guardado local y propagación de sincronización cloud instantánea
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(eventos));
-
-                form.reset();
-                document.getElementById('fecha-evento').value = today;
-                gpsDataCaptured = "N/A";
-
-                actualizarFiltroMeses();
-                renderizarApp();
-                mostrarToast("💾 Registrado y sincronizado automáticamente");
+                // Guardado directo en la nube en tiempo real
+                dbRef.push(nuevoEvento)
+                    .then(() => {
+                        form.reset();
+                        document.getElementById('fecha-evento').value = today;
+                        gpsDataCaptured = "N/A";
+                        document.getElementById('foto-evento').value = "";
+                        mostrarToast("💾 Registrado y sincronizado en la nube");
+                    })
+                    .catch((err) => {
+                        mostrarToast("⚠️ Error al sincronizar: Verifique conexión");
+                    });
             });
 
-            window.eliminarEvento = function(id) {
-                if (confirm('¿Está seguro de eliminar este registro crítico?')) {
-                    eventos = eventos.filter(ev => ev.id !== id);
-                    localStorage.setItem(STORAGE_KEY, JSON.stringify(eventos));
-                    actualizarFiltroMeses();
-                    renderizarApp();
-                    mostrarToast("Registro eliminado y sincronizado");
+            window.eliminarEvento = function(firebaseKey) {
+                if (confirm('¿Está seguro de eliminar este registro crítico de la nube?')) {
+                    dbRef.child(firebaseKey).remove()
+                        .then(() => {
+                            mostrarToast("🗑️ Registro eliminado de la nube");
+                        })
+                        .catch(() => {
+                            mostrarToast("⚠️ Error al eliminar");
+                        });
                 }
             };
-
-            // Escucha automática si la app está abierta en otro dispositivo/pestaña local
-            window.addEventListener('storage', (e) => {
-                if (e.key === STORAGE_KEY) {
-                    renderizarApp();
-                    actualizarFiltroMeses();
-                    mostrarToast("🔄 Sincronizado desde otro dispositivo");
-                }
-            });
 
             inputBusqueda.addEventListener('input', renderizarApp);
             filtroMes.addEventListener('change', renderizarApp);
             filtroCategoria.addEventListener('change', renderizarApp);
-
-            actualizarFiltroMeses();
-            renderizarApp();
         });
     </script>
 </body>
