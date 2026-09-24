@@ -7,11 +7,19 @@
         {
           "key": "Access-Control-Allow-Origin",
           "value": "*"
+        },
+        {
+          "key": "Access-Control-Allow-Methods",
+          "value": "GET, POST, OPTIONS, PUT, DELETE"
+        },
+        {
+          "key": "Access-Control-Allow-Headers",
+          "value": "X-Requested-With, Content-Type, Accept"
         }
       ]
     },
     {
-      "source": "/(.*)\\.(js|css|json|png|jpg|ico)",
+      "source": "/(.*)\\.(js|css|json|png|jpg|ico|webp)",
       "headers": [
         {
           "key": "Cache-Control",
