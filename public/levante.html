@@ -1,649 +1,622 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Hato Laguna Brava - Control de Levante y Bloques de Estudio</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Hato Laguna Brava - Control de Levante y Bloques de Estudio</title>
 
-    <!-- Centralizado en tus Estilos Maestros Unificados (v4.1) -->
-    <link rel="stylesheet" href="./potreros.css?v=4.1">
+    <!-- Centralizado en tus Estilos Maestros Unificados (v4.1) -->
+    <link rel="stylesheet" href="./potreros.css?v=4.1">
 
-    <!-- CDN oficial de iconos FontAwesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- CDN oficial de iconos FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <!-- Manifiesto PWA -->
-    <link rel="manifest" href="manifest.json">
+    <!-- Manifiesto PWA -->
+    <link rel="manifest" href="manifest.json">
 
-    <style>
-        body {
-            background-color: var(--bg-main, #fafdfb);
-            color: var(--text-main, #1b4332);
-            font-family: system-ui, -apple-system, sans-serif;
-            margin: 0;
-            padding: 0;
-        }
+    <style>
+        body {
+            background-color: var(--bg-main, #fafdfb);
+            color: var(--text-main, #1b4332);
+            font-family: system-ui, -apple-system, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
 
-        .main-container { 
-            padding: 20px; 
-            max-width: 1280px; 
-            margin: 0 auto; 
-        }
+        .main-container { 
+            padding: 20px; 
+            max-width: 1280px; 
+            margin: 0 auto; 
+        }
 
-        .menu-grid { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); 
-            gap: 20px; 
-        }
+        .menu-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); 
+            gap: 20px; 
+        }
 
-        .section-box {
-            background-color: var(--card-bg, #ffffff);
-            border: 1px solid var(--border-color, #e2e8f0);
-            border-radius: 8px;
-            padding: 20px;
-            box-shadow: 0 2px 4px rgba(27, 67, 50, 0.02);
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
-            margin-bottom: 12px;
-        }
+        .section-box {
+            background-color: var(--card-bg, #ffffff);
+            border: 1px solid var(--border-color, #e2e8f0);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(27, 67, 50, 0.02);
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
 
-        .card-header { 
-            display: flex; 
-            align-items: center; 
-            gap: 10px;
-            border-bottom: 1px solid var(--border-color, #e2e8f0); 
-            padding-bottom: 10px; 
-            margin: 0;
-        }
+        .card-header { 
+            display: flex; 
+            align-items: center; 
+            gap: 10px;
+            border-bottom: 1px solid var(--border-color, #e2e8f0); 
+            padding-bottom: 10px; 
+            margin: 0;
+        }
 
-        .card-title { 
-            font-size: 1.2rem; 
-            font-weight: 700;
-            margin: 0; 
-            color: var(--text-main, #1b4332); 
-        }
+        .card-title { 
+            font-size: 1.2rem; 
+            font-weight: 700;
+            margin: 0; 
+            color: var(--text-main, #1b4332); 
+        }
 
-        .card-description {
-            font-size: 0.85rem;
-            color: #666;
-            margin: 0;
-        }
+        .card-description {
+            font-size: 0.85rem;
+            color: #666;
+            margin: 0;
+        }
 
-        .input-group { 
-            display: flex; 
-            flex-direction: column; 
-            gap: 4px;
-        }
+        .input-group { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 4px;
+        }
 
-        .input-group label { 
-            font-size: 0.8rem; 
-            font-weight: 600; 
-            color: var(--text-main, #1b4332);
-        }
+        .input-group label { 
+            font-size: 0.8rem; 
+            font-weight: 600; 
+            color: var(--text-main, #1b4332);
+        }
 
-        .input-group input, .input-group select, .input-group textarea { 
-            padding: 8px 12px; 
-            border: 1px solid var(--border-color, #e2e8f0); 
-            border-radius: 6px; 
-            font-size: 0.95rem;
-            background-color: #ffffff;
-            color: var(--text-main, #1b4332);
-        }
+        .input-group input, .input-group select, .input-group textarea { 
+            padding: 9px 12px; 
+            border: 1px solid var(--border-color, #e2e8f0); 
+            border-radius: 6px; 
+            font-size: 0.95rem;
+            background-color: #ffffff;
+            color: var(--text-main, #1b4332);
+            width: 100%;
+            box-sizing: border-box;
+        }
 
-        .input-group textarea { resize: vertical; min-height: 70px; }
+        .input-group textarea { resize: vertical; min-height: 70px; }
 
-        .input-group input:focus, .input-group select:focus, .input-group textarea:focus {
-            outline: none;
-            border-color: var(--text-muted, #52b788);
-        }
+        .input-group input:focus, .input-group select:focus, .input-group textarea:focus {
+            outline: none;
+            border-color: var(--text-muted, #52b788);
+        }
 
-        .kpi-container { 
-            display: grid; 
-            grid-template-columns: 1fr 1fr; 
-            gap: 12px; 
-        }
+        .kpi-container { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 12px; 
+        }
 
-        .kpi-card-item {
-            background-color: var(--card-bg, #ffffff);
-            border: 1px solid var(--border-color, #e2e8f0);
-            border-radius: 8px;
-            padding: 12px 14px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 4px rgba(27, 67, 50, 0.02);
-        }
+        .kpi-card-item {
+            background-color: var(--card-bg, #ffffff);
+            border: 1px solid var(--border-color, #e2e8f0);
+            border-radius: 8px;
+            padding: 12px 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(27, 67, 50, 0.02);
+        }
 
-        .kpi-card-item label {
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: var(--text-main, #1b4332);
-            margin: 0;
-        }
+        .kpi-card-item label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-main, #1b4332);
+            margin: 0;
+        }
 
-        .kpi-value { 
-            font-weight: 700; 
-            font-size: 1.15rem;
-            color: var(--text-main, #1b4332); 
-        }
+        .kpi-value { 
+            font-weight: 700; 
+            font-size: 1.15rem;
+            color: var(--text-main, #1b4332); 
+            text-align: right;
+        }
 
-        /* Alertas visuales dinámicas para la Brújula de Pesaje */
-        .cv-alert-optimal { border-left: 4px solid #2d6a4f; background-color: #f4f9f6; }
-        .cv-alert-warning { border-left: 4px solid #d4a373; background-color: #fefae0; }
-        .cv-alert-danger  { border-left: 4px solid #b7094c; background-color: #fdf0ed; }
+        /* Alertas visuales dinámicas para la Brújula de Pesaje */
+        .cv-alert-optimal { border-left: 4px solid #2d6a4f !important; background-color: #f4f9f6 !important; }
+        .cv-alert-warning { border-left: 4px solid #d4a373 !important; background-color: #fefae0 !important; }
+        .cv-alert-danger  { border-left: 4px solid #b7094c !important; background-color: #fdf0ed !important; }
 
-        .btn-submit { 
-            width: 100%; 
-            padding: 12px; 
-            background-color: var(--text-main, #1b4332); 
-            color: #ffffff; 
-            border: none; 
-            border-radius: 6px; 
-            font-weight: 600; 
-            font-size: 0.95rem;
-            cursor: pointer; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            gap: 8px; 
-            transition: background-color 0.2s;
-        }
+        .btn-submit { 
+            width: 100%; 
+            padding: 12px; 
+            background-color: var(--text-main, #1b4332); 
+            color: #ffffff; 
+            border: none; 
+            border-radius: 6px; 
+            font-weight: 600; 
+            font-size: 0.95rem;
+            cursor: pointer; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 8px; 
+            transition: background-color 0.2s;
+        }
 
-        .btn-submit:hover { 
-            background-color: var(--text-muted, #52b788); 
-        }
+        .btn-submit:hover { 
+            background-color: var(--text-muted, #52b788); 
+        }
 
-        /* Contenedor del Dúo Dinámico: Deshacer y Rehacer codo a codo */
-        .undo-redo-group {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-        }
+        .undo-redo-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
 
-        .btn-history-control {
-            background-color: #e9ecef;
-            color: #495057;
-            border: 1px solid #ced4da;
-            padding: 8px 10px;
-            border-radius: 6px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            transition: background-color 0.2s;
-        }
-        .btn-history-control:hover:not(:disabled) {
-            background-color: #dee2e6;
-            color: #212529;
-        }
-        .btn-history-control:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
+        .btn-history-control {
+            background-color: #e9ecef;
+            color: #495057;
+            border: 1px solid #ced4da;
+            padding: 8px 10px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: background-color 0.2s;
+        }
+        .btn-history-control:hover:not(:disabled) {
+            background-color: #dee2e6;
+            color: #212529;
+        }
+        .btn-history-control:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
 
-        /* Zona de Peligro / Eliminación total al final del reporte */
-        .danger-zone {
-            margin-top: 15px;
-            padding-top: 12px;
-            border-top: 1px dashed #b7094c;
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
+        .danger-zone {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px dashed #b7094c;
+            display: flex;
+            flex-direction: column;
+        }
 
-        .btn-delete-total {
-            background-color: transparent;
-            color: #b7094c;
-            border: 1px solid #b7094c;
-            padding: 8px 12px;
-            border-radius: 6px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            transition: all 0.2s;
-        }
-        .btn-delete-total:hover {
-            background-color: #b7094c;
-            color: #ffffff;
-        }
+        .btn-delete-total {
+            background-color: transparent;
+            color: #b7094c;
+            border: 1px solid #b7094c;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+        .btn-delete-total:hover {
+            background-color: #b7094c;
+            color: #ffffff;
+        }
 
-        .stats-interpretation {
-            font-size: 0.85rem;
-            line-height: 1.4;
-            color: #333;
-            background-color: #f4f9f6;
-            padding: 10px 12px;
-            border-left: 4px solid var(--text-muted, #52b788);
-            border-radius: 4px;
-            margin-top: 4px;
-        }
-    </style>
+        .stats-interpretation {
+            font-size: 0.85rem;
+            line-height: 1.4;
+            color: #333;
+            background-color: #f4f9f6;
+            padding: 10px 12px;
+            border-left: 4px solid var(--text-muted, #52b788);
+            border-radius: 4px;
+            margin-top: 4px;
+        }
+    </style>
 </head>
 <body>
 
-    <!-- ENCABEZADO MAESTRO -->
-    <header class="main-header">
-        <div class="header-container">
-            <nav class="header-nav">
-                <a href="./index.html" class="btn-back" style="text-decoration: none;">
-                    <i class="fa-solid fa-arrow-left"></i> Volver al Panel
-                </a>
-            </nav>
-            <div class="header-title-wrapper">
-                <h1>Hato Laguna Brava - <span>Bloques de Estudio & Control</span></h1>
-                <p>Brújula Temporal, GMD Dinámica y Alertas de Manga</p>
-            </div>
-            <div class="sync-status-wrapper">
-                <div id="sync-semaphore" class="semaphore online"></div>
-                <span id="sync-text" class="sync-text">Sincronizado Local</span>
-            </div>
-        </div>
-    </header>
-
-    <!-- CONTENEDOR PRINCIPAL -->
-    <main class="main-container">
-        <div class="menu-grid">
-
-            <!-- COLUMNA 1: FORMULARIO DE ENTRADA Y GESTIÓN DE LOTE -->
-            <section class="section-box">
-                <div class="card-header">
-                    <div class="card-icon">📋</div>
-                    <h2 class="card-title">Registro de Pesaje</h2>
-                </div>
-                <p class="card-description">Declaración de fechas de control en manga y programación del próximo pesaje.</p>
-
-                <form id="form-levante" onsubmit="event.preventDefault();" style="display: flex; flex-direction: column; gap: 12px;">
-
-                    <div class="input-group">
-                        <label for="inputLote">Lote / Bloque de Estudio (Fase y Tratamiento)</label>
-                        <input type="text" id="inputLote" value="Bloque 1 - Mautes Cebú (Suplementación + Compudose)" required>
-                    </div>
-
-                    <!-- SELECTOR DE TEMPORADA AGROECOLÓGICA DE APURE -->
-                    <div class="input-group">
-                        <label for="selectTemporada">Temporada Agroecológica:</label>
-                        <select id="selectTemporada" required>
-                            <option value="" disabled>-- Seleccione Época Climática --</option>
-                            <optgroup label="Invierno (Lluvias)">
-                                <option value="INVIERNO_ENTRADA">Invierno - Entrada (Mayo / Junio)</option>
-                                <option value="INVIERNO_MEDIADOS">Invierno - Mediados (Julio / Agosto)</option>
-                                <option value="INVIERNO_SALIDA" selected>Invierno - Salida (Septiembre / Octubre)</option>
-                            </optgroup>
-                            <optgroup label="Verano (Sequía)">
-                                <option value="VERANO_ENTRADA">Verano - Entrada (Noviembre / Diciembre)</option>
-                                <option value="VERANO_MEDIADOS">Verano - Mediados (Enero / Febrero)</option>
-                                <option value="VERANO_SALIDA">Verano - Salida (Marzo / Abril)</option>
-                            </optgroup>
-                        </select>
-                    </div>
-
-                    <!-- DECLARACIÓN DE FECHAS (ACTUAL Y PRÓXIMO PESAJE) -->
-                    <div class="kpi-container">
-                        <div class="input-group">
-                            <label for="inputFechaActual">Fecha del Pesaje Actual</label>
-                            <input type="date" id="inputFechaActual" required>
-                        </div>
-                        <div class="input-group">
-                            <label for="inputFechaProximo">Fecha del Próximo Pesaje</label>
-                            <input type="date" id="inputFechaProximo" required>
-                        </div>
-                    </div>
-
-                    <div class="kpi-container">
-                        <div class="input-group">
-                            <label for="inputPesoPromedio">Peso Promedio Actual del Lote (kg)</label>
-                            <input type="number" step="0.1" id="inputPesoPromedio" value="284.5" required>
-                        </div>
-                        <div class="input-group">
-                            <label for="inputNumAnimales">Nº Animales en el Lote</label>
-                            <input type="number" id="inputNumAnimales" value="9" required>
-                        </div>
-                    </div>
-
-                    <!-- METAS DEL LOTE Y PUNTO DE PARTIDA -->
-                    <div class="kpi-container">
-                        <div class="input-group">
-                            <label for="inputPesoInicial">⚖️ Peso Inicial / Base del lote (kg)</label>
-                            <input type="number" step="0.1" id="inputPesoInicial" placeholder="Ej: 220.5" required>
-                        </div>
-                        <div class="input-group">
-                            <label for="inputPesoObjetivo">Peso Meta del Lote (kg)</label>
-                            <input type="number" step="0.1" id="inputPesoObjetivo" value="350.0" required>
-                        </div>
-                    </div>
-
-                    <div class="kpi-container">
-                        <div class="input-group">
-                            <label for="inputMesesObjetivo">Meta de Salida (Meses)</label>
-                            <input type="number" step="0.5" id="inputMesesObjetivo" value="4.0" required>
-                        </div>
-                        <div class="input-group">
-                            <label for="inputCV">Coeficiente de Variación del Lote (CV %)</label>
-                            <input type="number" step="0.1" id="inputCV" value="6.4" required>
-                        </div>
-                    </div>
-
-                    <div class="kpi-container">
-                        <div class="input-group" style="grid-column: span 2;">
-                            <label for="inputEdad">Edad Promedio del Lote (meses)</label>
-                            <input type="number" step="0.1" id="inputEdad" value="8.5" required>
-                        </div>
-                    </div>
-
-                    <!-- BLOQUE DE OBSERVACIONES CUALITATIVAS PARA LA IA -->
-                    <div class="input-group">
-                        <label for="inputObservaciones">Observaciones Cualitativas de Manga (Contexto para la IA):</label>
-                        <textarea id="inputObservaciones" placeholder="Ej. Lote pastando en estero bajando lámina de agua. Se observa buen rompimiento de pelaje, sin ectoparásitos.">Entrada a sabana alta con predominio de pasto pará. Comportamiento activo en comederos y puntos de agua.</textarea>
-                    </div>
-
-                    <div style="display: flex; flex-direction: column; gap: 8px;">
-                        <button type="button" id="btnProcesarPesaje" class="btn-submit">
-                            <i class="fa-solid fa-brain"></i> Registrar y Guardar en Memoria
-                        </button>
-
-                        <!-- EL DÚO DINÁMICO: DESHACER Y REHACER (Hermanos de control de historial) -->
-                        <div class="undo-redo-group">
-                            <button type="button" id="btnDeshacerUltimo" class="btn-history-control" title="Deshace el último registro guardado">
-                                <i class="fa-solid fa-rotate-left"></i> Deshacer
-                            </button>
-                            <button type="button" id="btnRehacerUltimo" class="btn-history-control" title="Rehace el registro que acabas de deshacer" disabled>
-                                <i class="fa-solid fa-rotate-right"></i> Rehacer
-                            </button>
-                        </div>
-                    </div>
-                </form>
-            </section>
-
-            <!-- COLUMNA 2: PANEL DE INDICADORES DE ORO Y BRÚJULA TEMPORAL -->
-            <section class="section-box">
-                <div class="card-header">
-                    <div class="card-icon">🎯</div>
-                    <h2 class="card-title">Brújula Temporal, GMD e IA</h2>
-                </div>
-                <p class="card-description">Monitoreo de cuenta regresiva para el próximo control de manga y diagnóstico experto.</p>
-
-                <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 5px;">
-
-                    <!-- ALERTA VISUAL Y SONORA DE LA BRÚJULA -->
-                    <div id="cardBrujulaBox" class="kpi-card-item cv-alert-optimal">
-                        <label><i class="fa-solid fa-bell"></i> Estado de la Brújula de Pesaje</label>
-                        <span id="resumenBrujulaDias" class="kpi-value">En fecha (Faltan 30 días)</span>
-                    </div>
-
-                    <div class="kpi-card-item">
-                        <label>GMD Calculada (Entre Fechas de Pesaje)</label>
-                        <span id="resumenGMD" class="kpi-value" style="color: #2d6a4f;">0.54 kg/día</span>
-                    </div>
-
-                    <!-- Kilos Faltantes Promedio por Animal -->
-                    <div class="kpi-card-item">
-                        <label>Faltante Promedio / Animal</label>
-                        <span id="resumenKgsFaltantesUnitario" class="kpi-value">+65.5 kg</span>
-                    </div>
-
-                    <!-- Kilos Faltantes Totales del Lote -->
-                    <div class="kpi-card-item" style="background-color: #f4f9f6;">
-                        <label>Total Lote (<span id="labelConteoCabezasKpi">9</span> cab)</label>
-                        <span id="resumenKgsFaltantesTotal" class="kpi-value" style="color: #1b4332;">589.5 kg</span>
-                    </div>
-
-                    <div class="kpi-card-item">
-                        <label>Tiempo Faltante Estimado (según GMD)</label>
-                        <span id="resumenTiempoFaltante" class="kpi-value">4 meses y 5 días</span>
-                    </div>
-
-                    <div class="input-group" style="margin-top: 4px;">
-                        <label>Diagnóstico Estacional y Memoria de IA</label>
-                        <div id="statsInterpretacion" class="stats-interpretation">
-                            <strong>Análisis Integrado (Clima + Fechas + Numérico):</strong> Época registrada: <em>Invierno - Salida</em>. La brújula temporal monitorea el intervalo hacia el próximo pesaje programado para asegurar que el balance de ganancia en los esteros de Apure marche sin desviaciones.
-                        </div>
-                    </div>
-
-                    <!-- ESTADÍSTICAS Y ZONA DE ELIMINACIÓN TOTAL AL FINAL DEL REPORTE -->
-                    <div class="kpi-card-item" style="background-color: #f4f9f6; border: 1px dashed var(--text-muted, #52b788);">
-                        <label style="font-size: 0.8rem; color: #1b4332;"><i class="fa-solid fa-database"></i> Memoria Local:</label>
-                        <span id="resumenConteoHistorial" class="kpi-value" style="font-size: 0.95rem;">12 Pesajes Registrados</span>
-                    </div>
-
-                    <!-- ZONA SEGURA DE ELIMINACIÓN TOTAL (Al final del reporte del lote) -->
-                    <div class="danger-zone">
-                        <button type="button" id="btnEliminarLoteTotal" class="btn-delete-total" title="Elimina por completo todos los registros e historiales de este lote">
-                            <i class="fa-solid fa-trash-can"></i> Eliminar Lote y Todos sus Pesajes del Sistema
-                        </button>
-                    </div>
-
-                </div>
-            </section>
-
-        </div>
-    </main>
-
-    <!-- Script de Lógica con Pila Bidireccional (Undo / Redo) -->
-    <script>
-        // Inicializar fechas por defecto en los inputs
-        document.getElementById('inputFechaActual').valueAsDate = new Date();
-        let fechaProxDefault = new Date();
-        fechaProxDefault.setDate(fechaProxDefault.getDate() + 30);
-        document.getElementById('inputFechaProximo').valueAsDate = fechaProxDefault;
-
-        let historialLotes = JSON.parse(localStorage.getItem('lb_historial_lotes')) || [];
-        // Pila temporal para el hermanito "Rehacer" (Redo)
-        let papeleraDeshacer = [];
-
-        actualizarContadorHistorial();
-
-        function actualizarContadorHistorial() {
-            document.getElementById('resumenConteoHistorial').innerText = `${historialLotes.length} Pesajes Registrados`;
-            document.getElementById('btnRehacerUltimo').disabled = (papeleraDeshacer.length === 0);
-        }
-
-        // Función sintetizadora de alerta sonora
-        function reproducirAlertaSonora(tipo) {
-            try {
-                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                const osc = audioCtx.createOscillator();
-                const gainNode = audioCtx.createGain();
-
-                osc.type = tipo === 'urgente' ? 'sawtooth' : 'sine';
-                osc.frequency.setValueAtTime(tipo === 'urgente' ? 880 : 587.33, audioCtx.currentTime);
-
-                gainNode.gain.setValueAtTime(0.15, audioCtx.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.6);
-
-                osc.connect(gainNode);
-                gainNode.connect(audioCtx.destination);
-
-                osc.start();
-                osc.stop(audioCtx.currentTime + 0.6);
-            } catch(e) {
-                console.log("Audio no soportado o bloqueado por políticas del navegador", e);
-            }
-        }
-
-        function calcularIndicadoresDinamicos() {
-            let loteNombre = document.getElementById('inputLote').value;
-            let fechaActualStr = document.getElementById('inputFechaActual').value;
-            let fechaProximaStr = document.getElementById('inputFechaProximo').value;
-            let pesoProm = parseFloat(document.getElementById('inputPesoPromedio').value) || 0;
-            let pesoObj = parseFloat(document.getElementById('inputPesoObjetivo').value) || 0;
-            let mesesMeta = parseFloat(document.getElementById('inputMesesObjetivo').value) || 1;
-            let numAnimales = parseInt(document.getElementById('inputNumAnimales').value) || 1;
-            let cv = parseFloat(document.getElementById('inputCV').value) || 0;
-
-            // Actualizar etiqueta del número de animales en el KPI total
-            document.getElementById('labelConteoCabezasKpi').innerText = numAnimales;
-
-            let registrosLote = historialLotes.filter(r => r.lote === loteNombre);
-            let gmdCalculada = 0.50; 
-
-            if (registrosLote.length > 0) {
-                let ultimoReg = registrosLote[registrosLote.length - 1];
-                let fAnterior = new Date(ultimoReg.fechaActual || ultimoReg.fecha);
-                let fActual = new Date(fechaActualStr);
-                let diasTranscurridos = Math.round((fActual - fAnterior) / (1000 * 60 * 60 * 24));
-
-                if (diasTranscurridos > 0) {
-                    let diffKilos = pesoProm - ultimoReg.pesoPromedioLote;
-                    gmdCalculada = diffKilos / diasTranscurridos;
-                    if (gmdCalculada < 0) gmdCalculada = 0.01;
-                }
-            } else {
-                let kgsMetaInit = pesoObj - pesoProm;
-                let diasMetaInit = mesesMeta * 30;
-                if(diasMetaInit > 0) gmdCalculada = kgsMetaInit / diasMetaInit;
-            }
-
-            document.getElementById('resumenGMD').innerText = `${gmdCalculada.toFixed(2)} kg/día`;
-
-            let kgsFaltantesUnitario = pesoObj - pesoProm;
-            if (kgsFaltantesUnitario < 0) kgsFaltantesUnitario = 0;
-
-            let kgsFaltantesTotalLote = kgsFaltantesUnitario * numAnimales;
-
-            let diasTotales = gmdCalculada > 0 ? (kgsFaltantesUnitario / gmdCalculada) : 0;
-            let mesesFaltantes = Math.floor(diasTotales / 30);
-            let diasRestantes = Math.round(diasTotales % 30);
-
-            // Asignación separada en las dos casillas independientes
-            document.getElementById('resumenKgsFaltantesUnitario').innerText = `+${kgsFaltantesUnitario.toFixed(1)} kg`;
-            document.getElementById('resumenKgsFaltantesTotal').innerText = `${kgsFaltantesTotalLote.toFixed(1)} kg`;
-            document.getElementById('resumenTiempoFaltante').innerText = `${mesesFaltantes} meses y ${diasRestantes} días`;
-
-            let cardBrujulaBox = document.getElementById('cardBrujulaBox');
-            let resumenBrujulaDias = document.getElementById('resumenBrujulaDias');
-
-            if (fechaProximaStr) {
-                let hoy = new Date();
-                hoy.setHours(0,0,0,0);
-                let fProxima = new Date(fechaProximaStr + 'T00:00:00');
-                let diffDiasProximo = Math.round((fProxima - hoy) / (1000 * 60 * 60 * 24));
-
-                cardBrujulaBox.className = "kpi-card-item";
-
-                if (diffDiasProximo < 0) {
-                    cardBrujulaBox.classList.add('cv-alert-danger');
-                    resumenBrujulaDias.innerText = `¡VENCIDO por ${Math.abs(diffDiasProximo)} días!`;
-                    reproducirAlertaSonora('urgente');
-                } else if (diffDiasProximo <= 3) {
-                    cardBrujulaBox.classList.add('cv-alert-warning');
-                    resumenBrujulaDias.innerText = `¡Inminente! (Faltan ${diffDiasProximo} días)`;
-                    reproducirAlertaSonora('suave');
-                } else {
-                    cardBrujulaBox.classList.add('cv-alert-optimal');
-                    resumenBrujulaDias.innerText = `En fecha (Faltan ${diffDiasProximo} días)`;
-                }
-            }
-
-            return { gmdCalculada, kgsFaltantesUnitario, kgsFaltantesTotalLote };
-        }
-
-        ['inputPesoPromedio', 'inputPesoObjetivo', 'inputMesesObjetivo', 'inputLote', 'inputFechaActual', 'inputFechaProximo', 'inputNumAnimales'].forEach(id => {
-            document.getElementById(id).addEventListener('input', calcularIndicadoresDinamicos);
-        });
-
-        window.onload = function() {
-            calcularIndicadoresDinamicos();
-        };
-
-        // Botón Registrar en Memoria
-        document.getElementById('btnProcesarPesaje').addEventListener('click', function() {
-            let loteNombre = document.getElementById('inputLote').value;
-            let temporada = document.getElementById('selectTemporada').value;
-            let fechaActualStr = document.getElementById('inputFechaActual').value;
-            let fechaProximaStr = document.getElementById('inputFechaProximo').value;
-            let pesoProm = parseFloat(document.getElementById('inputPesoPromedio').value) || 0;
-            let pesoObj = parseFloat(document.getElementById('inputPesoObjetivo').value) || 0;
-            let mesesMeta = parseFloat(document.getElementById('inputMesesObjetivo').value) || 0;
-            let numAnimales = parseInt(document.getElementById('inputNumAnimales').value) || 0;
-            let pesoInicial = parseFloat(document.getElementById('inputPesoInicial').value) || 0;
-            let cv = parseFloat(document.getElementById('inputCV').value) || 0;
-            let observaciones = document.getElementById('inputObservaciones').value;
-
-            let calculos = calcularIndicadoresDinamicos();
-
-            let registroActual = {
-                timestampRegistro: new Date().toISOString(),
-                fechaActual: fechaActualStr,
-                fechaProximoPesaje: fechaProximaStr,
-                lote: loteNombre,
-                temporada: temporada,
-                pesoPromedioLote: pesoProm,
-                pesoInicialBase: pesoInicial,
-                pesoObjetivoLote: pesoObj,
-                mesesObjetivo: mesesMeta,
-                numAnimales: numAnimales,
-                gmdCalculada: calculos.gmdCalculada,
-                kgsFaltantesUnitario: calculos.kgsFaltantesUnitario,
-                kgsFaltantesTotal: calculos.kgsFaltantesTotalLote,
-                cvLote: cv,
-                observaciones: observaciones
-            };
-
-            historialLotes.push(registroActual);
-            localStorage.setItem('lb_historial_lotes', JSON.stringify(historialLotes));
-
-            papeleraDeshacer = [];
-
-            actualizarContadorHistorial();
-            calcularIndicadoresDinamicos();
-
-            alert("¡Pesaje actual y programación de la brújula guardados correctamente en la memoria!");
-        });
-
-        // Botón Deshacer
-        document.getElementById('btnDeshacerUltimo').addEventListener('click', function() {
-            if (historialLotes.length === 0) {
-                alert("No hay registros en la memoria local para deshacer.");
-                return;
-            }
-
-            let eliminado = historialLotes.pop();
-            papeleraDeshacer.push(eliminado);     
-
-            localStorage.setItem('lb_historial_lotes', JSON.stringify(historialLotes));
-            actualizarContadorHistorial();
-            calcularIndicadoresDinamicos();
-            alert(`Se deshizo el registro del ${eliminado.fechaActual} (${eliminado.pesoPromedioLote} kg). ¡Puedes usar 'Rehacer' si fue un error!`);
-        });
-
-        // Botón Rehacer
-        document.getElementById('btnRehacerUltimo').addEventListener('click', function() {
-            if (papeleraDeshacer.length === 0) {
-                alert("No hay acciones pendientes para rehacer.");
-                return;
-            }
-
-            let restaurado = papeleraDeshacer.pop(); 
-            historialLotes.push(restaurado);         
-
-            localStorage.setItem('lb_historial_lotes', JSON.stringify(historialLotes));
-            actualizarContadorHistorial();
-            calcularIndicadoresDinamicos();
-            alert(`¡Se ha rehecho y restaurado el registro del ${restaurado.fechaActual} (${restaurado.pesoPromedioLote} kg)!`);
-        });
-
-        // Botón de Eliminación Total del Lote
-        document.getElementById('btnEliminarLoteTotal').addEventListener('click', function() {
-            let loteNombre = document.getElementById('inputLote').value;
-            if(confirm(`⚠️ ATENCIÓN: ¿Está seguro de ELIMINAR POR COMPLETO todos los pesajes y registros históricos del lote "${loteNombre}" del sistema?\n\nEsta acción no se puede deshacer.`)) {
-                historialLotes = historialLotes.filter(r => r.lote !== loteNombre);
-                localStorage.setItem('lb_historial_lotes', JSON.stringify(historialLotes));
-                papeleraDeshacer = [];
-                actualizarContadorHistorial();
-                calcularIndicadoresDinamicos();
-                alert(`¡El lote "${loteNombre}" y todo su historial han sido eliminados por completo del sistema!`);
-            }
-        });
-    </script>
-
-    <!-- Script externo complementario si aplica -->
-    <script src="./levante.js"></script>
+    <!-- ENCABEZADO MAESTRO -->
+    <header class="main-header">
+        <div class="header-container" style="display:flex; justify-content:space-between; align-items:center; padding:12px 20px; background:var(--card-bg, #fff); border-bottom:1px solid var(--border-color, #e2e8f0);">
+            <nav class="header-nav">
+                <a href="./index.html" class="btn-back" style="text-decoration: none; color:var(--text-main, #1b4332); font-weight:600;">
+                    <i class="fa-solid fa-arrow-left"></i> Volver al Panel
+                </a>
+            </nav>
+            <div class="header-title-wrapper" style="text-align:center;">
+                <h1 style="font-size:1.1rem; margin:0; color:var(--text-main);">Hato Laguna Brava - <span>Control de Levante</span></h1>
+                <p style="font-size:0.75rem; margin:0; color:#666;">Brújula Temporal, GMD Dinámica y Alertas</p>
+            </div>
+            <div class="sync-status-wrapper" style="display:flex; align-items:center; gap:6px;">
+                <div id="sync-semaphore" class="semaphore online" style="width:10px; height:10px; background-color:#2d6a4f; border-radius:50%;"></div>
+                <span id="sync-text" class="sync-text" style="font-size:0.8rem; font-weight:600;">Sincronizado</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- CONTENEDOR PRINCIPAL -->
+    <main class="main-container">
+        <div class="menu-grid">
+
+            <!-- COLUMNA 1: FORMULARIO DE ENTRADA Y GESTIÓN DE LOTE -->
+            <section class="section-box">
+                <div class="card-header">
+                    <span style="font-size: 1.4rem;">📋</span>
+                    <h2 class="card-title">Registro de Pesaje</h2>
+                </div>
+                <p class="card-description">Declaración de fechas de control en manga y programación del próximo pesaje.</p>
+
+                <form id="form-levante" onsubmit="event.preventDefault();" style="display: flex; flex-direction: column; gap: 12px;">
+
+                    <div class="input-group">
+                        <label for="inputLote">Lote / Bloque de Estudio (Fase y Tratamiento)</label>
+                        <input type="text" id="inputLote" value="Bloque 1 - Mautes Cebú (Suplementación + Compudose)" required>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="selectTemporada">Temporada Agroecológica:</label>
+                        <select id="selectTemporada" required>
+                            <option value="" disabled>-- Seleccione Época Climática --</option>
+                            <optgroup label="Invierno (Lluvias)">
+                                <option value="INVIERNO_ENTRADA">Invierno - Entrada (Mayo / Junio)</option>
+                                <option value="INVIERNO_MEDIADOS">Invierno - Mediados (Julio / Agosto)</option>
+                                <option value="INVIERNO_SALIDA" selected>Invierno - Salida (Septiembre / Octubre)</option>
+                            </optgroup>
+                            <optgroup label="Verano (Sequía)">
+                                <option value="VERANO_ENTRADA">Verano - Entrada (Noviembre / Diciembre)</option>
+                                <option value="VERANO_MEDIADOS">Verano - Mediados (Enero / Febrero)</option>
+                                <option value="VERANO_SALIDA">Verano - Salida (Marzo / Abril)</option>
+                            </optgroup>
+                        </select>
+                    </div>
+
+                    <div class="kpi-container">
+                        <div class="input-group">
+                            <label for="inputFechaActual">Fecha Pesaje Actual</label>
+                            <input type="date" id="inputFechaActual" required>
+                        </div>
+                        <div class="input-group">
+                            <label for="inputFechaProximo">Fecha Próximo Pesaje</label>
+                            <input type="date" id="inputFechaProximo" required>
+                        </div>
+                    </div>
+
+                    <div class="kpi-container">
+                        <div class="input-group">
+                            <label for="inputPesoPromedio">Peso Promedio Lote (kg)</label>
+                            <input type="number" step="0.1" id="inputPesoPromedio" value="284.5" required>
+                        </div>
+                        <div class="input-group">
+                            <label for="inputNumAnimales">Nº Animales</label>
+                            <input type="number" id="inputNumAnimales" value="9" required>
+                        </div>
+                    </div>
+
+                    <div class="kpi-container">
+                        <div class="input-group">
+                            <label for="inputPesoInicial">⚖️ Peso Inicial Base (kg)</label>
+                            <input type="number" step="0.1" id="inputPesoInicial" value="220.5" required>
+                        </div>
+                        <div class="input-group">
+                            <label for="inputPesoObjetivo">Peso Meta (kg)</label>
+                            <input type="number" step="0.1" id="inputPesoObjetivo" value="350.0" required>
+                        </div>
+                    </div>
+
+                    <div class="kpi-container">
+                        <div class="input-group">
+                            <label for="inputMesesObjetivo">Meta Salida (Meses)</label>
+                            <input type="number" step="0.5" id="inputMesesObjetivo" value="4.0" required>
+                        </div>
+                        <div class="input-group">
+                            <label for="inputCV">Coef. Variación (CV %)</label>
+                            <input type="number" step="0.1" id="inputCV" value="6.4" required>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="inputEdad">Edad Promedio del Lote (meses)</label>
+                        <input type="number" step="0.1" id="inputEdad" value="8.5" required>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="inputObservaciones">Observaciones Cualitativas de Manga:</label>
+                        <textarea id="inputObservaciones">Entrada a sabana alta con predominio de pasto pará. Comportamiento activo en comederos.</textarea>
+                    </div>
+
+                    <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 5px;">
+                        <button type="button" id="btnProcesarPesaje" class="btn-submit">
+                            <i class="fa-solid fa-floppy-disk"></i> Registrar y Guardar en Memoria
+                        </button>
+
+                        <div class="undo-redo-group">
+                            <button type="button" id="btnDeshacerUltimo" class="btn-history-control">
+                                <i class="fa-solid fa-rotate-left"></i> Deshacer
+                            </button>
+                            <button type="button" id="btnRehacerUltimo" class="btn-history-control" disabled>
+                                <i class="fa-solid fa-rotate-right"></i> Rehacer
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </section>
+
+            <!-- COLUMNA 2: PANEL DE INDICADORES Y BRÚJULA -->
+            <section class="section-box">
+                <div class="card-header">
+                    <span style="font-size: 1.4rem;">🎯</span>
+                    <h2 class="card-title">Brújula Temporal, GMD e IA</h2>
+                </div>
+                <p class="card-description">Monitoreo de cuenta regresiva y diagnóstico experto en tiempo real.</p>
+
+                <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 5px;">
+
+                    <div id="cardBrujulaBox" class="kpi-card-item cv-alert-optimal">
+                        <label><i class="fa-solid fa-bell"></i> Estado de la Brújula</label>
+                        <span id="resumenBrujulaDias" class="kpi-value">Calculando...</span>
+                    </div>
+
+                    <div class="kpi-card-item">
+                        <label>GMD Calculada</label>
+                        <span id="resumenGMD" class="kpi-value" style="color: #2d6a4f;">0.00 kg/día</span>
+                    </div>
+
+                    <div class="kpi-card-item">
+                        <label>Faltante / Animal</label>
+                        <span id="resumenKgsFaltantesUnitario" class="kpi-value">0.0 kg</span>
+                    </div>
+
+                    <div class="kpi-card-item" style="background-color: #f4f9f6;">
+                        <label>Total Lote (<span id="labelConteoCabezasKpi">9</span> cab)</label>
+                        <span id="resumenKgsFaltantesTotal" class="kpi-value" style="color: #1b4332;">0.0 kg</span>
+                    </div>
+
+                    <div class="kpi-card-item">
+                        <label>Tiempo Faltante Estimado</label>
+                        <span id="resumenTiempoFaltante" class="kpi-value">0 meses</span>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Diagnóstico Estacional y Memoria</label>
+                        <div id="statsInterpretacion" class="stats-interpretation">
+                            <strong>Análisis Integrado:</strong> Monitoreo activo de la ganancia diaria y programación de manga en Hato Laguna Brava.
+                        </div>
+                    </div>
+
+                    <div class="kpi-card-item" style="background-color: #f4f9f6; border: 1px dashed var(--text-muted, #52b788);">
+                        <label style="font-size: 0.8rem; color: #1b4332;"><i class="fa-solid fa-database"></i> Registros:</label>
+                        <span id="resumenConteoHistorial" class="kpi-value" style="font-size: 0.95rem;">0 Guardados</span>
+                    </div>
+
+                    <div class="danger-zone">
+                        <button type="button" id="btnEliminarLoteTotal" class="btn-delete-total">
+                            <i class="fa-solid fa-trash-can"></i> Eliminar Lote y Historial Completo
+                        </button>
+                    </div>
+
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- Script de Lógica Corregido -->
+    <script>
+        // Inicializar fechas por defecto si los campos están vacíos
+        if(!document.getElementById('inputFechaActual').value) {
+            document.getElementById('inputFechaActual').valueAsDate = new Date();
+        }
+        if(!document.getElementById('inputFechaProximo').value) {
+            let fechaProxDefault = new Date();
+            fechaProxDefault.setDate(fechaProxDefault.getDate() + 30);
+            document.getElementById('inputFechaProximo').valueAsDate = fechaProxDefault;
+        }
+
+        let historialLotes = JSON.parse(localStorage.getItem('lb_historial_lotes')) || [];
+        let papeleraDeshacer = [];
+
+        actualizarContadorHistorial();
+        calcularIndicadoresDinamicos();
+
+        function actualizarContadorHistorial() {
+            document.getElementById('resumenConteoHistorial').innerText = `${historialLotes.length} Guardados`;
+            document.getElementById('btnRehacerUltimo').disabled = (papeleraDeshacer.length === 0);
+        }
+
+        function reproducirAlertaSonora(tipo) {
+            try {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = audioCtx.createOscillator();
+                const gainNode = audioCtx.createGain();
+
+                osc.type = tipo === 'urgente' ? 'sawtooth' : 'sine';
+                osc.frequency.setValueAtTime(tipo === 'urgente' ? 880 : 587.33, audioCtx.currentTime);
+
+                gainNode.gain.setValueAtTime(0.15, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.6);
+
+                osc.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.6);
+            } catch(e) {
+                console.log("Audio omitido por políticas del navegador", e);
+            }
+        }
+
+        function calcularIndicadoresDinamicos() {
+            let loteNombre = document.getElementById('inputLote').value;
+            let fechaActualStr = document.getElementById('inputFechaActual').value;
+            let fechaProximaStr = document.getElementById('inputFechaProximo').value;
+            let pesoProm = parseFloat(document.getElementById('inputPesoPromedio').value) || 0;
+            let pesoObj = parseFloat(document.getElementById('inputPesoObjetivo').value) || 0;
+            let mesesMeta = parseFloat(document.getElementById('inputMesesObjetivo').value) || 1;
+            let numAnimales = parseInt(document.getElementById('inputNumAnimales').value) || 1;
+
+            document.getElementById('labelConteoCabezasKpi').innerText = numAnimales;
+
+            let registrosLote = historialLotes.filter(r => r.lote === loteNombre);
+            let gmdCalculada = 0.50; 
+
+            if (registrosLote.length > 0) {
+                let ultimoReg = registrosLote[registrosLote.length - 1];
+                let fAnterior = new Date(ultimoReg.fechaActual || ultimoReg.fecha);
+                let fActual = new Date(fechaActualStr);
+                let diasTranscurridos = Math.round((fActual - fAnterior) / (1000 * 60 * 60 * 24));
+
+                if (diasTranscurridos > 0) {
+                    let diffKilos = pesoProm - ultimoReg.pesoPromedioLote;
+                    gmdCalculada = diffKilos / diasTranscurridos;
+                    if (gmdCalculada < 0) gmdCalculada = 0.01;
+                }
+            } else {
+                let kgsMetaInit = pesoObj - pesoProm;
+                let diasMetaInit = mesesMeta * 30;
+                if(diasMetaInit > 0) gmdCalculada = kgsMetaInit / diasMetaInit;
+            }
+
+            document.getElementById('resumenGMD').innerText = `${gmdCalculada.toFixed(2)} kg/día`;
+
+            let kgsFaltantesUnitario = pesoObj - pesoProm;
+            if (kgsFaltantesUnitario < 0) kgsFaltantesUnitario = 0;
+
+            let kgsFaltantesTotalLote = kgsFaltantesUnitario * numAnimales;
+            let diasTotales = gmdCalculada > 0 ? (kgsFaltantesUnitario / gmdCalculada) : 0;
+            let mesesFaltantes = Math.floor(diasTotales / 30);
+            let diasRestantes = Math.round(diasTotales % 30);
+
+            document.getElementById('resumenKgsFaltantesUnitario').innerText = `+${kgsFaltantesUnitario.toFixed(1)} kg`;
+            document.getElementById('resumenKgsFaltantesTotal').innerText = `${kgsFaltantesTotalLote.toFixed(1)} kg`;
+            document.getElementById('resumenTiempoFaltante').innerText = `${mesesFaltantes}m ${diasRestantes}d`;
+
+            let cardBrujulaBox = document.getElementById('cardBrujulaBox');
+            let resumenBrujulaDias = document.getElementById('resumenBrujulaDias');
+
+            if (fechaProximaStr) {
+                let hoy = new Date();
+                hoy.setHours(0,0,0,0);
+                let fProxima = new Date(fechaProximaStr + 'T00:00:00');
+                let diffDiasProximo = Math.round((fProxima - hoy) / (1000 * 60 * 60 * 24));
+
+                cardBrujulaBox.className = "kpi-card-item";
+
+                if (diffDiasProximo < 0) {
+                    cardBrujulaBox.classList.add('cv-alert-danger');
+                    resumenBrujulaDias.innerText = `¡Vencido (${Math.abs(diffDiasProximo)}d)!`;
+                } else if (diffDiasProximo <= 3) {
+                    cardBrujulaBox.classList.add('cv-alert-warning');
+                    resumenBrujulaDias.innerText = `Inminente (${diffDiasProximo}d)`;
+                } else {
+                    cardBrujulaBox.classList.add('cv-alert-optimal');
+                    resumenBrujulaDias.innerText = `En fecha (${diffDiasProximo}d)`;
+                }
+            }
+
+            return { gmdCalculada, kgsFaltantesUnitario, kgsFaltantesTotalLote };
+        }
+
+        ['inputPesoPromedio', 'inputPesoObjetivo', 'inputMesesObjetivo', 'inputLote', 'inputFechaActual', 'inputFechaProximo', 'inputNumAnimales'].forEach(id => {
+            document.getElementById(id).addEventListener('input', calcularIndicadoresDinamicos);
+        });
+
+        // Botón Registrar en Memoria
+        document.getElementById('btnProcesarPesaje').addEventListener('click', function() {
+            let loteNombre = document.getElementById('inputLote').value;
+            let temporada = document.getElementById('selectTemporada').value;
+            let fechaActualStr = document.getElementById('inputFechaActual').value;
+            let fechaProximaStr = document.getElementById('inputFechaProximo').value;
+            let pesoProm = parseFloat(document.getElementById('inputPesoPromedio').value) || 0;
+            let pesoObj = parseFloat(document.getElementById('inputPesoObjetivo').value) || 0;
+            let mesesMeta = parseFloat(document.getElementById('inputMesesObjetivo').value) || 0;
+            let numAnimales = parseInt(document.getElementById('inputNumAnimales').value) || 0;
+            let pesoInicial = parseFloat(document.getElementById('inputPesoInicial').value) || 0;
+            let cv = parseFloat(document.getElementById('inputCV').value) || 0;
+            let observaciones = document.getElementById('inputObservaciones').value;
+
+            let calculos = calcularIndicadoresDinamicos();
+
+            let registroActual = {
+                timestampRegistro: new Date().toISOString(),
+                fechaActual: fechaActualStr,
+                fechaProximoPesaje: fechaProximaStr,
+                lote: loteNombre,
+                temporada: temporada,
+                pesoPromedioLote: pesoProm,
+                pesoInicialBase: pesoInicial,
+                pesoObjetivoLote: pesoObj,
+                mesesObjetivo: mesesMeta,
+                numAnimales: numAnimales,
+                gmdCalculada: calculos.gmdCalculada,
+                kgsFaltantesUnitario: calculos.kgsFaltantesUnitario,
+                kgsFaltantesTotal: calculos.kgsFaltantesTotalLote,
+                cvLote: cv,
+                observaciones: observaciones
+            };
+
+            historialLotes.push(registroActual);
+            localStorage.setItem('lb_historial_lotes', JSON.stringify(historialLotes));
+            papeleraDeshacer = [];
+
+            actualizarContadorHistorial();
+            calcularIndicadoresDinamicos();
+
+            alert("¡Pesaje guardado y sincronizado correctamente en la memoria local!");
+        });
+
+        // Botón Deshacer
+        document.getElementById('btnDeshacerUltimo').addEventListener('click', function() {
+            if (historialLotes.length === 0) {
+                alert("No hay registros en la memoria local para deshacer.");
+                return;
+            }
+
+            let eliminado = historialLotes.pop();
+            papeleraDeshacer.push(eliminado);      
+
+            localStorage.setItem('lb_historial_lotes', JSON.stringify(historialLotes));
+            actualizarContadorHistorial();
+            calcularIndicadoresDinamicos();
+            alert(`Se deshizo el registro del ${eliminado.fechaActual}.`);
+        });
+
+        // Botón Rehacer
+        document.getElementById('btnRehacerUltimo').addEventListener('click', function() {
+            if (papeleraDeshacer.length === 0) return;
+
+            let restaurado = papeleraDeshacer.pop(); 
+            historialLotes.push(restaurado);         
+
+            localStorage.setItem('lb_historial_lotes', JSON.stringify(historialLotes));
+            actualizarContadorHistorial();
+            calcularIndicadoresDinamicos();
+            alert(`Se restauró el registro del ${restaurado.fechaActual}.`);
+        });
+
+        // Botón de Eliminación Total
+        document.getElementById('btnEliminarLoteTotal').addEventListener('click', function() {
+            let loteNombre = document.getElementById('inputLote').value;
+            if(confirm(`⚠️ ¿Desea eliminar por completo todos los pesajes del lote "${loteNombre}"?`)) {
+                historialLotes = historialLotes.filter(r => r.lote !== loteNombre);
+                localStorage.setItem('lb_historial_lotes', JSON.stringify(historialLotes));
+                papeleraDeshacer = [];
+                actualizarContadorHistorial();
+                calcularIndicadoresDinamicos();
+                alert(`¡Lote eliminado del sistema!`);
+            }
+        });
+    </script>
 </body>
-</html> no guarda y no sicroniza
+</html>
