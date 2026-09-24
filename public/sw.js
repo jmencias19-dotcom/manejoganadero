@@ -2,7 +2,7 @@
    SERVICE WORKER OFICIAL (v5.3) - HATO LAGUNA BRAVA
    ========================================================================== */
 
-const CACHE_NAME = 'laguna-brava-v5.3';
+const CACHE_NAME = 'laguna-brava-v5.5';
 
 const ASSETS_TO_CACHE = [
     './',
