@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Módulo: Planificación de Tareas y Control Operativo (Integrado v4.4 - Sincronizado)
+   Módulo: Planificación de Tareas y Control Operativo (Integrado v4.5 - Sincronizado)
    Hato Laguna Brava - Mantecal, Apure, Venezuela
    ========================================================================== */
 
@@ -87,7 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             });
 
-            // Actualizar opciones de filtros sin duplicar elementos existentes
+            // Actualizar opciones de filtros de forma reactiva preservando selección
             actualizarOpcionesFiltros(tareasCache);
 
             // Renderizar la vista aplicando los filtros actuales
@@ -158,24 +158,30 @@ document.addEventListener('DOMContentLoaded', () => {
         vincularEventosDinamicos();
     };
 
-    // Poblar de forma inteligente los selectores de filtros sin duplicar
+    // Poblar de forma inteligente los selectores de filtros sin duplicar y conservando el estado
     function actualizarOpcionesFiltros(data) {
-        if (filtroPotrero && filtroPotrero.options.length <= 1) {
+        if (filtroPotrero) {
+            const valorActual = filtroPotrero.value;
             const potrerosUnicos = [...new Set(data.map(t => t.potrero).filter(Boolean))].sort();
+            filtroPotrero.innerHTML = '<option value="">Todos los Potreros</option>';
             potrerosUnicos.forEach(p => {
                 const opt = document.createElement('option');
                 opt.value = p;
                 opt.textContent = p;
+                if (p === valorActual) opt.selected = true;
                 filtroPotrero.appendChild(opt);
             });
         }
 
-        if (filtroPersonal && filtroPersonal.options.length <= 1) {
+        if (filtroPersonal) {
+            const valorActual = filtroPersonal.value;
             const personalesUnicos = [...new Set(data.map(t => t.personal).filter(Boolean))].sort();
+            filtroPersonal.innerHTML = '<option value="">Todo el Personal</option>';
             personalesUnicos.forEach(p => {
                 const opt = document.createElement('option');
                 opt.value = p;
                 opt.textContent = p;
+                if (p === valorActual) opt.selected = true;
                 filtroPersonal.appendChild(opt);
             });
         }
@@ -287,6 +293,6 @@ document.addEventListener('DOMContentLoaded', () => {
         inputFecha.value = `${ahora.getFullYear()}-${String(ahora.getMonth() + 1).padStart(2, '0')}-${String(ahora.getDate()).padStart(2, '0')}`;
     }
 
-    // Iniciar el canal abierto de sincronización en tiempo real
+    // Iniciar el canal abierto de sincronización en tiempo real (CRÍTICO)
     iniciarSincronizacionEnTiempoReal();
 });
