@@ -96,40 +96,35 @@
             text-transform: uppercase;
         }
 
-        /* SEMÁFORO CLOUD */
+        /* INDICADOR DE ESTADO SUTIL EN CABECERA */
         .sync-status-wrapper {
             display: flex;
             align-items: center;
-            gap: 4px;
-            background: rgba(0, 0, 0, 0.3);
+            gap: 6px;
+            background: rgba(0, 0, 0, 0.2);
             padding: 4px 8px;
             border-radius: 20px;
             flex-shrink: 0;
+            border: 1px solid rgba(255,255,255,0.05);
         }
 
         .semaphore {
             width: 8px;
             height: 8px;
             border-radius: 50%;
-            background-color: var(--danger-color);
-        }
-
-        .semaphore.online {
-            background-color: #2a9d8f;
-            box-shadow: 0 0 6px rgba(42, 157, 143, 0.9);
+            background-color: var(--accent-color);
+            box-shadow: 0 0 6px var(--accent-color);
         }
 
         .sync-text {
             font-size: 0.6rem;
             color: #fff;
             font-weight: 700;
-            display: none;
         }
 
-        @media(min-width: 480px) {
-            .sync-text { display: inline; }
-            .header-title-wrapper h1 { font-size: 1.05rem; }
-            .header-title-wrapper p { font-size: 0.68rem; }
+        @media(max-width: 480px) {
+            .sync-text { display: none; }
+            .header-title-wrapper h1 { font-size: 0.8rem; }
         }
 
         /* CONTENEDOR PRINCIPAL Y GRID */
@@ -238,6 +233,22 @@
         .btn-action:active {
             background-color: var(--primary-color);
         }
+
+        .btn-print {
+            background-color: #3a86ff;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 6px 12px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            cursor: pointer;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .btn-print:hover { background-color: #2667cc; }
 
         .btn-danger {
             background-color: var(--danger-color);
@@ -378,17 +389,18 @@
         }
         #toast.show { visibility: visible; }
 
-        /* ESTILOS DE IMPRESIÓN Y PDF */
+        /* ÁREA Y FORMATO DE IMPRESIÓN */
         @media print {
             body {
                 background: white !important;
                 color: black !important;
-                font-size: 12pt;
+                font-size: 11pt;
             }
             form, 
             .btn-back,
             .btn-action,
             .btn-danger,
+            .btn-print,
             .filters-wrapper,
             .sync-status-wrapper,
             #busqueda-chip,
@@ -404,19 +416,42 @@
                 border: none !important;
                 box-shadow: none !important;
                 padding: 0 !important;
+                margin: 0 !important;
+            }
+            .main-header {
+                background: none !important;
+                color: black !important;
+                border-bottom: 2px solid black !important;
+                box-shadow: none !important;
+                padding: 5px 0 10px 0 !important;
+                margin-bottom: 15px;
+            }
+            .header-title-wrapper h1 {
+                color: black !important;
+                font-size: 16pt !important;
+            }
+            .header-title-wrapper h1 span {
+                color: black !important;
+            }
+            .header-title-wrapper p {
+                color: #555 !important;
+            }
+            .table-responsive {
+                overflow: visible !important;
+                border: none !important;
             }
             table {
                 width: 100% !important;
                 min-width: auto !important;
-                border-collapse: collapse;
+                border-collapse: collapse !important;
             }
             th, td {
-                border: 1px solid #000 !important;
-                padding: 6px;
+                border: 1px solid #333 !important;
+                padding: 6px 8px !important;
                 color: black !important;
             }
             th {
-                background-color: #e9ecef !important;
+                background-color: #e2e8f0 !important;
                 color: black !important;
                 -webkit-print-color-adjust: exact;
                 print-color-adjust: exact;
@@ -436,9 +471,9 @@
                 <h1>Laguna Brava <span>| Eventos Críticos</span></h1>
                 <p>Mantecal · Apure</p>
             </div>
-            <div class="sync-status-wrapper">
-                <div id="syncSemaphore" class="semaphore online"></div>
-                <span id="syncTextLabel" class="sync-text">Cloud Sincronizado</span>
+            <div class="sync-status-wrapper" title="Sincronización automática activa">
+                <div id="syncSemaphore" class="semaphore"></div>
+                <span class="sync-text">Cloud Sincronizado</span>
             </div>
         </div>
     </header>
@@ -496,9 +531,9 @@
 
                         <!-- EVIDENCIA FOTOGRÁFICA -->
                         <div class="form-group">
-                            <label for="foto-evento" id="label-foto">Adjuntar Evidencia Fotográfica <span id="req-foto-text" style="color: var(--danger-color); display:none;">* (Obligatoria)</span></label>
+                            <label for="foto-evento">Adjuntar Evidencia Fotográfica</label>
                             <input type="file" id="foto-evento" accept="image/*" style="font-size: 0.75rem; padding: 4px;">
-                            <span style="font-size: 0.62rem; color: var(--text-muted); margin-top: 2px;">Las coordenadas GPS se extraerán automáticamente de la foto si están disponibles.</span>
+                            <span style="font-size: 0.62rem; color: var(--text-muted); margin-top: 2px;">Extracción automática de coordenadas GPS de la foto.</span>
                         </div>
 
                         <button type="submit" class="btn-action">💾 Registrar y Sincronizar</button>
@@ -542,15 +577,20 @@
                         </div>
                     </div>
 
-                    <!-- BARRA DE HERRAMIENTAS Y FILTROS -->
+                    <!-- BARRA DE HERRAMIENTAS, FILTROS Y BOTÓN IMPRESIÓN -->
                     <div class="toolbar-flex">
-                        <h2>📋 Historial de Eventos</h2>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <h2>📋 Historial</h2>
+                            <button type="button" class="btn-print" onclick="window.print()" title="Imprimir o Exportar PDF">
+                                🖨️ Imprimir
+                            </button>
+                        </div>
                         <div class="filters-wrapper">
-                            <input type="text" id="busqueda-chip" placeholder="Buscar por Chip / Caravana..." style="font-size: 0.75rem; padding: 5px; width: 140px;">
+                            <input type="text" id="busqueda-chip" placeholder="Buscar Chip..." style="font-size: 0.75rem; padding: 5px; width: 130px;">
                             <select id="filtro-mes" style="font-size: 0.75rem; padding: 5px; width: 110px;">
                                 <option value="">Mes (Todos)</option>
                             </select>
-                            <select id="filtro-categoria" style="font-size: 0.75rem; padding: 5px; width: 120px;">
+                            <select id="filtro-categoria" style="font-size: 0.75rem; padding: 5px; width: 110px;">
                                 <option value="">Categorías</option>
                                 <option value="Mortalidad">Mortalidad</option>
                                 <option value="Aborto">Aborto</option>
@@ -575,7 +615,7 @@
                                 </tr>
                             </thead>
                             <tbody id="tablaEventosBody">
-                                <!-- Inyectado dinámicamente por el script -->
+                                <!-- Inyectado dinámicamente -->
                             </tbody>
                         </table>
                     </div>
@@ -586,25 +626,21 @@
         </div>
     </main>
 
-    <!-- INCLUSIÓN DE LIBRERÍA EXIF-JS PARA LECTURA DE GPS EN IMÁGENES -->
+    <!-- INCLUSIÓN DE LIBRERÍA EXIF-JS -->
     <script src="https://cdn.jsdelivr.net/npm/exif-js"></script>
     <script>
+        const STORAGE_KEY = 'laguna_brava_eventos_criticos';
+
         document.addEventListener('DOMContentLoaded', () => {
-            // Establecer fecha actual por defecto en el formulario
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('fecha-evento').value = today;
 
-            // Clave de almacenamiento local para Hato Laguna Brava
-            const STORAGE_KEY = 'laguna_brava_eventos_criticos';
-
-            // Elementos DOM
             const form = document.getElementById('eventoForm');
             const tablaBody = document.getElementById('tablaEventosBody');
             const inputBusqueda = document.getElementById('busqueda-chip');
             const filtroMes = document.getElementById('filtro-mes');
             const filtroCategoria = document.getElementById('filtro-categoria');
             
-            // KPIs
             const kpiMortalidad = document.getElementById('kpi-mortalidad');
             const kpiAbortos = document.getElementById('kpi-abortos');
             const kpiNatimortos = document.getElementById('kpi-natimortos');
@@ -616,7 +652,7 @@
             let eventos = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
             let gpsDataCaptured = "N/A";
 
-            // Capturar metadatos EXIF (GPS) al seleccionar imagen
+            // Capturar metadatos EXIF (GPS)
             document.getElementById('foto-evento').addEventListener('change', function(e) {
                 const file = e.target.files[0];
                 if (!file) {
@@ -639,14 +675,13 @@
                         const latitude = convertDMSToDD(lat, latRef).toFixed(6);
                         const longitude = convertDMSToDD(lon, lonRef).toFixed(6);
                         gpsDataCaptured = `${latitude}, ${longitude}`;
-                        mostrarToast("Coordenadas GPS extraídas de la foto con éxito");
+                        mostrarToast("Coordenadas GPS extraídas de la foto");
                     } else {
                         gpsDataCaptured = "Sin GPS en EXIF";
                     }
                 });
             });
 
-            // Función para mostrar notificaciones Toast
             function mostrarToast(mensaje) {
                 const toast = document.getElementById('toast');
                 document.getElementById('toast-message').innerText = mensaje;
@@ -654,14 +689,10 @@
                 setTimeout(() => { toast.className = toast.className.replace("show", ""); }, 3000);
             }
 
-            // Actualizar opciones del selector de meses dinámicamente
             function actualizarFiltroMeses() {
                 const mesesSet = new Set();
                 eventos.forEach(ev => {
-                    if (ev.fecha) {
-                        const mesAnio = ev.fecha.substring(0, 7); // Formato YYYY-MM
-                        mesesSet.add(mesAnio);
-                    }
+                    if (ev.fecha) mesesSet.add(ev.fecha.substring(0, 7));
                 });
 
                 const mesSeleccionadoActual = filtroMes.value;
@@ -670,7 +701,6 @@
                 Array.from(mesesSet).sort().reverse().forEach(m => {
                     const option = document.createElement('option');
                     option.value = m;
-                    // Formato amigable mes/año
                     const [anio, mes] = m.split('-');
                     const fechaObj = new Date(anio, mes - 1, 1);
                     option.textContent = fechaObj.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
@@ -679,22 +709,17 @@
                 filtroMes.value = mesSeleccionadoActual;
             }
 
-            // Renderizar tabla y KPIs
-            function renderizar() {
+            function renderizarApp() {
+                eventos = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
                 const textoBusqueda = inputBusqueda.value.toLowerCase().trim();
                 const mesFiltro = filtroMes.value;
                 const catFiltro = filtroCategoria.value;
 
                 tablaBody.innerHTML = '';
 
-                // Contadores KPIs
                 let counts = { Mortalidad: 0, Aborto: 0, Natimorto: 0, Natalidad: 0, Consumo: 0, Traslado: 0, Donacion: 0 };
-
-                // Procesar totales globales para KPIs
                 eventos.forEach(ev => {
-                    if (counts.hasOwnProperty(ev.categoria)) {
-                        counts[ev.categoria]++;
-                    }
+                    if (counts.hasOwnProperty(ev.categoria)) counts[ev.categoria]++;
                 });
 
                 kpiMortalidad.innerText = counts.Mortalidad;
@@ -705,7 +730,6 @@
                 kpiTraslados.innerText = counts.Traslado;
                 kpiDonaciones.innerText = counts.Donacion;
 
-                // Filtrado
                 const eventosFiltrados = eventos.filter(ev => {
                     const coincideChip = (ev.chip && ev.chip.toLowerCase().includes(textoBusqueda)) || ev.descripcion.toLowerCase().includes(textoBusqueda);
                     const coincideMes = mesFiltro === "" || (ev.fecha && ev.fecha.startsWith(mesFiltro));
@@ -720,7 +744,6 @@
 
                 eventosFiltrados.forEach((ev) => {
                     const tr = document.createElement('tr');
-                    
                     const badgeClass = `badge badge-${ev.categoria.toLowerCase()}`;
                     
                     tr.innerHTML = `
@@ -735,7 +758,7 @@
                         </td>
                         <td>
                             <span style="font-size:0.68rem; font-weight:600;">${ev.responsable || 'N/A'}</span><br>
-                            <span style="font-size:0.6rem; color:var(--text-muted);">📍 ${ev.gps}</span>
+                            <span style="font-size:0.6rem; color: var(--text-muted);">📍 ${ev.gps}</span>
                         </td>
                         <td style="text-align: center;">
                             <button class="btn-danger" onclick="eliminarEvento('${ev.id}')">🗑️</button>
@@ -745,7 +768,7 @@
                 });
             }
 
-            // Registrar nuevo evento
+            // ACCIÓN CENTRALIZADA EN EL BOTÓN DE REGISTRAR
             form.addEventListener('submit', (e) => {
                 e.preventDefault();
 
@@ -760,7 +783,9 @@
                     gps: gpsDataCaptured
                 };
 
-                eventos.unshift(nuevoEvento); // Agregar al inicio
+                eventos.unshift(nuevoEvento);
+                
+                // Guardado local y propagación de sincronización cloud instantánea
                 localStorage.setItem(STORAGE_KEY, JSON.stringify(eventos));
 
                 form.reset();
@@ -768,29 +793,35 @@
                 gpsDataCaptured = "N/A";
 
                 actualizarFiltroMeses();
-                renderizar();
-                mostrarToast("Evento registrado y sincronizado localmente");
+                renderizarApp();
+                mostrarToast("💾 Registrado y sincronizado automáticamente");
             });
 
-            // Eliminar evento global
             window.eliminarEvento = function(id) {
-                if (confirm('¿Está seguro de eliminar este registro crítico del hato?')) {
+                if (confirm('¿Está seguro de eliminar este registro crítico?')) {
                     eventos = eventos.filter(ev => ev.id !== id);
                     localStorage.setItem(STORAGE_KEY, JSON.stringify(eventos));
                     actualizarFiltroMeses();
-                    renderizar();
-                    mostrarToast("Registro eliminado correctamente");
+                    renderizarApp();
+                    mostrarToast("Registro eliminado y sincronizado");
                 }
             };
 
-            // Eventos de filtrado en tiempo real
-            inputBusqueda.addEventListener('input', renderizar);
-            filtroMes.addEventListener('change', renderizar);
-            filtroCategoria.addEventListener('change', renderizar);
+            // Escucha automática si la app está abierta en otro dispositivo/pestaña local
+            window.addEventListener('storage', (e) => {
+                if (e.key === STORAGE_KEY) {
+                    renderizarApp();
+                    actualizarFiltroMeses();
+                    mostrarToast("🔄 Sincronizado desde otro dispositivo");
+                }
+            });
 
-            // Inicialización visual
+            inputBusqueda.addEventListener('input', renderizarApp);
+            filtroMes.addEventListener('change', renderizarApp);
+            filtroCategoria.addEventListener('change', renderizarApp);
+
             actualizarFiltroMeses();
-            renderizar();
+            renderizarApp();
         });
     </script>
 </body>
