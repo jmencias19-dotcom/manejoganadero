@@ -3,7 +3,7 @@
    Hato Laguna Brava - Mantecal, Apure, Venezuela
    ========================================================================== */
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import {  
     initializeFirestore,  
     persistentLocalCache,
@@ -26,11 +26,12 @@ const firebaseConfig = {
     storageBucket: "hato-laguna-brava.firebasestorage.app",
     messagingSenderId: "1053099733476",
     appId: "1:1053099733476:web:624514d41b08d1b347d7f1",
-    measurementId: "G-2E517DTZFS"
+    measurementId: "G-2E517DTZFS",
+    databaseURL: "https://hato-laguna-brava-default-rtdb.firebaseio.com"
 };
 
-// Inicialización segura para evitar múltiples instancias activas en el navegador
-const app = !firebaseappsLength ? initializeApp(firebaseConfig) : initializeApp(firebaseConfig, "app_eventos_criticos");
+// Inicialización segura reutilizando apps existentes y evitando avisos del logger
+const app = !getApps().length ? initializeApp(firebaseConfig) : getApps()[0];
 
 const db = initializeFirestore(app, {
     localCache: persistentLocalCache({
