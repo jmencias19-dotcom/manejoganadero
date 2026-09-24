@@ -1,348 +1,578 @@
-/* ==========================================================================
-   Módulo: Registro y Control de Eventos Críticos (Versión Compatible HTML)
-   Hato Laguna Brava - Mantecal, Apure, Venezuela
-   ========================================================================== */
-
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import {  
-    initializeFirestore,  
-    persistentLocalCache,
-    collection,  
-    addDoc,  
-    onSnapshot,  
-    doc,  
-    deleteDoc,  
-    query,  
-    orderBy
-} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
-// Credenciales oficiales de Firebase para Hato Laguna Brava
-const firebaseConfig = {
-    apiKey: "AIzaSyADbn4gV6ROrppvanBM835IRyX3U8wdAnk",
-    authDomain: "hato-laguna-brava.firebaseapp.com",
-    projectId: "hato-laguna-brava",
-    storageBucket: "hato-laguna-brava.firebasestorage.app",
-    messagingSenderId: "1053099733476",
-    appId: "1:1053099733476:web:624514d41b08d1b347d7f1",
-    measurementId: "G-2E517DTZFS"
-};
-
-const app = initializeApp(firebaseConfig);
-
-// Inicialización moderna con caché persistente (Soporte offline total en campo)
-const db = initializeFirestore(app, {
-    localCache: persistentLocalCache()
-});
-
-const COLLECTION_NAME = "hato_eventos";
-
-// Caché global en memoria para filtros reactivos
-let eventosCache = [];
-let imagenBase64Actual = "";
-
-document.addEventListener('DOMContentLoaded', () => {
-    const eventoForm = document.getElementById('eventoForm');
-    const tablaEventosBody = document.getElementById('tablaEventosBody');
-    const sinRegistros = document.getElementById('sinRegistros');
-    const inputFoto = document.getElementById('foto-evento');
-    
-    // Contadores de KPIs según tu HTML
-    const kpiMortalidad = document.getElementById('kpi-mortalidad');
-    const kpiReproductivos = document.getElementById('kpi-reproductivos'); // Abortos y Natimortos
-    const kpiMovimientos = document.getElementById('kpi-movimientos');     // Consumo, Donación, Traslado
-
-    // Elementos de Filtro Reactivo
-    const filtroCategoria = document.getElementById('filtro-categoria');
-    const filtroGrupoEtario = document.getElementById('filtro-grupo-etario');
-
-    // Semáforo Cloud UI
-    const syncSemaphore = document.getElementById('syncSemaphore');
-    const syncTextLabel = document.getElementById('syncTextLabel');
-
-    // Función auxiliar para notificaciones Toast
-    function mostrarToast(mensaje, tipo = "success") {
-        const toast = document.getElementById('toast');
-        const toastMessage = document.getElementById('toast-message');
-        if (!toast || !toastMessage) return;
-
-        toastMessage.textContent = mensaje;
-        toast.style.borderLeftColor = tipo === "error" ? "#c1121f" : "var(--accent-color, #52b788)";
-        toast.classList.add('show');
-
-        setTimeout(() => {
-            toast.classList.remove('show');
-        }, 3500);
-    }
-
-    // Manejo de Geolocalización GPS en campo
-    const btnCapturarGps = document.getElementById('btn-capturar-gps');
-    const gpsInfo = document.getElementById('gps-info');
-    const gpsLat = document.getElementById('gps-lat');
-    const gpsLng = document.getElementById('gps-lng');
-
-    if (btnCapturarGps) {
-        btnCapturarGps.addEventListener('click', () => {
-            if (!navigator.geolocation) {
-                mostrarToast("La geolocalización no está soportada en este dispositivo", "error");
-                return;
-            }
-            gpsInfo.textContent = "Obteniendo coordenadas GPS...";
-            navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    const lat = position.coords.latitude.toFixed(6);
-                    const lng = position.coords.longitude.toFixed(6);
-                    gpsLat.value = lat;
-                    gpsLng.value = lng;
-                    gpsInfo.textContent = `Lat: ${lat}, Lng: ${lng}`;
-                    mostrarToast("Coordenadas GPS fijadas con éxito");
-                },
-                (error) => {
-                    console.error("Error GPS:", error);
-                    gpsInfo.textContent = "Error al obtener GPS (verifique permisos)";
-                    mostrarToast("No se pudo capturar la posición GPS", "error");
-                },
-                { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
-            );
-        });
-    }
-
-    // Procesar imagen subida a Base64
-    if (inputFoto) {
-        inputFoto.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = function(uploadEvent) {
-                imagenBase64Actual = uploadEvent.target.result;
-                mostrarToast("Evidencia fotográfica cargada correctamente");
-            };
-            reader.onerror = function() {
-                mostrarToast("Error al leer el archivo de imagen", "error");
-            };
-            reader.readAsDataURL(file);
-        });
-    }
-
-    // Sincronización en tiempo real con Firestore
-    function iniciarSincronizacionEventos() {
-        if (!tablaEventosBody) return;
-
-        const q = query(collection(db, COLLECTION_NAME), orderBy("fecha", "desc"));
-        
-        onSnapshot(q, (snapshot) => {
-            eventosCache = [];  
-            
-            snapshot.forEach((docSnap) => {
-                eventosCache.push({
-                    id: docSnap.id,
-                    ...docSnap.data()
-                });
-            });
-
-            // Actualizar semáforo a online
-            if (syncSemaphore) syncSemaphore.classList.add('online');
-            if (syncTextLabel) syncTextLabel.textContent = "Cloud Sincronizado";
-
-            actualizarOpcionesFiltroEtarios(eventosCache);
-            window.renderizarEventosFiltrados();
-
-        }, (error) => {
-            console.error("Error al sincronizar eventos:", error);
-            if (syncSemaphore) syncSemaphore.classList.remove('online');
-            if (syncTextLabel) syncTextLabel.textContent = "Modo Offline";
-            mostrarToast("Trabajando en modo offline (datos locales)", "error");
-            
-            // Renderizar con caché local disponible
-            window.renderizarEventosFiltrados();
-        });
-    }
-
-    // Renderizado dinámico y filtrado en la Tabla HTML
-    window.renderizarEventosFiltrados = function() {
-        if (!tablaEventosBody) return;
-
-        const catSeleccionada = filtroCategoria ? filtroCategoria.value.toLowerCase() : '';
-        const etarioSeleccionado = filtroGrupoEtario ? filtroGrupoEtario.value.toLowerCase() : '';
-
-        const eventosFiltrados = eventosCache.filter(ev => {
-            const coincideCat = !catSeleccionada || (ev.categoria && ev.categoria.toLowerCase() === catSeleccionada);
-            const coincideEtario = !etarioSeleccionado || (ev.grupoEtario && ev.grupoEtario.toLowerCase().includes(etarioSeleccionado));
-            return coincideCat && coincideEtario;
-        });
-
-        tablaEventosBody.innerHTML = '';
-
-        if (eventosFiltrados.length === 0) {
-            if (sinRegistros) sinRegistros.style.display = 'block';
-            actualizarContadoresDashboard({ mortalidad: 0, reproductivos: 0, movimientos: 0 });
-            return;
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Hato Laguna Brava - Módulo de Eventos Críticos</title>
+    <style>
+        :root {
+            --primary-color: #1b4332;
+            --secondary-color: #2d6a4f;
+            --accent-color: #52b788;
+            --header-gradient: linear-gradient(135deg, #081c15 0%, #1b4332 100%);
+            --card-bg: #ffffff;
+            --border-color: #d8f3dc;
+            --text-muted: #495057;
+            --bg-body: #f4f9f4;
+            --danger-color: #c1121f;
         }
 
-        if (sinRegistros) sinRegistros.style.display = 'none';
+        *, *:before, *:after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
-        let conteoMortalidad = 0;
-        let conteoReproductivos = 0; // Abortos + Natimortos
-        let conteoMovimientos = 0;     // Consumo + Donacion + Traslado
+        html, body {
+            width: 100%;
+            max-width: 100vw;
+            overflow-x: hidden;
+            background-color: var(--bg-body);
+            color: #212529;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
 
-        eventosFiltrados.forEach(ev => {
-            const catLower = (ev.categoria || '').toLowerCase();
-            
-            if (catLower === 'mortalidad') conteoMortalidad++;
-            else if (catLower === 'aborto' || catLower === 'natimorto') conteoReproductivos++;
-            else if (catLower === 'consumo' || catLower === 'donacion' || catLower === 'traslado') conteoMovimientos++;
+        /* CABECERA INSTITUCIONAL */
+        .main-header {
+            background: var(--header-gradient);
+            color: #ffffff;
+            padding: 10px 12px;
+            box-shadow: 0 4px 15px rgba(27, 67, 50, 0.3);
+            border-bottom: 3px solid var(--accent-color);
+            width: 100%;
+        }
 
-            // Asignar color de badge institucional según tipo
-            let badgeClass = 'badge-operativo';
-            if (catLower === 'mortalidad') badgeClass = 'badge-mortalidad';
-            else if (catLower === 'aborto' || catLower === 'natimorto') badgeClass = 'badge-reproductivo';
+        .header-container {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 6px;
+        }
 
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td><div style="font-weight: 600;">${ev.fecha || 'N/D'}</div></td>
-                <td>
-                    <span class="badge ${badgeClass}">${ev.categoria || 'N/D'}</span><br>
-                    <span style="font-size: 0.72rem; color: var(--text-muted);">${ev.grupoEtario || 'N/D'}</span>
-                </td>
-                <td>
-                    <div style="font-weight: 600;">Chip: ${ev.chipNumero || 'N/A'}</div>
-                    <div style="font-size: 0.73rem; color: #495057; max-width: 220px; white-space: normal;">${ev.descripcion || ''}</div>
-                    ${ev.fotoBase64 ? `<div style="margin-top: 4px;"><a href="${ev.fotoBase64}" target="_blank" style="font-size: 0.65rem; color: var(--secondary-color);">Ver Foto Evidencia</a></div>` : ''}
-                </td>
-                <td>
-                    <div style="font-size: 0.72rem;"><b>Resp:</b> ${ev.responsable || 'General'}</div>
-                    ${ev.lat && ev.lng ? `<div style="font-size: 0.62rem; color: #1d3557;"><i class="fa-solid fa-location-dot"></i> ${ev.lat},${ev.lng}</div>` : '<div style="font-size: 0.62rem; color: #adb5bd;">Sin GPS</div>'}
-                </td>
-                <td style="text-align: center;">
-                    <button class="btn-danger btn-delete" data-id="${ev.id}" title="Eliminar registro">Eliminar</button>
-                </td>
-            `;
-            tablaEventosBody.appendChild(tr);
-        });
+        .btn-back {
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.15);
+            padding: 6px 10px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 0.75rem;
+            font-weight: 600;
+            border: 1px solid rgba(255,255,255,0.2);
+            cursor: pointer;
+            flex-shrink: 0;
+        }
 
-        actualizarContadoresDashboard({
-            mortalidad: conteoMortalidad,
-            reproductivos: conteoReproductivos,
-            movimientos: conteoMovimientos
-        });
+        .header-title-wrapper {
+            flex-grow: 1;
+            text-align: center;
+            min-width: 0;
+            padding: 0 4px;
+        }
 
-        vincularEventosEliminacion();
-    };
+        .header-title-wrapper h1 {
+            font-size: 0.9rem;
+            font-weight: 800;
+            color: #ffffff;
+            text-transform: uppercase;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
 
-    // Poblar dinámicamente selectores de grupos etarios
-    function actualizarOpcionesFiltroEtarios(data) {
-        if (!filtroGrupoEtario) return;
-        const valorActual = filtroGrupoEtario.value;
-        
-        // Mantener opción por defecto
-        filtroGrupoEtario.innerHTML = '<option value="">Todos los Etarios</option>';
-        
-        const etariosUnicos = [...new Set(data.map(e => e.grupoEtario).filter(Boolean))].sort();
-        etariosUnicos.forEach(et => {
-            const opt = document.createElement('option');
-            opt.value = et;
-            opt.textContent = et;
-            if (et === valorActual) opt.selected = true;
-            filtroGrupoEtario.appendChild(opt);
-        });
-    }
+        .header-title-wrapper h1 span {
+            color: var(--accent-color);
+            font-weight: 500;
+            text-transform: none;
+        }
 
-    // Event listeners para filtros reactivos
-    if (filtroCategoria) filtroCategoria.addEventListener('change', window.renderizarEventosFiltrados);
-    if (filtroGrupoEtario) filtroGrupoEtario.addEventListener('change', window.renderizarEventosFiltrados);
+        .header-title-wrapper p {
+            font-size: 0.6rem;
+            color: #a3b899;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
 
-    // Actualizar los KPIs en la interfaz
-    function actualizarContadoresDashboard(c) {
-        if (kpiMortalidad) kpiMortalidad.textContent = c.mortalidad;
-        if (kpiReproductivos) kpiReproductivos.textContent = c.reproductivos;
-        if (kpiMovimientos) kpiMovimientos.textContent = c.movimientos;
-    }
+        /* SEMÁFORO CLOUD */
+        .sync-status-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 4px 8px;
+            border-radius: 20px;
+            flex-shrink: 0;
+        }
 
-    function vincularEventosEliminacion() {
-        document.querySelectorAll('.btn-delete').forEach(btn => {
-            btn.addEventListener('click', async (e) => {
-                const id = e.currentTarget.dataset.id;
-                if (confirm("¿Está seguro de eliminar este evento crítico del registro del hato?")) {
-                    try {
-                        await deleteDoc(doc(db, COLLECTION_NAME, id));
-                        mostrarToast("Registro eliminado correctamente");
-                    } catch (error) {
-                        console.error("Error al eliminar evento:", error);
-                        mostrarToast("Error al eliminar el registro", "error");
-                    }
-                }
-            });
-        });
-    }
+        .semaphore {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--danger-color);
+        }
 
-    // Manejo de envío del formulario de eventos
-    if (eventoForm) {
-        eventoForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
+        .semaphore.online {
+            background-color: #2a9d8f;
+            box-shadow: 0 0 6px rgba(42, 157, 143, 0.9);
+        }
 
-            const categoriaSelect = document.getElementById('categoria-evento');
-            const categoria = categoriaSelect?.value;
-            const grupoEtario = document.getElementById('grupo-etario')?.value.trim();
-            const chipNumero = document.getElementById('chip-numero')?.value.trim() || 'N/A';
-            const fecha = document.getElementById('fecha-evento')?.value;
-            const responsable = document.getElementById('responsable-evento')?.value.trim() || 'General';
-            const descripcion = document.getElementById('descripcion-evento')?.value.trim();
-            
-            const lat = gpsLat ? gpsLat.value : '';
-            const lng = gpsLng ? gpsLng.value : '';
+        .sync-text {
+            font-size: 0.6rem;
+            color: #fff;
+            font-weight: 700;
+            display: none;
+        }
 
-            if (!categoria || !grupoEtario || !fecha || !descripcion) {
-                mostrarToast("Complete los campos obligatorios (*)", "error");
-                return;
+        @media(min-width: 480px) {
+            .sync-text { display: inline; }
+            .header-title-wrapper h1 { font-size: 1.05rem; }
+            .header-title-wrapper p { font-size: 0.68rem; }
+        }
+
+        /* CONTENEDOR PRINCIPAL Y GRID */
+        .main-container {
+            width: 100%;
+            max-width: 1440px;
+            margin: 0 auto;
+            padding: 10px 8px;
+        }
+
+        .menu-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            width: 100%;
+        }
+
+        @media (min-width: 1024px) {
+            .menu-grid {
+                display: grid;
+                grid-template-columns: 1fr 1.6fr;
+                gap: 20px;
             }
+        }
 
-            const btnSubmit = eventoForm.querySelector('button[type="submit"]');
-            if (btnSubmit) btnSubmit.disabled = true;
+        /* TARJETAS CONTENEDORAS */
+        .section-box {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-top: 4px solid var(--primary-color);
+            border-radius: 8px;
+            padding: 14px 12px;
+            box-shadow: 0 2px 8px rgba(27, 67, 50, 0.05);
+            width: 100%;
+        }
 
-            const nuevoEvento = {
-                categoria,
-                grupoEtario,
-                chipNumero,
-                fecha,
-                responsable,
-                descripcion,
-                lat,
-                lng,
-                fotoBase64: imagenBase64Actual,
-                timestamp: Date.now()
-            };
+        .section-box h2 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            font-size: 0.95rem;
+            color: var(--primary-color);
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
 
-            try {
-                await addDoc(collection(db, COLLECTION_NAME), nuevoEvento);
-                eventoForm.reset();
-                imagenBase64Actual = "";
-                if (gpsLat) gpsLat.value = '';
-                if (gpsLng) gpsLng.value = '';
-                if (gpsInfo) gpsInfo.textContent = "GPS no capturado";
-                
-                // Restablecer fecha por defecto a hoy
-                const ahora = new Date();
-                const today = `${ahora.getFullYear()}-${String(ahora.getMonth() + 1).padStart(2, '0')}-${String(ahora.getDate()).padStart(2, '0')}`;
-                const inputFecha = document.getElementById('fecha-evento');
-                if (inputFecha) inputFecha.value = today;
+        .form-group {
+            margin-bottom: 10px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+        }
 
-                mostrarToast("💾 Evento crítico registrado y sincronizado con éxito");
-            } catch (error) {
-                console.error("Error al guardar evento:", error);
-                mostrarToast("Guardado localmente. Se sincronizará al conectar", "error");
-            } finally {
-                if (btnSubmit) btnSubmit.disabled = false;
+        label {
+            display: block;
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--primary-color);
+            margin-bottom: 3px;
+            letter-spacing: 0.3px;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid #ced4da;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            color: #212529;
+            background-color: #fff;
+        }
+
+        .form-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 4%;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        .form-row .form-group {
+            flex: 0 0 48%;
+            margin-bottom: 0;
+        }
+
+        /* BOTONES ESPECIALES */
+        .btn-action {
+            display: block;
+            width: 100%;
+            text-align: center;
+            background-color: var(--secondary-color);
+            color: #ffffff;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(45, 106, 79, 0.2);
+            margin-top: 4px;
+        }
+
+        .btn-action:active {
+            background-color: var(--primary-color);
+        }
+
+        .btn-danger {
+            background-color: var(--danger-color);
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            padding: 6px 10px;
+            font-size: 0.75rem;
+        }
+
+        /* KPIS / RESUMEN RAPIDO INDependientes por evento */
+        .kpi-container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 6px;
+            margin-bottom: 14px;
+        }
+
+        @media(max-width: 768px) {
+            .kpi-container {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .kpi-card {
+            background: #f8f9fa;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 6px 4px;
+            text-align: center;
+        }
+
+        .kpi-card span {
+            display: block;
+            font-size: 0.55rem;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            font-weight: 700;
+        }
+
+        .kpi-card strong {
+            font-size: 1rem;
+            color: var(--primary-color);
+        }
+
+        /* FILTROS Y BARRA DE BÚSQUEDA */
+        .toolbar-flex {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 10px;
+            width: 100%;
+        }
+
+        .filters-wrapper {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 6px;
+            width: 100%;
+        }
+
+        @media(min-width: 768px) {
+            .toolbar-flex {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+            }
+            .filters-wrapper {
+                display: flex;
+                flex-wrap: wrap;
+                width: auto;
+                gap: 6px;
+            }
+        }
+
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            background: #fff;
+        }
+
+        table {
+            width: 100%;
+            min-width: 650px;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.78rem;
+        }
+
+        th, td {
+            padding: 8px;
+            border-bottom: 1px solid #dee2e6;
+            color: #343a40;
+            vertical-align: middle;
+        }
+
+        th {
+            background-color: var(--primary-color);
+            color: #ffffff;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.68rem;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 6px;
+            font-size: 0.62rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .badge-mortalidad { background: #fee2e2; color: #b91c1c; }
+        .badge-reproductivo { background: #fef3c7; color: #b45309; }
+        .badge-operativo { background: #e0f2fe; color: #0369a1; }
+        .badge-natalidad { background: #d1fae5; color: #065f46; }
+
+        /* TOAST */
+        #toast {
+            visibility: hidden;
+            min-width: 220px;
+            background-color: #212529;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 10px;
+            position: fixed;
+            z-index: 1000;
+            left: 50%;
+            bottom: 20px;
+            transform: translateX(-50%);
+            border-left: 5px solid var(--accent-color);
+            font-size: 0.8rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        #toast.show { visibility: visible; }
+    </style>
+</head>
+<body>
+
+    <div id="toast"><span id="toast-message">Notificación del sistema</span></div>
+
+    <!-- CABECERA -->
+    <header class="main-header">
+        <div class="header-container">
+            <button id="btnVolverMenu" class="btn-back">← Menú</button>
+            <div class="header-title-wrapper">
+                <h1>Laguna Brava <span>| Eventos Críticos</span></h1>
+                <p>Mantecal · Apure</p>
+            </div>
+            <div class="sync-status-wrapper">
+                <div id="syncSemaphore" class="semaphore"></div>
+                <span id="syncTextLabel" class="sync-text">Cloud</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- CONTENEDOR PRINCIPAL -->
+    <main class="main-container">
+        <div class="menu-grid">
+            
+            <!-- FORMULARIO DE REGISTRO DE EVENTOS -->
+            <div>
+                <section class="section-box">
+                    <h2>🚨 Registrar Evento Crítico</h2>
+                    <form id="eventoForm">
+                        
+                        <div class="form-group">
+                            <label for="categoria-evento">Categoría del Evento *</label>
+                            <select id="categoria-evento" required>
+                                <option value="" disabled selected>Seleccione categoría...</option>
+                                <option value="Mortalidad">Mortalidad</option>
+                                <option value="Aborto">Aborto</option>
+                                <option value="Natimorto">Natimorto</option>
+                                <option value="Natalidad">Natalidad</option>
+                                <option value="Consumo">Consumo Interno</option>
+                                <option value="Donacion">Donación</option>
+                                <option value="Traslado">Traslado</option>
+                            </select>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="grupo-etario">Grupo Etario *</label>
+                                <input type="text" id="grupo-etario" required placeholder="Ej. Terneros, Vacas, Novillas">
+                            </div>
+                            <div class="form-group">
+                                <label for="chip-numero">Chip / Caravana</label>
+                                <input type="text" id="chip-numero" placeholder="Nº o N/A lote">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="fecha-evento">Fecha del Evento *</label>
+                                <input type="date" id="fecha-evento" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="responsable-evento">Responsable</label>
+                                <input type="text" id="responsable-evento" placeholder="Nombre / Caporal">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="descripcion-evento">Descripción / Observaciones *</label>
+                            <textarea id="descripcion-evento" rows="3" required placeholder="Causa probable, potrero de origen/destino, detalles..."></textarea>
+                        </div>
+
+                        <!-- EVIDENCIA FOTOGRÁFICA (OBLIGATORIA PARA CIERTOS EVENTOS SEGÚN REGLA) -->
+                        <div class="form-group">
+                            <label for="foto-evento" id="label-foto">Adjuntar Evidencia Fotográfica <span id="req-foto-text" style="color: var(--danger-color); display:none;">* (Obligatoria)</span></label>
+                            <input type="file" id="foto-evento" accept="image/*" style="font-size: 0.75rem; padding: 4px;">
+                            <span style="font-size: 0.62rem; color: var(--text-muted); margin-top: 2px;">Las coordenadas GPS se extraerán automáticamente de la foto si están disponibles.</span>
+                        </div>
+
+                        <button type="submit" class="btn-action">💾 Registrar y Sincronizar</button>
+                    </form>
+                </section>
+            </div>
+
+            <!-- TABLA E HISTORIAL DE EVENTOS -->
+            <div>
+                <section class="section-box">
+                    
+                    <!-- KPIS INDEPENDIENTES Y DETALLADOS -->
+                    <div class="kpi-container">
+                        <div class="kpi-card">
+                            <span>Mortalidad</span>
+                            <strong id="kpi-mortalidad">0</strong>
+                        </div>
+                        <div class="kpi-card">
+                            <span>Abortos</span>
+                            <strong id="kpi-abortos">0</strong>
+                        </div>
+                        <div class="kpi-card">
+                            <span>Natimortos</span>
+                            <strong id="kpi-natimortos">0</strong>
+                        </div>
+                        <div class="kpi-card">
+                            <span>Natalidad</span>
+                            <strong id="kpi-natalidad">0</strong>
+                        </div>
+                        <div class="kpi-card">
+                            <span>Consumo Int.</span>
+                            <strong id="kpi-consumo">0</strong>
+                        </div>
+                        <div class="kpi-card">
+                            <span>Traslados</span>
+                            <strong id="kpi-traslados">0</strong>
+                        </div>
+                        <div class="kpi-card">
+                            <span>Donaciones</span>
+                            <strong id="kpi-donaciones">0</strong>
+                        </div>
+                    </div>
+
+                    <!-- BARRA DE HERRAMIENTAS Y FILTROS (CON BLOQUE MENSUAL Y BÚSQUEDA RÁPIDA) -->
+                    <div class="toolbar-flex">
+                        <h2>📋 Historial de Eventos</h2>
+                        <div class="filters-wrapper">
+                            <input type="text" id="busqueda-chip" placeholder="Buscar por Chip / Caravana..." style="font-size: 0.75rem; padding: 5px; width: 140px;">
+                            <select id="filtro-mes" style="font-size: 0.75rem; padding: 5px; width: 110px;">
+                                <option value="">Mes (Todos)</option>
+                                <!-- Se llenará dinámicamente o por bloques YYYY-MM -->
+                            </select>
+                            <select id="filtro-categoria" style="font-size: 0.75rem; padding: 5px; width: 120px;">
+                                <option value="">Categorías</option>
+                                <option value="Mortalidad">Mortalidad</option>
+                                <option value="Aborto">Aborto</option>
+                                <option value="Natimorto">Natimorto</option>
+                                <option value="Natalidad">Natalidad</option>
+                                <option value="Consumo">Consumo</option>
+                                <option value="Donacion">Donación</option>
+                                <option value="Traslado">Traslado</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Categoría / Etario</th>
+                                    <th>Chip / Descripcion</th>
+                                    <th>Resp. / GPS</th>
+                                    <th style="text-align: center;">Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tablaEventosBody">
+                                <!-- Inyectado dinámicamente por el script -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="sinRegistros" style="text-align: center; padding: 20px; color: var(--text-muted); font-size: 0.8rem; display: none;">
+                        No hay eventos registrados con los filtros seleccionados.
+                    </div>
+                </section>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- MOTOR DE LÓGICA EXTERNO -->
+    <script type="module" src="eventos.js"></script>
+    <script>
+        document.getElementById('btnVolverMenu').addEventListener('click', () => {
+            if (window.history.length > 1) {
+                window.history.back();
+            } else {
+                window.location.href = 'index.html';
             }
         });
-    }
 
-    // Inicializar fecha actual por defecto en el formulario
-    const inputFecha = document.getElementById('fecha-evento');
-    if (inputFecha && !inputFecha.value) {
-        const ahora = new Date();
-        inputFecha.value = `${ahora.getFullYear()}-${String(ahora.getMonth() + 1).padStart(2, '0')}-${String(ahora.getDate()).padStart(2, '0')}`;
-    }
+        // Script visual rápido para gestionar dinámicamente la obligatoriedad de la foto
+        const selectCat = document.getElementById('categoria-evento');
+        const inputFoto = document.getElementById('foto-evento');
+        const reqFotoText = document.getElementById('req-foto-text');
 
-    // Iniciar sincronización en tiempo real
-    iniciarSincronizacionEventos();
-});
+        const categoriasConFotoRequerida = ['Consumo', 'Mortalidad', 'Traslado', 'Donacion'];
+
+        selectCat.addEventListener('change', (e) => {
+            const val = e.target.value;
+            if (categoriasConFotoRequerida.includes(val)) {
+                inputFoto.setAttribute('required', 'true');
+                reqFotoText.style.display = 'inline';
+            } else {
+                inputFoto.removeAttribute('required');
+                reqFotoText.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
