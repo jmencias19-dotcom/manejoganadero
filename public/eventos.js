@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Módulo: Registro y Control de Eventos Críticos (Versión Compatible HTML)
+   Módulo: Registro y Control de Eventos Críticos (Modo Offline Blindado)
    Hato Laguna Brava - Mantecal, Apure, Venezuela
    ========================================================================== */
 
@@ -7,6 +7,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebas
 import {  
     initializeFirestore,  
     persistentLocalCache,
+    persistentMultipleTabManager,
     collection,  
     addDoc,  
     onSnapshot,  
@@ -29,14 +30,15 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 
-// Inicialización moderna con caché persistente (Soporte offline total en campo)
+// Configuración de Firestore con persistencia local robusta para campo sin internet
 const db = initializeFirestore(app, {
-    localCache: persistentLocalCache()
+    localCache: persistentLocalCache({
+        tabManager: persistentMultipleTabManager()
+    })
 });
 
 const COLLECTION_NAME = "hato_eventos";
 
-// Caché global en memoria para filtros reactivos
 let eventosCache = [];
 let imagenBase64Actual = "";
 
@@ -46,20 +48,24 @@ document.addEventListener('DOMContentLoaded', () => {
     const sinRegistros = document.getElementById('sinRegistros');
     const inputFoto = document.getElementById('foto-evento');
     
-    // Contadores de KPIs según tu HTML
+    // Contadores de KPIs (7 indicadores)
     const kpiMortalidad = document.getElementById('kpi-mortalidad');
-    const kpiReproductivos = document.getElementById('kpi-reproductivos'); // Abortos y Natimortos
-    const kpiMovimientos = document.getElementById('kpi-movimientos');     // Consumo, Donación, Traslado
+    const kpiAbortos = document.getElementById('kpi-abortos');
+    const kpiNatimortos = document.getElementById('kpi-natimortos');
+    const kpiNatalidad = document.getElementById('kpi-natalidad');
+    const kpiConsumo = document.getElementById('kpi-consumo');
+    const kpiTraslados = document.getElementById('kpi-traslados');
+    const kpiDonaciones = document.getElementById('kpi-donaciones');
 
-    // Elementos de Filtro Reactivo
+    // Filtros y Búsqueda
     const filtroCategoria = document.getElementById('filtro-categoria');
-    const filtroGrupoEtario = document.getElementById('filtro-grupo-etario');
+    const filtroMes = document.getElementById('filtro-mes');
+    const busquedaChip = document.getElementById('busqueda-chip');
 
     // Semáforo Cloud UI
     const syncSemaphore = document.getElementById('syncSemaphore');
     const syncTextLabel = document.getElementById('syncTextLabel');
 
-    // Función auxiliar para notificaciones Toast
     function mostrarToast(mensaje, tipo = "success") {
         const toast = document.getElementById('toast');
         const toastMessage = document.getElementById('toast-message');
@@ -72,38 +78,6 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => {
             toast.classList.remove('show');
         }, 3500);
-    }
-
-    // Manejo de Geolocalización GPS en campo
-    const btnCapturarGps = document.getElementById('btn-capturar-gps');
-    const gpsInfo = document.getElementById('gps-info');
-    const gpsLat = document.getElementById('gps-lat');
-    const gpsLng = document.getElementById('gps-lng');
-
-    if (btnCapturarGps) {
-        btnCapturarGps.addEventListener('click', () => {
-            if (!navigator.geolocation) {
-                mostrarToast("La geolocalización no está soportada en este dispositivo", "error");
-                return;
-            }
-            gpsInfo.textContent = "Obteniendo coordenadas GPS...";
-            navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    const lat = position.coords.latitude.toFixed(6);
-                    const lng = position.coords.longitude.toFixed(6);
-                    gpsLat.value = lat;
-                    gpsLng.value = lng;
-                    gpsInfo.textContent = `Lat: ${lat}, Lng: ${lng}`;
-                    mostrarToast("Coordenadas GPS fijadas con éxito");
-                },
-                (error) => {
-                    console.error("Error GPS:", error);
-                    gpsInfo.textContent = "Error al obtener GPS (verifique permisos)";
-                    mostrarToast("No se pudo capturar la posición GPS", "error");
-                },
-                { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
-            );
-        });
     }
 
     // Procesar imagen subida a Base64
@@ -124,13 +98,14 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Sincronización en tiempo real con Firestore
+    // Sincronización robusta en tiempo real con soporte offline automático
     function iniciarSincronizacionEventos() {
         if (!tablaEventosBody) return;
 
         const q = query(collection(db, COLLECTION_NAME), orderBy("fecha", "desc"));
         
-        onSnapshot(q, (snapshot) => {
+        // onSnapshot lee automáticamente de la caché local si no hay red
+        onSnapshot(q, { includeMetadataChanges: true }, (snapshot) => {
             eventosCache = [];  
             
             snapshot.forEach((docSnap) => {
@@ -140,62 +115,84 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             });
 
-            // Actualizar semáforo a online
-            if (syncSemaphore) syncSemaphore.classList.add('online');
-            if (syncTextLabel) syncTextLabel.textContent = "Cloud Sincronizado";
+            // Detectar si los datos vienen del servidor o de la caché local offline
+            const desdeCache = snapshot.metadata.fromCache;
 
-            actualizarOpcionesFiltroEtarios(eventosCache);
+            if (desdeCache) {
+                if (syncSemaphore) syncSemaphore.classList.remove('online');
+                if (syncTextLabel) syncTextLabel.textContent = "Modo Offline (Local)";
+            } else {
+                if (syncSemaphore) syncSemaphore.classList.add('online');
+                if (syncTextLabel) syncTextLabel.textContent = "Cloud Sincronizado";
+            }
+
+            actualizarOpcionesMeses(eventosCache);
             window.renderizarEventosFiltrados();
 
         }, (error) => {
-            console.error("Error al sincronizar eventos:", error);
+            console.warn("Aviso de conectividad Firestore (operando localmente):", error);
             if (syncSemaphore) syncSemaphore.classList.remove('online');
             if (syncTextLabel) syncTextLabel.textContent = "Modo Offline";
-            mostrarToast("Trabajando en modo offline (datos locales)", "error");
             
-            // Renderizar con caché local disponible
+            // Renderizamos igual con lo que tenga la caché almacenada
             window.renderizarEventosFiltrados();
         });
     }
 
-    // Renderizado dinámico y filtrado en la Tabla HTML
+    // Renderizado dinámico y filtrado múltiple (Chip, Mes, Categoría)
     window.renderizarEventosFiltrados = function() {
         if (!tablaEventosBody) return;
 
         const catSeleccionada = filtroCategoria ? filtroCategoria.value.toLowerCase() : '';
-        const etarioSeleccionado = filtroGrupoEtario ? filtroGrupoEtario.value.toLowerCase() : '';
+        const mesSeleccionado = filtroMes ? filtroMes.value : ''; // Formato YYYY-MM
+        const queryChip = busquedaChip ? busquedaChip.value.trim().toLowerCase() : '';
 
         const eventosFiltrados = eventosCache.filter(ev => {
-            const coincideCat = !catSeleccionada || (ev.categoria && ev.categoria.toLowerCase() === catSeleccionada);
-            const coincideEtario = !etarioSeleccionado || (ev.grupoEtario && ev.grupoEtario.toLowerCase().includes(etarioSeleccionado));
-            return coincideCat && coincideEtario;
+            const catLower = (ev.categoria || '').toLowerCase();
+            const fechaEv = ev.fecha || ''; // YYYY-MM-DD
+            const mesEv = fechaEv.substring(0, 7); // YYYY-MM
+            const chipEv = (ev.chipNumero || '').toLowerCase();
+
+            const coincideCat = !catSeleccionada || catLower === catSeleccionada;
+            const coincideMes = !mesSeleccionado || mesEv === mesSeleccionado;
+            const coincideChip = !queryChip || chipEv.includes(queryChip);
+
+            return coincideCat && coincideMes && coincideChip;
         });
 
         tablaEventosBody.innerHTML = '';
 
         if (eventosFiltrados.length === 0) {
             if (sinRegistros) sinRegistros.style.display = 'block';
-            actualizarContadoresDashboard({ mortalidad: 0, reproductivos: 0, movimientos: 0 });
+            actualizarContadoresDashboard({ mortalidad: 0, abortos: 0, natimortos: 0, natalidad: 0, consumo: 0, traslados: 0, donaciones: 0 });
             return;
         }
 
         if (sinRegistros) sinRegistros.style.display = 'none';
 
-        let conteoMortalidad = 0;
-        let conteoReproductivos = 0; // Abortos + Natimortos
-        let conteoMovimientos = 0;     // Consumo + Donacion + Traslado
+        let cMortalidad = 0;
+        let cAbortos = 0;
+        let cNatimortos = 0;
+        let cNatalidad = 0;
+        let cConsumo = 0;
+        let cTraslados = 0;
+        let cDonaciones = 0;
 
         eventosFiltrados.forEach(ev => {
-            const catLower = (ev.categoria || '').toLowerCase();
+            const cat = (ev.categoria || '').toLowerCase();
             
-            if (catLower === 'mortalidad') conteoMortalidad++;
-            else if (catLower === 'aborto' || catLower === 'natimorto') conteoReproductivos++;
-            else if (catLower === 'consumo' || catLower === 'donacion' || catLower === 'traslado') conteoMovimientos++;
+            if (cat === 'mortalidad') cMortalidad++;
+            else if (cat === 'aborto') cAbortos++;
+            else if (cat === 'natimorto') cNatimortos++;
+            else if (cat === 'natalidad') cNatalidad++;
+            else if (cat === 'consumo') cConsumo++;
+            else if (cat === 'traslado') cTraslados++;
+            else if (cat === 'donacion') cDonaciones++;
 
-            // Asignar color de badge institucional según tipo
             let badgeClass = 'badge-operativo';
-            if (catLower === 'mortalidad') badgeClass = 'badge-mortalidad';
-            else if (catLower === 'aborto' || catLower === 'natimorto') badgeClass = 'badge-reproductivo';
+            if (cat === 'mortalidad') badgeClass = 'badge-mortalidad';
+            else if (cat === 'aborto' || cat === 'natimorto') badgeClass = 'badge-reproductivo';
+            else if (cat === 'natalidad') badgeClass = 'badge-natalidad';
 
             const tr = document.createElement('tr');
             tr.innerHTML = `
@@ -211,7 +208,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 </td>
                 <td>
                     <div style="font-size: 0.72rem;"><b>Resp:</b> ${ev.responsable || 'General'}</div>
-                    ${ev.lat && ev.lng ? `<div style="font-size: 0.62rem; color: #1d3557;"><i class="fa-solid fa-location-dot"></i> ${ev.lat},${ev.lng}</div>` : '<div style="font-size: 0.62rem; color: #adb5bd;">Sin GPS</div>'}
                 </td>
                 <td style="text-align: center;">
                     <button class="btn-danger btn-delete" data-id="${ev.id}" title="Eliminar registro">Eliminar</button>
@@ -221,41 +217,47 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         actualizarContadoresDashboard({
-            mortalidad: conteoMortalidad,
-            reproductivos: conteoReproductivos,
-            movimientos: conteoMovimientos
+            mortalidad: cMortalidad,
+            abortos: cAbortos,
+            natimortos: cNatimortos,
+            natalidad: cNatalidad,
+            consumo: cConsumo,
+            traslados: cTraslados,
+            donaciones: cDonaciones
         });
 
         vincularEventosEliminacion();
     };
 
-    // Poblar dinámicamente selectores de grupos etarios
-    function actualizarOpcionesFiltroEtarios(data) {
-        if (!filtroGrupoEtario) return;
-        const valorActual = filtroGrupoEtario.value;
+    // Poblar dinámicamente el selector de meses (YYYY-MM)
+    function actualizarOpcionesMeses(data) {
+        if (!filtroMes) return;
+        const valorActual = filtroMes.value;
         
-        // Mantener opción por defecto
-        filtroGrupoEtario.innerHTML = '<option value="">Todos los Etarios</option>';
+        filtroMes.innerHTML = '<option value="">Mes (Todos)</option>';
         
-        const etariosUnicos = [...new Set(data.map(e => e.grupoEtario).filter(Boolean))].sort();
-        etariosUnicos.forEach(et => {
+        const mesesUnicos = [...new Set(data.map(e => e.fecha ? e.fecha.substring(0, 7) : null).filter(Boolean))].sort().reverse();
+        mesesUnicos.forEach(m => {
             const opt = document.createElement('option');
-            opt.value = et;
-            opt.textContent = et;
-            if (et === valorActual) opt.selected = true;
-            filtroGrupoEtario.appendChild(opt);
+            opt.value = m;
+            opt.textContent = m; 
+            if (m === valorActual) opt.selected = true;
+            filtroMes.appendChild(opt);
         });
     }
 
-    // Event listeners para filtros reactivos
     if (filtroCategoria) filtroCategoria.addEventListener('change', window.renderizarEventosFiltrados);
-    if (filtroGrupoEtario) filtroGrupoEtario.addEventListener('change', window.renderizarEventosFiltrados);
+    if (filtroMes) filtroMes.addEventListener('change', window.renderizarEventosFiltrados);
+    if (busquedaChip) busquedaChip.addEventListener('input', window.renderizarEventosFiltrados);
 
-    // Actualizar los KPIs en la interfaz
     function actualizarContadoresDashboard(c) {
         if (kpiMortalidad) kpiMortalidad.textContent = c.mortalidad;
-        if (kpiReproductivos) kpiReproductivos.textContent = c.reproductivos;
-        if (kpiMovimientos) kpiMovimientos.textContent = c.movimientos;
+        if (kpiAbortos) kpiAbortos.textContent = c.abortos;
+        if (kpiNatimortos) kpiNatimortos.textContent = c.natimortos;
+        if (kpiNatalidad) kpiNatalidad.textContent = c.natalidad;
+        if (kpiConsumo) kpiConsumo.textContent = c.consumo;
+        if (kpiTraslados) kpiTraslados.textContent = c.traslados;
+        if (kpiDonaciones) kpiDonaciones.textContent = c.donaciones;
     }
 
     function vincularEventosEliminacion() {
@@ -268,14 +270,14 @@ document.addEventListener('DOMContentLoaded', () => {
                         mostrarToast("Registro eliminado correctamente");
                     } catch (error) {
                         console.error("Error al eliminar evento:", error);
-                        mostrarToast("Error al eliminar el registro", "error");
+                        mostrarToast("Error al eliminar el registro (verifique conexión)", "error");
                     }
                 }
             });
         });
     }
 
-    // Manejo de envío del formulario de eventos
+    // Envío del formulario (Soporta alta offline instantánea)
     if (eventoForm) {
         eventoForm.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -287,12 +289,16 @@ document.addEventListener('DOMContentLoaded', () => {
             const fecha = document.getElementById('fecha-evento')?.value;
             const responsable = document.getElementById('responsable-evento')?.value.trim() || 'General';
             const descripcion = document.getElementById('descripcion-evento')?.value.trim();
-            
-            const lat = gpsLat ? gpsLat.value : '';
-            const lng = gpsLng ? gpsLng.value : '';
 
             if (!categoria || !grupoEtario || !fecha || !descripcion) {
                 mostrarToast("Complete los campos obligatorios (*)", "error");
+                return;
+            }
+
+            // Validación de foto obligatoria
+            const categoriasConFoto = ['Consumo', 'Mortalidad', 'Traslado', 'Donacion'];
+            if (categoriasConFoto.includes(categoria) && !imagenBase64Actual) {
+                mostrarToast(`La fotografía es obligatoria para eventos de ${categoria}`, "error");
                 return;
             }
 
@@ -306,43 +312,39 @@ document.addEventListener('DOMContentLoaded', () => {
                 fecha,
                 responsable,
                 descripcion,
-                lat,
-                lng,
                 fotoBase64: imagenBase64Actual,
                 timestamp: Date.now()
             };
 
             try {
+                // addDoc escribe de inmediato en la caché local IndexedDB aunque no haya internet
                 await addDoc(collection(db, COLLECTION_NAME), nuevoEvento);
                 eventoForm.reset();
                 imagenBase64Actual = "";
-                if (gpsLat) gpsLat.value = '';
-                if (gpsLng) gpsLng.value = '';
-                if (gpsInfo) gpsInfo.textContent = "GPS no capturado";
                 
-                // Restablecer fecha por defecto a hoy
                 const ahora = new Date();
                 const today = `${ahora.getFullYear()}-${String(ahora.getMonth() + 1).padStart(2, '0')}-${String(ahora.getDate()).padStart(2, '0')}`;
                 const inputFecha = document.getElementById('fecha-evento');
                 if (inputFecha) inputFecha.value = today;
 
-                mostrarToast("💾 Evento crítico registrado y sincronizado con éxito");
+                const reqFotoText = document.getElementById('req-foto-text');
+                if (reqFotoText) reqFotoText.style.display = 'none';
+
+                mostrarToast("💾 Evento guardado localmente (se sincronizará al conectar)");
             } catch (error) {
-                console.error("Error al guardar evento:", error);
-                mostrarToast("Guardado localmente. Se sincronizará al conectar", "error");
+                console.error("Error al guardar localmente:", error);
+                mostrarToast("Error al procesar el registro en el dispositivo", "error");
             } finally {
                 if (btnSubmit) btnSubmit.disabled = false;
             }
         });
     }
 
-    // Inicializar fecha actual por defecto en el formulario
     const inputFecha = document.getElementById('fecha-evento');
     if (inputFecha && !inputFecha.value) {
         const ahora = new Date();
         inputFecha.value = `${ahora.getFullYear()}-${String(ahora.getMonth() + 1).padStart(2, '0')}-${String(ahora.getDate()).padStart(2, '0')}`;
     }
 
-    // Iniciar sincronización en tiempo real
     iniciarSincronizacionEventos();
 });
