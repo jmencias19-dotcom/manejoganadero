@@ -779,5 +779,247 @@
             filtroCategoria.addEventListener('change', renderizarApp);
         });
     </script>
+    <!-- SCRIPTS DE FIREBASE Y EXIF -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/exif-js"></script>
+    <script>
+        const firebaseConfig = {
+            databaseURL: "https://hato-laguna-brava-default-rtdb.firebaseio.com/"
+        };
+        
+        // Evitar doble inicialización si ya existe
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+
+        const dbRef = firebase.database().ref('eventos_criticos');
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('fecha-evento').value = today;
+
+            const form = document.getElementById('eventoForm');
+            const tablaBody = document.getElementById('tablaEventosBody');
+            const inputBusqueda = document.getElementById('busqueda-chip');
+            const filtroMes = document.getElementById('filtro-mes');
+            const filtroCategoria = document.getElementById('filtro-categoria');
+            
+            const kpiMortalidad = document.getElementById('kpi-mortalidad');
+            const kpiAbortos = document.getElementById('kpi-abortos');
+            const kpiNatimortos = document.getElementById('kpi-natimortos');
+            const kpiNatalidad = document.getElementById('kpi-natalidad');
+            const kpiConsumo = document.getElementById('kpi-consumo');
+            const kpiTraslados = document.getElementById('kpi-traslados');
+            const kpiDonaciones = document.getElementById('kpi-donaciones');
+
+            let eventosCache = [];
+            let gpsDataCaptured = "N/A";
+
+            // Indicador de conexión en tiempo real
+            const semaphoreEl = document.getElementById('syncSemaphore');
+            const syncTextEl = document.getElementById('syncTextLabel');
+            
+            firebase.database().ref('.info/connected').on('value', function(snap) {
+                if (snap.val() === true) {
+                    semaphoreEl.className = "semaphore online";
+                    syncTextEl.innerText = "Cloud Sincronizado";
+                } else {
+                    semaphoreEl.className = "semaphore";
+                    syncTextEl.innerText = "Modo Local (Offline)";
+                }
+            });
+
+            // Captura de GPS mediante EXIF o geolocalización de respaldo
+            document.getElementById('foto-evento').addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (!file) {
+                    gpsDataCaptured = "N/A";
+                    return;
+                }
+
+                EXIF.getData(file, function() {
+                    const lat = EXIF.getTag(this, "GPSLatitude");
+                    const latRef = EXIF.getTag(this, "GPSLatitudeRef");
+                    const lon = EXIF.getTag(this, "GPSLongitude");
+                    const lonRef = EXIF.getTag(this, "GPSLongitudeRef");
+
+                    if (lat && lon && latRef && lonRef) {
+                        const convertDMSToDD = (dms, ref) => {
+                            let dd = dms[0] + dms[1]/60 + dms[2]/3600;
+                            if (ref === "S" || ref === "W") dd = -dd;
+                            return dd;
+                        };
+                        const latitude = convertDMSToDD(lat, latRef).toFixed(6);
+                        const longitude = convertDMSToDD(lon, lonRef).toFixed(6);
+                        gpsDataCaptured = `${latitude}, ${longitude}`;
+                        mostrarToast("📍 GPS extraído de la foto con éxito");
+                    } else {
+                        if (navigator.geolocation) {
+                            navigator.geolocation.getCurrentPosition(
+                                (position) => {
+                                    gpsDataCaptured = `${position.coords.latitude.toFixed(6)}, ${position.coords.longitude.toFixed(6)}`;
+                                    mostrarToast("📍 GPS obtenido por dispositivo");
+                                },
+                                () => {
+                                    gpsDataCaptured = "N/A (Sin permiso GPS)";
+                                },
+                                { timeout: 10000, enableHighAccuracy: true }
+                            );
+                        } else {
+                            gpsDataCaptured = "N/A";
+                        }
+                    }
+                });
+            });
+
+            function mostrarToast(mensaje) {
+                const toast = document.getElementById('toast');
+                document.getElementById('toast-message').innerText = mensaje;
+                toast.className = "show";
+                setTimeout(() => { toast.className = toast.className.replace("show", ""); }, 3000);
+            }
+
+            function actualizarFiltroMeses() {
+                const mesesSet = new Set();
+                eventosCache.forEach(ev => {
+                    if (ev.fecha) mesesSet.add(ev.fecha.substring(0, 7));
+                });
+
+                const mesSeleccionadoActual = filtroMes.value;
+                filtroMes.innerHTML = '<option value="">Mes (Todos)</option>';
+                
+                Array.from(mesesSet).sort().reverse().forEach(m => {
+                    const option = document.createElement('option');
+                    option.value = m;
+                    const [anio, mes] = m.split('-');
+                    const fechaObj = new Date(anio, mes - 1, 1);
+                    option.textContent = fechaObj.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
+                    filtroMes.appendChild(option);
+                });
+                filtroMes.value = mesSeleccionadoActual;
+            }
+
+            function renderizarApp() {
+                const textoBusqueda = inputBusqueda.value.toLowerCase().trim();
+                const mesFiltro = filtroMes.value;
+                const catFiltro = filtroategoria.value;
+
+                tablaBody.innerHTML = '';
+
+                let counts = { Mortalidad: 0, Aborto: 0, Natimorto: 0, Natalidad: 0, Consumo: 0, Traslado: 0, Donacion: 0 };
+                eventosCache.forEach(ev => {
+                    if (counts.hasOwnProperty(ev.categoria)) counts[ev.categoria]++;
+                });
+
+                kpiMortalidad.innerText = counts.Mortalidad;
+                kpiAbortos.innerText = counts.Aborto;
+                kpiNatimortos.innerText = counts.Natimorto;
+                kpiNatalidad.innerText = counts.Natalidad;
+                kpiConsumo.innerText = counts.Consumo;
+                kpiTraslados.innerText = counts.Traslado;
+                kpiDonaciones.innerText = counts.Donacion;
+
+                const eventosFiltrados = eventosCache.filter(ev => {
+                    const coincideChip = (ev.chip && ev.chip.toLowerCase().includes(textoBusqueda)) || ev.descripcion.toLowerCase().includes(textoBusqueda);
+                    const coincideMes = mesFiltro === "" || (ev.fecha && ev.fecha.startsWith(mesFiltro));
+                    const coincideCat = catFiltro === "" || ev.categoria === catFiltro;
+                    return coincideChip && coincideMes && coincideCat;
+                });
+
+                if (eventosFiltrados.length === 0) {
+                    tablaBody.innerHTML = `<tr><td colspan="5" style="text-align:center; color: var(--text-muted); padding: 15px;">No se encontraron registros activos.</td></tr>`;
+                    return;
+                }
+
+                eventosFiltrados.forEach((ev) => {
+                    const tr = document.createElement('tr');
+                    const badgeClass = `badge badge-${ev.categoria.toLowerCase()}`;
+                    
+                    tr.innerHTML = `
+                        <td><strong>${ev.fecha}</strong></td>
+                        <td>
+                            <span class="${badgeClass}">${ev.categoria}</span><br>
+                            <span style="font-size:0.68rem; color:var(--text-muted);">${ev.etario}</span>
+                        </td>
+                        <td>
+                            <strong>Chip:</strong> ${ev.chip || 'N/A'}<br>
+                            <span style="font-size:0.7rem;">${ev.descripcion}</span>
+                        </td>
+                        <td>
+                            <span style="font-size:0.68rem; font-weight:600;">${ev.responsable || 'N/A'}</span><br>
+                            <span style="font-size:0.6rem; color: var(--text-muted);">📍 ${ev.gps || 'N/A'}</span>
+                        </td>
+                        <td style="text-align: center;">
+                            <button type="button" class="btn-danger" onclick="eliminarEvento('${ev.firebaseKey}')">🗑️</button>
+                        </td>
+                    `;
+                    tablaBody.appendChild(tr);
+                });
+            }
+
+            // Sincronización en tiempo real con la base de datos
+            dbRef.on('value', (snapshot) => {
+                const data = snapshot.val();
+                eventosCache = [];
+                if (data) {
+                    Object.keys(data).forEach(key => {
+                        eventosCache.push({ firebaseKey: key, ...data[key] });
+                    });
+                    eventosCache.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+                }
+                actualizarFiltroMeses();
+                renderizarApp();
+            }, (error) => {
+                console.error("Error al leer de Firebase:", error);
+                mostrarToast("⚠️ Error de lectura: Verifique reglas de Firebase");
+            });
+
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+
+                const nuevoEvento = {
+                    categoria: document.getElementById('categoria-evento').value,
+                    etario: document.getElementById('grupo-etario').value.trim(),
+                    chip: document.getElementById('chip-numero').value.trim().toUpperCase(),
+                    fecha: document.getElementById('fecha-evento').value,
+                    responsable: document.getElementById('responsable-evento').value.trim(),
+                    descripcion: document.getElementById('descripcion-evento').value.trim(),
+                    gps: gpsDataCaptured,
+                    timestamp: firebase.database.ServerValue.TIMESTAMP
+                };
+
+                dbRef.push(nuevoEvento)
+                    .then(() => {
+                        form.reset();
+                        document.getElementById('fecha-evento').value = today;
+                        gpsDataCaptured = "N/A";
+                        document.getElementById('foto-evento').value = "";
+                        mostrarToast("💾 Registrado y sincronizado con éxito");
+                    })
+                    .catch((err) => {
+                        console.error("Error al guardar:", err);
+                        mostrarToast("⚠️ Error al guardar: Revise su conexión");
+                    });
+            });
+
+            window.eliminarEvento = function(firebaseKey) {
+                if (confirm('¿Está seguro de eliminar este registro crítico de la base de datos?')) {
+                    dbRef.child(firebaseKey).remove()
+                        .then(() => {
+                            mostrarToast("🗑️ Registro eliminado correctamente");
+                        })
+                        .catch((err) => {
+                            console.error("Error al eliminar:", err);
+                            mostrarToast("⚠️ Error al intentar eliminar");
+                        });
+                }
+            };
+
+            inputBusqueda.addEventListener('input', renderizarApp);
+            filtroMes.addEventListener('change', renderizarApp);
+            filtroCategoria.addEventListener('change', renderizarApp);
+        });
+    </script>
 </body>
 </html>
