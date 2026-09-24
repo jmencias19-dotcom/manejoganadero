@@ -29,7 +29,8 @@ const firebaseConfig = {
     measurementId: "G-2E517DTZFS"
 };
 
-const app = initializeApp(firebaseConfig);
+// Inicialización segura para evitar múltiples instancias activas en el navegador
+const app = !firebaseappsLength ? initializeApp(firebaseConfig) : initializeApp(firebaseConfig, "app_eventos_criticos");
 
 const db = initializeFirestore(app, {
     localCache: persistentLocalCache({
