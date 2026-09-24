@@ -4,16 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Hato Laguna Brava - Control de Levante y Bloques de Estudio</title>
-    
+
     <!-- Centralizado en tus Estilos Maestros Unificados (v4.1) -->
     <link rel="stylesheet" href="./potreros.css?v=4.1">
-    
+
     <!-- CDN oficial de iconos FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+
     <!-- Manifiesto PWA -->
     <link rel="manifest" href="manifest.json">
-    
+
     <style>
         body {
             background-color: var(--bg-main, #fafdfb);
@@ -250,7 +250,7 @@
     <!-- CONTENEDOR PRINCIPAL -->
     <main class="main-container">
         <div class="menu-grid">
-            
+
             <!-- COLUMNA 1: FORMULARIO DE ENTRADA Y GESTIÓN DE LOTE -->
             <section class="section-box">
                 <div class="card-header">
@@ -258,9 +258,9 @@
                     <h2 class="card-title">Registro de Pesaje</h2>
                 </div>
                 <p class="card-description">Declaración de fechas de control en manga y programación del próximo pesaje.</p>
-                
+
                 <form id="form-levante" onsubmit="event.preventDefault();" style="display: flex; flex-direction: column; gap: 12px;">
-                    
+
                     <div class="input-group">
                         <label for="inputLote">Lote / Bloque de Estudio (Fase y Tratamiento)</label>
                         <input type="text" id="inputLote" value="Bloque 1 - Mautes Cebú (Suplementación + Compudose)" required>
@@ -347,7 +347,7 @@
                         <button type="button" id="btnProcesarPesaje" class="btn-submit">
                             <i class="fa-solid fa-brain"></i> Registrar y Guardar en Memoria
                         </button>
-                        
+
                         <!-- EL DÚO DINÁMICO: DESHACER Y REHACER (Hermanos de control de historial) -->
                         <div class="undo-redo-group">
                             <button type="button" id="btnDeshacerUltimo" class="btn-history-control" title="Deshace el último registro guardado">
@@ -368,9 +368,9 @@
                     <h2 class="card-title">Brújula Temporal, GMD e IA</h2>
                 </div>
                 <p class="card-description">Monitoreo de cuenta regresiva para el próximo control de manga y diagnóstico experto.</p>
-                
+
                 <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 5px;">
-                    
+
                     <!-- ALERTA VISUAL Y SONORA DE LA BRÚJULA -->
                     <div id="cardBrujulaBox" class="kpi-card-item cv-alert-optimal">
                         <label><i class="fa-solid fa-bell"></i> Estado de la Brújula de Pesaje</label>
@@ -450,16 +450,16 @@
                 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
                 const osc = audioCtx.createOscillator();
                 const gainNode = audioCtx.createGain();
-                
+
                 osc.type = tipo === 'urgente' ? 'sawtooth' : 'sine';
                 osc.frequency.setValueAtTime(tipo === 'urgente' ? 880 : 587.33, audioCtx.currentTime);
-                
+
                 gainNode.gain.setValueAtTime(0.15, audioCtx.currentTime);
                 gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.6);
-                
+
                 osc.connect(gainNode);
                 gainNode.connect(audioCtx.destination);
-                
+
                 osc.start();
                 osc.stop(audioCtx.currentTime + 0.6);
             } catch(e) {
@@ -518,7 +518,7 @@
 
             let cardBrujulaBox = document.getElementById('cardBrujulaBox');
             let resumenBrujulaDias = document.getElementById('resumenBrujulaDias');
-            
+
             if (fechaProximaStr) {
                 let hoy = new Date();
                 hoy.setHours(0,0,0,0);
@@ -588,7 +588,7 @@
 
             historialLotes.push(registroActual);
             localStorage.setItem('lb_historial_lotes', JSON.stringify(historialLotes));
-            
+
             papeleraDeshacer = [];
 
             actualizarContadorHistorial();
@@ -642,8 +642,8 @@
             }
         });
     </script>
-    
+
     <!-- Script externo complementario si aplica -->
     <script src="./levante.js"></script>
 </body>
-</html>
+</html> no guarda y no sicroniza
