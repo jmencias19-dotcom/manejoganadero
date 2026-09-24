@@ -14,7 +14,9 @@ import {
     doc,  
     deleteDoc,  
     query,  
-    orderBy
+    orderBy,
+    enableNetwork,
+    disableNetwork
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 // Credenciales oficiales de Firebase para Hato Laguna Brava
@@ -65,6 +67,28 @@ document.addEventListener('DOMContentLoaded', () => {
     // Semáforo Cloud UI
     const syncSemaphore = document.getElementById('syncSemaphore');
     const syncTextLabel = document.getElementById('syncTextLabel');
+
+    // GESTIÓN DE CONECTIVIDAD DE RED EN VIVO (Blindaje Starlink/Estero)
+    window.addEventListener('online', async () => {
+        console.log("Conectividad detectada. Reactivando red de Firestore...");
+        try {
+            await enableNetwork(db);
+            if (syncTextLabel) syncTextLabel.textContent = "Sincronizando...";
+        } catch (err) {
+            console.error("Error al reactivar red Firestore:", err);
+        }
+    });
+
+    window.addEventListener('offline', async () => {
+        console.warn("Señal perdida. Conmutando a Modo Offline estricto.");
+        try {
+            await disableNetwork(db);
+            if (syncSemaphore) syncSemaphore.classList.remove('online');
+            if (syncTextLabel) syncTextLabel.textContent = "Modo Offline (Local)";
+        } catch (err) {
+            console.error("Error al pausar red Firestore:", err);
+        }
+    });
 
     function mostrarToast(mensaje, tipo = "success") {
         const toast = document.getElementById('toast');
@@ -118,7 +142,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Detectar si los datos vienen del servidor o de la caché local offline
             const desdeCache = snapshot.metadata.fromCache;
 
-            if (desdeCache) {
+            if (desdeCache || !navigator.onLine) {
                 if (syncSemaphore) syncSemaphore.classList.remove('online');
                 if (syncTextLabel) syncTextLabel.textContent = "Modo Offline (Local)";
             } else {
