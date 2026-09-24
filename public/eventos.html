@@ -239,22 +239,6 @@
             background-color: var(--primary-color);
         }
 
-        .btn-gps {
-            background-color: #1d3557;
-            color: #fff;
-            padding: 7px 10px;
-            font-size: 0.75rem;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: 600;
-            margin-top: 4px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-        }
-
         .btn-danger {
             background-color: var(--danger-color);
             color: #fff;
@@ -265,36 +249,42 @@
             font-size: 0.75rem;
         }
 
-        /* KPIS / RESUMEN RAPIDO */
+        /* KPIS / RESUMEN RAPIDO INDependientes por evento */
         .kpi-container {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 6px;
             margin-bottom: 14px;
+        }
+
+        @media(max-width: 768px) {
+            .kpi-container {
+                grid-template-columns: repeat(3, 1fr);
+            }
         }
 
         .kpi-card {
             background: #f8f9fa;
             border: 1px solid var(--border-color);
             border-radius: 6px;
-            padding: 8px;
+            padding: 6px 4px;
             text-align: center;
         }
 
         .kpi-card span {
             display: block;
-            font-size: 0.6rem;
+            font-size: 0.55rem;
             text-transform: uppercase;
             color: var(--text-muted);
             font-weight: 700;
         }
 
         .kpi-card strong {
-            font-size: 1.1rem;
+            font-size: 1rem;
             color: var(--primary-color);
         }
 
-        /* FILTROS Y TABLA */
+        /* FILTROS Y BARRA DE BÚSQUEDA */
         .toolbar-flex {
             display: flex;
             flex-direction: column;
@@ -303,11 +293,24 @@
             width: 100%;
         }
 
-        @media(min-width: 600px) {
+        .filters-wrapper {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 6px;
+            width: 100%;
+        }
+
+        @media(min-width: 768px) {
             .toolbar-flex {
                 flex-direction: row;
                 justify-content: space-between;
                 align-items: center;
+            }
+            .filters-wrapper {
+                display: flex;
+                flex-wrap: wrap;
+                width: auto;
+                gap: 6px;
             }
         }
 
@@ -354,6 +357,7 @@
         .badge-mortalidad { background: #fee2e2; color: #b91c1c; }
         .badge-reproductivo { background: #fef3c7; color: #b45309; }
         .badge-operativo { background: #e0f2fe; color: #0369a1; }
+        .badge-natalidad { background: #d1fae5; color: #065f46; }
 
         /* TOAST */
         #toast {
@@ -412,6 +416,7 @@
                                 <option value="Mortalidad">Mortalidad</option>
                                 <option value="Aborto">Aborto</option>
                                 <option value="Natimorto">Natimorto</option>
+                                <option value="Natalidad">Natalidad</option>
                                 <option value="Consumo">Consumo Interno</option>
                                 <option value="Donacion">Donación</option>
                                 <option value="Traslado">Traslado</option>
@@ -445,19 +450,11 @@
                             <textarea id="descripcion-evento" rows="3" required placeholder="Causa probable, potrero de origen/destino, detalles..."></textarea>
                         </div>
 
-                        <!-- CAPTURA GPS -->
+                        <!-- EVIDENCIA FOTOGRÁFICA (OBLIGATORIA PARA CIERTOS EVENTOS SEGÚN REGLA) -->
                         <div class="form-group">
-                            <label>Georreferenciación (GPS)</label>
-                            <button type="button" id="btn-capturar-gps" class="btn-gps">📍 Fijar Coordenadas GPS</button>
-                            <span id="gps-info" style="font-size: 0.65rem; color: var(--text-muted); margin-top: 3px; display: block;">GPS no capturado</span>
-                            <input type="hidden" id="gps-lat">
-                            <input type="hidden" id="gps-lng">
-                        </div>
-
-                        <!-- FOTO EVIDENCIA -->
-                        <div class="form-group">
-                            <label for="foto-evento">Adjuntar Evidencia Fotográfica</label>
+                            <label for="foto-evento" id="label-foto">Adjuntar Evidencia Fotográfica <span id="req-foto-text" style="color: var(--danger-color); display:none;">* (Obligatoria)</span></label>
                             <input type="file" id="foto-evento" accept="image/*" style="font-size: 0.75rem; padding: 4px;">
+                            <span style="font-size: 0.62rem; color: var(--text-muted); margin-top: 2px;">Las coordenadas GPS se extraerán automáticamente de la foto si están disponibles.</span>
                         </div>
 
                         <button type="submit" class="btn-action">💾 Registrar y Sincronizar</button>
@@ -469,36 +466,56 @@
             <div>
                 <section class="section-box">
                     
-                    <!-- KPIS RAPIDOS -->
+                    <!-- KPIS INDEPENDIENTES Y DETALLADOS -->
                     <div class="kpi-container">
                         <div class="kpi-card">
                             <span>Mortalidad</span>
                             <strong id="kpi-mortalidad">0</strong>
                         </div>
                         <div class="kpi-card">
-                            <span>Reproductivos</span>
-                            <strong id="kpi-reproductivos">0</strong>
+                            <span>Abortos</span>
+                            <strong id="kpi-abortos">0</strong>
                         </div>
                         <div class="kpi-card">
-                            <span>Movimientos</span>
-                            <strong id="kpi-movimientos">0</strong>
+                            <span>Natimortos</span>
+                            <strong id="kpi-natimortos">0</strong>
+                        </div>
+                        <div class="kpi-card">
+                            <span>Natalidad</span>
+                            <strong id="kpi-natalidad">0</strong>
+                        </div>
+                        <div class="kpi-card">
+                            <span>Consumo Int.</span>
+                            <strong id="kpi-consumo">0</strong>
+                        </div>
+                        <div class="kpi-card">
+                            <span>Traslados</span>
+                            <strong id="kpi-traslados">0</strong>
+                        </div>
+                        <div class="kpi-card">
+                            <span>Donaciones</span>
+                            <strong id="kpi-donaciones">0</strong>
                         </div>
                     </div>
 
+                    <!-- BARRA DE HERRAMIENTAS Y FILTROS (CON BLOQUE MENSUAL Y BÚSQUEDA RÁPIDA) -->
                     <div class="toolbar-flex">
                         <h2>📋 Historial de Eventos</h2>
-                        <div style="display: flex; gap: 6px; width: 100%; max-width: 320px;">
-                            <select id="filtro-categoria" style="font-size: 0.75rem; padding: 5px;">
-                                <option value="">Todas las Categorías</option>
+                        <div class="filters-wrapper">
+                            <input type="text" id="busqueda-chip" placeholder="Buscar por Chip / Caravana..." style="font-size: 0.75rem; padding: 5px; width: 140px;">
+                            <select id="filtro-mes" style="font-size: 0.75rem; padding: 5px; width: 110px;">
+                                <option value="">Mes (Todos)</option>
+                                <!-- Se llenará dinámicamente o por bloques YYYY-MM -->
+                            </select>
+                            <select id="filtro-categoria" style="font-size: 0.75rem; padding: 5px; width: 120px;">
+                                <option value="">Categorías</option>
                                 <option value="Mortalidad">Mortalidad</option>
                                 <option value="Aborto">Aborto</option>
                                 <option value="Natimorto">Natimorto</option>
+                                <option value="Natalidad">Natalidad</option>
                                 <option value="Consumo">Consumo</option>
                                 <option value="Donacion">Donación</option>
                                 <option value="Traslado">Traslado</option>
-                            </select>
-                            <select id="filtro-grupo-etario" style="font-size: 0.75rem; padding: 5px;">
-                                <option value="">Todos los Etarios</option>
                             </select>
                         </div>
                     </div>
@@ -515,7 +532,7 @@
                                 </tr>
                             </thead>
                             <tbody id="tablaEventosBody">
-                                <!-- Inyectado dinámicamente por eventos.js -->
+                                <!-- Inyectado dinámicamente por el script -->
                             </tbody>
                         </table>
                     </div>
@@ -536,6 +553,24 @@
                 window.history.back();
             } else {
                 window.location.href = 'index.html';
+            }
+        });
+
+        // Script visual rápido para gestionar dinámicamente la obligatoriedad de la foto
+        const selectCat = document.getElementById('categoria-evento');
+        const inputFoto = document.getElementById('foto-evento');
+        const reqFotoText = document.getElementById('req-foto-text');
+
+        const categoriasConFotoRequerida = ['Consumo', 'Mortalidad', 'Traslado', 'Donacion'];
+
+        selectCat.addEventListener('change', (e) => {
+            const val = e.target.value;
+            if (categoriasConFotoRequerida.includes(val)) {
+                inputFoto.setAttribute('required', 'true');
+                reqFotoText.style.display = 'inline';
+            } else {
+                inputFoto.removeAttribute('required');
+                reqFotoText.style.display = 'none';
             }
         });
     </script>
