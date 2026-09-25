@@ -1,18 +1,60 @@
 import { db } from './db.js';
 
-// Catálogo oficial de potreros de Hato Laguna Brava con sus áreas
-const CATALOGO_POTREROS = [
-    { potrero: "Macanillal", area: 432 }, { potrero: "El Galpón", area: 569 },
-    { potrero: "Mata del Muerto", area: 80 }, { potrero: "Manguito", area: 234 },
-    { potrero: "Mata de Piña", area: 205 }, { potrero: "Las Rallas", area: 102 },
-    { potrero: "Potrero del Medio", area: 703 }, { potrero: "Cuatro Esquinas", area: 77 },
-    { potrero: "Paulero", area: 418 }, { potrero: "Jobo Gacho", area: 422 },
-    { potrero: "Curva del Peligro", area: 40 }, { potrero: "Módulo A", area: 36 },
-    { potrero: "Módulo B", area: 36 }, { potrero: "Módulo C", area: 36 },
-    { potrero: "Módulo D", area: 36 }, { potrero: "Módulo E", area: 156 },
-    { potrero: "Saladillal", area: 125 }, { potrero: "Carretera", area: 142 },
-    { potrero: "María del Carmen", area: 32 }, { potrero: "Casa", area: 26 }
+/* ==========================================================================
+   Módulo: Matrices de Conversión Ganadera Oficiales (Hato Laguna Brava)
+   Factores de Unidad Animal (UA / UGM) - Bovinos y Bufalinos
+   ========================================================================== */
+
+export const CATEGORIAS_BOVINOS = [
+    { id: 'vacas_criando', nombre: 'Vacas Criando', factor: 1.0 },
+    { id: 'vacas_criando_pre', nombre: 'Vacas Criando Preñada', factor: 1.0 },
+    { id: 'vacas_vacia', nombre: 'Vacas Vacías', factor: 1.0 },
+    { id: 'vacas_prenadas', nombre: 'Vacas Preñadas', factor: 1.0 },
+    { id: 'vacas_descarte', nombre: 'Vacas Descarte', factor: 1.0 },
+    { id: 'novillas_vacia', nombre: 'Novillas Vacías', factor: 0.8 },
+    { id: 'novillas_descarte', nombre: 'Novillas Descarte', factor: 0.8 },
+    { id: 'novillas_prenada', nombre: 'Novillas Preñadas', factor: 0.8 },
+    { id: 'novillas_monta', nombre: 'Novillas en Monta', factor: 0.8 },
+    { id: 'mautes', nombre: 'Mautes', factor: 0.5 },
+    { id: 'mautas', nombre: 'Mautas', factor: 0.5 },
+    { id: 'becerros', nombre: 'Becerros', factor: 0.25 },
+    { id: 'becerras', nombre: 'Becerras', factor: 0.25 },
+    { id: 'toros_padrotes', nombre: 'Toros Padrotes', factor: 1.25 },
+    { id: 'toros_padres_descarte', nombre: 'Toros Padres Descarte', factor: 1.25 }
 ];
+
+export const CATEGORIAS_BUFALINOS = [
+    { id: 'bufalas_criando', nombre: 'Búfalas Criando', factor: 1.2 },
+    { id: 'bufalas_criando_pre', nombre: 'Búfalas Criando Preñada', factor: 1.2 },
+    { id: 'bufalas_vacia', nombre: 'Búfalas Vacías', factor: 1.2 },
+    { id: 'bufalas_prenadas', nombre: 'Búfalas Preñadas', factor: 1.2 },
+    { id: 'bufalas_descarte', nombre: 'Búfalas Descarte', factor: 1.2 },
+    { id: 'buvillas_vacia', nombre: 'Buvillas Vacías', factor: 0.95 },
+    { id: 'buvillas_descarte', nombre: 'Buvillas Descarte', factor: 0.95 },
+    { id: 'buvillas_prenada', nombre: 'Buvillas Preñadas', factor: 0.95 },
+    { id: 'buvillas_monta', nombre: 'Buvillas en Monta', factor: 0.95 },
+    { id: 'baute', nombre: 'Bautes', factor: 0.6 },
+    { id: 'bauta', nombre: 'Bautas', factor: 0.6 },
+    { id: 'bucerros', nombre: 'Bucerros', factor: 0.3 },
+    { id: 'bucerras', nombre: 'Bucerras', factor: 0.3 },
+    { id: 'bufalos_padrote', nombre: 'Búfalos Padrotes', factor: 1.5 },
+    { id: 'bufalos_padres_descarte', nombre: 'Búfalos Padres Descarte', factor: 1.5 }
+];
+
+/**
+ * Retorna el factor de Unidad Animal (UA / UGM) según la especie y categoría.
+ */
+export function obtenerFactorUA(especie, categoriaId) {
+    const matrices = {
+        'BOVINOS': CATEGORIAS_BOVINOS,
+        'BUFALINOS': CATEGORIAS_BUFALINOS
+    };
+
+    const catalogo = matrices[(especie || 'BOVINOS').toUpperCase()] || CATEGORIAS_BOVINOS;
+    const encontrada = catalogo.find(c => c.id === categoriaId);
+    
+    return encontrada ? encontrada.factor : 1.0; 
+}
 
 export async function sincronizarHistorialIndefinidoDexie() {
     const contenedorMatriz = document.getElementById('matriz-historial-container');
@@ -25,21 +67,19 @@ export async function sincronizarHistorialIndefinidoDexie() {
 
         let historialesPorPotrero = {};
 
-        // Inicializar estructura por potrero
-        CATALOGO_POTREROS.forEach(cp => {
-            historialesPorPotrero[cp.potrero] = {
-                area: cp.area,
-                totalCiclosAcumulados: 0,
-                acumuladoCargaHa: 0,
-                ultimoVaciado: 'Sin registro histórico previo',
-                especieUltima: 'GENERAL'
-            };
-        });
-
-        // Procesar registros locales
+        // Procesar registros locales desde Dexie
         historialRegistros.forEach(data => {
             const pot = data.potrero_id || data.potrero; 
-            if (historialesPorPotrero[pot]) {
+            if (pot) {
+                if (!historialesPorPotrero[pot]) {
+                    historialesPorPotrero[pot] = {
+                        area: data.area || 0,
+                        totalCiclosAcumulados: 0,
+                        acumuladoCargaHa: 0,
+                        ultimoVaciado: 'Sin registro histórico previo',
+                        especieUltima: 'GENERAL'
+                    };
+                }
                 historialesPorPotrero[pot].totalCiclosAcumulados++;
                 historialesPorPotrero[pot].acumuladoCargaHa += (data.carga_instantanea_UA_ha || data.cargaPromedioHa || 0);
                 if (data.fecha_salida || data.fechaVaciadoReal) {
@@ -160,7 +200,7 @@ export async function sincronizarHistorialIndefinidoDexie() {
                             <i class="fa-solid fa-database"></i> ${h.potrero} (${h.area} ha)
                         </div>
                         <div style="font-size: 0.82rem; color: #495057; margin-top: 4px;">
-                            <b>Ciclos:</b> ${h.ciclos} | <b>Descanso:</b> ${h.diasDescanso === 999 ? 'N/D' : h.diasDescanso + ' días'}
+                            <b>Ciclos:</b> ${h.ciclos} | <b>Descanso:</b> ${h.diasDescanso === 999 ? 'N/D' : h.diasDescanso + ' days'}
                         </div>
                     </div>
                 `;
