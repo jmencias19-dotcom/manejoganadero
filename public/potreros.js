@@ -18,6 +18,12 @@ export async function sincronizarHistorialIndefinidoDexie() {
         { potrero: "Saladillal", area: 125 }, { potrero: "Carretera", area: 142 },
         { potrero: "María del Carmen", area: 32 }, { potrero: "Casa", area: 26 }
     ];
+    import { db } from './db.js';
+
+// PEGA AQUÍ LA FUNCIÓN COMPLETA:
+export async function sincronizarHistorialIndefinidoDexie() {
+    // ... todo el código que me pasaste ...
+}
 
     try {
         // 1. Obtener todos los registros del historial de pastoreo local
@@ -339,4 +345,11 @@ function sincronizarHistorialIndefinido() {
             contenedorMatriz.innerHTML = htmlMatriz;
         }
     });
+    document.addEventListener('DOMContentLoaded', async () => {
+    // 1. Asegúrate de inicializar tu base de datos si es necesario
+    // await inicializarBaseDatos();
+
+    // 2. Ejecutar la sincronización y renderizado del historial de potreros
+    await sincronizarHistorialIndefinidoDexie();
+});
 }
