@@ -66,13 +66,11 @@ function sincronizarHistorialIndefinido() {
     const panelRecomendaciones = document.getElementById('ai-recomendacion-rutas');
     if (!contenedorMatriz && !panelRecomendaciones) return;
 
-    // Consulta global al histórico indefinido ordenado por fecha de vaciado real
     const q = query(collection(db, COL_HISTORIAL), orderBy("fechaVaciadoReal", "desc"));
 
     onSnapshot(q, (snapshot) => {
         let historialesPorPotrero = {};
 
-        // Inicializar estructura para los 20 potreros con almacenamiento a largo plazo
         CATALOGO_POTREROS.forEach(cp => {
             historialesPorPotrero[cp.potrero] = {
                 area: cp.area,
@@ -105,7 +103,6 @@ function sincronizarHistorialIndefinido() {
             const h = historialesPorPotrero[nombrePotrero];
             const cargaHistoricaPromedio = h.totalCiclosAcumulados > 0 ? (h.acumuladoCargaHa / h.totalCiclosAcumulados) : 0;
             
-            // Cálculo exacto de días de descanso transcurridos desde el último vaciado real
             let diasDescansoReal = 999;
             if (h.ultimoVaciado !== 'Sin registro histórico previo') {
                 const diffTime = Math.abs(new Date() - new Date(h.ultimoVaciado));
@@ -123,7 +120,6 @@ function sincronizarHistorialIndefinido() {
             });
         });
 
-        // Ordenar inicialmente por mayor tiempo de descanso
         potrerosParaRuta.sort((a, b) => b.diasDescanso - a.diasDescanso);
 
         // 1. Renderizar Panel Superior de Inteligencia, Filtros y Buscador
@@ -140,7 +136,6 @@ function sincronizarHistorialIndefinido() {
                         Rutas óptimas sugeridas: <b>1° ${opt1.potrero}</b> (${opt1.diasDescanso === 999 ? 'Disponible' : opt1.diasDescanso + ' días desc.'}) | <b>2° ${opt2.potrero}</b> (${opt2.diasDescanso === 999 ? 'Disponible' : opt2.diasDescanso + ' días desc.'})
                     </p>
                     
-                    <!-- Barra de Filtros Avanzada -->
                     <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 10px;">
                         <input type="text" id="busqueda-potrero-input" placeholder="🔍 Buscar potrero..." style="padding: 6px 10px; border: 1px solid #c8e6c9; border-radius: 4px; font-size: 0.82rem; background: #fff;">
                         <select id="filtro-especie-hist" style="padding: 6px; border: 1px solid #c8e6c9; border-radius: 4px; font-size: 0.82rem; background: #fff;">
@@ -155,9 +150,7 @@ function sincronizarHistorialIndefinido() {
                         </select>
                     </div>
 
-                    <div id="lista-disponibilidad-optimizada" style="max-height: 200px; overflow-y: auto; padding-right: 4px;">
-                        <!-- Se inyecta dinámicamente la lista filtrada -->
-                    </div>
+                    <div id="lista-disponibilidad-optimizada" style="max-height: 200px; overflow-y: auto; padding-right: 4px;"></div>
                 </div>
             `;
 
@@ -266,7 +259,6 @@ export async function archivarCicloAlVaciarse(potreroNombre, datosLoteActivo) {
             timestampArchivo: Date.now()
         };
 
-        // Almacenamiento indefinido en la colección histórica de Hato Laguna Brava
         await addDoc(collection(db, COL_HISTORIAL), registroHistoricoPermanente);
         console.log(`[HISTÓRICO INDEFINIDO] El potrero ${potreroNombre} archivó su ciclo exitosamente.`);
     } catch (error) {
