@@ -56,6 +56,28 @@ export function obtenerFactorUA(especie, categoriaId) {
     return encontrada ? encontrada.factor : 1.0; 
 }
 
+/**
+ * Llena de manera dinámica el selector de categorías según la especie seleccionada
+ */
+function actualizarCategoriasZootecnicas() {
+    const selectEspecie = document.getElementById('select-especie');
+    const selectCategoria = document.getElementById('select-categoria');
+    
+    if (!selectEspecie || !selectCategoria) return;
+
+    const especieSeleccionada = selectEspecie.value;
+    const catalogo = especieSeleccionada === 'BUFALINOS' ? CATEGORIAS_BUFALINOS : CATEGORIAS_BOVINOS;
+
+    selectCategoria.innerHTML = '<option value="" disabled selected>-- Seleccione Categoría --</option>';
+    
+    catalogo.forEach(cat => {
+        const option = document.createElement('option');
+        option.value = cat.id;
+        option.textContent = `${cat.nombre} (Factor: ${cat.factor} UA)`;
+        selectCategoria.appendChild(option);
+    });
+}
+
 export async function sincronizarHistorialIndefinidoDexie() {
     const contenedorMatriz = document.getElementById('matriz-historial-container');
     const panelRecomendaciones = document.getElementById('ai-recomendacion-rutas');
@@ -200,7 +222,7 @@ export async function sincronizarHistorialIndefinidoDexie() {
                             <i class="fa-solid fa-database"></i> ${h.potrero} (${h.area} ha)
                         </div>
                         <div style="font-size: 0.82rem; color: #495057; margin-top: 4px;">
-                            <b>Ciclos:</b> ${h.ciclos} | <b>Descanso:</b> ${h.diasDescanso === 999 ? 'N/D' : h.diasDescanso + ' days'}
+                            <b>Ciclos:</b> ${h.ciclos} | <b>Descanso:</b> ${h.diasDescanso === 999 ? 'N/D' : h.diasDescanso + ' días'}
                         </div>
                     </div>
                 `;
@@ -215,5 +237,12 @@ export async function sincronizarHistorialIndefinidoDexie() {
 
 // Inicialización automática al cargar el DOM
 document.addEventListener('DOMContentLoaded', async () => {
+    actualizarCategoriasZootecnicas();
+
+    const selectEspecie = document.getElementById('select-especie');
+    if (selectEspecie) {
+        selectEspecie.addEventListener('change', actualizarCategoriasZootecnicas);
+    }
+
     await sincronizarHistorialIndefinidoDexie();
 });
