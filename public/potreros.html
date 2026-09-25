@@ -187,48 +187,7 @@
                 </div>
             </section>
 
-            <!-- COLUMNA 2: Tablero de Carga Ecológica y Lotes Activos -->
-            <section class="section-box" style="height: auto;">
-                <div class="card-header">
-                    <div class="card-icon"><i class="fa-solid fa-chart-pie"></i></div>
-                    <h2 class="card-title">Carga Ecológica y Lotes</h2>
-                </div>
-                <p class="card-description">Indicadores agregados en tiempo real y asignaciones vigentes.</p>
-                
-                <!-- Recuadro para KPIs Globales de Carga -->
-                <div class="kpi-container" style="grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 15px;">
-                    <div class="kpi-card" style="padding: 8px 4px; background-color: #f8f9fa; border-color: #dee2e6;">
-                        <div class="kpi-title" style="font-size:0.65rem; color:var(--primary-color);">Total Animales</div>
-                        <div id="kpi-total-cabezas" class="kpi-value" style="font-size:1.1rem; color:var(--primary-color);">0</div>
-                    </div>
-                    <div class="kpi-card" style="padding: 8px 4px; background-color: #e2e8f0; border-color: #cbd5e1;">
-                        <div class="kpi-title" style="font-size:0.65rem; color:#1e293b;">Total UGM</div>
-                        <div id="kpi-total-ugm" class="kpi-value" style="font-size:1.1rem; color:#1e293b;">0.00</div>
-                    </div>
-                    <div class="kpi-card" style="padding: 8px 4px; background-color: #d1fae5; border-color: #a7f3d0;">
-                        <div class="kpi-title" style="font-size:0.65rem; color:#065f46;">Promedio UGM/ha</div>
-                        <div id="kpi-carga-promedio" class="kpi-value" style="font-size:1.1rem; color:#065f46;">0.00</div>
-                    </div>
-                </div>
-
-                <!-- SELECTORES DE FILTRO DINÁMICO REACTIVOS -->
-                <div class="filters-container" style="display: flex; gap: 8px; margin-bottom: 15px; flex-wrap: wrap;">
-                    <select id="filtro-potrero" class="form-control" style="flex: 1; min-width: 130px; padding: 8px; border-radius: 6px; border: 1px solid var(--border-color); font-size: 0.85rem;">
-                        <option value="">Todos los Potreros</option>
-                    </select>
-                    <select id="filtro-especie" class="form-control" style="flex: 1; min-width: 120px; padding: 8px; border-radius: 6px; border: 1px solid var(--border-color); font-size: 0.85rem;">
-                        <option value="">Todas las Especies</option>
-                        <option value="BOVINOS">Bovinos</option>
-                        <option value="BUFALINOS">Bufalinos</option>
-                    </select>
-                    <select id="filtro-estado-carga" class="form-control" style="flex: 1; min-width: 120px; padding: 8px; border-radius: 6px; border: 1px solid var(--border-color); font-size: 0.85rem;">
-                        <option value="">Todos los Estados</option>
-                        <option value="estable">🟢 Estable</option>
-                        <option value="moderado">🟡 Moderado</option>
-                        <option value="critico">🔴 Crítico</option>
-                    </select>
-                </div>
-                <!-- COLUMNA 2: Tablero de Carga Ecológica y Lotes Activos -->
+            <!-- COLUMNA 2: Tablero de Carga Ecológica y Lotes Activos (Única versión limpia) -->
             <section class="section-box" style="height: auto;">
                 <div class="card-header">
                     <div class="card-icon"><i class="fa-solid fa-chart-pie"></i></div>
@@ -270,14 +229,8 @@
                     </select>
                 </div>
 
-                <!-- 🚀 CONTENEDOR NUEVO: Inteligencia de Rutas y Buscador de Disponibilidad de Potreros -->
+                <!-- CONTENEDOR: Inteligencia de Rutas y Buscador de Disponibilidad de Potreros -->
                 <div id="ai-recomendacion-rutas" style="margin-bottom: 15px;"></div>
-
-                <!-- Contenedor dinámico donde se listarán las tarjetas de asignación -->
-                <div id="potreros-container">
-                    <p style="text-align: center; color: var(--text-muted); font-size: 0.9rem; padding: 20px;">No hay lotes activos registrados en los potreros.</p>
-                </div>
-            </section>
 
                 <!-- Contenedor dinámico donde se listarán las tarjetas de asignación -->
                 <div id="potreros-container">
