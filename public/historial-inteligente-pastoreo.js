@@ -9,7 +9,6 @@ import {
     collection,  
     addDoc,  
     onSnapshot,  
-    doc,  
     query,  
     orderBy  
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -60,18 +59,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
 /**
  * Motor analítico en tiempo real que procesa la memoria indefinida 
- * y alimenta el sistema predictivo de rutas de pastoreo.
+ * y alimenta el sistema predictivo de rutas de pastoreo con filtros avanzados.
  */
 function sincronizarHistorialIndefinido() {
     const contenedorMatriz = document.getElementById('matriz-historial-container');
     const panelRecomendaciones = document.getElementById('ai-recomendacion-rutas');
-    if (!contenedorMatriz) return;
+    if (!contenedorMatriz && !panelRecomendaciones) return;
 
     // Consulta global al histórico indefinido ordenado por fecha de vaciado real
     const q = query(collection(db, COL_HISTORIAL), orderBy("fechaVaciadoReal", "desc"));
 
     onSnapshot(q, (snapshot) => {
-        contenedorMatriz.innerHTML = '';
         let historialesPorPotrero = {};
 
         // Inicializar estructura para los 20 potreros con almacenamiento a largo plazo
@@ -81,6 +79,7 @@ function sincronizarHistorialIndefinido() {
                 totalCiclosAcumulados: 0,
                 acumuladoCargaHa: 0,
                 ultimoVaciado: 'Sin registro histórico previo',
+                especieUltima: 'BOVINOS',
                 historialCiclos: []
             };
         });
@@ -95,11 +94,11 @@ function sincronizarHistorialIndefinido() {
                 
                 if (data.fechaVaciadoReal) {
                     historialesPorPotrero[pot].ultimoVaciado = data.fechaVaciadoReal;
+                    historialesPorPotrero[pot].especieUltima = data.especie || 'BOVINOS';
                 }
             }
         });
 
-        let htmlMatriz = '';
         let potrerosParaRuta = [];
 
         Object.keys(historialesPorPotrero).forEach(nombrePotrero => {
@@ -107,63 +106,132 @@ function sincronizarHistorialIndefinido() {
             const cargaHistoricaPromedio = h.totalCiclosAcumulados > 0 ? (h.acumuladoCargaHa / h.totalCiclosAcumulados) : 0;
             
             // Cálculo exacto de días de descanso transcurridos desde el último vaciado real
-            let diasDescansoReal = 0;
+            let diasDescansoReal = 999;
             if (h.ultimoVaciado !== 'Sin registro histórico previo') {
                 const diffTime = Math.abs(new Date() - new Date(h.ultimoVaciado));
                 diasDescansoReal = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-            } else {
-                diasDescansoReal = 999; // Máxima prioridad si nunca ha sido usado en el histórico
             }
 
             potrerosParaRuta.push({
                 potrero: nombrePotrero,
+                area: h.area,
                 diasDescanso: diasDescansoReal,
                 ciclos: h.totalCiclosAcumulados,
                 cargaHistorica: cargaHistoricaPromedio,
-                area: h.area
+                especie: h.especieUltima,
+                ultimoVaciado: h.ultimoVaciado
             });
-
-            htmlMatriz += `
-                <div style="background: #ffffff; border: 1px solid #d1e7dd; border-radius: 8px; padding: 12px; margin-bottom: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                        <span style="font-weight: 700; color: #0f5132; font-size: 0.95rem;">
-                            <i class="fa-solid fa-database"></i> ${nombrePotrero} (${h.area} ha)
-                        </span>
-                        <span style="background: #d1e7dd; color: #0f5132; padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: 600;">
-                            Memoria Acumulada: ${h.totalCiclosAcumulados} Ciclos
-                        </span>
-                    </div>
-                    <div style="font-size: 0.82rem; color: #495057; display: grid; grid-template-columns: 1fr 1fr; gap: 4px;">
-                        <div><b>Carga Histórica Media:</b> ${cargaHistoricaPromedio.toFixed(2)} UGM/ha</div>
-                        <div><b>Días de Descanso Actual:</b> <span style="color: #198754; font-weight: 700;">${diasDescansoReal === 999 ? 'N/D' : diasDescansoReal + ' días'}</span></div>
-                        <div style="grid-column: span 2;"><b>Último Vaciado Registrado:</b> ${h.ultimoVaciado}</div>
-                    </div>
-                </div>
-            `;
         });
 
-        contenedorMatriz.innerHTML = htmlMatriz;
+        // Ordenar inicialmente por mayor tiempo de descanso
+        potrerosParaRuta.sort((a, b) => b.diasDescanso - a.diasDescanso);
 
-        // Motor de Inteligencia Predictiva basado en el Histórico Indefinido
+        // 1. Renderizar Panel Superior de Inteligencia, Filtros y Buscador
         if (panelRecomendaciones) {
-            potrerosParaRuta.sort((a, b) => b.diasDescanso - a.diasDescanso);
             const opt1 = potrerosParaRuta[0] || { potrero: 'Macanillal', diasDescanso: 60 };
             const opt2 = potrerosParaRuta[1] || { potrero: 'El Galpón', diasDescanso: 45 };
 
             panelRecomendaciones.innerHTML = `
-                <div style="background: #e8f5e9; border-left: 4px solid #2e7d32; padding: 12px; border-radius: 4px; font-size: 0.88rem;">
-                    <div style="font-weight: bold; color: #1b5e20; margin-bottom: 4px;">
-                        <i class="fa-solid fa-brain"></i> Ruta de Pastoreo Óptima (Inteligencia Histórica):
+                <div style="background: #e8f5e9; border-left: 4px solid #2e7d32; padding: 14px; border-radius: 6px; font-size: 0.88rem; margin-bottom: 15px;">
+                    <div style="font-weight: bold; color: #1b5e20; margin-bottom: 6px; font-size: 0.95rem;">
+                        <i class="fa-solid fa-brain"></i> Inteligencia de Rotación y Disponibilidad (Hato Laguna Brava):
                     </div>
-                    <p style="margin: 0 0 6px 0; color: #263238;">
-                        Cruzando la memoria acumulada de los ciclos de vaciado en Hato Laguna Brava, la recomendación de rutas para el próximo ingreso es:
+                    <p style="margin: 0 0 10px 0; color: #263238; font-size: 0.84rem;">
+                        Rutas óptimas sugeridas: <b>1° ${opt1.potrero}</b> (${opt1.diasDescanso === 999 ? 'Disponible' : opt1.diasDescanso + ' días desc.'}) | <b>2° ${opt2.potrero}</b> (${opt2.diasDescanso === 999 ? 'Disponible' : opt2.diasDescanso + ' días desc.'})
                     </p>
-                    <ul style="margin: 0; padding-left: 18px; color: #1b5e20;">
-                        <li><b>Principal:</b> <b>${opt1.potrero}</b> (${opt1.diasDescanso === 999 ? 'Disponible permanente' : opt1.diasDescanso + ' días de descanso acumulado'}).</li>
-                        <li><b>Alternativa:</b> <b>${opt2.potrero}</b> (${opt2.diasDescanso === 999 ? 'Disponible permanente' : opt2.diasDescanso + ' días de descanso acumulado'}).</li>
-                    </ul>
+                    
+                    <!-- Barra de Filtros Avanzada -->
+                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 10px;">
+                        <input type="text" id="busqueda-potrero-input" placeholder="🔍 Buscar potrero..." style="padding: 6px 10px; border: 1px solid #c8e6c9; border-radius: 4px; font-size: 0.82rem; background: #fff;">
+                        <select id="filtro-especie-hist" style="padding: 6px; border: 1px solid #c8e6c9; border-radius: 4px; font-size: 0.82rem; background: #fff;">
+                            <option value="">Todas las Especies</option>
+                            <option value="BOVINOS">Bovinos</option>
+                            <option value="BUFALINOS">Bufalinos</option>
+                        </select>
+                        <select id="filtro-disponibilidad" style="padding: 6px; border: 1px solid #c8e6c9; border-radius: 4px; font-size: 0.82rem; background: #fff;">
+                            <option value="">Filtro Disponibilidad</option>
+                            <option value="listos">Listos (> 45 días descanso)</option>
+                            <option value="recuperacion">En Recuperación (< 45 días)</option>
+                        </select>
+                    </div>
+
+                    <div id="lista-disponibilidad-optimizada" style="max-height: 200px; overflow-y: auto; padding-right: 4px;">
+                        <!-- Se inyecta dinámicamente la lista filtrada -->
+                    </div>
                 </div>
             `;
+
+            const renderListaFiltrada = (filtroTexto = "", filtroEsp = "", filtroDisp = "") => {
+                const contenedorLista = document.getElementById('lista-disponibilidad-optimizada');
+                if (!contenedorLista) return;
+
+                const filtrados = potrerosParaRuta.filter(p => {
+                    const matchTexto = p.potrero.toLowerCase().includes(filtroTexto.toLowerCase());
+                    const matchEsp = filtroEsp ? p.especie === filtroEsp : true;
+                    let matchDisp = true;
+                    if (filtroDisp === 'listos') matchDisp = p.diasDescanso >= 45;
+                    if (filtroDisp === 'recuperacion') matchDisp = p.diasDescanso < 45 && p.diasDescanso !== 999;
+                    return matchTexto && matchEsp && matchDisp;
+                });
+
+                if (filtrados.length === 0) {
+                    contenedorLista.innerHTML = `<p style="text-align: center; color: #555; font-style: italic; margin: 8px 0;">No se encontraron potreros con los criterios seleccionados.</p>`;
+                    return;
+                }
+
+                let htmlItems = '';
+                filtrados.forEach((p, index) => {
+                    let badgeColor = p.diasDescanso >= 45 ? '#2e7d32' : (p.diasDescanso >= 30 ? '#f57c00' : '#c62828');
+                    let textoDescanso = p.diasDescanso === 999 ? 'Disponible (Sin historial)' : `${p.diasDescanso} días de descanso`;
+                    
+                    htmlItems += `
+                        <div style="background: #ffffff; border: 1px solid #c8e6c9; border-radius: 4px; padding: 6px 10px; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; font-size: 0.82rem;">
+                            <div>
+                                <b>#${index + 1} - ${p.potrero}</b> (${p.area} ha) | <span style="color: ${badgeColor}; font-weight: 600;">${textoDescanso}</span>
+                            </div>
+                            <span style="background: #e0f2f1; color: #00695c; padding: 2px 6px; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">${p.especie}</span>
+                        </div>
+                    `;
+                });
+                contenedorLista.innerHTML = htmlItems;
+            };
+
+            renderListaFiltrada();
+
+            document.getElementById('busqueda-potrero-input').addEventListener('input', (e) => {
+                renderListaFiltrada(e.target.value, document.getElementById('filtro-especie-hist').value, document.getElementById('filtro-disponibilidad').value);
+            });
+            document.getElementById('filtro-especie-hist').addEventListener('change', (e) => {
+                renderListaFiltrada(document.getElementById('busqueda-potrero-input').value, e.target.value, document.getElementById('filtro-disponibilidad').value);
+            });
+            document.getElementById('filtro-disponibilidad').addEventListener('change', (e) => {
+                renderListaFiltrada(document.getElementById('busqueda-potrero-input').value, document.getElementById('filtro-especie-hist').value, e.target.value);
+            });
+        }
+
+        // 2. Renderizar la Matriz de Estado General Inferior
+        if (contenedorMatriz) {
+            let htmlMatriz = '';
+            potrerosParaRuta.forEach(h => {
+                htmlMatriz += `
+                    <div style="background: #ffffff; border: 1px solid #d1e7dd; border-radius: 8px; padding: 12px; margin-bottom: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                            <span style="font-weight: 700; color: #0f5132; font-size: 0.95rem;">
+                                <i class="fa-solid fa-database"></i> ${h.potrero} (${h.area} ha)
+                            </span>
+                            <span style="background: #d1e7dd; color: #0f5132; padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: 600;">
+                                Memoria Acumulada: ${h.ciclos} Ciclos
+                            </span>
+                        </div>
+                        <div style="font-size: 0.82rem; color: #495057; display: grid; grid-template-columns: 1fr 1fr; gap: 4px;">
+                            <div><b>Carga Histórica Media:</b> ${h.cargaHistorica.toFixed(2)} UGM/ha</div>
+                            <div><b>Días de Descanso Actual:</b> <span style="color: #198754; font-weight: 700;">${h.diasDescanso === 999 ? 'N/D' : h.diasDescanso + ' días'}</span></div>
+                            <div style="grid-column: span 2;"><b>Último Vaciado Registrado:</b> ${h.ultimoVaciado}</div>
+                        </div>
+                    </div>
+                `;
+            });
+            contenedorMatriz.innerHTML = htmlMatriz;
         }
 
     }, (error) => {
